@@ -4,13 +4,12 @@ using UnityEngine;
 
 public class Managers : MonoBehaviour
 {
-    // Start is called before the first frame update
+    // 한글 주석 테스트, 소스트리 커밋 준비
     void Start()
     {
         
     }
 
-    // Update is called once per frame
     void Update()
     {
         
