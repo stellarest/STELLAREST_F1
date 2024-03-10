@@ -14,9 +14,12 @@ Assets/@Commons
 Assets/@Scenes
 Assets/@Settings
 Assets/Resources
+Assets/AddressableAssetsData
+Assets/TextMesh Pro
 Packages
 .vscode
 ProjectSettings
+*.blob
 
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
