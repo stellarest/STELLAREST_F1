@@ -28,7 +28,7 @@ namespace STELLAREST_F1
             Max
         }
 
-        public static class Const
+        public static class ReadOnly
         {
             public static class String
             {

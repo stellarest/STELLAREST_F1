@@ -49,12 +49,12 @@ namespace STELLAREST_F1
 
         private void StartLoadAsset()
         {
-            Managers.Resource.LoadAllAsync<Object>(Const.String.PreLoad, delegate(string key, int count, int totalCount)
+            Managers.Resource.LoadAllAsync<Object>(label: ReadOnly.String.PreLoad, callback: delegate(string key, int count, int totalCount)
             {
                 Debug.Log($"Key Loaded : {key}, Current : {count} / Total : {totalCount}");
                 if (count == totalCount)
                 {
-                    // Managers.Data.Init
+                    Managers.Data.Init();
                     GetObject((int)GameObjects.StartImage).SetActive(true);
                     GetText((int)Texts.DisplayText).text = $"Touch To Start";
                 }

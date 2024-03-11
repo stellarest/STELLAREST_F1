@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Reflection;
 using UnityEngine;
 
 namespace STELLAREST_F1
@@ -58,5 +60,17 @@ namespace STELLAREST_F1
         // string value -> Enum Type, true : 대소문자 구분 안함.
         public static T ParseEnum<T>(string value)
             => (T)Enum.Parse(typeof(T), value, true);
+
+#if UNITY_EDITOR
+        [Conditional("UNITY_EDITOR")]
+        public static void ClearLog()
+        {
+            var assembly = Assembly.GetAssembly(typeof(UnityEditor.Editor));
+            var type = assembly.GetType("UnityEditor.LogEntries");
+            var method = type.GetMethod("Clear");
+            method.Invoke(new object(), null);
+            UnityEngine.Debug.Log("### CLEAR ###");
+        }
+#endif
     }
 }
