@@ -13,6 +13,7 @@ namespace STELLAREST_F1
 {
     public class UI_Base : InitBase
     {
+        // * Key : UnityEngine.Object Type (not enum type)
         protected Dictionary<Type, UnityEngine.Object[]> _objects = new Dictionary<Type, UnityEngine.Object[]>();
 
         public override bool Init()
@@ -37,9 +38,9 @@ namespace STELLAREST_F1
             for (int i = 0; i < names.Length; ++i)
             {
                 if (typeof(T) == typeof(GameObject))
-                    objects[i] = Util.FindChild(gameObject, names[i], true);
+                    objects[i] = Util.FindChild(gameObject, names[i], true, inActiveTarget: true);
                 else
-                    objects[i] = Util.FindChild<T>(gameObject, names[i], true);
+                    objects[i] = Util.FindChild<T>(gameObject, names[i], true, inActiveTarget: true);
 
                 if (objects[i] == null)
                     Debug.LogWarning($"{nameof(UI_Base)}, {nameof(Bind)}, Input : \"{names[i]}\"");

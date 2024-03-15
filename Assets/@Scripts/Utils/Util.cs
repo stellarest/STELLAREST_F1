@@ -27,12 +27,12 @@ namespace STELLAREST_F1
             return transform.gameObject;
         }
 
-        public static T FindChild<T>(GameObject go, string name = null, bool recusive = false, bool inActiveTarget = false) where T : UnityEngine.Object
+        public static T FindChild<T>(GameObject go, string name = null, bool recursive = false, bool inActiveTarget = false) where T : UnityEngine.Object
         {
             if (go == null)
                 return null;
 
-            if (recusive == false)
+            if (recursive == false)
             {
                 for (int i = 0; i < go.transform.childCount; ++i)
                 {

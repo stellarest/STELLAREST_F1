@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using STELLAREST_F1;
+using TMPro;
 using UnityEditor.SearchService;
 using UnityEngine;
 using static STELLAREST_F1.Define;
@@ -31,7 +32,14 @@ namespace STELLAREST_F1
         }
 
         #region Contents
+        private GameManager _game = new GameManager();
+        public static GameManager Game => Instance?._game;
 
+        private ObjectManager _object = new ObjectManager();
+        public static ObjectManager Object => Instance?._object;
+
+        private SpriteManager _sprite = new SpriteManager();
+        public static SpriteManager Sprite => Instance?._sprite;
         #endregion
 
         #region Core
