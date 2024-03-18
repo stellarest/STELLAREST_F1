@@ -68,6 +68,12 @@ namespace STELLAREST_F1
             Dead
         }
 
+        public enum LookAtDirection
+        {
+            Left = -1,
+            Right = 1,
+        }
+
         public static class ReadOnly
         {
             public static class String
@@ -82,6 +88,7 @@ namespace STELLAREST_F1
                 public static readonly string HeroRoot = "@Heroes";
                 public static readonly string MonsterRoot = "@Monsters";
                 public static readonly string UI_Joystick = "UI_Joystick";
+                public static readonly string AnimationBody = "AnimationBody";
                 
                 public static readonly string Anim_Idle = "Idle";
                 public static readonly string Anim_Attack = "Attack";
@@ -93,6 +100,14 @@ namespace STELLAREST_F1
 
             public static class Numeric
             {
+                public static readonly int TemplateID_Hero_Temp = 201000; // TEMP
+                public static readonly int SortingLayer_SpellIndicator = 200;
+                public static readonly int SortingLayer_Creature = 300;
+                public static readonly int SortingLayer_Env = 300;
+                public static readonly int SortingLayer_Projectile = 310;
+                public static readonly int SortingLayer_SkillEffect = 310;
+                public static readonly int SortingLayer_DamageFont = 410;
+
                 public static readonly float CamOrthoSize = 10F; 
                 public static readonly float JoystickFocusMinDist = -0.18F;
                 public static readonly float JoystickFocusMaxDist = 0.18F;

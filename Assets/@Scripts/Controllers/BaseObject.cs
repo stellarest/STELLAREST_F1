@@ -11,20 +11,24 @@ namespace STELLAREST_F1
     {
         public EObjectType ObjectType { get; protected set; } = EObjectType.None;
         public CircleCollider2D Collider { get; private set; } = null;
+        //public BaseAnimation BaseAnim { get; private set; } = null;
         public BaseAnimation BaseAnim { get; private set; } = null;
         public Rigidbody2D RigidBody { get; private set; } = null;
 
         public float ColliderRadius { get => Collider != null ? Collider.radius : 0.0f; }
         public float ColliderRadius2 { get => Collider?.radius ?? 0.0f; }
 
-        private bool _lookLeft = true;
-        public bool LookLeft
+        [SerializeField] private LookAtDirection _lookAtDir = LookAtDirection.Right;
+        public LookAtDirection LookAtDir
         {
-            get => _lookLeft;
+            get => _lookAtDir;
             set
             {
-                _lookLeft = value;
-                Flip(!value); // 뭐 굳이 이것까진 따라하지 않아도 됨.
+                if (_lookAtDir != value)
+                {
+                    _lookAtDir = value;
+                    BaseAnim.Flip(value);
+                }
             }
         }
 
@@ -34,7 +38,10 @@ namespace STELLAREST_F1
                 return false;
 
             Collider = gameObject.GetOrAddComponent<CircleCollider2D>();
-            BaseAnim = Util.FindChild<BaseAnimation>(gameObject, name = ReadOnly.String.AnimBody, recursive: false);
+            //BaseAnim = Util.FindChild<BaseAnimation>(gameObject, name = ReadOnly.String.AnimBody, recursive: false);
+            BaseAnim = Util.FindChild<BaseAnimation>(gameObject, name: ReadOnly.String.AnimationBody, recursive: false);
+            BaseAnim.Owner = this;
+
             RigidBody = gameObject.GetOrAddComponent<Rigidbody2D>();
             RigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
             RigidBody.gravityScale = 0f;
@@ -45,28 +52,25 @@ namespace STELLAREST_F1
         public void TranslateEx(Vector3 dir)
         {
             transform.Translate(dir);
-            if (dir.x < 0)
-                LookLeft = true;
-            else if (dir.x > 0)
-                LookLeft = false;
+            if (dir.x > 0)
+            {
+                LookAtDir = LookAtDirection.Right;
+            }
+            else if (dir.x < 0)
+            {
+                LookAtDir = LookAtDirection.Left;
+            }
         }
 
         #region Animation
-        protected virtual void UpdateAnimation()
-        {
-        }
+        public void UpdateAnimation()
+            => BaseAnim.UpdateAnimation();
 
-        public void PlayAnimation(string AnimName)
-        {
-            if (BaseAnim == null)
-                return;
-        }
+        public void PlayAnimation(string animName)
+            => BaseAnim.PlayAnimation(animName);
 
-        public void Flip(bool flag)
-        {
-            if (BaseAnim == null)
-                return;
-        }
+        public void Flip(LookAtDirection lookAtDir)
+            => BaseAnim.Flip(lookAtDir);
         #endregion
     }
 }

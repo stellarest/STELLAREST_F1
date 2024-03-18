@@ -59,6 +59,7 @@ namespace STELLAREST_F1
                 return;
             }
 
+            // BanditLightArmor.sprite -> BanditLightArmor.sprite[BanditLightArmor]
             // texture to sprite : EXPGem_01.sprite -> EXPGem_01.sprite[EXPGem_01]
             string loadKey = key;
             if (key.Contains(".sprite"))

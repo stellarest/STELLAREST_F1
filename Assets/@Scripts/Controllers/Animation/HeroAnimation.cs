@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace STELLAREST_F1
 {
-    public class HeroAnimation : CreatureAnimation
+    public class HeroAnimation : BaseAnimation
     {
         public override bool Init()
         {
