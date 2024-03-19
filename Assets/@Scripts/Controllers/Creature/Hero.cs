@@ -11,9 +11,16 @@ namespace STELLAREST_F1
     {
         public class HeroBodyContainer
         {
-            public string Tag { get; set; } = null;
-            public Transform TR { get; set; } = null;
-            public SpriteRenderer SPR { get; set; } = null;
+            public HeroBodyContainer(string tag, Transform tr, SpriteRenderer spr)
+            {
+                Tag = tag;
+                TR = tr;
+                SPR = spr;
+            }
+
+            public string Tag { get; private set; } = null;
+            public Transform TR { get; private set; } = null;
+            public SpriteRenderer SPR { get; private set; } = null;
         }
 
         public HeroBody(Hero owner)
@@ -31,123 +38,141 @@ namespace STELLAREST_F1
                 case EHeroBodyParts.Head:
                     {
                         HeroBodyContainer[] containers = new HeroBodyContainer[length];
-                        for (int i = 0; i < length; ++i)
-                            containers[i] = new HeroBodyContainer();
                         _bodyDict.Add(EHeroBodyParts.Head, containers);
 
-                        containers[(int)EHeroHead.Hair].Tag = ReadOnly.String.HBody_Hair;
-                        containers[(int)EHeroHead.Hair].TR = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Hair, true, true);
-                        containers[(int)EHeroHead.Hair].SPR = containers[(int)EHeroHead.Hair].TR.GetComponent<SpriteRenderer>();
+                        string tag = ReadOnly.String.HBody_Hair;
+                        Transform tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Hair, true, true);
+                        SpriteRenderer spr = tr.GetComponent<SpriteRenderer>();
+                        containers[(int)EHeroHead.Hair] = new HeroBodyContainer(tag, tr, spr);
 
-                        containers[(int)EHeroHead.Eyes].Tag = ReadOnly.String.HBody_Eyes;
-                        containers[(int)EHeroHead.Eyes].TR = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Eyes, true, true);
-                        containers[(int)EHeroHead.Eyes].SPR = containers[(int)EHeroHead.Eyes].TR.GetComponent<SpriteRenderer>();
+                        tag = ReadOnly.String.HBody_Eyes;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Eyes, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        containers[(int)EHeroHead.Eyes] = new HeroBodyContainer(tag, tr, spr);
 
-                        containers[(int)EHeroHead.Eyebrows].Tag = ReadOnly.String.HBody_Eyebrows;
-                        containers[(int)EHeroHead.Eyebrows].TR = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Eyebrows, true, true);
-                        containers[(int)EHeroHead.Eyebrows].SPR = containers[(int)EHeroHead.Eyebrows].TR.GetComponent<SpriteRenderer>();
+                        tag = ReadOnly.String.HBody_Eyebrows;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Eyebrows, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        containers[(int)EHeroHead.Eyebrows] = new HeroBodyContainer(tag, tr, spr);
 
-                        containers[(int)EHeroHead.Mouth].Tag = ReadOnly.String.HBody_Mouth;
-                        containers[(int)EHeroHead.Mouth].TR = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Mouth, true, true);
-                        containers[(int)EHeroHead.Mouth].SPR = containers[(int)EHeroHead.Mouth].TR.GetComponent<SpriteRenderer>();
+                        tag = ReadOnly.String.HBody_Mouth;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Mouth, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        containers[(int)EHeroHead.Mouth] = new HeroBodyContainer(tag, tr, spr);
 
-                        containers[(int)EHeroHead.Beard].Tag = ReadOnly.String.HBody_Beard;
-                        containers[(int)EHeroHead.Beard].TR = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Beard, true, true);
-                        containers[(int)EHeroHead.Beard].SPR = containers[(int)EHeroHead.Beard].TR.GetComponent<SpriteRenderer>();
+                        tag = ReadOnly.String.HBody_Beard;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Beard, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        containers[(int)EHeroHead.Beard] = new HeroBodyContainer(tag, tr, spr);
 
-                        containers[(int)EHeroHead.Earrings].Tag = ReadOnly.String.HBody_Earrings;
-                        containers[(int)EHeroHead.Earrings].TR = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Earrings, true, true);
-                        containers[(int)EHeroHead.Earrings].SPR = containers[(int)EHeroHead.Earrings].TR.GetComponent<SpriteRenderer>();
+                        tag = ReadOnly.String.HBody_Earrings;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Earrings, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        containers[(int)EHeroHead.Earrings] = new HeroBodyContainer(tag, tr, spr);
 
-                        containers[(int)EHeroHead.Mask].Tag = ReadOnly.String.HBody_Mask;
-                        containers[(int)EHeroHead.Mask].TR = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Mask, true, true);
-                        containers[(int)EHeroHead.Mask].SPR = containers[(int)EHeroHead.Mask].TR.GetComponent<SpriteRenderer>();
+                        tag = ReadOnly.String.HBody_Mask;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Mask, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        containers[(int)EHeroHead.Mask] = new HeroBodyContainer(tag, tr, spr);
 
-                        containers[(int)EHeroHead.Glasses].Tag = ReadOnly.String.HBody_Glasses;
-                        containers[(int)EHeroHead.Glasses].TR = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Glasses, true, true);
-                        containers[(int)EHeroHead.Glasses].SPR = containers[(int)EHeroHead.Glasses].TR.GetComponent<SpriteRenderer>();
+                        tag = ReadOnly.String.HBody_Glasses;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Glasses, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        containers[(int)EHeroHead.Glasses] = new HeroBodyContainer(tag, tr, spr);
 
-                        containers[(int)EHeroHead.Helmet].Tag = ReadOnly.String.HBody_Helmet;
-                        containers[(int)EHeroHead.Helmet].TR = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Helmet, true, true);
-                        containers[(int)EHeroHead.Helmet].SPR = containers[(int)EHeroHead.Helmet].TR.GetComponent<SpriteRenderer>();
+                        tag = ReadOnly.String.HBody_Helmet;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Helmet, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        containers[(int)EHeroHead.Helmet] = new HeroBodyContainer(tag, tr, spr);
                     }
                     break;
 
                 case EHeroBodyParts.UpperBody:
                     {
                         HeroBodyContainer[] containers = new HeroBodyContainer[length];
-                        for (int i = 0; i < length; ++i)
-                            containers[i] = new HeroBodyContainer();
                         _bodyDict.Add(EHeroBodyParts.UpperBody, containers);
 
-                        containers[(int)EHeroUpperBody.Torso].Tag = ReadOnly.String.HBody_Torso;
-                        containers[(int)EHeroUpperBody.Torso].TR = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Torso, true, true);
-                        containers[(int)EHeroUpperBody.Torso].SPR = containers[(int)EHeroUpperBody.Torso].TR.GetComponent<SpriteRenderer>();
+                        string tag = ReadOnly.String.HBody_Torso;
+                        Transform tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Torso, true, true);
+                        SpriteRenderer spr = tr.GetComponent<SpriteRenderer>();
+                        containers[(int)EHeroUpperBody.Torso] = new HeroBodyContainer(tag, tr, spr);
 
-                        containers[(int)EHeroUpperBody.Cape].Tag = ReadOnly.String.HBody_Cape;
-                        containers[(int)EHeroUpperBody.Cape].TR = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Cape, true, true);
-                        containers[(int)EHeroUpperBody.Cape].SPR = containers[(int)EHeroUpperBody.Cape].TR.GetComponent<SpriteRenderer>();
+                        tag = ReadOnly.String.HBody_Cape;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Cape, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        containers[(int)EHeroUpperBody.Cape] = new HeroBodyContainer(tag, tr, spr);
 
-                        containers[(int)EHeroUpperBody.ArmL].Tag = ReadOnly.String.HBody_ArmL;
-                        containers[(int)EHeroUpperBody.ArmL].TR = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_ArmL, true, true);
-                        containers[(int)EHeroUpperBody.ArmL].SPR = containers[(int)EHeroUpperBody.ArmL].TR.GetComponent<SpriteRenderer>();
+                        tag = ReadOnly.String.HBody_ArmL;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_ArmL, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        containers[(int)EHeroUpperBody.ArmL] = new HeroBodyContainer(tag, tr, spr);
 
-                        containers[(int)EHeroUpperBody.ForearmL].Tag = ReadOnly.String.HBody_ForearmL;
-                        containers[(int)EHeroUpperBody.ForearmL].TR = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_ForearmL, true, true);
-                        containers[(int)EHeroUpperBody.ForearmL].SPR = containers[(int)EHeroUpperBody.ForearmL].TR.GetComponent<SpriteRenderer>();
+                        tag = ReadOnly.String.HBody_ForearmL;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_ForearmL, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        containers[(int)EHeroUpperBody.ForearmL] = new HeroBodyContainer(tag, tr, spr);
+                     
+                        tag = ReadOnly.String.HBody_HandL;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_HandL, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        containers[(int)EHeroUpperBody.HandL] = new HeroBodyContainer(tag, tr, spr);
 
-                        containers[(int)EHeroUpperBody.HandL].Tag = ReadOnly.String.HBody_HandL;
-                        containers[(int)EHeroUpperBody.HandL].TR = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_HandL, true, true);
-                        containers[(int)EHeroUpperBody.HandL].SPR = containers[(int)EHeroUpperBody.HandL].TR.GetComponent<SpriteRenderer>();
+                        tag = ReadOnly.String.HBody_Finger;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Finger, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        containers[(int)EHeroUpperBody.Finger] = new HeroBodyContainer(tag, tr, spr);
 
-                        containers[(int)EHeroUpperBody.Finger].Tag = ReadOnly.String.HBody_Finger;
-                        containers[(int)EHeroUpperBody.Finger].TR = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Finger, true, true);
-                        containers[(int)EHeroUpperBody.Finger].SPR = containers[(int)EHeroUpperBody.Finger].TR.GetComponent<SpriteRenderer>();
+                        tag = ReadOnly.String.HBody_ArmR;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_ArmR, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        containers[(int)EHeroUpperBody.ArmR] = new HeroBodyContainer(tag, tr, spr);
 
-                        containers[(int)EHeroUpperBody.ArmR].Tag = ReadOnly.String.HBody_ArmR;
-                        containers[(int)EHeroUpperBody.ArmR].TR = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_ArmR, true, true);
-                        containers[(int)EHeroUpperBody.ArmR].SPR = containers[(int)EHeroUpperBody.ArmR].TR.GetComponent<SpriteRenderer>();
+                        tag = ReadOnly.String.HBody_ForearmR;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_ForearmR, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        containers[(int)EHeroUpperBody.ForearmR] = new HeroBodyContainer(tag, tr, spr);
 
-                        containers[(int)EHeroUpperBody.ForearmR].Tag = ReadOnly.String.HBody_ForearmR;
-                        containers[(int)EHeroUpperBody.ForearmR].TR = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_ForearmR, true, true);
-                        containers[(int)EHeroUpperBody.ForearmR].SPR = containers[(int)EHeroUpperBody.ForearmR].TR.GetComponent<SpriteRenderer>();
-
-                        containers[(int)EHeroUpperBody.SleeveR].Tag = ReadOnly.String.HBody_SleeveR;
-                        containers[(int)EHeroUpperBody.SleeveR].TR = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_SleeveR, true, true);
-                        containers[(int)EHeroUpperBody.SleeveR].SPR = containers[(int)EHeroUpperBody.SleeveR].TR.GetComponent<SpriteRenderer>();
-
-                        containers[(int)EHeroUpperBody.HandR].Tag = ReadOnly.String.HBody_HandR;
-                        containers[(int)EHeroUpperBody.HandR].TR = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_HandR, true, true);
-                        containers[(int)EHeroUpperBody.HandR].SPR = containers[(int)EHeroUpperBody.HandR].TR.GetComponent<SpriteRenderer>();
+                        tag = ReadOnly.String.HBody_SleeveR;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_SleeveR, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        containers[(int)EHeroUpperBody.SleeveR] = new HeroBodyContainer(tag, tr, spr);
+                      
+                        tag = ReadOnly.String.HBody_HandR;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_HandR, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        containers[(int)EHeroUpperBody.HandR] = new HeroBodyContainer(tag, tr, spr);
                     }
                     break;
 
                 case EHeroBodyParts.LowerBody:
                     {
                         HeroBodyContainer[] containers = new HeroBodyContainer[length];
-                        for (int i = 0; i < length; ++i)
-                            containers[i] = new HeroBodyContainer();
                         _bodyDict.Add(EHeroBodyParts.LowerBody, containers);
 
-                        containers[(int)EHeroLowerBody.Pelvis].Tag = ReadOnly.String.HBody_Pelvis;
-                        containers[(int)EHeroLowerBody.Pelvis].TR = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Pelvis, true, true);
-                        containers[(int)EHeroLowerBody.Pelvis].SPR = containers[(int)EHeroLowerBody.Pelvis].TR.GetComponent<SpriteRenderer>();
+                        string tag = ReadOnly.String.HBody_Pelvis;
+                        Transform tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Pelvis, true, true);
+                        SpriteRenderer spr = tr.GetComponent<SpriteRenderer>();
+                        containers[(int)EHeroLowerBody.Pelvis] = new HeroBodyContainer(tag, tr, spr);
 
-                        containers[(int)EHeroLowerBody.LegL].Tag = ReadOnly.String.HBody_LegL;
-                        containers[(int)EHeroLowerBody.LegL].TR = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_LegL, true, true);
-                        containers[(int)EHeroLowerBody.LegL].SPR = containers[(int)EHeroLowerBody.LegL].TR.GetComponent<SpriteRenderer>();
+                        tag = ReadOnly.String.HBody_LegL;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_LegL, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        containers[(int)EHeroLowerBody.LegL] = new HeroBodyContainer(tag, tr, spr);
 
-                        containers[(int)EHeroLowerBody.ShinL].Tag = ReadOnly.String.HBody_ShinL;
-                        containers[(int)EHeroLowerBody.ShinL].TR = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_ShinL, true, true);
-                        containers[(int)EHeroLowerBody.ShinL].SPR = containers[(int)EHeroLowerBody.ShinL].TR.GetComponent<SpriteRenderer>();
+                        tag = ReadOnly.String.HBody_ShinL;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_ShinL, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        containers[(int)EHeroLowerBody.ShinL] = new HeroBodyContainer(tag, tr, spr);
 
-                        containers[(int)EHeroLowerBody.LegR].Tag = ReadOnly.String.HBody_LegR;
-                        containers[(int)EHeroLowerBody.LegR].TR = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_LegR, true, true);
-                        containers[(int)EHeroLowerBody.LegR].SPR = containers[(int)EHeroLowerBody.LegR].TR.GetComponent<SpriteRenderer>();
-
-                        containers[(int)EHeroLowerBody.ShinR].Tag = ReadOnly.String.HBody_ShinR;
-                        containers[(int)EHeroLowerBody.ShinR].TR = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_ShinR, true, true);
-                        containers[(int)EHeroLowerBody.ShinR].SPR = containers[(int)EHeroLowerBody.ShinR].TR.GetComponent<SpriteRenderer>();
+                        tag = ReadOnly.String.HBody_LegR;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_LegR, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        containers[(int)EHeroLowerBody.LegR] = new HeroBodyContainer(tag, tr, spr);
+                   
+                        tag = ReadOnly.String.HBody_ShinR;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_ShinR, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        containers[(int)EHeroLowerBody.ShinR] = new HeroBodyContainer(tag, tr, spr);
                     }
                     break;
             }
