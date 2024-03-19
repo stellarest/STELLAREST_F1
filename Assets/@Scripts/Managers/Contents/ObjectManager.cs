@@ -24,36 +24,33 @@ namespace STELLAREST_F1
         public Transform MonsterRoot => GetRoot(ReadOnly.String.MonsterRoot);
         #endregion
 
-        public T Spawn<T>(Vector3 position) where T : BaseObject
+        public T Spawn<T>(Vector3 position, int dataID) where T : BaseObject
         {
-            // 얼마든지 자유롭게 변경가능.
-            // 스폰은 매프레임마다 하는게 아니기 때문에 조금 비효율적이라고 해도 크게 상관 없다고 판단할수도 있음.
+            // 얼마든지 자유롭게 변경가능. 스폰은 매프레임마다 하는게 아니기 때문에 조금 비효율적이라고 해도 크게 상관 없다고 판단할수도 있음.
             string prefabName = typeof(T).Name;
             GameObject go = Managers.Resource.Instantiate(prefabName);
             go.transform.position = position;
 
             BaseObject bo = go.GetComponent<BaseObject>();
-            if (bo.ObjectType == EObjectType.Creature)
+            switch (bo.ObjectType)
             {
-                Creature creature = bo.GetComponent<Creature>();
-                switch (creature.CreatureType)
-                {
-                    case ECreatureType.Hero:
-                        creature.transform.SetParent(HeroRoot);
-                        Heroes.Add(creature as Hero);
-                        break;
+                case EObjectType.Hero:
+                    {
+                        bo.transform.SetParent(HeroRoot);
+                        Hero hero = bo as Hero;
+                        hero.SetInfo(dataID);
+                        Heroes.Add(hero);
+                    }
+                    break;
 
-                    case ECreatureType.Monster:
-                        creature.transform.SetParent(MonsterRoot);
-                        Monsters.Add(creature as Monster);
-                        break;
-                }
-            }
-            else if (bo.ObjectType == EObjectType.Projectile)
-            {
-            }
-            else if (bo.ObjectType == EObjectType.Env)
-            {
+                case EObjectType.Monster:
+                    {
+                        bo.transform.SetParent(HeroRoot);
+                        Monster monster = bo as Monster;
+                        monster.SetInfo(dataID);
+                        Monsters.Add(monster);
+                    }
+                    break;
             }
 
             return bo as T;
@@ -61,26 +58,15 @@ namespace STELLAREST_F1
 
         public void Despawn<T>(T obj) where T : BaseObject
         {
-            EObjectType objectType = obj.ObjectType;
-            if (objectType == EObjectType.Creature)
+            switch (obj.ObjectType)
             {
-                Creature creature = obj.GetComponent<Creature>();
-                switch (creature.CreatureType)
-                {
-                    case ECreatureType.Hero:
-                        Heroes.Remove(creature as Hero);
-                        break;
+                case EObjectType.Hero:
+                    Heroes.Remove(obj as Hero);
+                    break;
 
-                    case ECreatureType.Monster:
-                        Monsters.Remove(creature as Monster);
-                        break;
-                }
-            }
-            else if (objectType == EObjectType.Projectile)
-            {
-            }
-            else if (objectType == EObjectType.Env)
-            {
+                case EObjectType.Monster:
+                    Monsters.Remove(obj as Monster);
+                    break;
             }
 
             Managers.Resource.Destroy(obj.gameObject);

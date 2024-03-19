@@ -23,15 +23,16 @@ namespace STELLAREST_F1
         private void Test()
         {
             UI_Joystick joystick = Managers.UI.ShowBaseUI<UI_Joystick>();
-            Hero hero = Managers.Object.Spawn<Hero>(Vector3.zero);
+            Hero hero = Managers.Object.Spawn<Hero>(Vector3.zero, ReadOnly.Numeric.DataID_Lancer);
+
             CameraController cam = Camera.main.GetComponent<CameraController>();
             cam.Target = hero;
 
             // Addressables.LoadAssetAsync<T>
-            Sprite armor = Managers.Resource.Load<Sprite>("BanditLightArmor_Torso.sprite");
-            Sprite armor_cloned = UnityEngine.Component.Instantiate(armor);
-            armor_cloned.name = "Cloned_Armor_Test";
-            hero.Torso_Armor_Temp.GetComponent<SpriteRenderer>().sprite = armor_cloned;
+            // Sprite armor = Managers.Resource.Load<Sprite>("BanditLightArmor_Torso.sprite");
+            // Sprite armor_cloned = UnityEngine.Component.Instantiate(armor);
+            // armor_cloned.name = "Cloned_Armor_Test";
+            // hero.Torso_Armor_Temp.GetComponent<SpriteRenderer>().sprite = armor_cloned;
         }
 
         private void LoadAsset()

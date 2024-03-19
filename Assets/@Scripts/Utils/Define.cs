@@ -7,9 +7,9 @@ namespace STELLAREST_F1
 {
     public static class Define
     {
-        public enum EHeroGrade
+        public enum EHeroRarity
         {
-            Default,
+            Common,
             Epic
         }
 
@@ -45,7 +45,8 @@ namespace STELLAREST_F1
         public enum EObjectType
         {
             None,
-            Creature,
+            Hero,
+            Monster,
             Projectile,
             Env
         }
@@ -74,10 +75,104 @@ namespace STELLAREST_F1
             Right = 1,
         }
 
+        public enum EHeroWeaponType
+        {
+            Melee,
+            MeleeDouble,
+            MeleeGiant,
+        }
+
+        public enum EHeroBodyParts
+        {
+            Head,
+            UpperBody,
+            LowerBody
+        }
+
+        public enum EHeroHead
+        {
+            None = -1,
+            Hair,
+            Eyes,
+            Eyebrows,
+            Mouth,
+            Beard,
+            Earrings,
+            Mask,
+            Glasses,
+            Helmet,
+            Max = Helmet + 1
+        }
+
+        public enum EHeroUpperBody
+        {
+            None = -1,
+            Torso,
+            Cape,
+            ArmL,
+            ForearmL,
+            HandL,
+            Finger,
+            ArmR,
+            ForearmR,
+            SleeveR,
+            HandR,
+            Max = HandR + 1
+        }
+
+        public enum EHeroLowerBody
+        {
+            None = -1,
+            Pelvis,
+            LegL,
+            ShinL,
+            LegR,
+            ShinR,
+            Max = ShinR + 1
+        }
+
+        // public enum EHeroBodyParts
+        // {
+        //     None = -1,
+        //     // HEAD
+        //     Hair,
+        //     Eyes,
+        //     Eyebrows,
+        //     Mouth,
+        //     Beard,
+        //     Earrings,
+        //     Mask,
+        //     Glasses,
+        //     Helmet,
+
+        //     // UPPER
+        //     Torso,
+        //     Cape,
+        //     ArmL,
+        //     ForearmL,
+        //     HandL,
+        //     Finger,
+        //     ArmR,
+        //     ForearmR,
+        //     SleeveR,
+        //     HandR,
+
+        //     // LOWER
+        //     Pelvis,
+        //     LegL,
+        //     ShinL,
+        //     LegR,
+        //     ShinR,
+        //     Max = 24,
+        // }
+
         public static class ReadOnly
         {
             public static class String
             {
+                public static readonly string HeroData = "HeroData";
+                public static readonly string HeroSpriteData = "HeroSpriteData";
+
                 public static readonly string Managers = "@Managers";
                 public static readonly string UI_Root = "@UI_Root";
                 public static readonly string EventSystem = "@EventSystem";
@@ -96,6 +191,35 @@ namespace STELLAREST_F1
                 public static readonly string Anim_Skill_B = "Skill_B"; // 교체해야됨
                 public static readonly string Anim_Move = "Move";
                 public static readonly string Anim_Dead = "Dead";
+
+                // Hero Body Parts
+                public static readonly string HBody_Hair = "Hair";
+                public static readonly string HBody_Eyes = "Eyes";
+                public static readonly string HBody_Eyebrows = "Eyebrows";
+                public static readonly string HBody_Mouth = "Mouth";
+                public static readonly string HBody_Beard = "Beard";
+                public static readonly string HBody_Earrings = "Earrings";
+                public static readonly string HBody_Mask = "Mask";
+                public static readonly string HBody_Glasses = "Glasses";
+                public static readonly string HBody_Helmet = "Helmet";
+
+                public static readonly string HBody_Torso = "Torso_Armor";
+                public static readonly string HBody_Cape = "Cape_Armor";
+                public static readonly string HBody_ArmL = "ArmL_Armor";
+                public static readonly string HBody_ForearmL = "ForearmL_Armor";
+                public static readonly string HBody_HandL = "HandL_Armor";
+                public static readonly string HBody_Finger = "Finger_Armor";
+                // TODO : WEAPON L
+                public static readonly string HBody_ArmR = "ArmR_Armor";
+                public static readonly string HBody_ForearmR = "ForearmR_Armor";
+                public static readonly string HBody_SleeveR = "SleeveR_Armor";
+                public static readonly string HBody_HandR = "HandR_Armor";
+                // TODO : WEAPON R
+                public static readonly string HBody_Pelvis = "Pelvis_Armor";
+                public static readonly string HBody_LegL = "LegL_Armor";
+                public static readonly string HBody_ShinL = "ShinL_Armor";
+                public static readonly string HBody_LegR = "LegR_Armor";
+                public static readonly string HBody_ShinR = "ShinR_Armor";
             }
 
             public static class Numeric
@@ -107,6 +231,8 @@ namespace STELLAREST_F1
                 public static readonly int SortingLayer_Projectile = 310;
                 public static readonly int SortingLayer_SkillEffect = 310;
                 public static readonly int SortingLayer_DamageFont = 410;
+
+                public static readonly int DataID_Lancer = 101000;
 
                 public static readonly float CamOrthoSize = 10F; 
                 public static readonly float JoystickFocusMinDist = -0.18F;

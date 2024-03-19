@@ -28,10 +28,15 @@ namespace STELLAREST_F1
             if (base.Init() == false)
                 return false;
 
-            ObjectType = EObjectType.Creature;
-            CreatureState = ECreatureState.Idle;
+            //ObjectType = EObjectType.Creature;
+            //CreatureState = ECreatureState.Idle;
 
             return true;
+        }
+
+        public virtual void SetInfo(int dataID)
+        {
+            DataTemplateID = dataID;
         }
 
         // protected override void UpdateAnimation()

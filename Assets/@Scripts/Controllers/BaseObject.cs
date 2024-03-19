@@ -9,6 +9,7 @@ namespace STELLAREST_F1
 {
     public class BaseObject : InitBase
     {
+        public int DataTemplateID { get; set; } = -1;
         public EObjectType ObjectType { get; protected set; } = EObjectType.None;
         public CircleCollider2D Collider { get; private set; } = null;
         //public BaseAnimation BaseAnim { get; private set; } = null;
@@ -53,13 +54,9 @@ namespace STELLAREST_F1
         {
             transform.Translate(dir);
             if (dir.x > 0)
-            {
                 LookAtDir = LookAtDirection.Right;
-            }
             else if (dir.x < 0)
-            {
                 LookAtDir = LookAtDirection.Left;
-            }
         }
 
         #region Animation

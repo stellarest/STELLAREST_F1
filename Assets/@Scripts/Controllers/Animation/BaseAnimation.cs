@@ -6,6 +6,7 @@ using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
+    // 굳이 InitBase를 붙여야할까?
     public class BaseAnimation : InitBase
     {
         private BaseObject _owner = null;
