@@ -140,6 +140,24 @@ namespace STELLAREST_F1.Data
     }
 
     [Serializable]
+    public class HeroSpriteData_Weapon
+    {
+        public string LeftWeapon;
+        public string LeftColor;
+        public Vector3 LeftScale;
+        public Vector3 LeftPosition;
+        public Vector3 LeftRotation;
+        public List<string> LeftWeaponAttachments;
+
+        public string RightWeapon;
+        public string RightColor;
+        public Vector3 RightScale;
+        public Vector3 RightPosition;
+        public Vector3 RightRotation;
+        public List<string> RightWeaponAttachments;
+    }
+
+    [Serializable]
     public class HeroSpriteData
     {
         public int DataID;
@@ -148,6 +166,7 @@ namespace STELLAREST_F1.Data
         public HeroSpriteData_Head Head;
         public HeroSpriteData_UpperBody UpperBody;
         public HeroSpriteData_LowerBody LowerBody;        
+        public HeroSpriteData_Weapon Weapon;        
     }
 
     public class HeroSpriteDataLoader : ILoader<int, HeroSpriteData>

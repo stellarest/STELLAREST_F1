@@ -44,3 +44,79 @@ public class T_E_S_T : MonoBehaviour
         _moveDir = dir;
     }
 }
+
+/* Memo
+    public SpriteRenderer[] GetSkin()
+    {
+        string[] names = System.Enum.GetNames(typeof(EHeroHead));
+        for (int i = 0; i < names.Length; ++i)
+        {
+            if (names[i].Contains("Skin"))
+            {
+                SpriteRenderer spr = GetSpriteRenderer(Util.GetEnumFromString<EHeroHead>(names[i]));
+                if (spr != null)
+                    Skin.Add(spr);
+                else
+                    Debug.LogWarning($"{nameof(HeroBody)}, {nameof(GetSkin)}, Input : \"{names[i]}\"");
+            }
+        }
+
+        names = System.Enum.GetNames(typeof(EHeroUpperBody));
+        for (int i = 0; i < names.Length; ++i)
+        {
+            if (names[i].Contains("Skin"))
+            {
+                SpriteRenderer spr = GetSpriteRenderer(Util.GetEnumFromString<EHeroUpperBody>(names[i]));
+                if (spr != null)
+                    Skin.Add(spr);
+                else
+                    Debug.LogWarning($"{nameof(HeroBody)}, {nameof(GetSkin)}, Input : \"{names[i]}\"");
+            }
+        }
+
+        names = System.Enum.GetNames(typeof(EHeroLowerBody));
+        for (int i = 0; i < names.Length; ++i)
+        {
+            if (names[i].Contains("Skin"))
+            {
+                SpriteRenderer spr = GetSpriteRenderer(Util.GetEnumFromString<EHeroLowerBody>(names[i]));
+                if (spr != null)
+                    Skin.Add(spr);
+                else
+                    Debug.LogWarning($"{nameof(HeroBody)}, {nameof(GetSkin)}, Input : \"{names[i]}\"");
+            }
+        }
+
+        return Skin.ToArray();
+    }
+
+    // Reflection Memo
+    private void InitHeroSprites(int dataID, Transform[] targets)
+    {
+        Data.HeroSpriteData sprites = Managers.Data.HeroesSpritesDict[dataID];
+        Type type = typeof(Data.HeroSpriteData);
+        FieldInfo[] fields = type.GetFields();
+    }
+
+    private void InitHeroSprites(int dataID, Transform[] targets)
+    {
+        Data.HeroSpriteData sprites = Managers.Data.HeroesSpritesDict[dataID];
+
+        Type type = typeof(Data.HeroSpriteData);
+        FieldInfo[] fields = type.GetFields();
+        for (int i = 0; i < fields.Length; ++i)
+        {
+            if (fields[i].FieldType != typeof(string) || fields[i].Name.Contains("Tag"))
+                continue;
+
+            string fieldValue = (string)fields[i].GetValue(sprites);
+            if (string.IsNullOrEmpty(fieldValue))
+                continue;
+
+            string fieldName = fields[i].Name;
+            EHeroBodyParts bodyPart = Util.GetEnumFromString<EHeroBodyParts>(fieldName);
+            Sprite sprite = Managers.Resource.Load<Sprite>(fieldValue);
+            targets[(int)bodyPart].GetComponent<SpriteRenderer>().sprite = sprite;
+        }
+    }
+*/

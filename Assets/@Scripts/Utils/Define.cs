@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
+using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 
 namespace STELLAREST_F1
@@ -75,23 +76,18 @@ namespace STELLAREST_F1
             Right = 1,
         }
 
-        public enum EHeroWeaponType
-        {
-            Melee,
-            MeleeDouble,
-            MeleeGiant,
-        }
-
         public enum EHeroBodyParts
         {
             Head,
             UpperBody,
-            LowerBody
+            LowerBody,
+            Weapon,
         }
 
         public enum EHeroHead
         {
             None = -1,
+            HeadSkin,
             Hair,
             Eyes,
             Eyebrows,
@@ -107,15 +103,23 @@ namespace STELLAREST_F1
         public enum EHeroUpperBody
         {
             None = -1,
+            TorsoSkin,
             Torso,
             Cape,
+            ArmLSkin,
             ArmL,
+            ForearmLSkin,
             ForearmL,
+            HandLSkin,
             HandL,
+            FingerSkin,
             Finger,
+            ArmRSkin,
             ArmR,
+            ForearmRSkin,
             ForearmR,
             SleeveR,
+            HandRSkin,
             HandR,
             Max = HandR + 1
         }
@@ -123,13 +127,27 @@ namespace STELLAREST_F1
         public enum EHeroLowerBody
         {
             None = -1,
+            PelvisSkin,
             Pelvis,
+            LegLSkin,
             LegL,
+            ShinLSkin,
             ShinL,
+            LegRSkin,
             LegR,
+            ShinRSkin,
             ShinR,
             Max = ShinR + 1
         }
+
+        public enum EHeroWeapon
+        {
+            None = -1,
+            WeaponL,
+            WeaponR,
+            Max = WeaponR + 1
+        }
+
 
         // public enum EHeroBodyParts
         // {
@@ -193,6 +211,7 @@ namespace STELLAREST_F1
                 public static readonly string Anim_Dead = "Dead";
 
                 // Hero Body Parts
+                public static readonly string HBody_HeadSkin = "Head";
                 public static readonly string HBody_Hair = "Hair";
                 public static readonly string HBody_Eyes = "Eyes";
                 public static readonly string HBody_Eyebrows = "Eyebrows";
@@ -203,22 +222,47 @@ namespace STELLAREST_F1
                 public static readonly string HBody_Glasses = "Glasses";
                 public static readonly string HBody_Helmet = "Helmet";
 
+                public static readonly string HBody_TorsoSkin = "Torso";
                 public static readonly string HBody_Torso = "Torso_Armor";
                 public static readonly string HBody_Cape = "Cape_Armor";
+                public static readonly string HBody_ArmLSkin = "ArmL";
                 public static readonly string HBody_ArmL = "ArmL_Armor";
+                public static readonly string HBody_ForearmLSkin = "ForearmL";
                 public static readonly string HBody_ForearmL = "ForearmL_Armor";
+                public static readonly string HBody_HandLSkin = "HandL";
                 public static readonly string HBody_HandL = "HandL_Armor";
+                public static readonly string HBody_FingerSkin = "Finger";
                 public static readonly string HBody_Finger = "Finger_Armor";
+
                 // TODO : WEAPON L
+                public static readonly string HBody_WeaponL = "WeaponL_Armor";
+                public static readonly string HBody_WeaponLAttachment1 = "WeaponLAttachment1_Armor";
+                public static readonly string HBody_WeaponLAttachment2 = "WeaponLAttachment2_Armor";
+                public static readonly string HBody_WeaponLAttachment3 = "WeaponLAttachment3_Armor";
+
+                public static readonly string HBody_ArmRSkin = "ArmR";
                 public static readonly string HBody_ArmR = "ArmR_Armor";
+                public static readonly string HBody_ForearmRSkin = "ForearmR";
                 public static readonly string HBody_ForearmR = "ForearmR_Armor";
                 public static readonly string HBody_SleeveR = "SleeveR_Armor";
+                public static readonly string HBody_HandRSkin = "HandR";
                 public static readonly string HBody_HandR = "HandR_Armor";
+
                 // TODO : WEAPON R
+                public static readonly string HBody_WeaponR = "WeaponR_Armor";
+                public static readonly string HBody_WeaponRAttachment1 = "WeaponRAttachment1_Armor";
+                public static readonly string HBody_WeaponRAttachment2 = "WeaponRAttachment2_Armor";
+                public static readonly string HBody_WeaponRAttachment3 = "WeaponRAttachment3_Armor";
+
+                public static readonly string HBody_PelvisSkin = "Pelvis";
                 public static readonly string HBody_Pelvis = "Pelvis_Armor";
+                public static readonly string HBody_LegLSkin = "LegL";
                 public static readonly string HBody_LegL = "LegL_Armor";
+                public static readonly string HBody_ShinLSkin = "ShinL";
                 public static readonly string HBody_ShinL = "ShinL_Armor";
+                public static readonly string HBody_LegRSkin = "LegR";
                 public static readonly string HBody_LegR = "LegR_Armor";
+                public static readonly string HBody_ShinRSkin = "ShinR";
                 public static readonly string HBody_ShinR = "ShinR_Armor";
             }
 
