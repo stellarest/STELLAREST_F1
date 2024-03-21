@@ -45,8 +45,6 @@ namespace STELLAREST_F1
             HeroData = Managers.Data.HeroesDict[dataID];
         }
 
-        public EHeroHead FindHeadTest = EHeroHead.None;
-
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.T))

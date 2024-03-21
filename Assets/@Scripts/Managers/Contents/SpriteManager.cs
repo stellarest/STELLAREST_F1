@@ -36,6 +36,7 @@ namespace STELLAREST_F1
             SetBodySprites(data, heroBody, EHeroBodyParts.Head);
             SetBodySprites(data, heroBody, EHeroBodyParts.UpperBody);
             SetBodySprites(data, heroBody, EHeroBodyParts.LowerBody);
+            SetBodySprites(data, heroBody, EHeroBodyParts.Weapon);
         }
 
         private void SetBodySprites(Data.HeroSpriteData data, HeroBody heroBody, EHeroBodyParts parts)
@@ -220,7 +221,7 @@ namespace STELLAREST_F1
                         heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.HandR).color = color;
                 }
             }
-            else
+            else if (parts == EHeroBodyParts.LowerBody)
             {
                 Data.HeroSpriteData_LowerBody lowerBody = Managers.Data.HeroesSpritesDict[data.DataID].LowerBody;
                 sprite = Managers.Resource.Load<Sprite>(lowerBody.Pelvis);
@@ -266,6 +267,88 @@ namespace STELLAREST_F1
                     heroBody.GetComponent<SpriteRenderer>(EHeroLowerBody.ShinR).sprite = clone;
                     if (ColorUtility.TryParseHtmlString(lowerBody.ShinRColor, out color))
                         heroBody.GetComponent<SpriteRenderer>(EHeroLowerBody.ShinR).color = color;
+                }
+            }
+            else // Wepon
+            {
+                Data.HeroSpriteData_Weapon weapon = Managers.Data.HeroesSpritesDict[data.DataID].Weapon;
+
+                // Weapon - Left
+                Transform weaponL = heroBody.GetComponent<Transform>(EHeroWeapon.WeaponL);
+                sprite = Managers.Resource.Load<Sprite>(weapon.LeftWeapon);
+                if (sprite != null)
+                {
+                    clone = UnityEngine.Object.Instantiate(sprite);
+                    SpriteRenderer spr = heroBody.GetComponent<SpriteRenderer>(EHeroWeapon.WeaponL);
+                    spr.sprite = clone;
+                    if (ColorUtility.TryParseHtmlString(weapon.LeftColor, out color))
+                        spr.color = color;
+                    
+                    Vector3 scale = weapon.LeftScale;
+                    Vector3 position = weapon.LeftPosition;
+                    Vector3 rotation = weapon.LeftRotation;
+
+                    weaponL.localScale = new Vector3(scale.x, scale.y, scale.z);
+                    weaponL.localPosition = new Vector3(position.x, position.y, position.z);
+                    weaponL.localRotation = Quaternion.Euler(rotation.x, rotation.y, rotation.z);
+                    for (int i = 0; i < weaponL.childCount; ++i)
+                    {
+                        if (weapon.LeftWeaponAttachments[i] != null)
+                        {
+                            Sprite childSprite = Managers.Resource.Load<Sprite>(weapon.LeftWeaponAttachments[i]);
+                            if (childSprite != null)
+                            {
+                                Sprite childClone = UnityEngine.Object.Instantiate(childSprite);
+                                weaponL.GetChild(i).GetComponent<SpriteRenderer>().sprite = childClone;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < weaponL.childCount; ++i)
+                        weaponL.GetChild(i).gameObject.SetActive(false);
+                    weaponL.gameObject.SetActive(false);
+                }
+
+                // Weapon - Right
+                Transform weaponR = heroBody.GetComponent<Transform>(EHeroWeapon.WeaponR);
+                sprite = Managers.Resource.Load<Sprite>(weapon.RightWeapon);
+                if (sprite != null)
+                {
+                    clone = UnityEngine.Object.Instantiate(sprite);
+                    SpriteRenderer spr = heroBody.GetComponent<SpriteRenderer>(EHeroWeapon.WeaponR);
+                    spr.sprite = clone;
+                    if (ColorUtility.TryParseHtmlString(weapon.RightColor, out color))
+                        spr.color = color;
+                    
+                    Vector3 scale = weapon.RightScale;
+                    Vector3 position = weapon.RightPosition;
+                    Vector3 rotation = weapon.RightRotation;
+
+                    weaponR.localScale = new Vector3(scale.x, scale.y, scale.z);
+                    weaponR.localPosition = new Vector3(position.x, position.y, position.z);
+                    weaponR.localRotation = Quaternion.Euler(rotation.x, rotation.y, rotation.z);
+                    for (int i = 0; i < weaponR.childCount; ++i)
+                    {
+                        if (weapon.RightWeaponAttachments.Count != 0)
+                        {
+                            Sprite childSprite = Managers.Resource.Load<Sprite>(weapon.RightWeaponAttachments[i]);
+                            if (childSprite != null)
+                            {
+                                Sprite childClone = UnityEngine.Object.Instantiate(childSprite);
+                                weaponR.GetChild(i).GetComponent<SpriteRenderer>().sprite = childClone;
+                            }
+                        }
+                        else
+                            weaponR.GetChild(i).gameObject.SetActive(false);
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < weaponR.childCount; ++i)
+                        weaponR.GetChild(i).gameObject.SetActive(false);
+                    weaponR.gameObject.SetActive(false);
                 }
             }
         }
