@@ -9,11 +9,6 @@ namespace STELLAREST_F1
 {
     public class SpriteManager
     {
-        public void SetEmoji(EHeroEmoji heroEmoji, HeroBody target)
-        {
-
-        }
-
         public void SetInfo(int dataID, BaseObject target)
         {
             switch (target.ObjectType)
@@ -32,6 +27,7 @@ namespace STELLAREST_F1
             SetBodySprites(data, heroBody, EHeroBodyParts.UpperBody);
             SetBodySprites(data, heroBody, EHeroBodyParts.LowerBody);
             SetBodySprites(data, heroBody, EHeroBodyParts.Weapon, ReadOnly.Numeric.SortingOrder_Weapon);
+            heroBody.SetFace();
         }
 
         private void SetSkin(Data.HeroSpriteData data, HeroBody heroBody)

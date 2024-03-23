@@ -252,7 +252,17 @@ namespace STELLAREST_F1
                 public static readonly string HBody_HumanType_Shin = "Human_Shin.sprite";
                 public static readonly string HBody_HumanType_Leg = "Human_Leg.sprite";
 
-                // Hero Body - Armored Parts
+                // Hero Face - Sick
+                public static readonly string HFace_Eyebrows_Sick = "HeroEyebrows_Sick.sprite";
+                public static readonly string HFace_Eyes_Sick = "HeroEyes_Sick.sprite";
+                public static readonly string HFace_Mouth_Sick = "HeroMouth_Sick.sprite";
+
+                // Hero Face - Dead
+                public static readonly string HFace_Eyes_Dead = "HeroEyes_Dead.sprite";
+                public static readonly string HFace_Eyes_DeadColor = "#00C8FF";
+                public static readonly string HFace_Mouth_Dead = "HeroMouth_Dead.sprite";
+
+                // Hero Armored Body
                 public static readonly string HBody_HeadSkin = "Head";
                 public static readonly string HBody_Hair = "Hair";
                 public static readonly string HBody_Eyes = "Eyes";
@@ -276,7 +286,7 @@ namespace STELLAREST_F1
                 public static readonly string HBody_FingerSkin = "Finger";
                 public static readonly string HBody_Finger = "Finger_Armor";
 
-                // TODO : WEAPON L
+                // Hero Armored WeaponL
                 public static readonly string HBody_WeaponL = "WeaponL_Armor";
                 public static readonly string HBody_WeaponLAttachment1 = "WeaponLAttachment1_Armor";
                 public static readonly string HBody_WeaponLAttachment2 = "WeaponLAttachment2_Armor";
@@ -290,7 +300,7 @@ namespace STELLAREST_F1
                 public static readonly string HBody_HandRSkin = "HandR";
                 public static readonly string HBody_HandR = "HandR_Armor";
 
-                // TODO : WEAPON R
+                // Hero Armored WeaponR
                 public static readonly string HBody_WeaponR = "WeaponR_Armor";
                 public static readonly string HBody_WeaponRAttachment1 = "WeaponRAttachment1_Armor";
                 public static readonly string HBody_WeaponRAttachment2 = "WeaponRAttachment2_Armor";

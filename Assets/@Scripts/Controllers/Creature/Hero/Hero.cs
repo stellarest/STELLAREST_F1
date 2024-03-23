@@ -74,8 +74,19 @@ namespace STELLAREST_F1
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.T))
+            if (Input.GetKeyDown(KeyCode.Q))
             {
+                HeroBody.SetEmoji(EHeroEmoji.Default);
+            }
+
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                HeroBody.SetEmoji(EHeroEmoji.Sick);
+            }
+
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                HeroBody.SetEmoji(EHeroEmoji.Dead);
             }
 
             float distancePerFrame = Speed * Time.deltaTime;

@@ -24,8 +24,75 @@ namespace STELLAREST_F1
             public SpriteRenderer SPR { get; private set; } = null;
         }
 
+        public class FaceContainer
+        {
+            public FaceContainer(HeroBody heroBody)
+            {
+                _heroBody = heroBody;
+                _eyebrowsSprites = new Sprite[(int)EHeroEmoji.Max];
+                _eyebrowsSprites[(int)EHeroEmoji.Default] = heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).sprite;
+                _eyebrowsSprites[(int)EHeroEmoji.Sick] = Managers.Resource.Load<Sprite>(ReadOnly.String.HFace_Eyebrows_Sick);
+                _eyebrowsSprites[(int)EHeroEmoji.Dead] = _eyebrowsSprites[(int)EHeroEmoji.Default];
+
+                _eyesSprites = new Sprite[(int)EHeroEmoji.Max];
+                _eyesSprites[(int)EHeroEmoji.Default] = heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).sprite;
+                _eyesDefaultColor = heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).color;
+                _eyesSprites[(int)EHeroEmoji.Sick] = Managers.Resource.Load<Sprite>(ReadOnly.String.HFace_Eyes_Sick);
+                _eyesSprites[(int)EHeroEmoji.Dead] = Managers.Resource.Load<Sprite>(ReadOnly.String.HFace_Eyes_Dead);
+                if (ColorUtility.TryParseHtmlString(ReadOnly.String.HFace_Eyes_DeadColor, out Color eyesDeadColor))
+                    _eyesDeadColor = eyesDeadColor;
+
+                _mouthSprites = new Sprite[(int)EHeroEmoji.Max];
+                _mouthSprites[(int)EHeroEmoji.Default] = heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).sprite;
+                _mouthSprites[(int)EHeroEmoji.Sick] = Managers.Resource.Load<Sprite>(ReadOnly.String.HFace_Mouth_Sick);
+                _mouthSprites[(int)EHeroEmoji.Dead] = Managers.Resource.Load<Sprite>(ReadOnly.String.HFace_Mouth_Dead);
+            }
+
+            private HeroBody _heroBody = null;
+            private Sprite[] _eyebrowsSprites = null;
+            private Sprite[] _eyesSprites = null;
+            private Sprite[] _mouthSprites = null;
+
+            private Color _eyesDefaultColor = Color.white;
+            private Color _eyesDeadColor = Color.white;
+
+            public void SetEmoji(EHeroEmoji heroEmoji)
+            {
+                switch (heroEmoji)
+                {
+                    case EHeroEmoji.Default:
+                        {
+                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).sprite = _eyebrowsSprites[(int)EHeroEmoji.Default];
+                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).sprite = _eyesSprites[(int)EHeroEmoji.Default];
+                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).color = _eyesDefaultColor;
+                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).sprite = _mouthSprites[(int)EHeroEmoji.Default];
+                        }
+                        break;
+
+                    case EHeroEmoji.Sick:
+                        {
+                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).sprite = _eyebrowsSprites[(int)EHeroEmoji.Sick];
+                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).sprite = _eyesSprites[(int)EHeroEmoji.Sick];
+                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).color = _eyesDefaultColor;
+                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).sprite = _mouthSprites[(int)EHeroEmoji.Sick];
+                        }
+                        break;
+
+                    case EHeroEmoji.Dead:
+                        {
+                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).sprite = _eyebrowsSprites[(int)EHeroEmoji.Default];
+                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).sprite = _eyesSprites[(int)EHeroEmoji.Dead];
+                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).color = _eyesDeadColor;
+                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).sprite = _mouthSprites[(int)EHeroEmoji.Dead];
+                        }
+                        break;
+                }
+            }
+        }
+
         public Hero Owner { get; private set; } = null;
         private Dictionary<EHeroBodyParts, Container[]> _bodyDict = new Dictionary<EHeroBodyParts, Container[]>();
+        public FaceContainer HeroFace { get; private set; } = null;
 
         public HeroBody(Hero owner)
         {
@@ -268,6 +335,12 @@ namespace STELLAREST_F1
                     break;
             }
         }
+
+        public void SetFace()
+            => HeroFace = new FaceContainer(this);
+
+        public void SetEmoji(EHeroEmoji emoji)
+            => HeroFace.SetEmoji(emoji);
 
         public T GetComponent<T>(EHeroHead findTarget) where T : UnityEngine.Component
         {
