@@ -6,20 +6,9 @@ using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
-    // 굳이 InitBase를 붙여야할까?
     public class BaseAnimation : InitBase
     {
-        private BaseObject _owner = null;
-        public BaseObject Owner
-        {
-            get => _owner;
-            set
-            {
-                if (_owner == null)
-                    _owner = value;
-            }
-        }
-
+        public virtual BaseObject Owner { get; protected set; } = null;
         public Animator Animator { get; private set; } = null;
         public AnimationCallback AnimCallback { get; private set; } = null;
         private float _originScaleX = 0f;
@@ -36,14 +25,29 @@ namespace STELLAREST_F1
             return true;
         }
 
+        public virtual void SetInfoFromOwner(int dataID, BaseObject owner)
+        {
+            Owner = owner;
+        }
+
         public virtual void UpdateAnimation()
         {
         }
 
-        public void PlayAnimation(string animName) // temp string
+        protected virtual void Idle()
         {
-            Debug.Log($"Play Animation : {animName}");
+            Debug.Log("BaseAnim::IDLE");
         }
+
+        protected virtual void Move()
+        {
+            Debug.Log("BaseAnin::MOVE");
+        }
+
+        // public void PlayAnimation(string animName) // temp string
+        // {
+        //     Debug.Log($"Play Animation : {animName}");
+        // }
 
         public void Flip(LookAtDirection lookAtDir)
         {

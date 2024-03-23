@@ -6,6 +6,7 @@ using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1.Data
 {
+    #region Test Data
     [Serializable]
     public class TestData
     {
@@ -23,18 +24,20 @@ namespace STELLAREST_F1.Data
         public Dictionary<int, TestData> MakeDict()
         {
             Dictionary<int, TestData> dict = new Dictionary<int, TestData>();
-            foreach (TestData test in tests)
-                dict.Add(test.Level, test);
+            foreach (TestData data in tests)
+                dict.Add(data.Level, data);
 
             return dict;
         }
     }
+    #endregion
 
     [Serializable]
     public class HeroData
     {
         public int DataID;
         public string DescriptionTextID;
+        public string AnimatorTextID;
         public string Rarity;
         public float MaxHp;
         public float Atk;
@@ -48,11 +51,24 @@ namespace STELLAREST_F1.Data
         public Dictionary<int, HeroData> MakeDict()
         {
             Dictionary<int, HeroData> dict = new Dictionary<int, HeroData>();
-            foreach (HeroData hero in Heroes)
-                dict.Add(hero.DataID, hero);
+            foreach (HeroData data in Heroes)
+                dict.Add(data.DataID, data);
 
             return dict;
         }
+    }
+
+    [Serializable]
+    public class HeroSpriteData
+    {
+        public int DataID;
+        public string Tag;
+        public string BodyType;
+        public string SkinColor;
+        public HeroSpriteData_Head Head;
+        public HeroSpriteData_UpperBody UpperBody;
+        public HeroSpriteData_LowerBody LowerBody;
+        public HeroSpriteData_Weapon Weapon;
     }
 
     [SerializeField]
@@ -63,7 +79,7 @@ namespace STELLAREST_F1.Data
 
         public string Eyebrows;
         public string EyebrowsColor;
-        
+
         public string Eyes;
         public string EyesColor;
 
@@ -157,27 +173,37 @@ namespace STELLAREST_F1.Data
         public List<string> RightWeaponAttachments;
     }
 
-    [Serializable]
-    public class HeroSpriteData
-    {
-        public int DataID;
-        public string Tag;
-        public string SkinColor;
-        public HeroSpriteData_Head Head;
-        public HeroSpriteData_UpperBody UpperBody;
-        public HeroSpriteData_LowerBody LowerBody;        
-        public HeroSpriteData_Weapon Weapon;        
-    }
-
     public class HeroSpriteDataLoader : ILoader<int, HeroSpriteData>
     {
         public List<HeroSpriteData> HeroesSprites = new List<HeroSpriteData>();
         public Dictionary<int, HeroSpriteData> MakeDict()
         {
             Dictionary<int, HeroSpriteData> dict = new Dictionary<int, HeroSpriteData>();
-            foreach (HeroSpriteData heroSprite in HeroesSprites)
-                dict.Add(heroSprite.DataID, heroSprite);
-            
+            foreach (HeroSpriteData data in HeroesSprites)
+                dict.Add(data.DataID, data);
+
+            return dict;
+        }
+    }
+
+    [Serializable]
+    public class HeroAnimationData
+    {
+        public int DataID;
+        public string Tag;
+        public string AnimatorTextID;
+    }
+
+    public class HeroAnimationDataLoader : ILoader<int, HeroAnimationData>
+    {
+        public List<HeroAnimationData> HeroAnimations = new List<HeroAnimationData>();
+
+        public Dictionary<int, HeroAnimationData> MakeDict()
+        {
+            Dictionary<int, HeroAnimationData> dict = new Dictionary<int, HeroAnimationData>();
+            foreach (HeroAnimationData data in HeroAnimations)
+                dict.Add(data.DataID, data);
+
             return dict;
         }
     }

@@ -10,8 +10,36 @@ namespace STELLAREST_F1
     public class Hero : Creature
     {
         public Data.HeroData HeroData { get; private set; } = null;
+        public Data.HeroSpriteData HeroSpriteData { get; private set; } = null;
+        public Data.HeroAnimationData HeroAnimationData { get; private set; } = null;   
+
+        private EHeroEmoji _heroEmoji = EHeroEmoji.Default;     
+        public EHeroEmoji HeroEmoji
+        {
+            get => _heroEmoji;
+            set
+            {
+                if (_heroEmoji != value)
+                {
+                    _heroEmoji = value;
+                    //SetEmoji(value);
+                }
+            }
+        }
+
         public HeroBody HeroBody { get; private set; } = null;
-        public HeroAnimation HeroAnim { get; private set; } = null;
+
+        private HeroAnimation _heroAnim = null;
+        public override BaseAnimation BaseAnim 
+        { 
+            get => _heroAnim;
+            protected set
+            {
+                if (_heroAnim == null)
+                    _heroAnim = value as HeroAnimation;
+            } 
+        }
+
         private Vector2 _moveDir = Vector2.zero;
 
         public override bool Init()
@@ -29,9 +57,6 @@ namespace STELLAREST_F1
             Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
             Managers.Game.OnJoystickStateChangedHandler += OnJoystickStateChanged;
 
-            if (BaseAnim != null)
-                HeroAnim = BaseAnim as HeroAnimation;
-
             HeroBody = new HeroBody(this);
             return true;
         }
@@ -39,10 +64,12 @@ namespace STELLAREST_F1
         public override void SetInfo(int dataID)
         {
             base.SetInfo(dataID);
-            Managers.Sprite.SetInfo(dataID, this);
-
-            Data.HeroSpriteData data = Managers.Data.HeroesSpritesDict[ReadOnly.Numeric.DataID_Lancer];
-            HeroData = Managers.Data.HeroesDict[dataID];
+            Managers.Sprite.SetInfo(dataID, target: this);
+            BaseAnim.SetInfoFromOwner(dataID, this);
+            
+            HeroData = Managers.Data.HeroDataDict[dataID];
+            HeroSpriteData = Managers.Data.HeroSpriteDataDict[dataID];
+            HeroAnimationData = Managers.Data.HeroAnimationDataDict[dataID];
         }
 
         private void Update()
@@ -65,7 +92,6 @@ namespace STELLAREST_F1
             switch (joystickState)
             {
                 case EJoystickState.PointerDown:
-                    CreatureState = ECreatureState.Move;
                     break;
 
                 case EJoystickState.PointerUp:
@@ -73,6 +99,7 @@ namespace STELLAREST_F1
                     break;
 
                 case EJoystickState.Drag:
+                    CreatureState = ECreatureState.Move;
                     break;
 
                 default:

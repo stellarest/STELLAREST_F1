@@ -14,6 +14,11 @@ namespace STELLAREST_F1
             Epic
         }
 
+        public enum EMonsterType
+        {
+            Village_Bird
+        }
+
         public enum EScene
         {
             Unknown,
@@ -74,6 +79,24 @@ namespace STELLAREST_F1
         {
             Left = -1,
             Right = 1,
+        }
+
+        public enum EHeroBodyType
+        {
+            Human,
+            Skeleton1,
+            Skeleton2,
+            Undead,
+            Demon
+        }
+
+        public enum EHeroEmoji
+        {
+            None = -1,
+            Default,
+            Sick,
+            Dead,
+            Max = Dead + 1
         }
 
         public enum EHeroBodyParts
@@ -148,6 +171,11 @@ namespace STELLAREST_F1
             Max = WeaponR + 1
         }
 
+        public enum EHeroAnimationLayer
+        {
+            Upper,
+            Lower
+        }
 
         // public enum EHeroBodyParts
         // {
@@ -203,14 +231,28 @@ namespace STELLAREST_F1
                 public static readonly string UI_Joystick = "UI_Joystick";
                 public static readonly string AnimationBody = "AnimationBody";
                 
-                public static readonly string Anim_Idle = "Idle";
-                public static readonly string Anim_Attack = "Attack";
-                public static readonly string Anim_Skill_A = "Skill_A"; // 교체해야됨
-                public static readonly string Anim_Skill_B = "Skill_B"; // 교체해야됨
-                public static readonly string Anim_Move = "Move";
-                public static readonly string Anim_Dead = "Dead";
+                // public static readonly string Anim_Idle = "Idle";
+                // public static readonly string Anim_Attack = "Attack";
+                // public static readonly string Anim_Skill_A = "Skill_A"; // 교체해야됨
+                // public static readonly string Anim_Skill_B = "Skill_B"; // 교체해야됨
+                // public static readonly string Anim_Move = "Move";
+                // public static readonly string Anim_Dead = "Dead";
 
-                // Hero Body Parts
+                // Hero - Human Body Type
+                public static readonly string HBody_HumanType_Head = "Human_Head.sprite";
+                public static readonly string HBody_HumanType_Torso = "Human_Torso.sprite";
+                public static readonly string HBody_HumanType_ArmL = "Human_ArmL.sprite";
+                public static readonly string HBody_HumanType_ArmR = "Human_ArmR.sprite";
+                public static readonly string HBody_HumanType_ForearmL = "Human_ForearmL.sprite";
+                public static readonly string HBody_HumanType_ForearmR = "Human_ForearmR.sprite";
+                public static readonly string HBody_HumanType_HandL = "Human_HandL.sprite";
+                public static readonly string HBody_HumanType_HandR = "Human_HandR.sprite";
+                public static readonly string HBody_HumanType_Finger = "Human_Finger.sprite";
+                public static readonly string HBody_HumanType_Pelvis = "Human_Pelvis.sprite";
+                public static readonly string HBody_HumanType_Shin = "Human_Shin.sprite";
+                public static readonly string HBody_HumanType_Leg = "Human_Leg.sprite";
+
+                // Hero Body - Armored Parts
                 public static readonly string HBody_HeadSkin = "Head";
                 public static readonly string HBody_Hair = "Hair";
                 public static readonly string HBody_Eyes = "Eyes";
@@ -264,17 +306,22 @@ namespace STELLAREST_F1
                 public static readonly string HBody_LegR = "LegR_Armor";
                 public static readonly string HBody_ShinRSkin = "ShinR";
                 public static readonly string HBody_ShinR = "ShinR_Armor";
+
+                // Animation Params
+                public static readonly string AnimParam_Idle = "Idle";
+                public static readonly string AnimParam_Move = "Move";
             }
 
             public static class Numeric
             {
                 public static readonly int TemplateID_Hero_Temp = 201000; // TEMP
-                public static readonly int SortingLayer_SpellIndicator = 200;
-                public static readonly int SortingLayer_Creature = 300;
-                public static readonly int SortingLayer_Env = 300;
-                public static readonly int SortingLayer_Projectile = 310;
-                public static readonly int SortingLayer_SkillEffect = 310;
-                public static readonly int SortingLayer_DamageFont = 410;
+                public static readonly int SortingOrder_SpellIndicator = 200;
+                public static readonly int SortingOrder_Creature = 300;
+                public static readonly int SortingOrder_Env = 300;
+                public static readonly int SortingOrder_Projectile = 310;
+                public static readonly int SortingOrder_SkillEffect = 310;
+                public static readonly int SortingOrder_DamageFont = 410;
+                public static readonly int SortingOrder_Weapon = 200;
 
                 public static readonly int DataID_Lancer = 101000;
 

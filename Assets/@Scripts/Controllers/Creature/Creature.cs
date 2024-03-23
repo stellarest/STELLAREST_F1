@@ -9,6 +9,8 @@ namespace STELLAREST_F1
     {
         public float Speed { get; protected set; } = 1.0f;
         public ECreatureType CreatureType { get; protected set; } = ECreatureType.None;
+        
+        [SerializeField]
         protected ECreatureState _creatureState = ECreatureState.None;
         public ECreatureState CreatureState
         {
@@ -34,10 +36,16 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public virtual void SetInfo(int dataID)
-        {
-            DataTemplateID = dataID;
-        }
+        // public virtual void SetInfo(int dataID)
+        // {
+        //     DataTemplateID = dataID;
+        // }
+
+        // public virtual void SetInfo(int dataID, Creature owner)
+        // {
+        //     DataTemplateID = dataID;
+        //     Owner = owner;
+        // }
 
         // protected override void UpdateAnimation()
         // {

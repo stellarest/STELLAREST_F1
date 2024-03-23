@@ -46,6 +46,17 @@ public class T_E_S_T : MonoBehaviour
 }
 
 /* Memo
+
+// 아이들
+// 이동
+// 공격
+// 죽음
+
+// 히어로 애니메이션 Upper, Lower 나눌 필요가 없을 것 같긴함.
+// 나누면, 애니메이션 제작하기 너무 빡세짐
+// 나눴을 때 이점은 세부적으로, 다양하게 조합이 가능하겠지만, 그럴 이유는 아직까진 없음.
+// 그리고 이점이 하나 더 있긴한데, Movement Speed가 빨라지면 하반신만 빨라지도록. 이런식의 조정이 가능함.
+
     public SpriteRenderer[] GetSkin()
     {
         string[] names = System.Enum.GetNames(typeof(EHeroHead));

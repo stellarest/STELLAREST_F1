@@ -24,6 +24,9 @@ namespace STELLAREST_F1
             public SpriteRenderer SPR { get; private set; } = null;
         }
 
+        public Hero Owner { get; private set; } = null;
+        private Dictionary<EHeroBodyParts, Container[]> _bodyDict = new Dictionary<EHeroBodyParts, Container[]>();
+
         public HeroBody(Hero owner)
         {
             Owner = owner;
@@ -32,8 +35,6 @@ namespace STELLAREST_F1
             InitBody(EHeroBodyParts.LowerBody, (int)EHeroLowerBody.Max);
             InitBody(EHeroBodyParts.Weapon, (int)EHeroLowerBody.Max);
         }
-
-        private List<SpriteRenderer> _skin = new List<SpriteRenderer>();
 
         private void InitBody(EHeroBodyParts bodyParts, int length)
         {
@@ -48,7 +49,6 @@ namespace STELLAREST_F1
                         Transform tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_HeadSkin, true, true);
                         SpriteRenderer spr = tr.GetComponent<SpriteRenderer>();
                         containers[(int)EHeroHead.HeadSkin] = new Container(tag, tr, spr);
-                        _skin.Add(spr);
 
                         tag = ReadOnly.String.HBody_Hair;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Hair, true, true);
@@ -106,7 +106,6 @@ namespace STELLAREST_F1
                         Transform tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_TorsoSkin, true, true);
                         SpriteRenderer spr = tr.GetComponent<SpriteRenderer>();
                         containers[(int)EHeroUpperBody.TorsoSkin] = new Container(tag, tr, spr);
-                        _skin.Add(spr);
 
                         tag = ReadOnly.String.HBody_Torso;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Torso, true, true);
@@ -122,7 +121,6 @@ namespace STELLAREST_F1
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_ArmLSkin, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
                         containers[(int)EHeroUpperBody.ArmLSkin] = new Container(tag, tr, spr);
-                        _skin.Add(spr);
 
                         tag = ReadOnly.String.HBody_ArmL;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_ArmL, true, true);
@@ -133,7 +131,6 @@ namespace STELLAREST_F1
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_ForearmLSkin, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
                         containers[(int)EHeroUpperBody.ForearmLSkin] = new Container(tag, tr, spr);
-                        _skin.Add(spr);
 
                         tag = ReadOnly.String.HBody_ForearmL;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_ForearmL, true, true);
@@ -144,7 +141,6 @@ namespace STELLAREST_F1
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_HandLSkin, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
                         containers[(int)EHeroUpperBody.HandLSkin] = new Container(tag, tr, spr);
-                        _skin.Add(spr);
 
                         tag = ReadOnly.String.HBody_HandL;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_HandL, true, true);
@@ -155,7 +151,6 @@ namespace STELLAREST_F1
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_FingerSkin, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
                         containers[(int)EHeroUpperBody.FingerSkin] = new Container(tag, tr, spr);
-                        _skin.Add(spr);
 
                         tag = ReadOnly.String.HBody_Finger;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Finger, true, true);
@@ -166,7 +161,6 @@ namespace STELLAREST_F1
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_ArmRSkin, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
                         containers[(int)EHeroUpperBody.ArmRSkin] = new Container(tag, tr, spr);
-                        _skin.Add(spr);
 
                         tag = ReadOnly.String.HBody_ArmR;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_ArmR, true, true);
@@ -177,7 +171,6 @@ namespace STELLAREST_F1
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_ForearmRSkin, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
                         containers[(int)EHeroUpperBody.ForearmRSkin] = new Container(tag, tr, spr);
-                        _skin.Add(spr);
 
                         tag = ReadOnly.String.HBody_ForearmR;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_ForearmR, true, true);
@@ -193,7 +186,6 @@ namespace STELLAREST_F1
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_HandRSkin, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
                         containers[(int)EHeroUpperBody.HandRSkin] = new Container(tag, tr, spr);
-                        _skin.Add(spr);
 
                         tag = ReadOnly.String.HBody_HandR;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_HandR, true, true);
@@ -211,7 +203,6 @@ namespace STELLAREST_F1
                         Transform tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_PelvisSkin, true, true);
                         SpriteRenderer spr = tr.GetComponent<SpriteRenderer>();
                         containers[(int)EHeroLowerBody.PelvisSkin] = new Container(tag, tr, spr);
-                        _skin.Add(spr);
 
                         tag = ReadOnly.String.HBody_Pelvis;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Pelvis, true, true);
@@ -222,7 +213,6 @@ namespace STELLAREST_F1
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_LegLSkin, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
                         containers[(int)EHeroLowerBody.LegLSkin] = new Container(tag, tr, spr);
-                        _skin.Add(spr);
 
                         tag = ReadOnly.String.HBody_LegL;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_LegL, true, true);
@@ -233,7 +223,6 @@ namespace STELLAREST_F1
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_ShinLSkin, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
                         containers[(int)EHeroLowerBody.ShinLSkin] = new Container(tag, tr, spr);
-                        _skin.Add(spr);
 
                         tag = ReadOnly.String.HBody_ShinL;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_ShinL, true, true);
@@ -244,7 +233,6 @@ namespace STELLAREST_F1
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_LegRSkin, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
                         containers[(int)EHeroLowerBody.LegRSkin] = new Container(tag, tr, spr);
-                        _skin.Add(spr);
 
                         tag = ReadOnly.String.HBody_LegR;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_LegR, true, true);
@@ -255,7 +243,6 @@ namespace STELLAREST_F1
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_ShinRSkin, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
                         containers[(int)EHeroLowerBody.ShinRSkin] = new Container(tag, tr, spr);
-                        _skin.Add(spr);
 
                         tag = ReadOnly.String.HBody_ShinR;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_ShinR, true, true);
@@ -281,11 +268,6 @@ namespace STELLAREST_F1
                     break;
             }
         }
-
-        public Hero Owner { get; private set; } = null;
-        private Dictionary<EHeroBodyParts, Container[]> _bodyDict = new Dictionary<EHeroBodyParts, Container[]>();
-
-        public SpriteRenderer[] Skin => _skin.ToArray();
 
         public T GetComponent<T>(EHeroHead findTarget) where T : UnityEngine.Component
         {
