@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using STELLAREST_F1.Data;
 using UnityEngine;
 using static STELLAREST_F1.Define;
 
@@ -16,28 +17,35 @@ namespace STELLAREST_F1
                 case EObjectType.Hero:
                     SetSpritesSet(dataID, (target as Hero).HeroBody);
                     break;
+
+                case EObjectType.Monster:
+                    SetSpritesSet(dataID, (target as Monster).MonsterBody);
+                    break;
             }
         }
 
+        #region Init - Hero Sprites
         private void SetSpritesSet(int dataID, HeroBody heroBody)
         {
-            Data.HeroSpriteData data = Managers.Data.HeroSpriteDataDict[dataID];
-            SetSkin(data, heroBody);
-            SetBodySprites(data, heroBody, EHeroBodyParts.Head);
-            SetBodySprites(data, heroBody, EHeroBodyParts.UpperBody);
-            SetBodySprites(data, heroBody, EHeroBodyParts.LowerBody);
-            SetBodySprites(data, heroBody, EHeroBodyParts.Weapon, ReadOnly.Numeric.SortingOrder_Weapon);
+            Data.HeroData heroData = Managers.Data.HeroDataDict[dataID];
+            Data.HeroSpriteData heroSpriteData = Managers.Data.HeroSpriteDataDict[dataID];
+            EHeroType type = Util.GetEnumFromString<EHeroType>(heroData.Type);
+
+            SetBodyType(type, heroSpriteData, heroBody);
+            SetBodySprites(heroSpriteData, heroBody, EHeroBodyParts.Head);
+            SetBodySprites(heroSpriteData, heroBody, EHeroBodyParts.UpperBody);
+            SetBodySprites(heroSpriteData, heroBody, EHeroBodyParts.LowerBody);
+            SetBodySprites(heroSpriteData, heroBody, EHeroBodyParts.Weapon, ReadOnly.Numeric.SortingOrder_Weapon);
             heroBody.SetFace();
         }
 
-        private void SetSkin(Data.HeroSpriteData data, HeroBody heroBody)
+        private void SetBodyType(EHeroType type, Data.HeroSpriteData heroData, HeroBody heroBody)
         {
-            if (ColorUtility.TryParseHtmlString(data.SkinColor, out Color color) == false)
+            if (ColorUtility.TryParseHtmlString(heroData.SkinColor, out Color color) == false)
                 return;
 
             Sprite sprite = null;
-            EHeroBodyType type = Util.GetEnumFromString<EHeroBodyType>(data.BodyType);
-            if (type == EHeroBodyType.Human)
+            if (type == EHeroType.Human)
             {
                 sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.HBody_HumanType_Head);
                 if (sprite != null)
@@ -131,13 +139,13 @@ namespace STELLAREST_F1
             }
         }
 
-        private void SetBodySprites(Data.HeroSpriteData data, HeroBody heroBody, EHeroBodyParts parts, int sortingOrder = 0)
+        private void SetBodySprites(Data.HeroSpriteData heroSpriteData, HeroBody heroBody, EHeroBodyParts parts, int sortingOrder = 0)
         {
             Sprite sprite = null;
             Color color = Color.white;
             if (parts == EHeroBodyParts.Head)
             {
-                Data.HeroSpriteData_Head head = Managers.Data.HeroSpriteDataDict[data.DataID].Head;
+                Data.HeroSpriteData_Head head = Managers.Data.HeroSpriteDataDict[heroSpriteData.DataID].Head;
                 sprite = Managers.Resource.Load<Sprite>(head.Hair);
                 if (sprite != null)
                 {
@@ -212,7 +220,7 @@ namespace STELLAREST_F1
             }
             else if (parts == EHeroBodyParts.UpperBody)
             {
-                Data.HeroSpriteData_UpperBody upperBody = Managers.Data.HeroSpriteDataDict[data.DataID].UpperBody;
+                Data.HeroSpriteData_UpperBody upperBody = Managers.Data.HeroSpriteDataDict[heroSpriteData.DataID].UpperBody;
                 sprite = Managers.Resource.Load<Sprite>(upperBody.Torso);
                 if (sprite != null)
                 {
@@ -295,7 +303,7 @@ namespace STELLAREST_F1
             }
             else if (parts == EHeroBodyParts.LowerBody)
             {
-                Data.HeroSpriteData_LowerBody lowerBody = Managers.Data.HeroSpriteDataDict[data.DataID].LowerBody;
+                Data.HeroSpriteData_LowerBody lowerBody = Managers.Data.HeroSpriteDataDict[heroSpriteData.DataID].LowerBody;
                 sprite = Managers.Resource.Load<Sprite>(lowerBody.Pelvis);
                 if (sprite != null)
                 {
@@ -338,7 +346,7 @@ namespace STELLAREST_F1
             }
             else // Wepon
             {
-                Data.HeroSpriteData_Weapon weapon = Managers.Data.HeroSpriteDataDict[data.DataID].Weapon;
+                Data.HeroSpriteData_Weapon weapon = Managers.Data.HeroSpriteDataDict[heroSpriteData.DataID].Weapon;
 
                 // Weapon - Left
                 Transform weaponL = heroBody.GetComponent<Transform>(EHeroWeapon.WeaponL);
@@ -349,14 +357,14 @@ namespace STELLAREST_F1
                     spr.sprite = sprite;
                     if (ColorUtility.TryParseHtmlString(weapon.LeftColor, out color))
                         spr.color = color;
-                    
-                    Vector3 scale = weapon.LeftScale;
-                    Vector3 position = weapon.LeftPosition;
-                    Vector3 rotation = weapon.LeftRotation;
 
-                    weaponL.localScale = new Vector3(scale.x, scale.y, scale.z);
-                    weaponL.localPosition = new Vector3(position.x, position.y, position.z);
-                    weaponL.localRotation = Quaternion.Euler(rotation.x, rotation.y, rotation.z);
+                    // Vector3 scale = weapon.LeftScale;
+                    // Vector3 position = weapon.LeftPosition;
+                    // Vector3 rotation = weapon.LeftRotation;
+
+                    // weaponL.localScale = new Vector3(scale.x, scale.y, scale.z);
+                    // weaponL.localPosition = new Vector3(position.x, position.y, position.z);
+                    // weaponL.localRotation = Quaternion.Euler(rotation.x, rotation.y, rotation.z);
                     for (int i = 0; i < weaponL.childCount; ++i)
                     {
                         if (weapon.LeftWeaponAttachments[i] != null)
@@ -387,14 +395,14 @@ namespace STELLAREST_F1
                     spr.sortingOrder = sortingOrder;
                     if (ColorUtility.TryParseHtmlString(weapon.RightColor, out color))
                         spr.color = color;
-                    
-                    Vector3 scale = weapon.RightScale;
-                    Vector3 position = weapon.RightPosition;
-                    Vector3 rotation = weapon.RightRotation;
 
-                    weaponR.localScale = new Vector3(scale.x, scale.y, scale.z);
-                    weaponR.localPosition = new Vector3(position.x, position.y, position.z);
-                    weaponR.localRotation = Quaternion.Euler(rotation.x, rotation.y, rotation.z);
+                    // Vector3 scale = weapon.RightScale;
+                    // Vector3 position = weapon.RightPosition;
+                    // Vector3 rotation = weapon.RightRotation;
+
+                    // weaponR.localScale = new Vector3(scale.x, scale.y, scale.z);
+                    // weaponR.localPosition = new Vector3(position.x, position.y, position.z);
+                    // weaponR.localRotation = Quaternion.Euler(rotation.x, rotation.y, rotation.z);
                     for (int i = 0; i < weaponR.childCount; ++i)
                     {
                         if (weapon.RightWeaponAttachments.Count != 0)
@@ -418,5 +426,115 @@ namespace STELLAREST_F1
                 }
             }
         }
+        #endregion
+
+        #region Init - Monster Sprites
+        private void SetSpritesSet(int dataID, MonsterBody monsterBody)
+        {
+            Data.MonsterData monsterData = Managers.Data.MonsterDataDict[dataID];
+            EMonsterType type = Util.GetEnumFromString<EMonsterType>(monsterData.Type);
+            switch (type)
+            {
+                case EMonsterType.Bird:
+                    SetBodyType(dataID, Managers.Data.BirdSpriteDataDict[dataID], monsterBody);
+                    break;
+            }
+        }
+
+        private void SetBodyType(int dataID, Data.BirdSpriteData birdSpriteData, MonsterBody monsterBody)
+        {
+            if (ColorUtility.TryParseHtmlString(birdSpriteData.SkinColor, out Color color) == false)
+                return;
+
+            // Bird - Body
+            Transform tr = null;
+            SpriteRenderer spr =null;
+            Sprite sprite = Managers.Resource.Load<Sprite>(birdSpriteData.Body);
+            if (sprite != null)
+            {
+                tr = monsterBody.GetComponent<Transform>(EBirdBodyParts.Body);
+                tr.transform.localPosition = birdSpriteData.BodyPosition;
+                if (monsterBody.Size == EMonsterSize.Small)
+                    tr.transform.localScale = new Vector3(ReadOnly.Numeric.MonsterSize_Small, ReadOnly.Numeric.MonsterSize_Small, 1);
+                else if (monsterBody.Size == EMonsterSize.Medium)
+                    tr.transform.localScale = new Vector3(ReadOnly.Numeric.MonsterSize_Medium, ReadOnly.Numeric.MonsterSize_Medium, 1);
+                else if (monsterBody.Size == EMonsterSize.Large)
+                    tr.transform.localScale = new Vector3(ReadOnly.Numeric.MonsterSize_Medium, ReadOnly.Numeric.MonsterSize_Medium, 1);
+
+                spr = monsterBody.GetComponent<SpriteRenderer>(EBirdBodyParts.Body);
+                spr.sprite = sprite;
+                spr.sortingOrder = birdSpriteData.BodySortingOrder;
+                spr.color = color;
+            }
+
+            // Bird - Head
+            monsterBody.SetFace(EMonsterEmoji.Default, birdSpriteData.Heads[(int)EMonsterEmoji.Default]);
+            monsterBody.SetFace(EMonsterEmoji.Angry, birdSpriteData.Heads[(int)EMonsterEmoji.Angry]);
+            monsterBody.SetFace(EMonsterEmoji.Dead, birdSpriteData.Heads[(int)EMonsterEmoji.Dead]);
+
+            sprite = Managers.Resource.Load<Sprite>(birdSpriteData.Heads[(int)EMonsterEmoji.Default]);
+            if (sprite != null)
+            {
+                tr = monsterBody.GetComponent<Transform>(EBirdBodyParts.Head);
+                tr.transform.localPosition = birdSpriteData.HeadPosition;
+                spr = monsterBody.GetComponent<SpriteRenderer>(EBirdBodyParts.Head);
+                spr.sprite = sprite;
+                spr.sortingOrder = birdSpriteData.HeadSortingOrder;
+                spr.color = color;
+            }
+
+            // Bird - Wing
+            sprite = Managers.Resource.Load<Sprite>(birdSpriteData.Wing);
+            if (sprite != null)
+            {
+                tr = monsterBody.GetComponent<Transform>(EBirdBodyParts.Wing);
+                tr.transform.localPosition = birdSpriteData.WingPosition;
+                spr = monsterBody.GetComponent<SpriteRenderer>(EBirdBodyParts.Wing);
+                spr.sprite = sprite;
+                spr.sortingOrder = birdSpriteData.WingSortingOrder;
+                spr.color = color;
+            }
+
+            // Bird - LegL
+            sprite = Managers.Resource.Load<Sprite>(birdSpriteData.LegL);
+            if (sprite != null)
+            {
+                tr = monsterBody.GetComponent<Transform>(EBirdBodyParts.LegL);
+                tr.transform.localPosition = birdSpriteData.LegLPosition;
+                spr = monsterBody.GetComponent<SpriteRenderer>(EBirdBodyParts.LegL);
+                spr.sprite = sprite;
+                spr.sortingOrder = birdSpriteData.LegLSortingOrder;
+                spr.color = color;
+            }
+
+            // Bird - LegR
+            sprite = Managers.Resource.Load<Sprite>(birdSpriteData.LegR);
+            if (sprite != null)
+            {
+                tr = monsterBody.GetComponent<Transform>(EBirdBodyParts.LegR);
+                tr.transform.localPosition = birdSpriteData.LegRPosition;
+                spr = monsterBody.GetComponent<SpriteRenderer>(EBirdBodyParts.LegR);
+                spr.sprite = sprite;
+                spr.sortingOrder = birdSpriteData.LegRSortingOrder;
+                spr.color = color;
+            }
+
+            // Bird - Tail
+            sprite = Managers.Resource.Load<Sprite>(birdSpriteData.Tail);
+            tr = monsterBody.GetComponent<Transform>(EBirdBodyParts.Tail);
+            if (sprite != null)
+            {
+                tr.transform.localPosition = birdSpriteData.TailPosition;
+                spr = monsterBody.GetComponent<SpriteRenderer>(EBirdBodyParts.Tail);
+                spr.sprite = sprite;
+                spr.sortingOrder = birdSpriteData.TailSortingOrder;
+                spr.color = color;
+            }
+            else
+            {
+                tr.gameObject.SetActive(false);
+            }
+        }
+        #endregion
     }
 }

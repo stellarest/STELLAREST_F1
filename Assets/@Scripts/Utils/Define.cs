@@ -8,15 +8,34 @@ namespace STELLAREST_F1
 {
     public static class Define
     {
-        public enum EHeroRarity
+        public enum ECreatureRarity
         {
             Common,
             Epic
         }
 
+        public enum EHeroType
+        {
+            Human,
+            Skeleton1,
+            Skeleton2,
+            Undead,
+            Demon
+        }
+
         public enum EMonsterType
         {
-            Village_Bird
+            None = -1,
+            Bird,
+            Quadrupeds,
+        }
+
+        public enum EMonsterSize
+        {
+            None = -1,
+            Small,
+            Medium,
+            Large
         }
 
         public enum EScene
@@ -57,14 +76,6 @@ namespace STELLAREST_F1
             Env
         }
 
-        public enum ECreatureType
-        {
-            None,
-            Hero,
-            Monster,
-            Npc
-        }
-
         public enum ECreatureState
         {
             None,
@@ -81,20 +92,20 @@ namespace STELLAREST_F1
             Right = 1,
         }
 
-        public enum EHeroBodyType
-        {
-            Human,
-            Skeleton1,
-            Skeleton2,
-            Undead,
-            Demon
-        }
-
         public enum EHeroEmoji
         {
             None = -1,
             Default,
             Sick,
+            Dead,
+            Max = Dead + 1
+        }
+
+        public enum EMonsterEmoji
+        {
+            None = -1,
+            Default,
+            Angry,
             Dead,
             Max = Dead + 1
         }
@@ -171,53 +182,40 @@ namespace STELLAREST_F1
             Max = WeaponR + 1
         }
 
-        public enum EHeroAnimationLayer
+        public enum EBirdBodyParts
         {
-            Upper,
-            Lower
+            None = -1,
+            Body,
+            Head,
+            Wing,
+            LegL,
+            LegR,
+            Tail,
+            Max = Tail + 1
         }
 
-        // public enum EHeroBodyParts
-        // {
-        //     None = -1,
-        //     // HEAD
-        //     Hair,
-        //     Eyes,
-        //     Eyebrows,
-        //     Mouth,
-        //     Beard,
-        //     Earrings,
-        //     Mask,
-        //     Glasses,
-        //     Helmet,
-
-        //     // UPPER
-        //     Torso,
-        //     Cape,
-        //     ArmL,
-        //     ForearmL,
-        //     HandL,
-        //     Finger,
-        //     ArmR,
-        //     ForearmR,
-        //     SleeveR,
-        //     HandR,
-
-        //     // LOWER
-        //     Pelvis,
-        //     LegL,
-        //     ShinL,
-        //     LegR,
-        //     ShinR,
-        //     Max = 24,
-        // }
+        public enum EQuadrupedsParts
+        {
+            None = -1,
+            Body,
+            Head,
+            LegFrontL,
+            LegFrontR,
+            LegBackL,
+            LegBackR,
+            Tail,
+            Max = Tail + 1
+        }
 
         public static class ReadOnly
         {
             public static class String
             {
+                // Datas
                 public static readonly string HeroData = "HeroData";
                 public static readonly string HeroSpriteData = "HeroSpriteData";
+                public static readonly string MonsterData = "MonsterData";
+                public static readonly string BirdSpriteData = "BirdSpriteData";
 
                 public static readonly string Managers = "@Managers";
                 public static readonly string UI_Root = "@UI_Root";
@@ -226,11 +224,11 @@ namespace STELLAREST_F1
                 public static readonly string BaseMap = "BaseMap";
                 public static readonly string Hero = "Hero";
                 public static readonly string AnimBody = "AnimationBody";
-                public static readonly string HeroRoot = "@Heroes";
-                public static readonly string MonsterRoot = "@Monsters";
+                public static readonly string HeroRootName = "@Heroes";
+                public static readonly string MonsterRootName = "@Monsters";
                 public static readonly string UI_Joystick = "UI_Joystick";
                 public static readonly string AnimationBody = "AnimationBody";
-                
+
                 // public static readonly string Anim_Idle = "Idle";
                 // public static readonly string Anim_Attack = "Attack";
                 // public static readonly string Anim_Skill_A = "Skill_A"; // 교체해야됨
@@ -261,6 +259,14 @@ namespace STELLAREST_F1
                 public static readonly string HFace_Eyes_Dead = "HeroEyes_Dead.sprite";
                 public static readonly string HFace_Eyes_DeadColor = "#00C8FF";
                 public static readonly string HFace_Mouth_Dead = "HeroMouth_Dead.sprite";
+
+                // Monster Head
+                public static readonly string MBody_Chicken_Head_Default = "Chicken_Head_Default.sprite";
+                public static readonly string MBody_Chicken_Head_Angry = "Chicken_Head_Angry.sprite";
+                public static readonly string MBody_Chicken_Head_Dead = "Chicken_Head_Dead.sprite";
+                public static readonly string MBody_Chicken_Body = "Chicken_Body.sprite";
+                public static readonly string MBody_Chicken_Wing = "Chicken_Wing.sprite";
+                public static readonly string MBody_Chicken_Leg = "Chicken_Leg.sprite";
 
                 // Hero Armored Body
                 public static readonly string HBody_HeadSkin = "Head";
@@ -317,9 +323,17 @@ namespace STELLAREST_F1
                 public static readonly string HBody_ShinRSkin = "ShinR";
                 public static readonly string HBody_ShinR = "ShinR_Armor";
 
+                // Monster Body
+                public static readonly string MBody_Head = "Head";
+                public static readonly string MBody_Wing = "Wing";
+                public static readonly string MBody_LegL = "LegL";
+                public static readonly string MBody_LegR = "LegR";
+                public static readonly string MBody_Tail = "Tail";
+
                 // Animation Params
                 public static readonly string AnimParam_Idle = "Idle";
                 public static readonly string AnimParam_Move = "Move";
+                public static readonly string AnimParam_Dead = "Dead";
             }
 
             public static class Numeric
@@ -331,13 +345,23 @@ namespace STELLAREST_F1
                 public static readonly int SortingOrder_Projectile = 310;
                 public static readonly int SortingOrder_SkillEffect = 310;
                 public static readonly int SortingOrder_DamageFont = 410;
-                public static readonly int SortingOrder_Weapon = 200;
+                //public static readonly int SortingOrder_Weapon = 200;
+                public static readonly int SortingOrder_Weapon = 320;
 
-                public static readonly int DataID_Lancer = 101000;
+                // ID - Hero
+                public static readonly int DataID_Hero_Lancer = 101000;
+
+                // ID - Monster
+                public static readonly int DataID_Monster_Chicken = 201000;
 
                 public static readonly float CamOrthoSize = 10F; 
                 public static readonly float JoystickFocusMinDist = -0.18F;
                 public static readonly float JoystickFocusMaxDist = 0.18F;
+
+                public static readonly float MonsterSize_Small = 0.5f;
+                public static readonly float MonsterSize_Medium = 0.8f;
+                public static readonly float MonsterSize_Large = 1.2f;
+
             }
         }
     }

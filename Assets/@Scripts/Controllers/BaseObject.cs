@@ -11,12 +11,9 @@ namespace STELLAREST_F1
     {
         public int DataTemplateID { get; set; } = -1;
         public EObjectType ObjectType { get; protected set; } = EObjectType.None;
+        public BaseAnimation BaseAnim { get; private set; } = null;
         public CircleCollider2D Collider { get; private set; } = null;
-
-        public virtual BaseAnimation BaseAnim { get; protected set; } = null;
-        
         public Rigidbody2D RigidBody { get; private set; } = null;
-
         public float ColliderRadius { get => Collider != null ? Collider.radius : 0.0f; }
         public float ColliderRadius2 { get => Collider?.radius ?? 0.0f; }
 
@@ -34,14 +31,15 @@ namespace STELLAREST_F1
             }
         }
 
+        public Vector3 MoveDir { get; protected set; } = Vector2.zero;
+ 
         public override bool Init()
         {
             if (base.Init() == false)
                 return false;
 
-            Collider = gameObject.GetOrAddComponent<CircleCollider2D>();
             BaseAnim = Util.FindChild<BaseAnimation>(gameObject, name: ReadOnly.String.AnimationBody, recursive: false);
-
+            Collider = gameObject.GetOrAddComponent<CircleCollider2D>();
             RigidBody = gameObject.GetOrAddComponent<Rigidbody2D>();
             RigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
             RigidBody.gravityScale = 0f;
@@ -66,10 +64,6 @@ namespace STELLAREST_F1
         #region Animation
         public void UpdateAnimation()
             => BaseAnim.UpdateAnimation();
-
-        // 애니메이션은 상태에 따라 관리
-        // public void PlayAnimation(string animName)
-        //     => BaseAnim.PlayAnimation(animName);
 
         public void Flip(LookAtDirection lookAtDir)
             => BaseAnim.Flip(lookAtDir);

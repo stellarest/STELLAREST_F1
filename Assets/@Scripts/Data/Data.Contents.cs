@@ -6,43 +6,23 @@ using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1.Data
 {
-    #region Test Data
-    [Serializable]
-    public class TestData
-    {
-        public int Level;
-        public int Exp;
-        public List<int> Skills;
-        public float Speed;
-        public string Name;
-    }
-
-    [Serializable]
-    public class TestDataLoader : ILoader<int, TestData>
-    {
-        public List<TestData> tests = new List<TestData>();
-        public Dictionary<int, TestData> MakeDict()
-        {
-            Dictionary<int, TestData> dict = new Dictionary<int, TestData>();
-            foreach (TestData data in tests)
-                dict.Add(data.Level, data);
-
-            return dict;
-        }
-    }
-    #endregion
-
-    [Serializable]
-    public class HeroData
+    public class BaseData
     {
         public int DataID;
+        public string PrefabLabel;
+        public string AnimatorLabel;
         public string DescriptionTextID;
-        public string AnimatorTextID;
         public string Rarity;
         public float MaxHp;
         public float Atk;
         public float AtkRange;
         public float MovementSpeed;
+    }
+
+    [Serializable]
+    public class HeroData : BaseData
+    {
+        public string Type;
     }
 
     public class HeroDataLoader : ILoader<int, HeroData>
@@ -63,7 +43,7 @@ namespace STELLAREST_F1.Data
     {
         public int DataID;
         public string Tag;
-        public string BodyType;
+        public string Type;
         public string SkinColor;
         public HeroSpriteData_Head Head;
         public HeroSpriteData_UpperBody UpperBody;
@@ -160,16 +140,10 @@ namespace STELLAREST_F1.Data
     {
         public string LeftWeapon;
         public string LeftColor;
-        public Vector3 LeftScale;
-        public Vector3 LeftPosition;
-        public Vector3 LeftRotation;
         public List<string> LeftWeaponAttachments;
 
         public string RightWeapon;
         public string RightColor;
-        public Vector3 RightScale;
-        public Vector3 RightPosition;
-        public Vector3 RightRotation;
         public List<string> RightWeaponAttachments;
     }
 
@@ -187,21 +161,71 @@ namespace STELLAREST_F1.Data
     }
 
     [Serializable]
-    public class HeroAnimationData
+    public class MonsterData : BaseData
     {
-        public int DataID;
-        public string Tag;
-        public string AnimatorTextID;
+        public string Type;
+        public string Size;
+        public int DropItemID;
     }
 
-    public class HeroAnimationDataLoader : ILoader<int, HeroAnimationData>
+    public class MonsterDataLoader : ILoader<int, MonsterData>
     {
-        public List<HeroAnimationData> HeroAnimations = new List<HeroAnimationData>();
+        public List<MonsterData> Monsters = new List<MonsterData>();
 
-        public Dictionary<int, HeroAnimationData> MakeDict()
+        public Dictionary<int, MonsterData> MakeDict()
         {
-            Dictionary<int, HeroAnimationData> dict = new Dictionary<int, HeroAnimationData>();
-            foreach (HeroAnimationData data in HeroAnimations)
+            Dictionary<int, MonsterData> dict = new Dictionary<int, MonsterData>();
+            foreach (MonsterData data in Monsters)
+                dict.Add(data.DataID, data);
+
+            return dict;
+        }
+    }
+
+    [Serializable]
+    public class MonsterSpriteData
+    {
+        public int DataID;
+        public string Type;
+        public string SkinColor;
+    }
+
+    [Serializable]
+    public class BirdSpriteData : MonsterSpriteData
+    {
+        public string Body;
+        public Vector3 BodyPosition;
+        public int BodySortingOrder;
+
+        public string[] Heads;
+        public Vector3 HeadPosition;
+        public int HeadSortingOrder;
+
+        public string Wing;
+        public Vector3 WingPosition;
+        public int WingSortingOrder;
+
+        public string LegL;
+        public Vector3 LegLPosition;
+        public int LegLSortingOrder;
+
+        public string LegR;
+        public Vector3 LegRPosition;
+        public int LegRSortingOrder;
+
+        public string Tail;
+        public Vector3 TailPosition;
+        public int TailSortingOrder;
+    }
+
+    public class BirdSpriteDataLoader : ILoader<int, BirdSpriteData>
+    {
+        public List<BirdSpriteData> BirdsSprites = new List<BirdSpriteData>();
+
+        public Dictionary<int, BirdSpriteData> MakeDict()
+        {
+            Dictionary<int, BirdSpriteData> dict = new Dictionary<int, BirdSpriteData>();
+            foreach (BirdSpriteData data in BirdsSprites)
                 dict.Add(data.DataID, data);
 
             return dict;

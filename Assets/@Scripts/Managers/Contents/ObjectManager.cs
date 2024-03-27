@@ -16,13 +16,58 @@ namespace STELLAREST_F1
             GameObject root = GameObject.Find(name);
             if (root == null)
                 root = new GameObject { name = name };
-            
+
             return root.transform;
         }
 
-        public Transform HeroRoot => GetRoot(ReadOnly.String.HeroRoot);
-        public Transform MonsterRoot => GetRoot(ReadOnly.String.MonsterRoot);
+        public Transform HeroRoot => GetRoot(ReadOnly.String.HeroRootName);
+        public Transform MonsterRoot => GetRoot(ReadOnly.String.MonsterRootName);
         #endregion
+
+        public T Spawn<T>(Vector3 position, EObjectType spawnObjectType, int dataID) where T : BaseObject
+        {
+            GameObject go = null;
+            switch (spawnObjectType)
+            {
+                case EObjectType.Hero:
+                    {
+                        Data.HeroData data = Managers.Data.HeroDataDict[dataID];
+                        go = Managers.Resource.Instantiate(data.PrefabLabel);
+                        if (go ==null)
+                        {
+                            Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{data.PrefabLabel}\"");
+                            return null;
+                        }
+
+                        go.transform.position = position;
+                        go.transform.SetParent(HeroRoot);
+                        Hero hero = go.GetComponent<Hero>();
+                        hero.SetInfo(dataID);
+                        Heroes.Add(hero);
+                        return hero as T;
+                    }
+
+                case EObjectType.Monster:
+                    {
+                        Data.MonsterData data = Managers.Data.MonsterDataDict[dataID];
+                        go = Managers.Resource.Instantiate(data.PrefabLabel);
+                        if (go ==null)
+                        {
+                            Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{data.PrefabLabel}\"");
+                            return null;
+                        }
+
+                        go.transform.position = position;
+                        go.transform.SetParent(MonsterRoot);
+                        Monster monster = go.GetComponent<Monster>();
+                        monster.SetInfo(dataID);
+                        Monsters.Add(monster);
+                    }
+                    break;
+            }
+
+            return null;
+        }
 
         public T Spawn<T>(Vector3 position, int dataID) where T : BaseObject
         {

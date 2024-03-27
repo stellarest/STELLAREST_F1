@@ -8,32 +8,28 @@ using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
-    public class HeroBody
+    public class HeroBody : CreatureBody
     {
-        public class Container
+        public HeroBody(Hero owner, int dataID) : base(owner, dataID)
         {
-            public Container(string tag, Transform tr, SpriteRenderer spr)
-            {
-                Tag = tag;
-                TR = tr;
-                SPR = spr;
-            }
-
-            public string Tag { get; private set; } = null;
-            public Transform TR { get; private set; } = null;
-            public SpriteRenderer SPR { get; private set; } = null;
+            InitBody(EHeroBodyParts.Head, (int)EHeroHead.Max);
+            InitBody(EHeroBodyParts.UpperBody, (int)EHeroUpperBody.Max);
+            InitBody(EHeroBodyParts.LowerBody, (int)EHeroLowerBody.Max);
+            InitBody(EHeroBodyParts.Weapon, (int)EHeroLowerBody.Max);
         }
 
-        public class FaceContainer
+        public class HeroFace
         {
-            public FaceContainer(HeroBody heroBody)
+            public HeroFace(HeroBody heroBody)
             {
                 _heroBody = heroBody;
+                // Eyebrows
                 _eyebrowsSprites = new Sprite[(int)EHeroEmoji.Max];
                 _eyebrowsSprites[(int)EHeroEmoji.Default] = heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).sprite;
                 _eyebrowsSprites[(int)EHeroEmoji.Sick] = Managers.Resource.Load<Sprite>(ReadOnly.String.HFace_Eyebrows_Sick);
                 _eyebrowsSprites[(int)EHeroEmoji.Dead] = _eyebrowsSprites[(int)EHeroEmoji.Default];
 
+                // Eyes
                 _eyesSprites = new Sprite[(int)EHeroEmoji.Max];
                 _eyesSprites[(int)EHeroEmoji.Default] = heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).sprite;
                 _eyesDefaultColor = heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).color;
@@ -42,6 +38,7 @@ namespace STELLAREST_F1
                 if (ColorUtility.TryParseHtmlString(ReadOnly.String.HFace_Eyes_DeadColor, out Color eyesDeadColor))
                     _eyesDeadColor = eyesDeadColor;
 
+                // Mouth
                 _mouthSprites = new Sprite[(int)EHeroEmoji.Max];
                 _mouthSprites[(int)EHeroEmoji.Default] = heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).sprite;
                 _mouthSprites[(int)EHeroEmoji.Sick] = Managers.Resource.Load<Sprite>(ReadOnly.String.HFace_Mouth_Sick);
@@ -52,7 +49,6 @@ namespace STELLAREST_F1
             private Sprite[] _eyebrowsSprites = null;
             private Sprite[] _eyesSprites = null;
             private Sprite[] _mouthSprites = null;
-
             private Color _eyesDefaultColor = Color.white;
             private Color _eyesDeadColor = Color.white;
 
@@ -90,17 +86,14 @@ namespace STELLAREST_F1
             }
         }
 
-        public Hero Owner { get; private set; } = null;
         private Dictionary<EHeroBodyParts, Container[]> _bodyDict = new Dictionary<EHeroBodyParts, Container[]>();
-        public FaceContainer HeroFace { get; private set; } = null;
-
-        public HeroBody(Hero owner)
+        public HeroFace Face { get; private set; } = null;
+        public void SetEmoji(EHeroEmoji emoji) => Face?.SetEmoji(emoji);
+       
+        public void SetFace()
         {
-            Owner = owner;
-            InitBody(EHeroBodyParts.Head, (int)EHeroHead.Max);
-            InitBody(EHeroBodyParts.UpperBody, (int)EHeroUpperBody.Max);
-            InitBody(EHeroBodyParts.LowerBody, (int)EHeroLowerBody.Max);
-            InitBody(EHeroBodyParts.Weapon, (int)EHeroLowerBody.Max);
+            if (Face == null)
+                Face = new HeroFace(this);
         }
 
         private void InitBody(EHeroBodyParts bodyParts, int length)
@@ -336,11 +329,6 @@ namespace STELLAREST_F1
             }
         }
 
-        public void SetFace()
-            => HeroFace = new FaceContainer(this);
-
-        public void SetEmoji(EHeroEmoji emoji)
-            => HeroFace.SetEmoji(emoji);
 
         public T GetComponent<T>(EHeroHead findTarget) where T : UnityEngine.Component
         {
@@ -353,8 +341,7 @@ namespace STELLAREST_F1
             Type type = typeof(T);
             if (type == typeof(Transform))
                 return containers[(int)findTarget].TR as T;
-
-            if (type == typeof(SpriteRenderer))
+            else if (type == typeof(SpriteRenderer))
                 return containers[(int)findTarget].SPR as T;
 
             return null;
@@ -389,8 +376,7 @@ namespace STELLAREST_F1
             Type type = typeof(T);
             if (type == typeof(Transform))
                 return containers[(int)findTarget].TR as T;
-
-            if (type == typeof(SpriteRenderer))
+            else if (type == typeof(SpriteRenderer))
                 return containers[(int)findTarget].SPR as T;
 
             return null;
@@ -407,8 +393,7 @@ namespace STELLAREST_F1
             Type type = typeof(T);
             if (type == typeof(Transform))
                 return containers[(int)findTarget].TR as T;
-
-            if (type == typeof(SpriteRenderer))
+            else if (type == typeof(SpriteRenderer))
                 return containers[(int)findTarget].SPR as T;
 
             return null;

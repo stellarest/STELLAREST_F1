@@ -9,17 +9,7 @@ namespace STELLAREST_F1
     {
         private readonly int Play_Idle = Animator.StringToHash(ReadOnly.String.AnimParam_Idle);
         private readonly int Play_Move = Animator.StringToHash(ReadOnly.String.AnimParam_Move);
-
-        private Creature _creature = null;
-        public override BaseObject Owner
-        {
-            get => _creature;
-            protected set
-            {
-                if (_creature == null)
-                    _creature = value as Creature;
-            }
-        }
+        private readonly int Play_Dead = Animator.StringToHash(ReadOnly.String.AnimParam_Dead);
 
         public override bool Init()
         {
@@ -29,20 +19,13 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public override void SetInfoFromOwner(int dataID, BaseObject owner)
-        {
-            base.SetInfoFromOwner(dataID, owner);
-            Owner = owner as Creature;
-        }
-
         protected override void Idle()
-        {
-            Animator.Play(Play_Idle);
-        }
+            => Animator.Play(Play_Idle);
 
         protected override void Move()
-        {
-            Animator.Play(Play_Move);
-        }
+            => Animator.Play(Play_Move);
+
+        protected override void Dead()
+            => Animator.Play(Play_Dead);
     }
 }

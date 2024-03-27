@@ -6,17 +6,6 @@ namespace STELLAREST_F1
 {
     public class MonsterAnimation : CreatureAnimation
     {
-        private Monster _monster = null;
-        public override BaseObject Owner 
-        { 
-            get => _monster;
-            protected set
-            {
-                if (_monster == null)
-                    _monster = value as Monster;
-            }
-        }
-
         public override bool Init()
         {
             if (base.Init() == false)
@@ -25,10 +14,9 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public override void SetInfoFromOwner(int dataID, BaseObject owner)
+        public void SetInfo(int dataID, Monster owner)
         {
-            base.SetInfoFromOwner(dataID, owner);
-            Owner = owner as Monster;
+            base.SetInfo(dataID, owner);
         }
     }
 }

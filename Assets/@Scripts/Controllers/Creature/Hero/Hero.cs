@@ -10,37 +10,10 @@ namespace STELLAREST_F1
     public class Hero : Creature
     {
         public Data.HeroData HeroData { get; private set; } = null;
-        public Data.HeroSpriteData HeroSpriteData { get; private set; } = null;
-        public Data.HeroAnimationData HeroAnimationData { get; private set; } = null;   
-
-        private EHeroEmoji _heroEmoji = EHeroEmoji.Default;     
-        public EHeroEmoji HeroEmoji
-        {
-            get => _heroEmoji;
-            set
-            {
-                if (_heroEmoji != value)
-                {
-                    _heroEmoji = value;
-                    //SetEmoji(value);
-                }
-            }
-        }
-
         public HeroBody HeroBody { get; private set; } = null;
-
-        private HeroAnimation _heroAnim = null;
-        public override BaseAnimation BaseAnim 
-        { 
-            get => _heroAnim;
-            protected set
-            {
-                if (_heroAnim == null)
-                    _heroAnim = value as HeroAnimation;
-            } 
-        }
-
-        private Vector2 _moveDir = Vector2.zero;
+        public HeroAnimation HeroAnim { get; private set; } = null;
+        
+        //private Vector2 _moveDir = Vector2.zero;
 
         public override bool Init()
         {
@@ -48,8 +21,6 @@ namespace STELLAREST_F1
                 return false;
 
             ObjectType = EObjectType.Hero;
-            CreatureState = ECreatureState.Idle;
-            Speed = 5.0f;
 
             Managers.Game.OnMoveDirChangedHandler -= OnMoveDirChanged;
             Managers.Game.OnMoveDirChangedHandler += OnMoveDirChanged;
@@ -57,46 +28,56 @@ namespace STELLAREST_F1
             Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
             Managers.Game.OnJoystickStateChangedHandler += OnJoystickStateChanged;
 
-            HeroBody = new HeroBody(this);
             return true;
         }
 
         public override void SetInfo(int dataID)
         {
             base.SetInfo(dataID);
-            Managers.Sprite.SetInfo(dataID, target: this);
-            BaseAnim.SetInfoFromOwner(dataID, this);
-            
-            HeroData = Managers.Data.HeroDataDict[dataID];
-            HeroSpriteData = Managers.Data.HeroSpriteDataDict[dataID];
-            HeroAnimationData = Managers.Data.HeroAnimationDataDict[dataID];
+            if (HeroAnim == null && HeroBody == null)
+            {
+                HeroBody = new HeroBody(this, dataID);
+                HeroAnim = CreatureAnim as HeroAnimation;
+                HeroAnim.SetInfo(dataID, this);
+                Managers.Sprite.SetInfo(dataID, target: this);
+                SetCreatureFromData(dataID);
+            }
+
+            RefreshCreature();
+        }
+
+        protected override void RefreshCreature()
+        {
+            base.RefreshCreature();
+            Speed = HeroData.MovementSpeed;
         }
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Q))
+            if (Input.GetKeyDown(KeyCode.R))
             {
-                HeroBody.SetEmoji(EHeroEmoji.Default);
+                CreatureState = ECreatureState.Idle;
             }
 
-            if (Input.GetKeyDown(KeyCode.W))
+            if (Input.GetKeyDown(KeyCode.T))
             {
-                HeroBody.SetEmoji(EHeroEmoji.Sick);
+                CreatureState = ECreatureState.Dead;
             }
 
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                HeroBody.SetEmoji(EHeroEmoji.Dead);
-            }
+            float moveDistPerFrame = Speed * Time.deltaTime;
+            transform.TranslateEx(MoveDir * moveDistPerFrame);
+        }
 
-            float distancePerFrame = Speed * Time.deltaTime;
-            transform.TranslateEx(_moveDir * distancePerFrame);
+        protected override void SetCreatureFromData(int dataID)
+        {
+            HeroData = Managers.Data.HeroDataDict[dataID];
+            /*
+                TODO : Set Hero Stat..
+            */
         }
 
         private void OnMoveDirChanged(Vector2 dir)
-        {
-            _moveDir = dir;
-        }
+            => MoveDir = dir;
 
         private void OnJoystickStateChanged(EJoystickState joystickState)
         {

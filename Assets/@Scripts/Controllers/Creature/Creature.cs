@@ -7,9 +7,10 @@ namespace STELLAREST_F1
 {
     public class Creature : BaseObject
     {
-        public float Speed { get; protected set; } = 1.0f;
-        public ECreatureType CreatureType { get; protected set; } = ECreatureType.None;
-        
+        public float Speed { get; protected set; } = 1.0f; // TEMP
+
+        public CreatureAnimation CreatureAnim { get; private set; } = null;
+        public ECreatureRarity CreatureRarity { get; protected set; } = ECreatureRarity.Common;
         [SerializeField]
         protected ECreatureState _creatureState = ECreatureState.None;
         public ECreatureState CreatureState
@@ -30,50 +31,18 @@ namespace STELLAREST_F1
             if (base.Init() == false)
                 return false;
 
-            //ObjectType = EObjectType.Creature;
-            //CreatureState = ECreatureState.Idle;
-
             return true;
         }
 
-        // public virtual void SetInfo(int dataID)
-        // {
-        //     DataTemplateID = dataID;
-        // }
+        public override void SetInfo(int dataID)
+        {
+            base.SetInfo(dataID);
+            if (CreatureAnim == null)
+                CreatureAnim = BaseAnim as CreatureAnimation;
+        }
 
-        // public virtual void SetInfo(int dataID, Creature owner)
-        // {
-        //     DataTemplateID = dataID;
-        //     Owner = owner;
-        // }
-
-        // protected override void UpdateAnimation()
-        // {
-        //     switch (CreatureState)
-        //     {
-        //         case ECreatureState.Idle:
-        //             PlayAnimation(ReadOnly.String.Anim_Idle);
-        //             break;
-
-        //         case ECreatureState.Move:
-        //             PlayAnimation(ReadOnly.String.Anim_Move);
-        //             break;
-
-        //         case ECreatureState.Attack:
-        //             PlayAnimation(ReadOnly.String.Anim_Attack);
-        //             break;
-
-        //         case ECreatureState.Skill:
-        //             PlayAnimation(ReadOnly.String.Anim_Skill_A);
-        //             break;
-
-        //         case ECreatureState.Dead:
-        //             PlayAnimation(ReadOnly.String.Anim_Dead);
-        //             break;
-
-        //         default:
-        //             break;
-        //     }
-        // }
+        protected virtual void SetCreatureFromData(int dataID)  { }
+        protected virtual void RefreshCreature()
+            => CreatureState = ECreatureState.Idle;
     }
 }
