@@ -20,7 +20,7 @@ namespace STELLAREST_F1
             base.SetInfo(dataID, owner);
             string animatorTextID = Managers.Data.HeroDataDict[dataID].AnimatorLabel;
             RuntimeAnimatorController animController = Managers.Resource.Load<RuntimeAnimatorController>(animatorTextID);
-            if (animController != null)
+            if (string.IsNullOrEmpty(animatorTextID) == false && animController != null)
             {
                 RuntimeAnimatorController cloned = UnityEngine.Object.Instantiate(animController);
                 this.Animator.runtimeAnimatorController = cloned;

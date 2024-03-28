@@ -438,6 +438,10 @@ namespace STELLAREST_F1
                 case EMonsterType.Bird:
                     SetBodyType(dataID, Managers.Data.BirdSpriteDataDict[dataID], monsterBody);
                     break;
+
+                case EMonsterType.Quadrupeds:
+                    SetBodyType(dataID, Managers.Data.QuadrupedsSpriteDataDict[dataID], monsterBody);
+                    break;
             }
         }
 
@@ -455,11 +459,11 @@ namespace STELLAREST_F1
                 tr = monsterBody.GetComponent<Transform>(EBirdBodyParts.Body);
                 tr.transform.localPosition = birdSpriteData.BodyPosition;
                 if (monsterBody.Size == EMonsterSize.Small)
-                    tr.transform.localScale = new Vector3(ReadOnly.Numeric.MonsterSize_Small, ReadOnly.Numeric.MonsterSize_Small, 1);
+                    monsterBody.GetOwner<Monster>().transform.localScale = new Vector3(ReadOnly.Numeric.MonsterSize_Small, ReadOnly.Numeric.MonsterSize_Small, 1);
                 else if (monsterBody.Size == EMonsterSize.Medium)
-                    tr.transform.localScale = new Vector3(ReadOnly.Numeric.MonsterSize_Medium, ReadOnly.Numeric.MonsterSize_Medium, 1);
+                    monsterBody.GetOwner<Monster>().transform.localScale = new Vector3(ReadOnly.Numeric.MonsterSize_Medium, ReadOnly.Numeric.MonsterSize_Medium, 1);
                 else if (monsterBody.Size == EMonsterSize.Large)
-                    tr.transform.localScale = new Vector3(ReadOnly.Numeric.MonsterSize_Medium, ReadOnly.Numeric.MonsterSize_Medium, 1);
+                    monsterBody.GetOwner<Monster>().transform.localScale = new Vector3(ReadOnly.Numeric.MonsterSize_Large, ReadOnly.Numeric.MonsterSize_Large, 1);
 
                 spr = monsterBody.GetComponent<SpriteRenderer>(EBirdBodyParts.Body);
                 spr.sprite = sprite;
@@ -533,6 +537,109 @@ namespace STELLAREST_F1
             else
             {
                 tr.gameObject.SetActive(false);
+            }
+        }
+
+        private void SetBodyType(int dataID, Data.QuadrupedsSpriteData quadrupedsSpriteData, MonsterBody monsterBody)
+        {
+            if (ColorUtility.TryParseHtmlString(quadrupedsSpriteData.SkinColor, out Color color) == false)
+                return;
+
+            // Quadrupeds - Body
+            Transform tr = null;
+            SpriteRenderer spr = null;
+            Sprite sprite = Managers.Resource.Load<Sprite>(quadrupedsSpriteData.Body);
+            if (sprite != null)
+            {
+                tr = monsterBody.GetComponent<Transform>(EQuadrupedsParts.Body);
+                tr.transform.localPosition = quadrupedsSpriteData.BodyPosition;
+                if (monsterBody.Size == EMonsterSize.Small)
+                    monsterBody.GetOwner<Monster>().transform.localScale = new Vector3(ReadOnly.Numeric.MonsterSize_Small, ReadOnly.Numeric.MonsterSize_Small, 1);
+                else if (monsterBody.Size == EMonsterSize.Medium)
+                    monsterBody.GetOwner<Monster>().transform.localScale = new Vector3(ReadOnly.Numeric.MonsterSize_Medium, ReadOnly.Numeric.MonsterSize_Medium, 1);
+                else if (monsterBody.Size == EMonsterSize.Large)
+                    monsterBody.GetOwner<Monster>().transform.localScale = new Vector3(ReadOnly.Numeric.MonsterSize_Large, ReadOnly.Numeric.MonsterSize_Large, 1);
+
+                spr = monsterBody.GetComponent<SpriteRenderer>(EQuadrupedsParts.Body);
+                spr.sprite = sprite;
+                spr.sortingOrder = quadrupedsSpriteData.BodySortingOrder;
+                spr.color = color;
+            }
+
+            // Quadrupeds - Head
+            monsterBody.SetFace(EMonsterEmoji.Default, quadrupedsSpriteData.Heads[(int)EMonsterEmoji.Default]);
+            monsterBody.SetFace(EMonsterEmoji.Angry, quadrupedsSpriteData.Heads[(int)EMonsterEmoji.Angry]);
+            monsterBody.SetFace(EMonsterEmoji.Dead, quadrupedsSpriteData.Heads[(int)EMonsterEmoji.Dead]);
+
+            sprite = Managers.Resource.Load<Sprite>(quadrupedsSpriteData.Heads[(int)EMonsterEmoji.Default]);
+            if (sprite != null)
+            {
+                tr = monsterBody.GetComponent<Transform>(EQuadrupedsParts.Head);
+                tr.transform.localPosition = quadrupedsSpriteData.HeadPosition;
+                spr = monsterBody.GetComponent<SpriteRenderer>(EQuadrupedsParts.Head);
+                spr.sprite = sprite;
+                spr.sortingOrder = quadrupedsSpriteData.HeadSortingOrder;
+                spr.color = color;
+            }
+
+            // Quadrupeds - LegFrontL
+            sprite = Managers.Resource.Load<Sprite>(quadrupedsSpriteData.LegFrontL);
+            if (sprite != null)
+            {
+                tr = monsterBody.GetComponent<Transform>(EQuadrupedsParts.LegFrontL);
+                tr.transform.localPosition = quadrupedsSpriteData.LegFrontLPosition;
+                spr = monsterBody.GetComponent<SpriteRenderer>(EQuadrupedsParts.LegFrontL);
+                spr.sprite = sprite;
+                spr.sortingOrder = quadrupedsSpriteData.LegFrontLSortingOrder;
+                spr.color = color;
+            }
+
+            // Quadrupeds - LegFrontR
+            sprite = Managers.Resource.Load<Sprite>(quadrupedsSpriteData.LegFrontR);
+            if (sprite != null)
+            {
+                tr = monsterBody.GetComponent<Transform>(EQuadrupedsParts.LegFrontR);
+                tr.transform.localPosition = quadrupedsSpriteData.LegFrontRPosition;
+                spr = monsterBody.GetComponent<SpriteRenderer>(EQuadrupedsParts.LegFrontR);
+                spr.sprite = sprite;
+                spr.sortingOrder = quadrupedsSpriteData.LegFrontRSortingOrder;
+                spr.color = color;
+            }
+
+            // Quadrupeds - LegBackL
+            sprite = Managers.Resource.Load<Sprite>(quadrupedsSpriteData.LegBackL);
+            if (sprite != null)
+            {
+                tr = monsterBody.GetComponent<Transform>(EQuadrupedsParts.LegBackL);
+                tr.transform.localPosition = quadrupedsSpriteData.LegBackLPosition;
+                spr = monsterBody.GetComponent<SpriteRenderer>(EQuadrupedsParts.LegBackL);
+                spr.sprite = sprite;
+                spr.sortingOrder = quadrupedsSpriteData.LegBackLSortingOrder;
+                spr.color = color;
+            }
+
+            // Quadrupeds - LegBackR
+            sprite = Managers.Resource.Load<Sprite>(quadrupedsSpriteData.LegBackR);
+            if (sprite != null)
+            {
+                tr = monsterBody.GetComponent<Transform>(EQuadrupedsParts.LegBackR);
+                tr.transform.localPosition = quadrupedsSpriteData.LegBackRPosition;
+                spr = monsterBody.GetComponent<SpriteRenderer>(EQuadrupedsParts.LegBackR);
+                spr.sprite = sprite;
+                spr.sortingOrder = quadrupedsSpriteData.LegBackRSortingOrder;
+                spr.color = color;
+            }
+
+            // Quadrupeds - Tail
+            sprite = Managers.Resource.Load<Sprite>(quadrupedsSpriteData.Tail);
+            if (sprite != null)
+            {
+                tr = monsterBody.GetComponent<Transform>(EQuadrupedsParts.Tail);
+                tr.transform.localPosition = quadrupedsSpriteData.TailPosition;
+                spr = monsterBody.GetComponent<SpriteRenderer>(EQuadrupedsParts.Tail);
+                spr.sprite = sprite;
+                spr.sortingOrder = quadrupedsSpriteData.TailSortingOrder;
+                spr.color = color;
             }
         }
         #endregion

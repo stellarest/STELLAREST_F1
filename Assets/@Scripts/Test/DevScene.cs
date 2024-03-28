@@ -29,8 +29,11 @@ namespace STELLAREST_F1
             CameraController cam = Camera.main.GetComponent<CameraController>();
             cam.Target = hero;
             
-            Monster monster = Managers.Object.Spawn<Monster>(Vector3.one, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Chicken);
-            
+            //Monster chicken = Managers.Object.Spawn<Monster>(Vector3.one, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Chicken);
+            Monster bunny = Managers.Object.Spawn<Monster>(Vector3.one, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Bunny);
+
+            // Monster turkey = Managers.Object.Spawn<Monster>(new Vector3(chicken.transform.position.x + 1, chicken.transform.position.y + 1, 0), EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Turkey);
+            // Monster pug = Managers.Object.Spawn<Monster>(new Vector3(turkey.transform.position.x + 1, turkey.transform.position.y + 1, 0), EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Pug);
             // Addressables.LoadAssetAsync<T>
             // Sprite armor = Managers.Resource.Load<Sprite>("BanditLightArmor_Torso.sprite");
             // Sprite armor_cloned = UnityEngine.Component.Instantiate(armor);

@@ -54,15 +54,15 @@ namespace STELLAREST_F1
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                CreatureState = ECreatureState.Idle;
-            }
+            // if (Input.GetKeyDown(KeyCode.R))
+            // {
+            //     CreatureState = ECreatureState.Idle;
+            // }
 
-            if (Input.GetKeyDown(KeyCode.T))
-            {
-                CreatureState = ECreatureState.Dead;
-            }
+            // if (Input.GetKeyDown(KeyCode.T))
+            // {
+            //     CreatureState = ECreatureState.Dead;
+            // }
 
             float moveDistPerFrame = Speed * Time.deltaTime;
             transform.TranslateEx(MoveDir * moveDistPerFrame);
@@ -71,6 +71,7 @@ namespace STELLAREST_F1
         protected override void SetCreatureFromData(int dataID)
         {
             HeroData = Managers.Data.HeroDataDict[dataID];
+            gameObject.name += $"_{HeroData.DescriptionTextID}";
             /*
                 TODO : Set Hero Stat..
             */

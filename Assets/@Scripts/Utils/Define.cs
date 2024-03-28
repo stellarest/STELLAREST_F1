@@ -81,7 +81,6 @@ namespace STELLAREST_F1
             None,
             Idle,
             Move,
-            Attack,
             Skill,
             Dead
         }
@@ -216,6 +215,7 @@ namespace STELLAREST_F1
                 public static readonly string HeroSpriteData = "HeroSpriteData";
                 public static readonly string MonsterData = "MonsterData";
                 public static readonly string BirdSpriteData = "BirdSpriteData";
+                public static readonly string QuadrupedsSpriteData = "QuadrupedsSpriteData";
 
                 public static readonly string Managers = "@Managers";
                 public static readonly string UI_Root = "@UI_Root";
@@ -327,7 +327,11 @@ namespace STELLAREST_F1
                 public static readonly string MBody_Head = "Head";
                 public static readonly string MBody_Wing = "Wing";
                 public static readonly string MBody_LegL = "LegL";
+                public static readonly string MBody_LegFrontL = "LegFrontL";
+                public static readonly string MBody_LegBackL = "LegBackL";
                 public static readonly string MBody_LegR = "LegR";
+                public static readonly string MBody_LegFrontR = "LegFrontR";
+                public static readonly string MBody_LegBackR = "LegBackR";
                 public static readonly string MBody_Tail = "Tail";
 
                 // Animation Params
@@ -353,6 +357,9 @@ namespace STELLAREST_F1
 
                 // ID - Monster
                 public static readonly int DataID_Monster_Chicken = 201000;
+                public static readonly int DataID_Monster_Turkey = 201001;
+                public static readonly int DataID_Monster_Bunny = 201010;
+                public static readonly int DataID_Monster_Pug = 201011;
 
                 public static readonly float CamOrthoSize = 10F; 
                 public static readonly float JoystickFocusMinDist = -0.18F;

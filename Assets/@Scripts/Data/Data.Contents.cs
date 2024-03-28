@@ -231,4 +231,50 @@ namespace STELLAREST_F1.Data
             return dict;
         }
     }
+
+    [Serializable]
+    public class QuadrupedsSpriteData : MonsterSpriteData
+    {
+        public string Body;
+        public Vector3 BodyPosition;
+        public int BodySortingOrder;
+
+        public string[] Heads;
+        public Vector3 HeadPosition;
+        public int HeadSortingOrder;
+
+        public string LegFrontL;
+        public Vector3 LegFrontLPosition;
+        public int LegFrontLSortingOrder;
+
+        public string LegFrontR;
+        public Vector3 LegFrontRPosition;
+        public int LegFrontRSortingOrder;
+
+        public string LegBackL;
+        public Vector3 LegBackLPosition;
+        public int LegBackLSortingOrder;
+
+        public string LegBackR;
+        public Vector3 LegBackRPosition;
+        public int LegBackRSortingOrder;
+
+        public string Tail;
+        public Vector3 TailPosition;
+        public int TailSortingOrder;
+    }
+
+    public class QuadrupedsSpriteDataLoader : ILoader<int, QuadrupedsSpriteData>
+    {
+        public List<QuadrupedsSpriteData> QuadrupedsSprites = new List<QuadrupedsSpriteData>();
+
+        public Dictionary<int, QuadrupedsSpriteData> MakeDict()
+        {
+            Dictionary<int, QuadrupedsSpriteData> dict = new Dictionary<int, QuadrupedsSpriteData>();
+            foreach (QuadrupedsSpriteData data in QuadrupedsSprites)
+                dict.Add(data.DataID, data);
+
+            return dict;
+        }
+    }
 }

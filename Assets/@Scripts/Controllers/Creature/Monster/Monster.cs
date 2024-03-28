@@ -36,6 +36,24 @@ namespace STELLAREST_F1
             RefreshCreature();
         }
 
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                MonsterBody.SetEmoji(EMonsterEmoji.Default);
+            }
+
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                MonsterBody.SetEmoji(EMonsterEmoji.Angry);
+            }
+
+            if (Input.GetKeyDown(KeyCode.T))
+            {
+                MonsterBody.SetEmoji(EMonsterEmoji.Dead);
+            }
+        }
+
         protected override void RefreshCreature()
         {
             base.RefreshCreature();
@@ -45,6 +63,7 @@ namespace STELLAREST_F1
         protected override void SetCreatureFromData(int dataID)
         {
             MonsterData = Managers.Data.MonsterDataDict[dataID];
+            gameObject.name += $"_{MonsterData.DescriptionTextID}";
             /*
                 TODO : Set Monster Stat..
             */

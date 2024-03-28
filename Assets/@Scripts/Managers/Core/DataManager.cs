@@ -17,6 +17,8 @@ namespace STELLAREST_F1
         public Dictionary<int, Data.HeroSpriteData> HeroSpriteDataDict { get; private set; } = new Dictionary<int, Data.HeroSpriteData>();
         public Dictionary<int, Data.MonsterData> MonsterDataDict { get; private set; } = new Dictionary<int, Data.MonsterData>();
         public Dictionary<int, Data.BirdSpriteData> BirdSpriteDataDict { get; private set; } = new Dictionary<int, Data.BirdSpriteData>();
+        public Dictionary<int, Data.QuadrupedsSpriteData> QuadrupedsSpriteDataDict { get; private set; } = new Dictionary<int, Data.QuadrupedsSpriteData>();
+
 
         public void Init()
         {
@@ -24,6 +26,7 @@ namespace STELLAREST_F1
             HeroSpriteDataDict = LoadJson<Data.HeroSpriteDataLoader, int, Data.HeroSpriteData>(ReadOnly.String.HeroSpriteData).MakeDict();
             MonsterDataDict = LoadJson<Data.MonsterDataLoader, int, Data.MonsterData>(ReadOnly.String.MonsterData).MakeDict();
             BirdSpriteDataDict = LoadJson<Data.BirdSpriteDataLoader, int, Data.BirdSpriteData>(ReadOnly.String.BirdSpriteData).MakeDict();
+            QuadrupedsSpriteDataDict = LoadJson<Data.QuadrupedsSpriteDataLoader, int, Data.QuadrupedsSpriteData>(ReadOnly.String.QuadrupedsSpriteData).MakeDict();
         }
 
         private T LoadJson<T, Key, Value>(string path) where T : ILoader<Key, Value>

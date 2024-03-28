@@ -62,8 +62,8 @@ namespace STELLAREST_F1
                         Monster monster = go.GetComponent<Monster>();
                         monster.SetInfo(dataID);
                         Monsters.Add(monster);
+                        return monster as T;
                     }
-                    break;
             }
 
             return null;
