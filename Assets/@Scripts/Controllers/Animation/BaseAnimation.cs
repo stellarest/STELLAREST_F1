@@ -34,6 +34,9 @@ namespace STELLAREST_F1
         public virtual void UpdateAnimation() { }
         protected virtual void Idle() { }
         protected virtual void Move() { }
+        protected virtual void Attack() { }
+        protected virtual void SkillA() { }
+        protected virtual void SkillB() { }
         protected virtual void Dead() { }
         public void Flip(LookAtDirection lookAtDir)
         {

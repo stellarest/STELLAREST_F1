@@ -36,23 +36,23 @@ namespace STELLAREST_F1
             RefreshCreature();
         }
 
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                MonsterBody.SetEmoji(EMonsterEmoji.Default);
-            }
+        // private void Update()
+        // {
+        //     if (Input.GetKeyDown(KeyCode.E))
+        //     {
+        //         MonsterBody.SetEmoji(EMonsterEmoji.Default);
+        //     }
 
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                MonsterBody.SetEmoji(EMonsterEmoji.Angry);
-            }
+        //     if (Input.GetKeyDown(KeyCode.R))
+        //     {
+        //         MonsterBody.SetEmoji(EMonsterEmoji.Angry);
+        //     }
 
-            if (Input.GetKeyDown(KeyCode.T))
-            {
-                MonsterBody.SetEmoji(EMonsterEmoji.Dead);
-            }
-        }
+        //     if (Input.GetKeyDown(KeyCode.T))
+        //     {
+        //         MonsterBody.SetEmoji(EMonsterEmoji.Dead);
+        //     }
+        // }
 
         protected override void RefreshCreature()
         {

@@ -54,15 +54,8 @@ namespace STELLAREST_F1
 
         private void Update()
         {
-            // if (Input.GetKeyDown(KeyCode.R))
-            // {
-            //     CreatureState = ECreatureState.Idle;
-            // }
-
-            // if (Input.GetKeyDown(KeyCode.T))
-            // {
-            //     CreatureState = ECreatureState.Dead;
-            // }
+            if (Input.GetKeyDown(KeyCode.Q))
+                CreatureState = ECreatureState.Skill;
 
             float moveDistPerFrame = Speed * Time.deltaTime;
             transform.TranslateEx(MoveDir * moveDistPerFrame);

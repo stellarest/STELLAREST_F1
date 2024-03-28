@@ -57,14 +57,14 @@ namespace STELLAREST_F1.Data
         public string Hair;
         public string HairColor;
 
-        public string Eyebrows;
-        public string EyebrowsColor;
+        public string[] Eyebrows;
+        public string[] EyebrowsColors;
 
-        public string Eyes;
-        public string EyesColor;
+        public string[] Eyes;
+        public string[] EyesColors;
 
-        public string Mouth;
-        public string MouthColor;
+        public string[] Mouth;
+        public string[] MouthColors;
 
         public string Beard;
         public string BeardColor;

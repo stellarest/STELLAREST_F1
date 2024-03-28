@@ -95,6 +95,7 @@ namespace STELLAREST_F1
         {
             None = -1,
             Default,
+            Combat,
             Sick,
             Dead,
             Max = Dead + 1
@@ -251,7 +252,7 @@ namespace STELLAREST_F1
                 public static readonly string HBody_HumanType_Leg = "Human_Leg.sprite";
 
                 // Hero Face - Sick
-                public static readonly string HFace_Eyebrows_Sick = "HeroEyebrows_Sick.sprite";
+                public static readonly string HFace_Eyebrows_Sick = "Hero_Eyebrows_Sick.sprite";
                 public static readonly string HFace_Eyes_Sick = "HeroEyes_Sick.sprite";
                 public static readonly string HFace_Mouth_Sick = "HeroMouth_Sick.sprite";
 
@@ -337,6 +338,9 @@ namespace STELLAREST_F1
                 // Animation Params
                 public static readonly string AnimParam_Idle = "Idle";
                 public static readonly string AnimParam_Move = "Move";
+                public static readonly string AnimParam_Attack = "Attack";
+                public static readonly string AnimParam_Skill_A = "Skill_A";
+                public static readonly string AnimParam_Skill_B = "Skill_B";
                 public static readonly string AnimParam_Dead = "Dead";
             }
 

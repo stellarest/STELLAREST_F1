@@ -9,6 +9,9 @@ namespace STELLAREST_F1
     {
         private readonly int Play_Idle = Animator.StringToHash(ReadOnly.String.AnimParam_Idle);
         private readonly int Play_Move = Animator.StringToHash(ReadOnly.String.AnimParam_Move);
+        private readonly int Play_Attack = Animator.StringToHash(ReadOnly.String.AnimParam_Attack);
+        private readonly int Play_Skill_A = Animator.StringToHash(ReadOnly.String.AnimParam_Skill_A);
+        private readonly int Play_Skill_B = Animator.StringToHash(ReadOnly.String.AnimParam_Skill_B);
         private readonly int Play_Dead = Animator.StringToHash(ReadOnly.String.AnimParam_Dead);
 
         public override bool Init()
@@ -24,6 +27,15 @@ namespace STELLAREST_F1
 
         protected override void Move()
             => Animator.Play(Play_Move);
+
+        protected override void Attack()
+            => Animator.Play(Play_Attack);
+
+        protected override void SkillA()
+            => Animator.Play(Play_Skill_A);
+
+        protected override void SkillB()
+            => Animator.Play(Play_Skill_B);
 
         protected override void Dead()
             => Animator.Play(Play_Dead);

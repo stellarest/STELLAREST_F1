@@ -154,27 +154,27 @@ namespace STELLAREST_F1
                         heroBody.GetComponent<SpriteRenderer>(EHeroHead.Hair).color = color;
                 }
 
-                sprite = Managers.Resource.Load<Sprite>(head.Eyebrows);
+                sprite = Managers.Resource.Load<Sprite>(head.Eyebrows[(int)EHeroEmoji.Default]);
                 if (sprite != null)
                 {
                     heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).sprite = sprite;
-                    if (ColorUtility.TryParseHtmlString(head.EyebrowsColor, out color))
+                    if (ColorUtility.TryParseHtmlString(head.EyebrowsColors[(int)EHeroEmoji.Default], out color))
                         heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).color = color;
                 }
 
-                sprite = Managers.Resource.Load<Sprite>(head.Eyes);
+                sprite = Managers.Resource.Load<Sprite>(head.Eyes[(int)EHeroEmoji.Default]);
                 if (sprite != null)
                 {
                     heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).sprite = sprite;
-                    if (ColorUtility.TryParseHtmlString(head.EyesColor, out color))
+                    if (ColorUtility.TryParseHtmlString(head.EyesColors[(int)EHeroEmoji.Default], out color))
                         heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).color = color;
                 }
 
-                sprite = Managers.Resource.Load<Sprite>(head.Mouth);
+                sprite = Managers.Resource.Load<Sprite>(head.Mouth[(int)EHeroEmoji.Default]);
                 if (sprite != null)
                 {
                     heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).sprite = sprite;
-                    if (ColorUtility.TryParseHtmlString(head.MouthColor, out color))
+                    if (ColorUtility.TryParseHtmlString(head.MouthColors[(int)EHeroEmoji.Default], out color))
                         heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).color = color;
                 }
 
