@@ -74,6 +74,18 @@ namespace STELLAREST_F1
         public static T ParseEnum<T>(string value)
             => (T)Enum.Parse(typeof(T), value, true);
 
+        public static Vector3 MakeSpawnPosition(BaseObject fromTarget, float fromMinDistance = 10f, float fromMaxDistance = 20f)
+        {
+            float angle = UnityEngine.Random.Range(0, 360) * Mathf.Deg2Rad;
+            float distance = UnityEngine.Random.Range(fromMinDistance, fromMaxDistance);
+
+            float xDistance = UnityEngine.Mathf.Cos(angle) * distance;
+            float yDistance = UnityEngine.Mathf.Sin(angle) * distance;
+
+            Vector3 targetPos = fromTarget.transform.position;
+            return new Vector3(xDistance, yDistance, 0) + targetPos;
+        }
+
 #if UNITY_EDITOR
         [Conditional("UNITY_EDITOR")]
         public static void ClearLog()

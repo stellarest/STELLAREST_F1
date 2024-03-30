@@ -14,6 +14,24 @@ namespace STELLAREST_F1
         private readonly int Play_Skill_B = Animator.StringToHash(ReadOnly.String.AnimParam_Skill_B);
         private readonly int Play_Dead = Animator.StringToHash(ReadOnly.String.AnimParam_Dead);
 
+        public int GetHash(ECreatureState state)
+        {
+            switch (state)
+            {
+                case ECreatureState.Idle:
+                    return Play_Idle;
+
+                case ECreatureState.Move:
+                    return Play_Move;
+
+                case ECreatureState.Attack:
+                    return Play_Attack; // TEMP
+
+                default:
+                    return -1;
+            }
+        }
+
         public override bool Init()
         {
             if (base.Init() == false)

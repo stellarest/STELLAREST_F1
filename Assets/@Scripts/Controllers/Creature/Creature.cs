@@ -41,7 +41,8 @@ namespace STELLAREST_F1
                 CreatureAnim = BaseAnim as CreatureAnimation;
         }
 
-        protected virtual void SetCreatureFromData(int dataID)  { }
+        protected virtual void SetCreatureFromData(int dataID) {  }
+
         protected virtual void RefreshCreature()
             => CreatureState = ECreatureState.Idle;
     }

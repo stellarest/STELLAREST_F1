@@ -15,7 +15,8 @@ namespace STELLAREST_F1
         public CircleCollider2D Collider { get; private set; } = null;
         public Rigidbody2D RigidBody { get; private set; } = null;
         public float ColliderRadius { get => Collider != null ? Collider.radius : 0.0f; }
-        public float ColliderRadius2 { get => Collider?.radius ?? 0.0f; }
+        //public float ColliderRadius2 { get => Collider?.radius ?? 0.0f; }
+        public Vector3 CenterPosition { get => transform.position + Vector3.up * ColliderRadius; }
 
         [SerializeField] private LookAtDirection _lookAtDir = LookAtDirection.Right;
         public LookAtDirection LookAtDir

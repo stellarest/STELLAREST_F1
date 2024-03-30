@@ -24,6 +24,11 @@ namespace STELLAREST_F1
             public HeroFace(HeroBody heroBody)
             {
                 _heroBody = heroBody;
+                // Cache SPRs
+                _eyebrowsSPR = _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows);
+                _eyesSPR = _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes);
+                _mouthSPR = heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth);
+
                 Data.HeroSpriteData heroSpriteData = Managers.Data.HeroSpriteDataDict[heroBody.TemplateID];
 
                 // Eyebrows
@@ -61,6 +66,10 @@ namespace STELLAREST_F1
             }
 
             private HeroBody _heroBody = null;
+            // Cache
+            private SpriteRenderer _eyebrowsSPR = null;
+            private SpriteRenderer _eyesSPR = null;
+            private SpriteRenderer _mouthSPR = null;
 
             private Sprite[] _eyebrowsSprites = null;
             private Color[] _eyebrowsColors = null;
@@ -77,65 +86,105 @@ namespace STELLAREST_F1
                 {
                     case EHeroEmoji.Default:
                         {
+                            _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Default];
+                            _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Default];
+
+                            _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Default];
+                            _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Default];
+
+                            _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Default];
+                            _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Default];
+
+                            // Prev
                             // Eyebrows - Default
-                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).sprite = _eyebrowsSprites[(int)EHeroEmoji.Default];
-                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).color = _eyebrowsColors[(int)EHeroEmoji.Default];
+                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).sprite = _eyebrowsSprites[(int)EHeroEmoji.Default];
+                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).color = _eyebrowsColors[(int)EHeroEmoji.Default];
 
-                            // Eyes - Default
-                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).sprite = _eyesSprites[(int)EHeroEmoji.Default];
-                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).color = _eyesColors[(int)EHeroEmoji.Default];
+                            // // Eyes - Default
+                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).sprite = _eyesSprites[(int)EHeroEmoji.Default];
+                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).color = _eyesColors[(int)EHeroEmoji.Default];
 
-                            // Mouth - Default
-                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).sprite = _mouthSprites[(int)EHeroEmoji.Default];
-                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).color = _mouthColors[(int)EHeroEmoji.Default];
+                            // // Mouth - Default
+                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).sprite = _mouthSprites[(int)EHeroEmoji.Default];
+                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).color = _mouthColors[(int)EHeroEmoji.Default];
                         }
                         break;
 
                     case EHeroEmoji.Combat:
                         {
+                            _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Combat];
+                            _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Combat];
+
+                            _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Combat];
+                            _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Combat];
+
+                            _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Combat];
+                            _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Combat];
+
+                            // Prev
                             // Eyebrows - Combat
-                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).sprite = _eyebrowsSprites[(int)EHeroEmoji.Combat];
-                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).color = _eyebrowsColors[(int)EHeroEmoji.Combat];
+                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).sprite = _eyebrowsSprites[(int)EHeroEmoji.Combat];
+                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).color = _eyebrowsColors[(int)EHeroEmoji.Combat];
 
-                            // Eyes - Combat
-                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).sprite = _eyesSprites[(int)EHeroEmoji.Combat];
-                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).color = _eyesColors[(int)EHeroEmoji.Combat];
+                            // // Eyes - Combat
+                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).sprite = _eyesSprites[(int)EHeroEmoji.Combat];
+                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).color = _eyesColors[(int)EHeroEmoji.Combat];
 
-                            // Mouth - Combat
-                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).sprite = _mouthSprites[(int)EHeroEmoji.Combat];
-                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).color = _mouthColors[(int)EHeroEmoji.Combat];
+                            // // Mouth - Combat
+                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).sprite = _mouthSprites[(int)EHeroEmoji.Combat];
+                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).color = _mouthColors[(int)EHeroEmoji.Combat];
                         }
                         break;
 
                     case EHeroEmoji.Sick:
                         {
-                            // Eyebrows - Sick
-                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).sprite = _eyebrowsSprites[(int)EHeroEmoji.Sick];
-                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).color = _eyebrowsColors[(int)EHeroEmoji.Sick];
+                            _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Sick];
+                            _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Sick];
 
-                            // Eyes - Sick
-                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).sprite = _eyesSprites[(int)EHeroEmoji.Sick];
-                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).color = _eyesColors[(int)EHeroEmoji.Sick];
+                            _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Sick];
+                            _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Sick];
 
-                            // Mouth - Sick
-                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).sprite = _mouthSprites[(int)EHeroEmoji.Sick];
-                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).color = _mouthColors[(int)EHeroEmoji.Sick];
+                            _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Sick];
+                            _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Sick];
+
+                            // Prev
+                            // // Eyebrows - Sick
+                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).sprite = _eyebrowsSprites[(int)EHeroEmoji.Sick];
+                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).color = _eyebrowsColors[(int)EHeroEmoji.Sick];
+
+                            // // Eyes - Sick
+                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).sprite = _eyesSprites[(int)EHeroEmoji.Sick];
+                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).color = _eyesColors[(int)EHeroEmoji.Sick];
+
+                            // // Mouth - Sick
+                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).sprite = _mouthSprites[(int)EHeroEmoji.Sick];
+                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).color = _mouthColors[(int)EHeroEmoji.Sick];
                         }
                         break;
 
                     case EHeroEmoji.Dead:
                         {
-                            // Eyebrows - Dead
-                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).sprite = _eyebrowsSprites[(int)EHeroEmoji.Dead];
-                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).color = _eyebrowsColors[(int)EHeroEmoji.Dead];
+                            _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Dead];
+                            _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Dead];
 
-                            // Eyes - Dead
-                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).sprite = _eyesSprites[(int)EHeroEmoji.Dead];
-                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).color = _eyesColors[(int)EHeroEmoji.Dead];
+                            _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Dead];
+                            _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Dead];
 
-                            // Mouth - Dead
-                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).sprite = _mouthSprites[(int)EHeroEmoji.Dead];
-                            _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).color = _mouthColors[(int)EHeroEmoji.Dead];
+                            _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Dead];
+                            _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Dead];
+
+                            // Prev
+                            // // Eyebrows - Dead
+                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).sprite = _eyebrowsSprites[(int)EHeroEmoji.Dead];
+                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).color = _eyebrowsColors[(int)EHeroEmoji.Dead];
+
+                            // // Eyes - Dead
+                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).sprite = _eyesSprites[(int)EHeroEmoji.Dead];
+                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).color = _eyesColors[(int)EHeroEmoji.Dead];
+
+                            // // Mouth - Dead
+                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).sprite = _mouthSprites[(int)EHeroEmoji.Dead];
+                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).color = _mouthColors[(int)EHeroEmoji.Dead];
                         }
                         break;
                 }

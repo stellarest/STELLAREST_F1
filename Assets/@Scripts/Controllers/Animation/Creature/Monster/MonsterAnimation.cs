@@ -7,6 +7,8 @@ namespace STELLAREST_F1
 {
     public class MonsterAnimation : CreatureAnimation
     {
+        private Monster _owner = null;
+
         public override bool Init()
         {
             if (base.Init() == false)
@@ -15,7 +17,7 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public void SetInfo(int dataID, Monster owner)
+        public override void SetInfo(int dataID, BaseObject owner)
         {
             base.SetInfo(dataID, owner);
             string animatorTextID = Managers.Data.MonsterDataDict[dataID].AnimatorLabel;
@@ -25,6 +27,8 @@ namespace STELLAREST_F1
                 RuntimeAnimatorController cloned = UnityEngine.Object.Instantiate(animController);
                 this.Animator.runtimeAnimatorController = cloned;
             }
+
+            _owner = owner as  Monster;
         }
 
         public override void UpdateAnimation()

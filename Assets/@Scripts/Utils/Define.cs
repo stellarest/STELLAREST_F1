@@ -81,6 +81,7 @@ namespace STELLAREST_F1
             None,
             Idle,
             Move,
+            Attack,
             Skill,
             Dead
         }
@@ -362,10 +363,10 @@ namespace STELLAREST_F1
                 // ID - Monster
                 public static readonly int DataID_Monster_Chicken = 201000;
                 public static readonly int DataID_Monster_Turkey = 201001;
-                public static readonly int DataID_Monster_Bunny = 201010;
-                public static readonly int DataID_Monster_Pug = 201011;
+                public static readonly int DataID_Monster_Bunny = 201020;
+                public static readonly int DataID_Monster_Pug = 201021;
 
-                public static readonly float CamOrthoSize = 10F; 
+                public static readonly float CamOrthoSize = 12F; 
                 public static readonly float JoystickFocusMinDist = -0.18F;
                 public static readonly float JoystickFocusMaxDist = 0.18F;
 

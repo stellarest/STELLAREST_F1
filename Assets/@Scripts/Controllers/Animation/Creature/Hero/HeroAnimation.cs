@@ -7,6 +7,8 @@ namespace STELLAREST_F1
 {
     public class HeroAnimation : CreatureAnimation
     {
+        private Hero _owner = null;
+
         public override bool Init()
         {
             if (base.Init() == false)
@@ -25,18 +27,22 @@ namespace STELLAREST_F1
                 RuntimeAnimatorController cloned = UnityEngine.Object.Instantiate(animController);
                 this.Animator.runtimeAnimatorController = cloned;
             }
+
+            _owner = owner as Hero;
         }
 
         public override void UpdateAnimation()
         {
-            if (GetOwner<Hero>() == null)
+            if (_owner == null)
                 return;
 
-            switch (GetOwner<Hero>().CreatureState)
+            switch (_owner.CreatureState)
             {
                 case ECreatureState.Idle:
                     {
                         //GetOwner<Hero>().HeroBody.SetEmoji(EHeroEmoji.Default);
+                        Debug.Log("PLAY IDLE !!");
+                        _owner.HeroBody.SetEmoji(EHeroEmoji.Default);
                         Idle();
                     }
                     break;
@@ -48,16 +54,17 @@ namespace STELLAREST_F1
                     }
                     break;
 
-                case ECreatureState.Skill:
+                case ECreatureState.Attack:
                     {
-                        //GetOwner<Hero>().HeroBody.SetEmoji(EHeroEmoji.Default);
+                        //GetOwner<Hero>().HeroBody.SetEmoji(EHeroEmoji.Combat);
+                        _owner.HeroBody.SetEmoji(EHeroEmoji.Combat);
                         Attack(); // ***** TEMP *****
                     }
                     break;
 
                 case ECreatureState.Dead:
                     {
-                        GetOwner<Hero>().HeroBody.SetEmoji(EHeroEmoji.Dead);
+                        _owner.HeroBody.SetEmoji(EHeroEmoji.Dead);
                         Dead();
                     }
                     break;

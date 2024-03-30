@@ -13,6 +13,7 @@ namespace STELLAREST_F1.Data
         public string AnimatorLabel;
         public string DescriptionTextID;
         public string Rarity;
+        public float ColliderRadius;
         public float MaxHp;
         public float Atk;
         public float AtkRange;

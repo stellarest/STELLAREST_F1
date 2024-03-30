@@ -55,7 +55,7 @@ namespace STELLAREST_F1
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Q))
-                CreatureState = ECreatureState.Skill;
+                CreatureState = ECreatureState.Attack;
 
             float moveDistPerFrame = Speed * Time.deltaTime;
             transform.TranslateEx(MoveDir * moveDistPerFrame);
@@ -65,6 +65,9 @@ namespace STELLAREST_F1
         {
             HeroData = Managers.Data.HeroDataDict[dataID];
             gameObject.name += $"_{HeroData.DescriptionTextID}";
+            Collider.radius = HeroData.ColliderRadius;
+            Speed = HeroData.MovementSpeed;
+
             /*
                 TODO : Set Hero Stat..
             */

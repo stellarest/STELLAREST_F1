@@ -30,7 +30,8 @@ namespace STELLAREST_F1
 
             // TEMP
             //Vector3 toTargetPos = new Vector3(_target.transform.position.x,  _target.transform.position.y + 1.3f, -10f);
-            Vector3 toTargetPos = new Vector3(_target.transform.position.x,  _target.transform.position.y, -10f);
+            //Vector3 toTargetPos = new Vector3(_target.transform.position.x,  _target.transform.position.y, -10f);
+            Vector3 toTargetPos = new Vector3(_target.CenterPosition.x,  _target.CenterPosition.y, -10f);
             transform.position = toTargetPos;
         }
     }
