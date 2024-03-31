@@ -9,6 +9,7 @@ public class T_E_S_T : MonoBehaviour
 {
     private float _movementSpeed = 3.0f;
     private Vector2 _moveDir = Vector3.zero;
+    private int TestProperty { get; set; }
 
     private IEnumerator Start()
     {

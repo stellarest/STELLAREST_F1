@@ -14,6 +14,8 @@ namespace STELLAREST_F1
             if (base.Init() == false)
                 return false;
 
+            // 몬스터 sprite는 플레이어와 반대 방향으로 구성되어 있음
+            _originScaleX = transform.localScale.x * -1;
             return true;
         }
 
@@ -28,40 +30,43 @@ namespace STELLAREST_F1
                 this.Animator.runtimeAnimatorController = cloned;
             }
 
-            _owner = owner as  Monster;
+            _owner = owner as Monster;
         }
 
         public override void UpdateAnimation()
         {
-            if (GetOwner<Monster>() == null)
+            if (_owner == null)
                 return;
 
-            switch (GetOwner<Monster>().CreatureState)
+            switch (_owner.CreatureState)
             {
                 case ECreatureState.Idle:
                     {
-                        GetOwner<Monster>().MonsterBody.SetEmoji(EMonsterEmoji.Default);
+                        _owner.MonsterBody.SetEmoji(EMonsterEmoji.Default);
                         Idle();
                     }
                     break;
 
                 case ECreatureState.Move:
                     {
-                        GetOwner<Monster>().MonsterBody.SetEmoji(EMonsterEmoji.Default);
+                        _owner.MonsterBody.SetEmoji(EMonsterEmoji.Default);
                         Move();
+                    }
+                    break;
+
+                case ECreatureState.Attack:
+                    {
+                        _owner.MonsterBody.SetEmoji(EMonsterEmoji.Angry);
+                        Attack();
                     }
                     break;
 
                 case ECreatureState.Skill:
-                    {
-                        GetOwner<Monster>().MonsterBody.SetEmoji(EMonsterEmoji.Angry);
-                        Move();
-                    }
                     break;
 
                 case ECreatureState.Dead:
                     {
-                        GetOwner<Monster>().MonsterBody.SetEmoji(EMonsterEmoji.Dead);
+                        _owner.MonsterBody.SetEmoji(EMonsterEmoji.Dead);
                         Dead();
                     }
                     break;

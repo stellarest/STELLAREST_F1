@@ -14,7 +14,7 @@ namespace STELLAREST_F1
         public T GetOwner<T>() where T : BaseObject => Owner as T;
         public Animator Animator { get; private set; } = null;
         public AnimationCallback AnimCallback { get; private set; } = null;
-        private float _originScaleX = 0f;
+        protected float _originScaleX = 0f;
 
         public override bool Init()
         {
@@ -23,7 +23,7 @@ namespace STELLAREST_F1
 
             Animator = GetComponent<Animator>();
             AnimCallback = GetComponent<AnimationCallback>();
-            _originScaleX = transform.localScale.x;
+            //_originScaleX = transform.localScale.x;
 
             return true;
         }

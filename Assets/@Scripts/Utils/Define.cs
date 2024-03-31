@@ -83,6 +83,7 @@ namespace STELLAREST_F1
             Move,
             Attack,
             Skill,
+            OnDamaged,
             Dead
         }
 

@@ -12,7 +12,6 @@ namespace STELLAREST_F1
         public Data.HeroData HeroData { get; private set; } = null;
         public HeroBody HeroBody { get; private set; } = null;
         public HeroAnimation HeroAnim { get; private set; } = null;
-        
         //private Vector2 _moveDir = Vector2.zero;
 
         public override bool Init()
@@ -54,9 +53,6 @@ namespace STELLAREST_F1
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Q))
-                CreatureState = ECreatureState.Attack;
-
             float moveDistPerFrame = Speed * Time.deltaTime;
             transform.TranslateEx(MoveDir * moveDistPerFrame);
         }

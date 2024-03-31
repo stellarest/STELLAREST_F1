@@ -443,6 +443,8 @@ namespace STELLAREST_F1
                     SetBodyType(dataID, Managers.Data.QuadrupedsSpriteDataDict[dataID], monsterBody);
                     break;
             }
+
+            
         }
 
         private void SetBodyType(int dataID, Data.BirdSpriteData birdSpriteData, MonsterBody monsterBody)

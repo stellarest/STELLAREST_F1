@@ -14,6 +14,7 @@ namespace STELLAREST_F1
             if (base.Init() == false)
                 return false;
 
+            _originScaleX = transform.localScale.x;
             return true;
         }
 
@@ -41,7 +42,6 @@ namespace STELLAREST_F1
                 case ECreatureState.Idle:
                     {
                         //GetOwner<Hero>().HeroBody.SetEmoji(EHeroEmoji.Default);
-                        Debug.Log("PLAY IDLE !!");
                         _owner.HeroBody.SetEmoji(EHeroEmoji.Default);
                         Idle();
                     }

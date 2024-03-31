@@ -29,8 +29,10 @@ namespace STELLAREST_F1
             CameraController cam = Camera.main.GetComponent<CameraController>();
             cam.Target = hero;
 
+            Vector3 spawnPos = Util.MakeSpawnPosition(hero, 15f, 20f);
+
             {
-                Monster chicken = Managers.Object.Spawn<Monster>(Vector3.one, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Chicken);
+                Monster chicken = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Chicken);
                 // Vector3 spawnPos = Util.MakeSpawnPosition(chicken, 3f, 5f);
                 // Monster turkey = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Turkey);
 

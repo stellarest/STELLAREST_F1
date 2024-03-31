@@ -66,8 +66,8 @@ namespace STELLAREST_F1
         public void UpdateAnimation()
             => BaseAnim.UpdateAnimation();
 
-        public void Flip(LookAtDirection lookAtDir)
-            => BaseAnim.Flip(lookAtDir);
+        // public void Flip(LookAtDirection lookAtDir)
+        //     => BaseAnim.Flip(lookAtDir);
         #endregion
     }
 }
