@@ -14,7 +14,6 @@ namespace STELLAREST_F1
             if (base.Init() == false)
                 return false;
 
-            _originScaleX = transform.localScale.x;
             return true;
         }
 
@@ -69,6 +68,16 @@ namespace STELLAREST_F1
                     }
                     break;
             }
+        }
+
+        // Hero LookAtDir Default Sprite : Right
+        public override void Flip(ELookAtDirection lookAtDir)
+        {
+            Vector3 localScale = _owner.transform.localScale;
+            int sign = (lookAtDir == ELookAtDirection.Left) ?
+                                             -1 : (localScale.x < 0) ? -1 : 1;
+            localScale.x = localScale.x * sign;
+            _owner.transform.localScale = localScale;
         }
     }
 }

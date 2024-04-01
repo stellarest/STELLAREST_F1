@@ -14,7 +14,7 @@ namespace STELLAREST_F1
             Epic
         }
 
-        public enum EHeroType
+        public enum EHeroBodyType
         {
             Human,
             Skeleton1,
@@ -87,7 +87,7 @@ namespace STELLAREST_F1
             Dead
         }
 
-        public enum LookAtDirection
+        public enum ELookAtDirection
         {
             Left = -1,
             Right = 1,

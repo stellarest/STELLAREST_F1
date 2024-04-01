@@ -14,7 +14,6 @@ namespace STELLAREST_F1
         public T GetOwner<T>() where T : BaseObject => Owner as T;
         public Animator Animator { get; private set; } = null;
         public AnimationCallback AnimCallback { get; private set; } = null;
-        protected float _originScaleX = 0f;
 
         public override bool Init()
         {
@@ -38,11 +37,11 @@ namespace STELLAREST_F1
         protected virtual void SkillA() { }
         protected virtual void SkillB() { }
         protected virtual void Dead() { }
-        public void Flip(LookAtDirection lookAtDir)
+        public virtual void Flip(ELookAtDirection lookAtDir)
         {
-            Vector3 localScale = transform.localScale;
-            localScale.x = _originScaleX * (int)lookAtDir;
-            transform.localScale = localScale;
+            // Vector3 localScale = transform.localScale;
+            // localScale.x = _originScaleX * (int)lookAtDir;
+            // transform.localScale = localScale;
         }
     }
 }

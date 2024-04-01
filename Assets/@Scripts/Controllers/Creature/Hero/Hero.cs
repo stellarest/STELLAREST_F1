@@ -45,18 +45,6 @@ namespace STELLAREST_F1
             RefreshCreature();
         }
 
-        protected override void RefreshCreature()
-        {
-            base.RefreshCreature();
-            Speed = HeroData.MovementSpeed;
-        }
-
-        private void Update()
-        {
-            float moveDistPerFrame = Speed * Time.deltaTime;
-            transform.TranslateEx(MoveDir * moveDistPerFrame);
-        }
-
         protected override void SetCreatureFromData(int dataID)
         {
             HeroData = Managers.Data.HeroDataDict[dataID];
@@ -67,6 +55,19 @@ namespace STELLAREST_F1
             /*
                 TODO : Set Hero Stat..
             */
+        }
+
+        protected override void RefreshCreature()
+        {
+            base.RefreshCreature();
+            Speed = HeroData.MovementSpeed;
+            LookAtDir = ELookAtDirection.Right;
+        }
+
+        private void Update()
+        {
+            float moveDistPerFrame = Speed * Time.deltaTime;
+            transform.TranslateEx(MoveDir * moveDistPerFrame);
         }
 
         private void OnMoveDirChanged(Vector2 dir)

@@ -20,8 +20,7 @@ namespace STELLAREST_F1
                 switch (CreatureState)
                 {
                     case ECreatureState.Idle:
-                        //UpdateAITick = 0.5f;
-                        UpdateAITick = 0.25f;
+                        UpdateAITick = 0.5f;
                         break;
 
                     case ECreatureState.Move:
@@ -58,10 +57,6 @@ namespace STELLAREST_F1
                 MonsterAnim.SetInfo(dataID, this);
                 Managers.Sprite.SetInfo(dataID, target: this);
                 SetCreatureFromData(dataID);
-
-                // Vector3 localScale = transform.localScale;
-                // localScale.x *= -1;
-                // transform.localScale = localScale;
             }
 
             RefreshCreature();
@@ -73,6 +68,7 @@ namespace STELLAREST_F1
             StartCoroutine(CoUpdateAI());
             _initPos = transform.position;
             Speed = MonsterData.MovementSpeed;
+            LookAtDir = ELookAtDirection.Left;
         }
 
         protected override void SetCreatureFromData(int dataID)
@@ -83,21 +79,28 @@ namespace STELLAREST_F1
             Speed = MonsterData.MovementSpeed;
         }
 
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Q))
+                CreatureState = ECreatureState.Idle;
+
+            if (Input.GetKeyDown(KeyCode.W))
+                CreatureState = ECreatureState.Dead;
+        }
+
         // TEMP
         public float SearchDistance { get; private set; } = 8.0f;
-        public float AttackDistance { get; private set; } = 4.0f;
+        public float AttackDistance { get; private set; } = 2.0f;
         private Creature _target = null;
         private Vector3 _destPos = Vector3.zero;
         private Vector3 _initPos = Vector3.zero;
-
         protected override void UpdateIdle()
         {
             Debug.Log("Update Idle");
             // Patrol(0.5초마다 Idle 실행중인데, 10% 확률로 패트롤 이동을 한다고 하면)
             {
                 int patrolPercent = 20;
-                int rand = UnityEngine.Random.Range(0, 100);
-                if (rand <= patrolPercent)
+                if (UnityEngine.Random.Range(0, 100) <= patrolPercent)
                 {
                     _destPos = _initPos + new Vector3(Random.Range(-2, 2), Random.Range(-2, 2));
                     CreatureState = ECreatureState.Move;
@@ -185,11 +188,16 @@ namespace STELLAREST_F1
         // Attack이나 Skill은 실행 이후 Creature Move로 돌아가면 된다.
         protected override void UpdateAttack()
         {
+            Debug.Log("Update Attack");
             if (_coWait != null)
                 return;
 
-            Debug.Log("Update Attack");
             CreatureState = ECreatureState.Move;
+        }
+
+        protected override void UpdateDead()
+        {
+            Debug.Log("Update Dead");
         }
     }
 }

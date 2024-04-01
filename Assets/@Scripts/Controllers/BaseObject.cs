@@ -18,8 +18,8 @@ namespace STELLAREST_F1
         //public float ColliderRadius2 { get => Collider?.radius ?? 0.0f; }
         public Vector3 CenterPosition { get => transform.position + Vector3.up * ColliderRadius; }
 
-        [SerializeField] private LookAtDirection _lookAtDir = LookAtDirection.Right;
-        public LookAtDirection LookAtDir
+        [SerializeField] private ELookAtDirection _lookAtDir = ELookAtDirection.Right;
+        public ELookAtDirection LookAtDir
         {
             get => _lookAtDir;
             set
@@ -33,7 +33,6 @@ namespace STELLAREST_F1
         }
 
         public Vector3 MoveDir { get; protected set; } = Vector2.zero;
- 
         public override bool Init()
         {
             if (base.Init() == false)
@@ -57,9 +56,13 @@ namespace STELLAREST_F1
         {
             transform.Translate(dir);
             if (dir.x > 0)
-                LookAtDir = LookAtDirection.Right;
+            {
+                LookAtDir = ELookAtDirection.Right;
+            }
             else if (dir.x < 0)
-                LookAtDir = LookAtDirection.Left;
+            {
+                LookAtDir = ELookAtDirection.Left;
+            }
         }
 
         #region Animation

@@ -29,9 +29,9 @@ namespace STELLAREST_F1
         {
             Data.HeroData heroData = Managers.Data.HeroDataDict[dataID];
             Data.HeroSpriteData heroSpriteData = Managers.Data.HeroSpriteDataDict[dataID];
-            EHeroType type = Util.GetEnumFromString<EHeroType>(heroData.Type);
+            EHeroBodyType bodyType = Util.GetEnumFromString<EHeroBodyType>(heroData.BodyType);
 
-            SetBodyType(type, heroSpriteData, heroBody);
+            SetBodyType(bodyType, heroSpriteData, heroBody);
             SetBodySprites(heroSpriteData, heroBody, EHeroBodyParts.Head);
             SetBodySprites(heroSpriteData, heroBody, EHeroBodyParts.UpperBody);
             SetBodySprites(heroSpriteData, heroBody, EHeroBodyParts.LowerBody);
@@ -39,13 +39,13 @@ namespace STELLAREST_F1
             heroBody.SetFace();
         }
 
-        private void SetBodyType(EHeroType type, Data.HeroSpriteData heroData, HeroBody heroBody)
+        private void SetBodyType(EHeroBodyType bodyType, Data.HeroSpriteData heroData, HeroBody heroBody)
         {
             if (ColorUtility.TryParseHtmlString(heroData.SkinColor, out Color color) == false)
                 return;
 
             Sprite sprite = null;
-            if (type == EHeroType.Human)
+            if (bodyType == EHeroBodyType.Human)
             {
                 sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.HBody_HumanType_Head);
                 if (sprite != null)

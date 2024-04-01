@@ -14,8 +14,6 @@ namespace STELLAREST_F1
             if (base.Init() == false)
                 return false;
 
-            // 몬스터 sprite는 플레이어와 반대 방향으로 구성되어 있음
-            _originScaleX = transform.localScale.x * -1;
             return true;
         }
 
@@ -31,6 +29,8 @@ namespace STELLAREST_F1
             }
 
             _owner = owner as Monster;
+            // 몬스터 sprite는 플레이어와 반대 방향으로 구성되어 있음
+            //_originScaleX = _owner.transform.localScale.x * -1;
         }
 
         public override void UpdateAnimation()
@@ -71,6 +71,15 @@ namespace STELLAREST_F1
                     }
                     break;
             }
+        }
+
+        // Monster LookAtDir Default Sprite : Left
+        public override void Flip(ELookAtDirection lookAtDir)
+        {
+            Vector3 localScale = _owner.transform.localScale;
+            int sign = (lookAtDir == ELookAtDirection.Left) ? (localScale.x > 0 ? 1 : -1) : -1;
+            localScale.x = localScale.x * sign;
+            _owner.transform.localScale = localScale;
         }
     }
 }

@@ -23,7 +23,7 @@ namespace STELLAREST_F1.Data
     [Serializable]
     public class HeroData : BaseData
     {
-        public string Type;
+        public string BodyType;
     }
 
     public class HeroDataLoader : ILoader<int, HeroData>
