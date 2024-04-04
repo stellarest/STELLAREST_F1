@@ -25,13 +25,13 @@ namespace STELLAREST_F1
             UI_Joystick joystick = Managers.UI.ShowBaseUI<UI_Joystick>();
             //Hero hero = Managers.Object.Spawn<Hero>(Vector3.zero, ReadOnly.Numeric.DataID_Lancer);
 
-            Hero hero = Managers.Object.Spawn<Hero>(Vector3.zero, EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Lancer);
+            Hero hero = Managers.Object.Spawn<Hero>(Vector3.zero, EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Archer);
             CameraController cam = Camera.main.GetComponent<CameraController>();
             cam.Target = hero;
 
-            Vector3 spawnPos = Util.MakeSpawnPosition(hero, 5f, 10f);
+            //Vector3 spawnPos = Util.MakeSpawnPosition(hero, 5f, 10f);
             {
-                Monster mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Chicken);
+                //Monster mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Chicken);
                 // Vector3 spawnPos = Util.MakeSpawnPosition(chicken, 3f, 5f);
                 // Monster turkey = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Turkey);
 

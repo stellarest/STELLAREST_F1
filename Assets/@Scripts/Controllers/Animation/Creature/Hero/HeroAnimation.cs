@@ -5,6 +5,11 @@ using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
+    /*
+        Idle : 60 frame
+        Move : 25 frame
+        Attack : 30 frame
+    */
     public class HeroAnimation : CreatureAnimation
     {
         private Hero _owner = null;
@@ -48,7 +53,7 @@ namespace STELLAREST_F1
 
                 case ECreatureState.Move:
                     {
-                        //GetOwner<Hero>().HeroBody.SetEmoji(EHeroEmoji.Default);
+                        GetOwner<Hero>().HeroBody.SetEmoji(EHeroEmoji.Combat);
                         Move();
                     }
                     break;
@@ -70,9 +75,9 @@ namespace STELLAREST_F1
             }
         }
 
-        // Hero LookAtDir Default Sprite : Right
         public override void Flip(ELookAtDirection lookAtDir)
         {
+            // Hero LookAtDir Default Sprite : Right
             Vector3 localScale = _owner.transform.localScale;
             int sign = (lookAtDir == ELookAtDirection.Left) ?
                                              -1 : (localScale.x < 0) ? -1 : 1;

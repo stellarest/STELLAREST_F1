@@ -47,11 +47,25 @@ public class T_E_S_T : MonoBehaviour
 }
 
 /* Memo
+1. Paladin
+2. Archer
+3. Wizard
+4. Warrior
+5. Assassin
+---------------
+6. Lancer
 
 // 아이들
 // 이동
 // 공격
 // 죽음
+
+팔라딘
+- Passive : 인내
+- Skill_A : 더블 어택 -> 하늘의 심판
+- Skill_B : 방패 막기 -> 천상의 보호막
+
+// Int 타입 제이슨은 무조건 -1등으로 초기화해줘야함. 안그러면 읽어오지못함.
 
 // 히어로 애니메이션 Upper, Lower 나눌 필요가 없을 것 같긴함.
 // 나누면, 애니메이션 제작하기 너무 빡세짐

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using static STELLAREST_F1.Define;
 
@@ -8,7 +9,7 @@ namespace STELLAREST_F1
     public class Creature : BaseObject
     {
         public float Speed { get; protected set; } = 1.0f; // TEMP
-
+        public CreatureBody CreatureBody { get; protected set; } = null;
         public CreatureAnimation CreatureAnim { get; private set; } = null;
         public ECreatureRarity CreatureRarity { get; protected set; } = ECreatureRarity.Common;
         [SerializeField]
@@ -45,12 +46,17 @@ namespace STELLAREST_F1
 
         protected virtual void RefreshCreature()
         {
+            CreatureBody.ShowBody(false);
+            // *** 모든 크리쳐는 Idle State에서 시작 (고정) ***
             CreatureState = ECreatureState.Idle;
+            StartWait(() => BaseAnim.IsPlay() == false, 
+                      () => CreatureBody.ShowBody(true));
+
             // 일단은 몬스터에만..
             //StartCoroutine(CoUpdateAI());
         }
 
-// AI
+        // AI
         public float UpdateAITick { get; protected set; } = 0f;
         protected IEnumerator CoUpdateAI()
         {
@@ -88,7 +94,7 @@ namespace STELLAREST_F1
         protected virtual void UpdateDead() { }
 
         #region Wait
-        protected Coroutine _coWait = null; // null이 아니면 기다림. null이면 안기다림.
+        protected Coroutine _coWait = null;
         protected void StartWait(float seconds)
         {
             CancelWait();
@@ -100,6 +106,19 @@ namespace STELLAREST_F1
         {
             yield return new WaitForSeconds(seconds);
             _coWait = null;
+        }
+
+        protected void StartWait(System.Func<bool> func, System.Action callback = null)
+        {
+            CancelWait();
+            _coWait = StartCoroutine(CoWait(func, callback));
+        }
+
+        private IEnumerator CoWait(System.Func<bool> func, System.Action callback = null)
+        {
+            yield return new WaitUntil(func);
+            _coWait = null;
+            callback?.Invoke();
         }
 
         protected void CancelWait()

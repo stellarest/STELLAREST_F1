@@ -128,8 +128,9 @@ namespace STELLAREST_F1
             Eyes,
             Eyebrows,
             Mouth,
-            Beard,
+            Ears,
             Earrings,
+            Beard,
             Mask,
             Glasses,
             Helmet,
@@ -241,6 +242,7 @@ namespace STELLAREST_F1
 
                 // Hero - Human Body Type
                 public static readonly string HBody_HumanType_Head = "Human_Head.sprite";
+                public static readonly string HBody_HumanType_Ears = "Human_Ears.sprite";
                 public static readonly string HBody_HumanType_Torso = "Human_Torso.sprite";
                 public static readonly string HBody_HumanType_ArmL = "Human_ArmL.sprite";
                 public static readonly string HBody_HumanType_ArmR = "Human_ArmR.sprite";
@@ -277,8 +279,9 @@ namespace STELLAREST_F1
                 public static readonly string HBody_Eyes = "Eyes";
                 public static readonly string HBody_Eyebrows = "Eyebrows";
                 public static readonly string HBody_Mouth = "Mouth";
-                public static readonly string HBody_Beard = "Beard";
+                public static readonly string HBody_Ears = "Ears";
                 public static readonly string HBody_Earrings = "Earrings";
+                public static readonly string HBody_Beard = "Beard";
                 public static readonly string HBody_Mask = "Mask";
                 public static readonly string HBody_Glasses = "Glasses";
                 public static readonly string HBody_Helmet = "Helmet";
@@ -359,7 +362,9 @@ namespace STELLAREST_F1
                 public static readonly int SortingOrder_Weapon = 320;
 
                 // ID - Hero
-                public static readonly int DataID_Hero_Lancer = 101000;
+                public static readonly int DataID_Hero_Paladin = 101000;
+                public static readonly int DataID_Hero_Archer = 101001;
+                public static readonly int DataID_Hero_Lancer = 101999;
 
                 // ID - Monster
                 public static readonly int DataID_Monster_Chicken = 201000;

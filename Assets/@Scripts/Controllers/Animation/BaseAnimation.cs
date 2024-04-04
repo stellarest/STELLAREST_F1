@@ -30,6 +30,15 @@ namespace STELLAREST_F1
         public virtual void SetInfo(int dataID, BaseObject owner)
             => Owner = owner;
 
+        public bool IsPlay()
+        {
+            AnimatorStateInfo stateInfo = Animator.GetCurrentAnimatorStateInfo(0);
+            if (stateInfo.normalizedTime > 0f)
+                return true;
+            else
+                return false;
+        }
+
         public virtual void UpdateAnimation() { }
         protected virtual void Idle() { }
         protected virtual void Move() { }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using Unity.Properties;
 using UnityEngine;
 using static STELLAREST_F1.Define;
 
@@ -120,19 +121,6 @@ namespace STELLAREST_F1
 
                             _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Combat];
                             _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Combat];
-
-                            // Prev
-                            // Eyebrows - Combat
-                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).sprite = _eyebrowsSprites[(int)EHeroEmoji.Combat];
-                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).color = _eyebrowsColors[(int)EHeroEmoji.Combat];
-
-                            // // Eyes - Combat
-                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).sprite = _eyesSprites[(int)EHeroEmoji.Combat];
-                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).color = _eyesColors[(int)EHeroEmoji.Combat];
-
-                            // // Mouth - Combat
-                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).sprite = _mouthSprites[(int)EHeroEmoji.Combat];
-                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).color = _mouthColors[(int)EHeroEmoji.Combat];
                         }
                         break;
 
@@ -146,19 +134,6 @@ namespace STELLAREST_F1
 
                             _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Sick];
                             _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Sick];
-
-                            // Prev
-                            // // Eyebrows - Sick
-                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).sprite = _eyebrowsSprites[(int)EHeroEmoji.Sick];
-                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).color = _eyebrowsColors[(int)EHeroEmoji.Sick];
-
-                            // // Eyes - Sick
-                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).sprite = _eyesSprites[(int)EHeroEmoji.Sick];
-                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).color = _eyesColors[(int)EHeroEmoji.Sick];
-
-                            // // Mouth - Sick
-                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).sprite = _mouthSprites[(int)EHeroEmoji.Sick];
-                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).color = _mouthColors[(int)EHeroEmoji.Sick];
                         }
                         break;
 
@@ -172,19 +147,6 @@ namespace STELLAREST_F1
 
                             _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Dead];
                             _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Dead];
-
-                            // Prev
-                            // // Eyebrows - Dead
-                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).sprite = _eyebrowsSprites[(int)EHeroEmoji.Dead];
-                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).color = _eyebrowsColors[(int)EHeroEmoji.Dead];
-
-                            // // Eyes - Dead
-                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).sprite = _eyesSprites[(int)EHeroEmoji.Dead];
-                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).color = _eyesColors[(int)EHeroEmoji.Dead];
-
-                            // // Mouth - Dead
-                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).sprite = _mouthSprites[(int)EHeroEmoji.Dead];
-                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).color = _mouthColors[(int)EHeroEmoji.Dead];
                         }
                         break;
                 }
@@ -236,15 +198,20 @@ namespace STELLAREST_F1
                         spr = tr.GetComponent<SpriteRenderer>();
                         containers[(int)EHeroHead.Mouth] = new Container(tag, tr, spr);
 
-                        tag = ReadOnly.String.HBody_Beard;
-                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Beard, true, true);
+                        tag = ReadOnly.String.HBody_Ears;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Ears, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroHead.Beard] = new Container(tag, tr, spr);
+                        containers[(int)EHeroHead.Ears] = new Container(tag, tr, spr);
 
                         tag = ReadOnly.String.HBody_Earrings;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Earrings, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
                         containers[(int)EHeroHead.Earrings] = new Container(tag, tr, spr);
+
+                        tag = ReadOnly.String.HBody_Beard;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Beard, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        containers[(int)EHeroHead.Beard] = new Container(tag, tr, spr);
 
                         tag = ReadOnly.String.HBody_Mask;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_Mask, true, true);

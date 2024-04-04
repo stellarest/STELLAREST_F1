@@ -73,9 +73,9 @@ namespace STELLAREST_F1
             }
         }
 
-        // Monster LookAtDir Default Sprite : Left
         public override void Flip(ELookAtDirection lookAtDir)
         {
+            // Monster LookAtDir Default Sprite : Left
             Vector3 localScale = _owner.transform.localScale;
             int sign = (lookAtDir == ELookAtDirection.Left) ? (localScale.x > 0 ? 1 : -1) : -1;
             localScale.x = localScale.x * sign;

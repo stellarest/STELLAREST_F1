@@ -96,6 +96,9 @@ namespace STELLAREST_F1
         private Vector3 _initPos = Vector3.zero;
         protected override void UpdateIdle()
         {
+            if (_coWait != null)
+                return;
+
             Debug.Log("Update Idle");
             // Patrol(0.5초마다 Idle 실행중인데, 10% 확률로 패트롤 이동을 한다고 하면)
             {
@@ -133,7 +136,6 @@ namespace STELLAREST_F1
                 if (_target != null)
                     CreatureState = ECreatureState.Move;
             }
-
         }
 
         protected override void UpdateMove()

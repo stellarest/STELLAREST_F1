@@ -139,13 +139,19 @@ namespace STELLAREST_F1.Data
     [Serializable]
     public class HeroSpriteData_Weapon
     {
-        public string LeftWeapon;
-        public string LeftColor;
-        public List<string> LeftWeaponAttachments;
+        public string LWeapon;
+        public string LWeaponColor;
+        public int LWeaponSorting;
+        public string[] LWeaponChilds;
+        public string[] LWeaponColors;
+        public int[] LWeaponSortings;
 
-        public string RightWeapon;
-        public string RightColor;
-        public List<string> RightWeaponAttachments;
+        public string RWeapon;
+        public string RWeaponColor;
+        public int RWeaponSorting;
+        public string[] RWeaponChilds;
+        public string[] RWeaponColors;
+        public int[] RWeaponSortings;
     }
 
     public class HeroSpriteDataLoader : ILoader<int, HeroSpriteData>

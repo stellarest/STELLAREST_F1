@@ -10,7 +10,19 @@ namespace STELLAREST_F1
     public class Hero : Creature
     {
         public Data.HeroData HeroData { get; private set; } = null;
-        public HeroBody HeroBody { get; private set; } = null;
+
+        private HeroBody _heroBody = null;
+        public HeroBody HeroBody
+        {
+            get => _heroBody;
+            private set
+            {
+                _heroBody = value;
+                if (CreatureBody == null)
+                    CreatureBody = value;
+            }
+        }
+
         public HeroAnimation HeroAnim { get; private set; } = null;
         //private Vector2 _moveDir = Vector2.zero;
 
@@ -51,7 +63,6 @@ namespace STELLAREST_F1
             gameObject.name += $"_{HeroData.DescriptionTextID}";
             Collider.radius = HeroData.ColliderRadius;
             Speed = HeroData.MovementSpeed;
-
             /*
                 TODO : Set Hero Stat..
             */
@@ -66,6 +77,16 @@ namespace STELLAREST_F1
 
         private void Update()
         {
+            // EMOJI TEST
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                CreatureState = ECreatureState.Attack;
+            }
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                CreatureState = ECreatureState.Dead;
+            }
+
             float moveDistPerFrame = Speed * Time.deltaTime;
             transform.TranslateEx(MoveDir * moveDistPerFrame);
         }

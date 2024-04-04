@@ -35,7 +35,7 @@ namespace STELLAREST_F1
             SetBodySprites(heroSpriteData, heroBody, EHeroBodyParts.Head);
             SetBodySprites(heroSpriteData, heroBody, EHeroBodyParts.UpperBody);
             SetBodySprites(heroSpriteData, heroBody, EHeroBodyParts.LowerBody);
-            SetBodySprites(heroSpriteData, heroBody, EHeroBodyParts.Weapon, ReadOnly.Numeric.SortingOrder_Weapon);
+            SetBodySprites(heroSpriteData, heroBody, EHeroBodyParts.Weapon);
             heroBody.SetFace();
         }
 
@@ -52,6 +52,13 @@ namespace STELLAREST_F1
                 {
                     heroBody.GetComponent<SpriteRenderer>(EHeroHead.HeadSkin).sprite = sprite;
                     heroBody.GetComponent<SpriteRenderer>(EHeroHead.HeadSkin).color = color;
+                }
+
+                sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.HBody_HumanType_Ears);
+                if (sprite != null)
+                {
+                    heroBody.GetComponent<SpriteRenderer>(EHeroHead.Ears).sprite = sprite;
+                    heroBody.GetComponent<SpriteRenderer>(EHeroHead.Ears).color = color;
                 }
 
                 sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.HBody_HumanType_Torso);
@@ -139,7 +146,7 @@ namespace STELLAREST_F1
             }
         }
 
-        private void SetBodySprites(Data.HeroSpriteData heroSpriteData, HeroBody heroBody, EHeroBodyParts parts, int sortingOrder = 0)
+        private void SetBodySprites(Data.HeroSpriteData heroSpriteData, HeroBody heroBody, EHeroBodyParts parts)
         {
             Sprite sprite = null;
             Color color = Color.white;
@@ -350,32 +357,33 @@ namespace STELLAREST_F1
 
                 // Weapon - Left
                 Transform weaponL = heroBody.GetComponent<Transform>(EHeroWeapon.WeaponL);
-                sprite = Managers.Resource.Load<Sprite>(weapon.LeftWeapon);
+                sprite = Managers.Resource.Load<Sprite>(weapon.LWeapon);
                 if (sprite != null)
                 {
                     SpriteRenderer spr = heroBody.GetComponent<SpriteRenderer>(EHeroWeapon.WeaponL);
                     spr.sprite = sprite;
-                    if (ColorUtility.TryParseHtmlString(weapon.LeftColor, out color))
+                    spr.sortingOrder = weapon.LWeaponSorting;
+                    if (ColorUtility.TryParseHtmlString(weapon.LWeaponColor, out color))
                         spr.color = color;
 
-                    // Vector3 scale = weapon.LeftScale;
-                    // Vector3 position = weapon.LeftPosition;
-                    // Vector3 rotation = weapon.LeftRotation;
+                    // weaponL.transform.localScale = weapon.LWeaponScale;
+                    // weaponL.transform.localPosition = weapon.LWeaponPosition;
+                    // weaponL.transform.rotation = Quaternion.Euler(weapon.LWeaponRotation.x, 
+                    //                             weapon.LWeaponRotation.y, weapon.LWeaponRotation.z);
 
-                    // weaponL.localScale = new Vector3(scale.x, scale.y, scale.z);
-                    // weaponL.localPosition = new Vector3(position.x, position.y, position.z);
-                    // weaponL.localRotation = Quaternion.Euler(rotation.x, rotation.y, rotation.z);
-                    for (int i = 0; i < weaponL.childCount; ++i)
+                    if (weapon.LWeaponChilds.Length != 0)
                     {
-                        if (weapon.LeftWeaponAttachments[i] != null)
+                        for (int i = 0; i < weapon.LWeaponChilds.Length; ++i)
                         {
-                            Sprite childSprite = Managers.Resource.Load<Sprite>(weapon.LeftWeaponAttachments[i]);
+                            Sprite childSprite = Managers.Resource.Load<Sprite>(weapon.LWeaponChilds[i]);
                             if (childSprite != null)
-                            {
-                                Sprite childClone = UnityEngine.Object.Instantiate(childSprite);
-                                weaponL.GetChild(i).GetComponent<SpriteRenderer>().sprite = childClone;
-                            }
+                                weaponL.GetChild(i).GetComponent<SpriteRenderer>().sprite = childSprite;
                         }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < weaponL.childCount; ++i)
+                            weaponL.GetChild(i).gameObject.SetActive(false);
                     }
                 }
                 else
@@ -387,34 +395,27 @@ namespace STELLAREST_F1
 
                 // Weapon - Right
                 Transform weaponR = heroBody.GetComponent<Transform>(EHeroWeapon.WeaponR);
-                sprite = Managers.Resource.Load<Sprite>(weapon.RightWeapon);
+                sprite = Managers.Resource.Load<Sprite>(weapon.RWeapon);
                 if (sprite != null)
                 {
                     SpriteRenderer spr = heroBody.GetComponent<SpriteRenderer>(EHeroWeapon.WeaponR);
                     spr.sprite = sprite;
-                    spr.sortingOrder = sortingOrder;
-                    if (ColorUtility.TryParseHtmlString(weapon.RightColor, out color))
+                    spr.sortingOrder = weapon.RWeaponSorting;
+                    if (ColorUtility.TryParseHtmlString(weapon.RWeaponColor, out color))
                         spr.color = color;
 
-                    // Vector3 scale = weapon.RightScale;
-                    // Vector3 position = weapon.RightPosition;
-                    // Vector3 rotation = weapon.RightRotation;
-
-                    // weaponR.localScale = new Vector3(scale.x, scale.y, scale.z);
-                    // weaponR.localPosition = new Vector3(position.x, position.y, position.z);
-                    // weaponR.localRotation = Quaternion.Euler(rotation.x, rotation.y, rotation.z);
-                    for (int i = 0; i < weaponR.childCount; ++i)
+                    if (weapon.RWeaponChilds.Length != 0)
                     {
-                        if (weapon.RightWeaponAttachments.Count != 0)
+                        for (int i = 0; i < weapon.RWeaponChilds.Length; ++i)
                         {
-                            Sprite childSprite = Managers.Resource.Load<Sprite>(weapon.RightWeaponAttachments[i]);
+                            Sprite childSprite = Managers.Resource.Load<Sprite>(weapon.RWeaponChilds[i]);
                             if (childSprite != null)
-                            {
-                                Sprite childClone = UnityEngine.Object.Instantiate(childSprite);
-                                weaponR.GetChild(i).GetComponent<SpriteRenderer>().sprite = childClone;
-                            }
+                                weaponR.GetChild(i).GetComponent<SpriteRenderer>().sprite = childSprite;
                         }
-                        else
+                    }
+                    else
+                    {
+                        for (int i = 0; i < weaponR.childCount; ++i)
                             weaponR.GetChild(i).gameObject.SetActive(false);
                     }
                 }
