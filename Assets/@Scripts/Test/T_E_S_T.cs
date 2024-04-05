@@ -47,23 +47,31 @@ public class T_E_S_T : MonoBehaviour
 }
 
 /* Memo
+Only One류 게임. (벤서류는 아니고)
+정처없이 돌아다니면서 사냥 + 육성 + 대략 100레벨 정도 만들고 클리어하면 끝.
+조금 더 쉽게 클리어 하고 싶다 -> 엘리트 패키지 구매(광고 제거 포함, 3,300 또는 5,500, 걍 돈 쓴거에 대한 경험만 시켜주면 됨)
+
 1. Paladin
 2. Archer
 3. Wizard
 4. Warrior
 5. Assassin
+6. ForestGuardian (+)
 ---------------
-6. Lancer
+7. Lancer
 
 // 아이들
 // 이동
 // 공격
 // 죽음
 
-팔라딘
-- Passive : 인내
-- Skill_A : 더블 어택 -> 하늘의 심판
-- Skill_B : 방패 막기 -> 천상의 보호막
+Paladin
+- Skill_A : 강타 -> 더블 어택(Unique) -> 트리플 어택(Elite)
+- Skill_B : 인내 -> 쉴드(Unique) -> 축복의 심판(Elite)
+
+Archer
+- Skill_A : 더블샷 -> 멀티샷(Unique) -> 연발 멀티샷(Elite)
+- Skill_B : 
 
 // Int 타입 제이슨은 무조건 -1등으로 초기화해줘야함. 안그러면 읽어오지못함.
 

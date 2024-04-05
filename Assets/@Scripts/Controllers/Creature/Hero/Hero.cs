@@ -87,6 +87,9 @@ namespace STELLAREST_F1
                 CreatureState = ECreatureState.Dead;
             }
 
+            if (Input.GetKeyDown(KeyCode.T))
+                HeroBody.Face.SetEmoji(EHeroEmoji.Sick);
+
             float moveDistPerFrame = Speed * Time.deltaTime;
             transform.TranslateEx(MoveDir * moveDistPerFrame);
         }

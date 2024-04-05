@@ -95,19 +95,19 @@ namespace STELLAREST_F1
 
                             _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Default];
                             _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Default];
+                        }
+                        break;
 
-                            // Prev
-                            // Eyebrows - Default
-                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).sprite = _eyebrowsSprites[(int)EHeroEmoji.Default];
-                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).color = _eyebrowsColors[(int)EHeroEmoji.Default];
+                    case EHeroEmoji.Move:
+                        {
+                            _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Move];
+                            _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Move];
 
-                            // // Eyes - Default
-                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).sprite = _eyesSprites[(int)EHeroEmoji.Default];
-                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).color = _eyesColors[(int)EHeroEmoji.Default];
+                            _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Move];
+                            _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Move];
 
-                            // // Mouth - Default
-                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).sprite = _mouthSprites[(int)EHeroEmoji.Default];
-                            // _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).color = _mouthColors[(int)EHeroEmoji.Default];
+                            _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Move];
+                            _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Move];
                         }
                         break;
 

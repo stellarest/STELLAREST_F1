@@ -363,22 +363,29 @@ namespace STELLAREST_F1
                     SpriteRenderer spr = heroBody.GetComponent<SpriteRenderer>(EHeroWeapon.WeaponL);
                     spr.sprite = sprite;
                     spr.sortingOrder = weapon.LWeaponSorting;
-                    if (ColorUtility.TryParseHtmlString(weapon.LWeaponColor, out color))
-                        spr.color = color;
-
-                    // weaponL.transform.localScale = weapon.LWeaponScale;
-                    // weaponL.transform.localPosition = weapon.LWeaponPosition;
-                    // weaponL.transform.rotation = Quaternion.Euler(weapon.LWeaponRotation.x, 
-                    //                             weapon.LWeaponRotation.y, weapon.LWeaponRotation.z);
+                    spr.flipX = weapon.LWeaponFlipX;
+                    spr.flipY = weapon.LWeaponFlipY;
 
                     if (weapon.LWeaponChilds.Length != 0)
                     {
-                        for (int i = 0; i < weapon.LWeaponChilds.Length; ++i)
+                        int childLength = weapon.LWeaponChilds.Length;
+                        for (int i = 0; i < childLength; ++i)
                         {
                             Sprite childSprite = Managers.Resource.Load<Sprite>(weapon.LWeaponChilds[i]);
                             if (childSprite != null)
-                                weaponL.GetChild(i).GetComponent<SpriteRenderer>().sprite = childSprite;
+                            {
+                                SpriteRenderer childSPR = weaponL.GetChild(i).GetComponent<SpriteRenderer>();
+                                childSPR.sprite = childSprite;
+                                childSPR.sortingOrder = weapon.LWeaponChildSortings[i];
+                                childSPR.flipX = weapon.LWeaponChildFlipXs[i];
+                                childSPR.flipY = weapon.LWeaponChildFlipYs[i];
+                            }
                         }
+
+                        // L : 사용하지 않는 나머지 자식 비활성화
+                        for (int i = childLength; i < weaponL.childCount; ++i)
+                            weaponL.GetChild(i).gameObject.SetActive(false);
+
                     }
                     else
                     {
@@ -401,17 +408,28 @@ namespace STELLAREST_F1
                     SpriteRenderer spr = heroBody.GetComponent<SpriteRenderer>(EHeroWeapon.WeaponR);
                     spr.sprite = sprite;
                     spr.sortingOrder = weapon.RWeaponSorting;
-                    if (ColorUtility.TryParseHtmlString(weapon.RWeaponColor, out color))
-                        spr.color = color;
+                    spr.flipX = weapon.RWeaponFlipX;
+                    spr.flipY = weapon.RWeaponFlipY;
 
                     if (weapon.RWeaponChilds.Length != 0)
                     {
-                        for (int i = 0; i < weapon.RWeaponChilds.Length; ++i)
+                        int childLength = weapon.RWeaponChilds.Length;
+                        for (int i = 0; i < childLength; ++i)
                         {
                             Sprite childSprite = Managers.Resource.Load<Sprite>(weapon.RWeaponChilds[i]);
                             if (childSprite != null)
-                                weaponR.GetChild(i).GetComponent<SpriteRenderer>().sprite = childSprite;
+                            {
+                                SpriteRenderer childSPR = weaponR.GetChild(i).GetComponent<SpriteRenderer>();
+                                childSPR.sprite = childSprite;
+                                childSPR.sortingOrder = weapon.RWeaponChildSortings[i];
+                                childSPR.flipX = weapon.RWeaponChildFlipXs[i];
+                                childSPR.flipY = weapon.RWeaponChildFlipYs[i];
+                            }
                         }
+
+                        // R : 사용하지 않는 나머지 자식 비활성화
+                        for (int i = childLength; i < weaponR.childCount; ++i)
+                            weaponR.GetChild(i).gameObject.SetActive(false);
                     }
                     else
                     {

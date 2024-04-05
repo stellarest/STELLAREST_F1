@@ -140,18 +140,24 @@ namespace STELLAREST_F1.Data
     public class HeroSpriteData_Weapon
     {
         public string LWeapon;
-        public string LWeaponColor;
         public int LWeaponSorting;
+        public bool LWeaponFlipX;
+        public bool LWeaponFlipY;
+
         public string[] LWeaponChilds;
-        public string[] LWeaponColors;
-        public int[] LWeaponSortings;
+        public int[] LWeaponChildSortings;
+        public bool[] LWeaponChildFlipXs;
+        public bool[] LWeaponChildFlipYs;
 
         public string RWeapon;
-        public string RWeaponColor;
         public int RWeaponSorting;
+        public bool RWeaponFlipX;
+        public bool RWeaponFlipY;
+
         public string[] RWeaponChilds;
-        public string[] RWeaponColors;
-        public int[] RWeaponSortings;
+        public int[] RWeaponChildSortings;
+        public bool[] RWeaponChildFlipXs;
+        public bool[] RWeaponChildFlipYs;
     }
 
     public class HeroSpriteDataLoader : ILoader<int, HeroSpriteData>

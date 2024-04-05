@@ -25,7 +25,7 @@ namespace STELLAREST_F1
             UI_Joystick joystick = Managers.UI.ShowBaseUI<UI_Joystick>();
             //Hero hero = Managers.Object.Spawn<Hero>(Vector3.zero, ReadOnly.Numeric.DataID_Lancer);
 
-            Hero hero = Managers.Object.Spawn<Hero>(Vector3.zero, EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Archer);
+            Hero hero = Managers.Object.Spawn<Hero>(Vector3.zero, EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Wizard);
             CameraController cam = Camera.main.GetComponent<CameraController>();
             cam.Target = hero;
 

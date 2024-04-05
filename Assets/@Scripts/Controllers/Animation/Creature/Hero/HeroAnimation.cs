@@ -6,9 +6,12 @@ using static STELLAREST_F1.Define;
 namespace STELLAREST_F1
 {
     /*
-        Idle : 60 frame
-        Move : 25 frame
-        Attack : 30 frame
+        Hero Idle : 60 frame
+        hero Move : 25 frame
+        // 공속 나중에 따로 조정
+        Paladin Attack : 30 frame
+        Archer Attack : 50 frame
+        Wizard Attack : 60 frame
     */
     public class HeroAnimation : CreatureAnimation
     {
@@ -45,7 +48,6 @@ namespace STELLAREST_F1
             {
                 case ECreatureState.Idle:
                     {
-                        //GetOwner<Hero>().HeroBody.SetEmoji(EHeroEmoji.Default);
                         _owner.HeroBody.SetEmoji(EHeroEmoji.Default);
                         Idle();
                     }
@@ -53,14 +55,14 @@ namespace STELLAREST_F1
 
                 case ECreatureState.Move:
                     {
-                        GetOwner<Hero>().HeroBody.SetEmoji(EHeroEmoji.Combat);
+                        //GetOwner<Hero>().HeroBody.SetEmoji(EHeroEmoji.Combat);
+                        _owner.HeroBody.SetEmoji(EHeroEmoji.Move);
                         Move();
                     }
                     break;
 
                 case ECreatureState.Attack:
                     {
-                        //GetOwner<Hero>().HeroBody.SetEmoji(EHeroEmoji.Combat);
                         _owner.HeroBody.SetEmoji(EHeroEmoji.Combat);
                         Attack(); // ***** TEMP *****
                     }

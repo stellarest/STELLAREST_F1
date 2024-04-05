@@ -11,7 +11,8 @@ namespace STELLAREST_F1
         public enum ECreatureRarity
         {
             Common,
-            Epic
+            Elite,
+            Boss
         }
 
         public enum EHeroBodyType
@@ -97,6 +98,7 @@ namespace STELLAREST_F1
         {
             None = -1,
             Default,
+            Move,
             Combat,
             Sick,
             Dead,
@@ -364,6 +366,7 @@ namespace STELLAREST_F1
                 // ID - Hero
                 public static readonly int DataID_Hero_Paladin = 101000;
                 public static readonly int DataID_Hero_Archer = 101001;
+                public static readonly int DataID_Hero_Wizard = 101002;
                 public static readonly int DataID_Hero_Lancer = 101999;
 
                 // ID - Monster
