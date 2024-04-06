@@ -9,7 +9,7 @@ namespace STELLAREST_F1
 {
     public class BaseObject : InitBase
     {
-        public int DataTemplateID { get; set; } = -1;
+        public int DataTemplateID { get; private set; } = -1;
         public EObjectType ObjectType { get; protected set; } = EObjectType.None;
         public BaseAnimation BaseAnim { get; private set; } = null;
         public CircleCollider2D Collider { get; private set; } = null;
@@ -47,9 +47,19 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public virtual void SetInfo(int dataID)
+        private bool _initialSet = false;
+        public virtual bool SetInfo(int dataID)
         {
+            if (_initialSet)
+                return false;
+
+            _initialSet = true;
             DataTemplateID = dataID;
+            return true;
+        }
+
+        protected virtual void Refresh()
+        {
         }
 
         public void TranslateEx(Vector3 dir)

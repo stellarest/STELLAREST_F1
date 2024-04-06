@@ -24,7 +24,6 @@ namespace STELLAREST_F1
         }
 
         public HeroAnimation HeroAnim { get; private set; } = null;
-        //private Vector2 _moveDir = Vector2.zero;
 
         public override bool Init()
         {
@@ -42,35 +41,32 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public override void SetInfo(int dataID)
+        public override bool SetInfo(int dataID)
         {
-            base.SetInfo(dataID);
-            if (HeroAnim == null && HeroBody == null)
+            if (base.SetInfo(dataID) == false)
             {
-                HeroBody = new HeroBody(this, dataID);
-                HeroAnim = CreatureAnim as HeroAnimation;
-                HeroAnim.SetInfo(dataID, this);
-                Managers.Sprite.SetInfo(dataID, target: this);
-                SetCreatureFromData(dataID);
+                Refresh();
+                return false;
             }
 
-            RefreshCreature();
-        }
+            HeroBody = new HeroBody(this, dataID);
+            HeroAnim = CreatureAnim as HeroAnimation;
+            HeroAnim.SetInfo(dataID, this);
+            Managers.Sprite.SetInfo(dataID, target: this);
 
-        protected override void SetCreatureFromData(int dataID)
-        {
             HeroData = Managers.Data.HeroDataDict[dataID];
             gameObject.name += $"_{HeroData.DescriptionTextID}";
+
             Collider.radius = HeroData.ColliderRadius;
             Speed = HeroData.MovementSpeed;
-            /*
-                TODO : Set Hero Stat..
-            */
+            Refresh();
+            
+            return true;
         }
 
-        protected override void RefreshCreature()
+        protected override void Refresh()
         {
-            base.RefreshCreature();
+            base.Refresh();
             Speed = HeroData.MovementSpeed;
             LookAtDir = ELookAtDirection.Right;
         }
@@ -78,17 +74,10 @@ namespace STELLAREST_F1
         private void Update()
         {
             // EMOJI TEST
-            if (Input.GetKeyDown(KeyCode.Q))
-            {
-                CreatureState = ECreatureState.Attack;
-            }
-            if (Input.GetKeyDown(KeyCode.W))
-            {
-                CreatureState = ECreatureState.Dead;
-            }
-
-            if (Input.GetKeyDown(KeyCode.T))
-                HeroBody.Face.SetEmoji(EHeroEmoji.Sick);
+            // if (Input.GetKeyDown(KeyCode.Q))
+            // {
+            //     CreatureState = ECreatureState.Attack;
+            // }
 
             float moveDistPerFrame = Speed * Time.deltaTime;
             transform.TranslateEx(MoveDir * moveDistPerFrame);

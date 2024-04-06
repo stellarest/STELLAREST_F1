@@ -21,6 +21,10 @@ namespace STELLAREST_F1
                 case EObjectType.Monster:
                     SetSpritesSet(dataID, (target as Monster).MonsterBody);
                     break;
+
+                case EObjectType.Env:
+                    SetSpritesSet(dataID, target as Env);
+                    break;
             }
         }
 
@@ -451,29 +455,27 @@ namespace STELLAREST_F1
         private void SetSpritesSet(int dataID, MonsterBody monsterBody)
         {
             Data.MonsterData monsterData = Managers.Data.MonsterDataDict[dataID];
-            EMonsterType type = Util.GetEnumFromString<EMonsterType>(monsterData.Type);
-            switch (type)
+            EMonsterType monsterType = Util.GetEnumFromString<EMonsterType>(monsterData.Type);
+            switch (monsterType)
             {
                 case EMonsterType.Bird:
-                    SetBodyType(dataID, Managers.Data.BirdSpriteDataDict[dataID], monsterBody);
+                    SetBodySprites(dataID, Managers.Data.BirdSpriteDataDict[dataID], monsterBody);
                     break;
 
                 case EMonsterType.Quadrupeds:
-                    SetBodyType(dataID, Managers.Data.QuadrupedsSpriteDataDict[dataID], monsterBody);
+                    SetBodySprites(dataID, Managers.Data.QuadrupedsSpriteDataDict[dataID], monsterBody);
                     break;
             }
-
-            
         }
 
-        private void SetBodyType(int dataID, Data.BirdSpriteData birdSpriteData, MonsterBody monsterBody)
+        private void SetBodySprites(int dataID, Data.BirdSpriteData birdSpriteData, MonsterBody monsterBody)
         {
             if (ColorUtility.TryParseHtmlString(birdSpriteData.SkinColor, out Color color) == false)
                 return;
 
             // Bird - Body
             Transform tr = null;
-            SpriteRenderer spr =null;
+            SpriteRenderer spr = null;
             Sprite sprite = Managers.Resource.Load<Sprite>(birdSpriteData.Body);
             if (sprite != null)
             {
@@ -561,7 +563,7 @@ namespace STELLAREST_F1
             }
         }
 
-        private void SetBodyType(int dataID, Data.QuadrupedsSpriteData quadrupedsSpriteData, MonsterBody monsterBody)
+        private void SetBodySprites(int dataID, Data.QuadrupedsSpriteData quadrupedsSpriteData, MonsterBody monsterBody)
         {
             if (ColorUtility.TryParseHtmlString(quadrupedsSpriteData.SkinColor, out Color color) == false)
                 return;
@@ -662,6 +664,109 @@ namespace STELLAREST_F1
                 spr.sortingOrder = quadrupedsSpriteData.TailSortingOrder;
                 spr.color = color;
             }
+        }
+        #endregion
+
+        #region Init - Env Sprites
+        private void SetSpritesSet(int dataID, Env env)
+        {
+            Data.EnvData envData = Managers.Data.EnvDataDict[dataID];
+            EEnvType envType = Util.GetEnumFromString<EEnvType>(envData.Type);
+            switch (envType)
+            {
+                case EEnvType.Tree:
+                    SetBodySprites(dataID, Managers.Data.TreeSpriteDataDict[dataID], env);
+                    break;
+
+                case EEnvType.Rock:
+                    break;
+            }
+        }
+
+        private void SetBodySprites(int dataID, Data.TreeSpriteData treeSpriteData, Env env)
+        {
+            Transform tr = null;
+            SpriteRenderer spr = null;
+            // Trunk
+            Sprite sprite = Managers.Resource.Load<Sprite>(treeSpriteData.Trunk);
+            if (sprite != null)
+            {
+                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.EBody_Trunk, true, true);
+                tr.localPosition = treeSpriteData.TrunkPosition;
+
+                spr = tr.GetComponent<SpriteRenderer>();
+                spr.sprite = sprite;
+                spr.sortingOrder = treeSpriteData.TrunkSortingOrder;
+            }
+
+            // Patch
+            sprite = Managers.Resource.Load<Sprite>(treeSpriteData.Patch);
+            if (sprite != null)
+            {
+                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.EBody_Patch, true, true);
+                tr.localPosition = treeSpriteData.PatchPosition;
+
+                spr = tr.GetComponent<SpriteRenderer>();
+                spr.sprite = sprite;
+                spr.sortingOrder = treeSpriteData.PatchSortingOrder;
+            }
+
+            // Stump
+            sprite = Managers.Resource.Load<Sprite>(treeSpriteData.Stump);
+            if (sprite != null)
+            {
+                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.EBody_Stump, true, true);
+                tr.localPosition = treeSpriteData.StumpPosition;
+
+                spr = tr.GetComponent<SpriteRenderer>();
+                spr.sprite = sprite;
+                spr.sortingOrder = treeSpriteData.StumpSortingOrder;
+            }
+
+            // EndParticles
+            Material endParticleMat = Managers.Resource.Load<Material>(treeSpriteData.ParticleMaterial);
+            if (endParticleMat != null)
+            {
+                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.EBody_EndParticle, true, true);
+                tr.localPosition = Vector3.up * 2f;
+
+                ParticleSystemRenderer pr = tr.GetComponent<ParticleSystemRenderer>();
+                pr.material = endParticleMat;
+            }
+
+            // Fruits - Need Test on Loading Apple Tree
+            sprite = Managers.Resource.Load<Sprite>(treeSpriteData.Fruits);
+            if (sprite != null)
+            {
+                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.EBody_Fruits, true, true);
+                tr.localPosition = Vector3.zero;
+
+                for (int i = 0; i < treeSpriteData.FruitsPositions.Length; ++i)
+                {
+                    tr.GetChild(i).localScale = treeSpriteData.FruitsScales[i];
+                    tr.GetChild(i).localPosition = treeSpriteData.FruitsPositions[i];
+                    Quaternion localRot = Quaternion.Euler(treeSpriteData.FruitsRotations[i].x,
+                                                            treeSpriteData.FruitsRotations[i].y,
+                                                            treeSpriteData.FruitsRotations[i].z);
+                    tr.GetChild(i).localRotation = localRot;
+
+                    spr = tr.GetChild(i).GetComponent<SpriteRenderer>();
+                    spr.sprite = sprite;
+                    spr.sortingOrder = treeSpriteData.FruitsSortingOrder;
+                }
+            }
+
+            sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.Shadow);
+            if (treeSpriteData.HasShadowSprite && sprite != null)
+            {
+                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.EBody_Shadow, true, true);
+                tr.localPosition = Vector3.zero;
+
+                spr = tr.GetComponent<SpriteRenderer>();
+                spr.sprite = sprite;
+            }
+
+            Debug.Log("Complate Set Env Sprites");
         }
         #endregion
     }

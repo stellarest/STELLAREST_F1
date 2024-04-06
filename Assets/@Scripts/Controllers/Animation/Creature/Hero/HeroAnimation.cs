@@ -31,10 +31,7 @@ namespace STELLAREST_F1
             string animatorTextID = Managers.Data.HeroDataDict[dataID].AnimatorLabel;
             RuntimeAnimatorController animController = Managers.Resource.Load<RuntimeAnimatorController>(animatorTextID);
             if (string.IsNullOrEmpty(animatorTextID) == false && animController != null)
-            {
-                RuntimeAnimatorController cloned = UnityEngine.Object.Instantiate(animController);
-                this.Animator.runtimeAnimatorController = cloned;
-            }
+                this.Animator.runtimeAnimatorController = animController;
 
             _owner = owner as Hero;
         }

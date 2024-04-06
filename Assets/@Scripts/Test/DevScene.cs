@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using STELLAREST_F1;
+using Unity.VisualScripting;
 using UnityEngine;
 using static STELLAREST_F1.Define;
 
@@ -29,9 +30,16 @@ namespace STELLAREST_F1
             CameraController cam = Camera.main.GetComponent<CameraController>();
             cam.Target = hero;
 
+            // Spawn Monsters
+            // {
+            //     Vector3 spawnPos = Util.MakeSpawnPosition(hero, 5f, 10f);
+            //     Monster mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Chicken);
+            // }
+
+            // Spawn Envs
             {
-                Vector3 spawnPos = Util.MakeSpawnPosition(hero, 5f, 10f);
-                Monster mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Chicken);
+                Vector3 spawnPos = Util.MakeSpawnPosition(hero, 1f, 2f);
+                Env env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_RedAppleTree);
             }
         }
 

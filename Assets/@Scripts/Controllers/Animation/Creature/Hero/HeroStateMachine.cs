@@ -9,14 +9,14 @@ namespace STELLAREST_F1
     public class HeroStateMachine : StateMachineBehaviour
     {
         private Hero _owner = null;
-        private CreatureAnimation _creatureAnim = null;
+        private HeroAnimation _heroAnim = null;
 
         public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            if (_creatureAnim == null)
+            if (_owner == null && _heroAnim == null)
             {
-                _creatureAnim = animator.GetComponent<CreatureAnimation>();
-                _owner = _creatureAnim.GetOwner<Hero>();
+                _heroAnim = animator.GetComponent<HeroAnimation>();
+                _owner = _heroAnim.GetOwner<Hero>();
             }
         }
 
@@ -33,7 +33,7 @@ namespace STELLAREST_F1
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
             // Idle 자동
-            if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureState.Attack))
+            if (stateInfo.shortNameHash == _heroAnim?.GetHash(ECreatureState.Attack))
             {
                 _owner.CreatureState = ECreatureState.Idle;
                 Debug.Log("ATTACK TO IDLE.");

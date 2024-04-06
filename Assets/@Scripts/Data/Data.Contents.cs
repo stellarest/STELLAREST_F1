@@ -297,4 +297,60 @@ namespace STELLAREST_F1.Data
         public int Amount;
         public int DropItemID;
     }
+
+    public class EnvDataLoader : ILoader<int, EnvData>
+    {
+        public List<EnvData> Envs = new List<EnvData>();
+
+        public Dictionary<int, EnvData> MakeDict()
+        {
+            Dictionary<int, EnvData> dict = new Dictionary<int, EnvData>();
+            foreach (EnvData data in Envs)
+                dict.Add(data.DataID, data);
+
+            return dict;
+        }
+    }
+
+    [Serializable]
+    public class TreeSpriteData
+    {
+        public int DataID;
+        public string Tag;
+
+        public string Trunk;
+        public Vector3 TrunkPosition;
+        public int TrunkSortingOrder;
+
+        public string Patch;
+        public Vector3 PatchPosition;
+        public int PatchSortingOrder;
+
+        public string Stump;
+        public Vector3 StumpPosition;
+        public int StumpSortingOrder;
+
+        public string Fruits;
+        public Vector3[] FruitsScales;
+        public Vector3[] FruitsPositions;
+        public Vector3[] FruitsRotations;
+        public int FruitsSortingOrder;
+
+        public string ParticleMaterial;
+        public bool HasShadowSprite;
+    }
+
+    public class TreeSpriteDataLoader : ILoader<int, TreeSpriteData>
+    {
+        public List<TreeSpriteData> TreesSprites = new List<TreeSpriteData>();
+
+        public Dictionary<int, TreeSpriteData> MakeDict()
+        {
+            Dictionary<int, TreeSpriteData> dict = new Dictionary<int, TreeSpriteData>();
+            foreach (TreeSpriteData data in TreesSprites)
+                dict.Add(data.DataID, data);
+
+            return dict;
+        }
+    }
 }

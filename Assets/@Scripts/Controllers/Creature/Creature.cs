@@ -12,8 +12,7 @@ namespace STELLAREST_F1
         public CreatureBody CreatureBody { get; protected set; } = null;
         public CreatureAnimation CreatureAnim { get; private set; } = null;
         public ECreatureRarity CreatureRarity { get; protected set; } = ECreatureRarity.Common;
-        [SerializeField]
-        protected ECreatureState _creatureState = ECreatureState.None;
+        [SerializeField] protected ECreatureState _creatureState = ECreatureState.None;
         public virtual ECreatureState CreatureState
         {
             get => _creatureState;
@@ -35,26 +34,36 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public override void SetInfo(int dataID)
+        public override bool SetInfo(int dataID)
         {
-            base.SetInfo(dataID);
-            if (CreatureAnim == null)
-                CreatureAnim = BaseAnim as CreatureAnimation;
+            if (base.SetInfo(dataID) == false)
+                return false;
+
+            CreatureAnim = BaseAnim as CreatureAnimation;
+            return true;
         }
 
-        protected virtual void SetCreatureFromData(int dataID) {  }
-
-        protected virtual void RefreshCreature()
+        protected override void Refresh()
         {
             CreatureBody.ShowBody(false);
-            // *** 모든 크리쳐는 Idle State에서 시작 (고정) ***
             CreatureState = ECreatureState.Idle;
-            StartWait(() => BaseAnim.IsPlay() == false, 
+            StartWait(() => BaseAnim.IsPlay() == false,
                       () => CreatureBody.ShowBody(true));
-
-            // 일단은 몬스터에만..
-            //StartCoroutine(CoUpdateAI());
         }
+
+        //protected virtual void SetCreatureFromData(int dataID) {  }
+
+        // protected virtual void RefreshCreature()
+        // {
+        //     CreatureBody.ShowBody(false);
+        //     // *** 모든 크리쳐는 Idle State에서 시작 (고정) ***
+        //     CreatureState = ECreatureState.Idle;
+        //     StartWait(() => BaseAnim.IsPlay() == false, 
+        //               () => CreatureBody.ShowBody(true));
+
+        //     // 일단은 몬스터에만..
+        //     //StartCoroutine(CoUpdateAI());
+        // }
 
         // AI
         public float UpdateAITick { get; protected set; } = 0f;

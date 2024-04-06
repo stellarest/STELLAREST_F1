@@ -57,36 +57,36 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public override void SetInfo(int dataID)
+        public override bool SetInfo(int dataID)
         {
-            base.SetInfo(dataID);
-            if (MonsterAnim == null && MonsterBody == null)
+            if (base.SetInfo(dataID) == false)
             {
-                MonsterBody = new MonsterBody(this, dataID);
-                MonsterAnim = CreatureAnim as MonsterAnimation;
-                MonsterAnim.SetInfo(dataID, this);
-                Managers.Sprite.SetInfo(dataID, target: this);
-                SetCreatureFromData(dataID);
+                Refresh();
+                return false;
             }
 
-            RefreshCreature();
+            MonsterBody = new MonsterBody(this, dataID);
+            MonsterAnim = CreatureAnim as MonsterAnimation;
+            MonsterAnim.SetInfo(dataID, this);
+            Managers.Sprite.SetInfo(dataID, target: this);
+
+            MonsterData = Managers.Data.MonsterDataDict[dataID];
+            gameObject.name += $"_{MonsterData.DescriptionTextID}";
+
+            Collider.radius = MonsterData.ColliderRadius;
+            Speed = MonsterData.MovementSpeed;
+            Refresh();
+            
+            return true;
         }
 
-        protected override void RefreshCreature()
+        protected override void Refresh()
         {
-            base.RefreshCreature();
+            base.Refresh();
             StartCoroutine(CoUpdateAI());
             _initPos = transform.position;
             Speed = MonsterData.MovementSpeed;
             LookAtDir = ELookAtDirection.Left;
-        }
-
-        protected override void SetCreatureFromData(int dataID)
-        {
-            MonsterData = Managers.Data.MonsterDataDict[dataID];
-            gameObject.name += $"_{MonsterData.DescriptionTextID}";
-            Collider.radius = MonsterData.ColliderRadius;
-            Speed = MonsterData.MovementSpeed;
         }
 
         private void Update()

@@ -73,8 +73,8 @@ namespace STELLAREST_F1
             None,
             Hero,
             Monster,
+            Env,
             Projectile,
-            Env
         }
 
         public enum ECreatureState
@@ -212,6 +212,23 @@ namespace STELLAREST_F1
             Max = Tail + 1
         }
 
+        public enum EEnvType
+        {
+            None = -1,
+            Tree,
+            Rock,
+            Max = Rock + 1
+        }
+
+        public enum EEnvState
+        {
+            None = -1,
+            Idle,
+            OnDamaged,
+            Dead,
+            Max = Dead + 1
+        }
+
         public static class ReadOnly
         {
             public static class String
@@ -222,6 +239,8 @@ namespace STELLAREST_F1
                 public static readonly string MonsterData = "MonsterData";
                 public static readonly string BirdSpriteData = "BirdSpriteData";
                 public static readonly string QuadrupedsSpriteData = "QuadrupedsSpriteData";
+                public static readonly string EnvData = "EnvData";
+                public static readonly string TreeSpriteData = "TreeSpriteData";
 
                 public static readonly string Managers = "@Managers";
                 public static readonly string UI_Root = "@UI_Root";
@@ -232,17 +251,11 @@ namespace STELLAREST_F1
                 public static readonly string AnimBody = "AnimationBody";
                 public static readonly string HeroRootName = "@Heroes";
                 public static readonly string MonsterRootName = "@Monsters";
+                public static readonly string EnvRootName = "@Envs";
                 public static readonly string UI_Joystick = "UI_Joystick";
                 public static readonly string AnimationBody = "AnimationBody";
 
-                // public static readonly string Anim_Idle = "Idle";
-                // public static readonly string Anim_Attack = "Attack";
-                // public static readonly string Anim_Skill_A = "Skill_A"; // 교체해야됨
-                // public static readonly string Anim_Skill_B = "Skill_B"; // 교체해야됨
-                // public static readonly string Anim_Move = "Move";
-                // public static readonly string Anim_Dead = "Dead";
-
-                // Hero - Human Body Type
+                // Sprite - Hero Human Body Type
                 public static readonly string HBody_HumanType_Head = "Human_Head.sprite";
                 public static readonly string HBody_HumanType_Ears = "Human_Ears.sprite";
                 public static readonly string HBody_HumanType_Torso = "Human_Torso.sprite";
@@ -257,23 +270,26 @@ namespace STELLAREST_F1
                 public static readonly string HBody_HumanType_Shin = "Human_Shin.sprite";
                 public static readonly string HBody_HumanType_Leg = "Human_Leg.sprite";
 
-                // Hero Face - Sick
+                // Sprite - Hero Face - Sick
                 public static readonly string HFace_Eyebrows_Sick = "Hero_Eyebrows_Sick.sprite";
                 public static readonly string HFace_Eyes_Sick = "HeroEyes_Sick.sprite";
                 public static readonly string HFace_Mouth_Sick = "HeroMouth_Sick.sprite";
 
-                // Hero Face - Dead
+                // Sprite - Hero Face - Dead
                 public static readonly string HFace_Eyes_Dead = "HeroEyes_Dead.sprite";
                 public static readonly string HFace_Eyes_DeadColor = "#00C8FF";
                 public static readonly string HFace_Mouth_Dead = "HeroMouth_Dead.sprite";
 
-                // Monster Head
+                // Sprite - Monster Head
                 public static readonly string MBody_Chicken_Head_Default = "Chicken_Head_Default.sprite";
                 public static readonly string MBody_Chicken_Head_Angry = "Chicken_Head_Angry.sprite";
                 public static readonly string MBody_Chicken_Head_Dead = "Chicken_Head_Dead.sprite";
                 public static readonly string MBody_Chicken_Body = "Chicken_Body.sprite";
                 public static readonly string MBody_Chicken_Wing = "Chicken_Wing.sprite";
                 public static readonly string MBody_Chicken_Leg = "Chicken_Leg.sprite";
+
+                // Sprite - Shadow
+                public static readonly string Shadow = "Shadow.sprite";
 
                 // Hero Armored Body
                 public static readonly string HBody_HeadSkin = "Head";
@@ -342,6 +358,14 @@ namespace STELLAREST_F1
                 public static readonly string MBody_LegBackR = "LegBackR";
                 public static readonly string MBody_Tail = "Tail";
 
+                // Env Body
+                public static readonly string EBody_Trunk = "Trunk";
+                public static readonly string EBody_Patch = "Patch";
+                public static readonly string EBody_Stump = "Stump";
+                public static readonly string EBody_EndParticle = "EndParticle";
+                public static readonly string EBody_Fruits = "Fruits";
+                public static readonly string EBody_Shadow = "Shadow";
+
                 // Animation Params
                 public static readonly string AnimParam_Idle = "Idle";
                 public static readonly string AnimParam_Move = "Move";
@@ -363,17 +387,21 @@ namespace STELLAREST_F1
                 //public static readonly int SortingOrder_Weapon = 200;
                 public static readonly int SortingOrder_Weapon = 320;
 
-                // ID - Hero
+                // ID - Heroes
                 public static readonly int DataID_Hero_Paladin = 101000;
                 public static readonly int DataID_Hero_Archer = 101001;
                 public static readonly int DataID_Hero_Wizard = 101002;
                 public static readonly int DataID_Hero_Lancer = 101999;
 
-                // ID - Monster
+                // ID - Monsters
                 public static readonly int DataID_Monster_Chicken = 201000;
                 public static readonly int DataID_Monster_Turkey = 201001;
                 public static readonly int DataID_Monster_Bunny = 201020;
                 public static readonly int DataID_Monster_Pug = 201021;
+
+                // ID - Envs
+                public static readonly int DataID_Env_OakTree = 301000;
+                public static readonly int DataID_Env_RedAppleTree = 301001;
 
                 public static readonly float CamOrthoSize = 12F; 
                 public static readonly float JoystickFocusMinDist = -0.18F;

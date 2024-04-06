@@ -24,8 +24,9 @@ namespace STELLAREST_F1
             RuntimeAnimatorController animController = Managers.Resource.Load<RuntimeAnimatorController>(animatorTextID);
             if (string.IsNullOrEmpty(animatorTextID) == false && animController != null)
             {
+                // clone을 꼭 해야되는건지 아직 확실하지 않음
                 RuntimeAnimatorController cloned = UnityEngine.Object.Instantiate(animController);
-                this.Animator.runtimeAnimatorController = cloned;
+                Animator.runtimeAnimatorController = cloned;
             }
 
             _owner = owner as Monster;

@@ -15,6 +15,31 @@ namespace STELLAREST_F1
         public Animator Animator { get; private set; } = null;
         public AnimationCallback AnimCallback { get; private set; } = null;
 
+        protected readonly int Play_Idle = Animator.StringToHash(ReadOnly.String.AnimParam_Idle);
+        protected readonly int Play_Move = Animator.StringToHash(ReadOnly.String.AnimParam_Move);
+        protected readonly int Play_Attack = Animator.StringToHash(ReadOnly.String.AnimParam_Attack);
+        protected readonly int Play_Skill_A = Animator.StringToHash(ReadOnly.String.AnimParam_Skill_A);
+        protected readonly int Play_Skill_B = Animator.StringToHash(ReadOnly.String.AnimParam_Skill_B);
+        protected readonly int Play_Dead = Animator.StringToHash(ReadOnly.String.AnimParam_Dead);
+
+        public int GetHash(ECreatureState state)
+        {
+            switch (state)
+            {
+                case ECreatureState.Idle:
+                    return Play_Idle;
+
+                case ECreatureState.Move:
+                    return Play_Move;
+
+                case ECreatureState.Attack:
+                    return Play_Attack; // TEMP
+
+                default:
+                    return -1;
+            }
+        }
+
         public override bool Init()
         {
             if (base.Init() == false)
@@ -39,18 +64,26 @@ namespace STELLAREST_F1
                 return false;
         }
 
-        public virtual void UpdateAnimation() { }
-        protected virtual void Idle() { }
-        protected virtual void Move() { }
-        protected virtual void Attack() { }
-        protected virtual void SkillA() { }
-        protected virtual void SkillB() { }
-        protected virtual void Dead() { }
-        public virtual void Flip(ELookAtDirection lookAtDir)
-        {
-            // Vector3 localScale = transform.localScale;
-            // localScale.x = _originScaleX * (int)lookAtDir;
-            // transform.localScale = localScale;
-        }
+        public virtual void UpdateAnimation() {  }
+
+        protected virtual void Idle()
+            => Animator.Play(Play_Idle);
+
+        protected virtual void Move()
+            => Animator.Play(Play_Move);
+
+        protected virtual void Attack()
+            => Animator.Play(Play_Attack);
+
+        protected virtual void SkillA()
+            => Animator.Play(Play_Skill_A);
+
+        protected virtual void SkillB()
+            => Animator.Play(Play_Skill_B);
+
+        protected virtual void Dead()
+            => Animator.Play(Play_Dead);
+
+        public virtual void Flip(ELookAtDirection lookAtDir) { }
     }
 }
