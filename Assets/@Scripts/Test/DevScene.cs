@@ -25,21 +25,13 @@ namespace STELLAREST_F1
             UI_Joystick joystick = Managers.UI.ShowBaseUI<UI_Joystick>();
             //Hero hero = Managers.Object.Spawn<Hero>(Vector3.zero, ReadOnly.Numeric.DataID_Lancer);
 
-            Hero hero = Managers.Object.Spawn<Hero>(Vector3.zero, EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Wizard);
+            Hero hero = Managers.Object.Spawn<Hero>(Vector3.zero, EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
             CameraController cam = Camera.main.GetComponent<CameraController>();
             cam.Target = hero;
 
-            //Vector3 spawnPos = Util.MakeSpawnPosition(hero, 5f, 10f);
             {
-                //Monster mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Chicken);
-                // Vector3 spawnPos = Util.MakeSpawnPosition(chicken, 3f, 5f);
-                // Monster turkey = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Turkey);
-
-                // spawnPos = Util.MakeSpawnPosition(chicken, 3f, 5f);
-                // Monster bunny = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Bunny);
-
-                // spawnPos = Util.MakeSpawnPosition(chicken, 3f, 5f);
-                // Monster pug = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Pug);
+                Vector3 spawnPos = Util.MakeSpawnPosition(hero, 5f, 10f);
+                Monster mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Chicken);
             }
         }
 

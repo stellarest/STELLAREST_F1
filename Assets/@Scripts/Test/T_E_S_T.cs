@@ -5,6 +5,12 @@ using STELLAREST_F1;
 using static STELLAREST_F1.Define;
 using UnityEngine;
 
+/*
+// TODO NEXT
+- Wizard Attack Anim 교정
+- 전투 준비 (A* 없이)
+*/
+
 public class T_E_S_T : MonoBehaviour
 {
     private float _movementSpeed = 3.0f;
@@ -51,12 +57,29 @@ Only One류 게임. (벤서류는 아니고)
 정처없이 돌아다니면서 사냥 + 육성 + 대략 100레벨 정도 만들고 클리어하면 끝.
 조금 더 쉽게 클리어 하고 싶다 -> 엘리트 패키지 구매(광고 제거 포함, 3,300 또는 5,500, 걍 돈 쓴거에 대한 경험만 시켜주면 됨)
 
+캐릭터 해금의 재미를 줘야할듯
 1. Paladin
 2. Archer
 3. Wizard
 4. Warrior
 5. Assassin
-6. ForestGuardian (+)
+6. Druid (Forest Guardian)
+7. Mutant
+8. Skeleton King
+9. Phantom Knight
+10. Babarian
+11. Gunner
+12. Sniper
+13. Hunter
+14. Trickster
+15. Ninja
+16. Thief
+17. Pirate
+18. Queen
+19. King
+20. ...
+21. ...
+30. Baseball Player
 ---------------
 7. Lancer
 

@@ -13,6 +13,7 @@ namespace STELLAREST_F1.Data
         public string AnimatorLabel;
         public string DescriptionTextID;
         public string Rarity;
+        public string Type;
         public float ColliderRadius;
         public float MaxHp;
         public float Atk;
@@ -23,7 +24,7 @@ namespace STELLAREST_F1.Data
     [Serializable]
     public class HeroData : BaseData
     {
-        public string BodyType;
+        //TODO : ADD HERO DATA
     }
 
     public class HeroDataLoader : ILoader<int, HeroData>
@@ -176,7 +177,6 @@ namespace STELLAREST_F1.Data
     [Serializable]
     public class MonsterData : BaseData
     {
-        public string Type;
         public string Size;
         public int DropItemID;
     }
@@ -289,5 +289,12 @@ namespace STELLAREST_F1.Data
 
             return dict;
         }
+    }
+
+    [Serializable]
+    public class EnvData : BaseData
+    {
+        public int Amount;
+        public int DropItemID;
     }
 }

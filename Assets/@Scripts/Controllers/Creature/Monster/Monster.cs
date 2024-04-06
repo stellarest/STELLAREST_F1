@@ -9,7 +9,17 @@ namespace STELLAREST_F1
     public class Monster : Creature
     {
         public Data.MonsterData MonsterData { get; private set; } = null;
-        public MonsterBody MonsterBody { get; private set; } = null;
+        private MonsterBody _monsterBody = null;
+        public MonsterBody MonsterBody
+        {
+            get => _monsterBody;
+            private set
+            {
+                _monsterBody = value;
+                if (CreatureBody == null)
+                    CreatureBody = _monsterBody;
+            }
+        }
         public MonsterAnimation MonsterAnim { get; private set; } = null;
         public override ECreatureState CreatureState
         {

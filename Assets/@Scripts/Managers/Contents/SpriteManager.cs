@@ -29,7 +29,7 @@ namespace STELLAREST_F1
         {
             Data.HeroData heroData = Managers.Data.HeroDataDict[dataID];
             Data.HeroSpriteData heroSpriteData = Managers.Data.HeroSpriteDataDict[dataID];
-            EHeroBodyType bodyType = Util.GetEnumFromString<EHeroBodyType>(heroData.BodyType);
+            EHeroBodyType bodyType = Util.GetEnumFromString<EHeroBodyType>(heroData.Type);
 
             SetBodyType(bodyType, heroSpriteData, heroBody);
             SetBodySprites(heroSpriteData, heroBody, EHeroBodyParts.Head);
