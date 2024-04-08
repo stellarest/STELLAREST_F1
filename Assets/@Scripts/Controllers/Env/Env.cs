@@ -50,7 +50,7 @@ namespace STELLAREST_F1
             Managers.Sprite.SetInfo(dataID, this);
 
             EnvData = Managers.Data.EnvDataDict[dataID];
-            gameObject.name += $"_{EnvData.DescriptionTextID}";
+            gameObject.name += $"_{EnvData.DescriptionTextID.Replace(" ", "")}";
 
             Refresh();
             return true;

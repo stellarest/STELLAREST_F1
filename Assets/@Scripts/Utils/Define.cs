@@ -241,7 +241,9 @@ namespace STELLAREST_F1
                 public static readonly string QuadrupedsSpriteData = "QuadrupedsSpriteData";
                 public static readonly string EnvData = "EnvData";
                 public static readonly string TreeSpriteData = "TreeSpriteData";
+                public static readonly string RockSpriteData = "RockSpriteData";
 
+                // Others
                 public static readonly string Managers = "@Managers";
                 public static readonly string UI_Root = "@UI_Root";
                 public static readonly string EventSystem = "@EventSystem";
@@ -256,40 +258,31 @@ namespace STELLAREST_F1
                 public static readonly string AnimationBody = "AnimationBody";
 
                 // Sprite - Hero Human Body Type
-                public static readonly string HBody_HumanType_Head = "Human_Head.sprite";
-                public static readonly string HBody_HumanType_Ears = "Human_Ears.sprite";
-                public static readonly string HBody_HumanType_Torso = "Human_Torso.sprite";
-                public static readonly string HBody_HumanType_ArmL = "Human_ArmL.sprite";
-                public static readonly string HBody_HumanType_ArmR = "Human_ArmR.sprite";
-                public static readonly string HBody_HumanType_ForearmL = "Human_ForearmL.sprite";
-                public static readonly string HBody_HumanType_ForearmR = "Human_ForearmR.sprite";
-                public static readonly string HBody_HumanType_HandL = "Human_HandL.sprite";
-                public static readonly string HBody_HumanType_HandR = "Human_HandR.sprite";
-                public static readonly string HBody_HumanType_Finger = "Human_Finger.sprite";
-                public static readonly string HBody_HumanType_Pelvis = "Human_Pelvis.sprite";
-                public static readonly string HBody_HumanType_Shin = "Human_Shin.sprite";
-                public static readonly string HBody_HumanType_Leg = "Human_Leg.sprite";
+                public static readonly string HBody_HumanType_Head_SP = "Human_Head.sprite";
+                public static readonly string HBody_HumanType_Ears_SP = "Human_Ears.sprite";
+                public static readonly string HBody_HumanType_Torso_SP = "Human_Torso.sprite";
+                public static readonly string HBody_HumanType_ArmL_SP = "Human_ArmL.sprite";
+                public static readonly string HBody_HumanType_ArmR_SP = "Human_ArmR.sprite";
+                public static readonly string HBody_HumanType_ForearmL_SP = "Human_ForearmL.sprite";
+                public static readonly string HBody_HumanType_ForearmR_SP = "Human_ForearmR.sprite";
+                public static readonly string HBody_HumanType_HandL_SP = "Human_HandL.sprite";
+                public static readonly string HBody_HumanType_HandR_SP = "Human_HandR.sprite";
+                public static readonly string HBody_HumanType_Finger_SP = "Human_Finger.sprite";
+                public static readonly string HBody_HumanType_Pelvis_SP = "Human_Pelvis.sprite";
+                public static readonly string HBody_HumanType_Shin_SP = "Human_Shin.sprite";
+                public static readonly string HBody_HumanType_Leg_SP = "Human_Leg.sprite";
 
-                // Sprite - Hero Face - Sick
-                public static readonly string HFace_Eyebrows_Sick = "Hero_Eyebrows_Sick.sprite";
-                public static readonly string HFace_Eyes_Sick = "HeroEyes_Sick.sprite";
-                public static readonly string HFace_Mouth_Sick = "HeroMouth_Sick.sprite";
+                // Sprite & Material - Env Rock
+                public static readonly string ERock_Rock_SP = "StoneRock_Rock.sprite";
+                public static readonly string ERock_Empty_SP = "StoneRock_Empty.sprite";
+                public static readonly string ERock_Mat = "RockFragments";
 
-                // Sprite - Hero Face - Dead
-                public static readonly string HFace_Eyes_Dead = "HeroEyes_Dead.sprite";
-                public static readonly string HFace_Eyes_DeadColor = "#00C8FF";
-                public static readonly string HFace_Mouth_Dead = "HeroMouth_Dead.sprite";
+                // Sprite - Common
+                public static readonly string Shadow_SP = "Shadow.sprite";
+                public static readonly string Light_SP = "Light.sprite";
 
-                // Sprite - Monster Head
-                public static readonly string MBody_Chicken_Head_Default = "Chicken_Head_Default.sprite";
-                public static readonly string MBody_Chicken_Head_Angry = "Chicken_Head_Angry.sprite";
-                public static readonly string MBody_Chicken_Head_Dead = "Chicken_Head_Dead.sprite";
-                public static readonly string MBody_Chicken_Body = "Chicken_Body.sprite";
-                public static readonly string MBody_Chicken_Wing = "Chicken_Wing.sprite";
-                public static readonly string MBody_Chicken_Leg = "Chicken_Leg.sprite";
-
-                // Sprite - Shadow
-                public static readonly string Shadow = "Shadow.sprite";
+                // Material - Common
+                public static readonly string Glow_Mat = "Glow";
 
                 // Hero Armored Body
                 public static readonly string HBody_HeadSkin = "Head";
@@ -359,11 +352,21 @@ namespace STELLAREST_F1
                 public static readonly string MBody_Tail = "Tail";
 
                 // Env Body
-                public static readonly string EBody_Trunk = "Trunk";
-                public static readonly string EBody_Patch = "Patch";
-                public static readonly string EBody_Stump = "Stump";
+                public static readonly string ETreeBody_Trunk = "Trunk";
+                public static readonly string ETreeBody_Patch = "Patch";
+                public static readonly string ETreeBody_Stump = "Stump";
+                public static readonly string ETreeBody_Fruits = "Fruits";
+
+                public static readonly string ERock_Rock = "Rock";
+                public static readonly string ERock_Empty = "Empty";
+                public static readonly string ERock_Ore = "Ore";
+                public static readonly string ERock_OreShadow = "OreShadow";
+                public static readonly string ERock_OreLight = "OreLight";
+                public static readonly string ERock_OreParticle = "OreParticle";
+                public static readonly string ERock_Spot = "Spot";
+                public static readonly string ERock_Fragment = "Fragment";
+
                 public static readonly string EBody_EndParticle = "EndParticle";
-                public static readonly string EBody_Fruits = "Fruits";
                 public static readonly string EBody_Shadow = "Shadow";
 
                 // Animation Params
@@ -377,7 +380,6 @@ namespace STELLAREST_F1
 
             public static class Numeric
             {
-                public static readonly int TemplateID_Hero_Temp = 201000; // TEMP
                 public static readonly int SortingOrder_SpellIndicator = 200;
                 public static readonly int SortingOrder_Creature = 300;
                 public static readonly int SortingOrder_Env = 300;
@@ -399,9 +401,33 @@ namespace STELLAREST_F1
                 public static readonly int DataID_Monster_Bunny = 201020;
                 public static readonly int DataID_Monster_Pug = 201021;
 
-                // ID - Envs
-                public static readonly int DataID_Env_OakTree = 301000;
-                public static readonly int DataID_Env_RedAppleTree = 301001;
+                // ID - Envs Trees
+                public static readonly int DataID_Env_AshTree = 301000;
+                public static readonly int DataID_Env_BlackOakTree = 301001;
+                public static readonly int DataID_Env_GreenAppleTree = 301002;
+                public static readonly int DataID_Env_IvyTree = 301003;
+                public static readonly int DataID_Env_ManticoreTree = 301004;
+                public static readonly int DataID_Env_MapleTree = 301005;
+                public static readonly int DataID_Env_OakTree = 301006;
+                public static readonly int DataID_Env_RedAppleTree = 301007;
+                public static readonly int DataID_Env_RedSandalTree = 301008;
+                public static readonly int DataID_Env_WillowTree = 301009;
+                public static readonly int DataID_Env_YewTree = 301010;
+                public static readonly int DataID_Env_CopperRock = 301011;
+                public static readonly int DataID_Env_GoldRock = 301012;
+                public static readonly int DataID_Env_IronRock = 301013;
+                public static readonly int DataID_Env_LimestoneRock = 301014;
+                public static readonly int DataID_Env_SilverRock = 301015;
+                public static readonly int DataID_Env_StoneRock = 301016;
+                public static readonly int DataID_Env_TinRock = 301017;
+                public static readonly int DataID_Env_WhetstoneRock = 301018;
+                public static readonly int DataID_Env_ZincRock = 301019;
+
+                // public static readonly int DataID_Env_OakTree = 301000;
+                // public static readonly int DataID_Env_RedAppleTree = 301001;
+                // public static readonly int DataID_Env_StoneRock = 301002;
+                // public static readonly int DataID_Env_SilverRock = 301003;
+                // public static readonly int DataID_Env_GoldRock = 301004;
 
                 public static readonly float CamOrthoSize = 12F; 
                 public static readonly float JoystickFocusMinDist = -0.18F;
@@ -410,6 +436,9 @@ namespace STELLAREST_F1
                 public static readonly float MonsterSize_Small = 0.5f;
                 public static readonly float MonsterSize_Medium = 0.8f;
                 public static readonly float MonsterSize_Large = 1.2f;
+
+                // Env
+                public static readonly int RockElementsCount = 3;
 
             }
         }

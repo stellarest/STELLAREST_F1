@@ -55,7 +55,7 @@ namespace STELLAREST_F1
             Managers.Sprite.SetInfo(dataID, target: this);
 
             HeroData = Managers.Data.HeroDataDict[dataID];
-            gameObject.name += $"_{HeroData.DescriptionTextID}";
+            gameObject.name += $"_{HeroData.DescriptionTextID.Replace(" ", "")}";
 
             Collider.radius = HeroData.ColliderRadius;
             Speed = HeroData.MovementSpeed;

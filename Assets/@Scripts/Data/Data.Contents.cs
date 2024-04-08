@@ -320,24 +320,19 @@ namespace STELLAREST_F1.Data
 
         public string Trunk;
         public Vector3 TrunkPosition;
-        public int TrunkSortingOrder;
 
         public string Patch;
         public Vector3 PatchPosition;
-        public int PatchSortingOrder;
 
         public string Stump;
         public Vector3 StumpPosition;
-        public int StumpSortingOrder;
 
         public string Fruits;
         public Vector3[] FruitsScales;
         public Vector3[] FruitsPositions;
         public Vector3[] FruitsRotations;
-        public int FruitsSortingOrder;
 
-        public string ParticleMaterial;
-        public bool HasShadowSprite;
+        public string EndParticleMaterial;
     }
 
     public class TreeSpriteDataLoader : ILoader<int, TreeSpriteData>
@@ -348,6 +343,39 @@ namespace STELLAREST_F1.Data
         {
             Dictionary<int, TreeSpriteData> dict = new Dictionary<int, TreeSpriteData>();
             foreach (TreeSpriteData data in TreesSprites)
+                dict.Add(data.DataID, data);
+
+            return dict;
+        }
+    }
+
+    [Serializable]
+    public class RockSpriteData
+    {
+        public int DataID;
+        public string Tag;
+
+        public string Ore;
+        public string OreShadow;
+        public string OreLightColor;
+        public string OreParticleColor;
+        public int OreMaxParticleCount;
+
+        public string[] Spots;
+        public bool[] SpotsFlipXs;
+
+        public string[] Fragments;
+        public bool[] FragmentsFlipXs;
+    }
+
+    public class RockSpriteDataLoader : ILoader<int, RockSpriteData>
+    {
+        public List<RockSpriteData> RocksSprites = new List<RockSpriteData>();
+
+        public Dictionary<int, RockSpriteData> MakeDict()
+        {
+            Dictionary<int, RockSpriteData> dict = new Dictionary<int, RockSpriteData>();
+            foreach (RockSpriteData data in RocksSprites)
                 dict.Add(data.DataID, data);
 
             return dict;

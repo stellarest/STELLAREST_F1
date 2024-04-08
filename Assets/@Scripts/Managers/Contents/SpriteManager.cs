@@ -51,84 +51,84 @@ namespace STELLAREST_F1
             Sprite sprite = null;
             if (bodyType == EHeroBodyType.Human)
             {
-                sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.HBody_HumanType_Head);
+                sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.HBody_HumanType_Head_SP);
                 if (sprite != null)
                 {
                     heroBody.GetComponent<SpriteRenderer>(EHeroHead.HeadSkin).sprite = sprite;
                     heroBody.GetComponent<SpriteRenderer>(EHeroHead.HeadSkin).color = color;
                 }
 
-                sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.HBody_HumanType_Ears);
+                sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.HBody_HumanType_Ears_SP);
                 if (sprite != null)
                 {
                     heroBody.GetComponent<SpriteRenderer>(EHeroHead.Ears).sprite = sprite;
                     heroBody.GetComponent<SpriteRenderer>(EHeroHead.Ears).color = color;
                 }
 
-                sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.HBody_HumanType_Torso);
+                sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.HBody_HumanType_Torso_SP);
                 if (sprite != null)
                 {
                     heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.TorsoSkin).sprite = sprite;
                     heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.TorsoSkin).color = color;
                 }
 
-                sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.HBody_HumanType_ArmL);
+                sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.HBody_HumanType_ArmL_SP);
                 if (sprite != null)
                 {
                     heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.ArmLSkin).sprite = sprite;
                     heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.ArmLSkin).color = color;
                 }
 
-                sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.HBody_HumanType_ArmR);
+                sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.HBody_HumanType_ArmR_SP);
                 if (sprite != null)
                 {
                     heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.ArmRSkin).sprite = sprite;
                     heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.ArmRSkin).color = color;
                 }
 
-                sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.HBody_HumanType_ForearmL);
+                sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.HBody_HumanType_ForearmL_SP);
                 if (sprite != null)
                 {
                     heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.ForearmLSkin).sprite = sprite;
                     heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.ForearmLSkin).color = color;
                 }
 
-                sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.HBody_HumanType_ForearmR);
+                sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.HBody_HumanType_ForearmR_SP);
                 if (sprite != null)
                 {
                     heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.ForearmRSkin).sprite = sprite;
                     heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.ForearmRSkin).color = color;
                 }
 
-                sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.HBody_HumanType_HandL);
+                sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.HBody_HumanType_HandL_SP);
                 if (sprite != null)
                 {
                     heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.HandLSkin).sprite = sprite;
                     heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.HandLSkin).color = color;
                 }
 
-                sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.HBody_HumanType_HandR);
+                sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.HBody_HumanType_HandR_SP);
                 if (sprite != null)
                 {
                     heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.HandRSkin).sprite = sprite;
                     heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.HandRSkin).color = color;
                 }
 
-                sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.HBody_HumanType_Finger);
+                sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.HBody_HumanType_Finger_SP);
                 if (sprite != null)
                 {
                     heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.FingerSkin).sprite = sprite;
                     heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.FingerSkin).color = color;
                 }
 
-                sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.HBody_HumanType_Pelvis);
+                sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.HBody_HumanType_Pelvis_SP);
                 if (sprite != null)
                 {
                     heroBody.GetComponent<SpriteRenderer>(EHeroLowerBody.PelvisSkin).sprite = sprite;
                     heroBody.GetComponent<SpriteRenderer>(EHeroLowerBody.PelvisSkin).color = color;
                 }
 
-                sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.HBody_HumanType_Shin);
+                sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.HBody_HumanType_Shin_SP);
                 if (sprite != null)
                 {
                     heroBody.GetComponent<SpriteRenderer>(EHeroLowerBody.ShinLSkin).sprite = sprite;
@@ -138,7 +138,7 @@ namespace STELLAREST_F1
                     heroBody.GetComponent<SpriteRenderer>(EHeroLowerBody.ShinRSkin).color = color;
                 }
 
-                sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.HBody_HumanType_Leg);
+                sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.HBody_HumanType_Leg_SP);
                 if (sprite != null)
                 {
                     heroBody.GetComponent<SpriteRenderer>(EHeroLowerBody.LegLSkin).sprite = sprite;
@@ -679,6 +679,7 @@ namespace STELLAREST_F1
                     break;
 
                 case EEnvType.Rock:
+                    SetBodySprites(dataID, Managers.Data.RockSpriteDataDict[dataID], env);
                     break;
             }
         }
@@ -691,56 +692,53 @@ namespace STELLAREST_F1
             Sprite sprite = Managers.Resource.Load<Sprite>(treeSpriteData.Trunk);
             if (sprite != null)
             {
-                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.EBody_Trunk, true, true);
+                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.ETreeBody_Trunk, true, true);
                 tr.localPosition = treeSpriteData.TrunkPosition;
-
                 spr = tr.GetComponent<SpriteRenderer>();
                 spr.sprite = sprite;
-                spr.sortingOrder = treeSpriteData.TrunkSortingOrder;
             }
 
             // Patch
             sprite = Managers.Resource.Load<Sprite>(treeSpriteData.Patch);
             if (sprite != null)
             {
-                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.EBody_Patch, true, true);
+                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.ETreeBody_Patch, true, true);
                 tr.localPosition = treeSpriteData.PatchPosition;
-
                 spr = tr.GetComponent<SpriteRenderer>();
                 spr.sprite = sprite;
-                spr.sortingOrder = treeSpriteData.PatchSortingOrder;
             }
 
             // Stump
             sprite = Managers.Resource.Load<Sprite>(treeSpriteData.Stump);
             if (sprite != null)
             {
-                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.EBody_Stump, true, true);
+                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.ETreeBody_Stump, true, true);
                 tr.localPosition = treeSpriteData.StumpPosition;
-
                 spr = tr.GetComponent<SpriteRenderer>();
                 spr.sprite = sprite;
-                spr.sortingOrder = treeSpriteData.StumpSortingOrder;
             }
 
             // EndParticles
-            Material endParticleMat = Managers.Resource.Load<Material>(treeSpriteData.ParticleMaterial);
+            tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.EBody_EndParticle, true, true);
+            Material endParticleMat = Managers.Resource.Load<Material>(treeSpriteData.EndParticleMaterial);
             if (endParticleMat != null)
             {
-                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.EBody_EndParticle, true, true);
                 tr.localPosition = Vector3.up * 2f;
-
                 ParticleSystemRenderer pr = tr.GetComponent<ParticleSystemRenderer>();
                 pr.material = endParticleMat;
             }
+            else
+            {
+                // Remove Particle System
+                ParticleSystem ps = tr.GetComponent<ParticleSystem>();
+                UnityEngine.Component.DestroyImmediate(ps);
+            }
+            tr.gameObject.SetActive(false);
 
-            // Fruits - Need Test on Loading Apple Tree
+            tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.ETreeBody_Fruits, true, true);
             sprite = Managers.Resource.Load<Sprite>(treeSpriteData.Fruits);
             if (sprite != null)
             {
-                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.EBody_Fruits, true, true);
-                tr.localPosition = Vector3.zero;
-
                 for (int i = 0; i < treeSpriteData.FruitsPositions.Length; ++i)
                 {
                     tr.GetChild(i).localScale = treeSpriteData.FruitsScales[i];
@@ -752,21 +750,138 @@ namespace STELLAREST_F1
 
                     spr = tr.GetChild(i).GetComponent<SpriteRenderer>();
                     spr.sprite = sprite;
-                    spr.sortingOrder = treeSpriteData.FruitsSortingOrder;
                 }
             }
+            else
+            {
+                for (int i = 0; i < tr.childCount; ++i)
+                    tr.GetChild(i).gameObject.SetActive(false);
+            }
 
-            sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.Shadow);
-            if (treeSpriteData.HasShadowSprite && sprite != null)
+            sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.Shadow_SP);
+            if (sprite != null)
             {
                 tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.EBody_Shadow, true, true);
-                tr.localPosition = Vector3.zero;
-
                 spr = tr.GetComponent<SpriteRenderer>();
                 spr.sprite = sprite;
             }
+        }
 
-            Debug.Log("Complate Set Env Sprites");
+        private void SetBodySprites(int dataID, Data.RockSpriteData rockSpriteData, Env env)
+        {
+            Transform tr = null;
+            SpriteRenderer spr = null;
+            ParticleSystem ps = null;
+            ParticleSystemRenderer pr = null;
+
+            string rock = ReadOnly.String.ERock_Rock_SP;
+            string empty = ReadOnly.String.ERock_Empty_SP;
+            Material rockMat = Managers.Resource.Load<Material>(ReadOnly.String.ERock_Mat);
+
+            Sprite sprite = Managers.Resource.Load<Sprite>(rock);
+            if (sprite != null)
+            {
+                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.ERock_Rock, true, true);
+                spr = tr.GetComponent<SpriteRenderer>();
+                spr.sprite = sprite;
+                spr.material = rockMat;
+            }
+
+            sprite = Managers.Resource.Load<Sprite>(empty);
+            if (sprite != null)
+            {
+                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.ERock_Empty, true, true);
+                spr = tr.GetComponent<SpriteRenderer>();
+                spr.sprite = sprite;
+                spr.material = rockMat;
+                tr.gameObject.SetActive(false);
+            }
+
+            sprite = Managers.Resource.Load<Sprite>(rockSpriteData.Ore);
+            if (sprite != null)
+            {
+                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.ERock_Ore, true, true);
+                spr = tr.GetComponent<SpriteRenderer>();
+                spr.sprite = sprite;
+                spr.material = rockMat;
+            }
+
+            sprite = Managers.Resource.Load<Sprite>(rockSpriteData.OreShadow);
+            if (sprite != null)
+            {
+                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.ERock_OreShadow, true, true);
+                spr = tr.GetComponent<SpriteRenderer>();
+                spr.sprite = sprite;
+                spr.material = rockMat;
+            }
+
+            string colorCode = rockSpriteData.OreLightColor;
+            tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.ERock_OreLight, true, true);
+            if (string.IsNullOrEmpty(colorCode) == false)
+            {
+                if (ColorUtility.TryParseHtmlString(colorCode, out Color oreLightColor))
+                {
+                    sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.Light_SP);
+                    spr = tr.GetComponent<SpriteRenderer>();
+                    spr.sprite = sprite;
+                    spr.color = new Color(oreLightColor.r, oreLightColor.g, oreLightColor.b, spr.color.a);
+                }
+            }
+            else
+                tr.gameObject.SetActive(false);
+
+            tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.ERock_OreParticle, true, true);
+            colorCode = rockSpriteData.OreParticleColor;
+            if (string.IsNullOrEmpty(colorCode) == false)
+            {
+                if (ColorUtility.TryParseHtmlString(colorCode, out Color oreParticleColor))
+                {
+                    ps = tr.GetComponent<ParticleSystem>();
+                    var main = ps.main;
+                    main.startColor = oreParticleColor;
+                    main.maxParticles = rockSpriteData.OreMaxParticleCount;
+                }
+
+                // *** Rock이 아닌, 다른 객체에서 Glow를 건드리게 되면 복사 생성으로 변경 ***
+                pr = tr.GetComponent<ParticleSystemRenderer>();
+                pr.material =  Managers.Resource.Load<Material>(ReadOnly.String.Glow_Mat);
+            }
+            else
+                tr.gameObject.SetActive(false);
+
+            tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.EBody_EndParticle, true, true);
+            pr = tr.GetComponent<ParticleSystemRenderer>();
+            pr.material = rockMat;
+            tr.gameObject.SetActive(false);
+
+            // Spots
+            for (int i = 0; i < rockSpriteData.Spots.Length; ++i)
+            {
+                string name = ReadOnly.String.ERock_Spot + (i + 1).ToString();
+                tr = Util.FindChild<Transform>(env.gameObject, name, true, true);
+                spr = tr.GetComponent<SpriteRenderer>();
+                spr.sprite = Managers.Resource.Load<Sprite>(rockSpriteData.Spots[i]);
+                spr.flipX = rockSpriteData.SpotsFlipXs[i];
+            }
+
+            // Fragments
+            for (int i = 0; i < rockSpriteData.Fragments.Length; ++i)
+            {
+                string name = ReadOnly.String.ERock_Fragment + (i + 1).ToString();
+                tr = Util.FindChild<Transform>(env.gameObject, name, true, true);
+                spr = tr.GetComponent<SpriteRenderer>();
+                spr.sprite = Managers.Resource.Load<Sprite>(rockSpriteData.Fragments[i]);
+                spr.flipX = rockSpriteData.FragmentsFlipXs[i];
+            }
+
+            // Shadow
+            sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.Shadow_SP);
+            if (sprite != null)
+            {
+                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.EBody_Shadow, true, true);
+                spr = tr.GetComponent<SpriteRenderer>();
+                spr.sprite = sprite;
+            }
         }
         #endregion
     }

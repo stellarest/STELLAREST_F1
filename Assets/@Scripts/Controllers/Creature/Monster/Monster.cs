@@ -71,7 +71,7 @@ namespace STELLAREST_F1
             Managers.Sprite.SetInfo(dataID, target: this);
 
             MonsterData = Managers.Data.MonsterDataDict[dataID];
-            gameObject.name += $"_{MonsterData.DescriptionTextID}";
+            gameObject.name += $"_{MonsterData.DescriptionTextID.Replace(" ", "")}";
 
             Collider.radius = MonsterData.ColliderRadius;
             Speed = MonsterData.MovementSpeed;

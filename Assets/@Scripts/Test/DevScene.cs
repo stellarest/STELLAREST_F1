@@ -31,15 +31,64 @@ namespace STELLAREST_F1
             cam.Target = hero;
 
             // Spawn Monsters
-            // {
-            //     Vector3 spawnPos = Util.MakeSpawnPosition(hero, 5f, 10f);
-            //     Monster mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Chicken);
-            // }
+            {
+                // Vector3 spawnPos = Util.MakeSpawnPosition(hero, 4f, 8f);
+                // Monster mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Chicken);
+
+                // spawnPos = Util.MakeSpawnPosition(hero, 4f, 8f);
+                // mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Turkey);
+
+                // spawnPos = Util.MakeSpawnPosition(hero, 4f, 8f);
+                // mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Bunny);
+
+                // spawnPos = Util.MakeSpawnPosition(hero, 4f, 8f);
+                // mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Pug);
+            }
 
             // Spawn Envs
             {
+                // Trees
+                // Vector3 spawnPos = Util.MakeSpawnPosition(hero, -2f, -2f);
+                // Env env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_AshTree);
+
+                // spawnPos = Util.MakeSpawnPosition(hero, -2f, -2f);
+                // env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_BlackOakTree);
+
+                // spawnPos = Util.MakeSpawnPosition(hero, -2f, -2f);
+                // env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_GreenAppleTree);
+
+                // spawnPos = Util.MakeSpawnPosition(hero, -2f, -2f);
+                // env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_IvyTree);
+
+                // spawnPos = Util.MakeSpawnPosition(hero, -2f, -2f);
+                // env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_ManticoreTree);
+
+                // spawnPos = Util.MakeSpawnPosition(hero, -2f, -2f);
+                // env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_MapleTree);
+
+                // spawnPos = Util.MakeSpawnPosition(hero, -2f, -2f);
+                // env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_OakTree);
+
+                // spawnPos = Util.MakeSpawnPosition(hero, -2f, -2f);
+                // env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_RedAppleTree);
+
+                // spawnPos = Util.MakeSpawnPosition(hero, -2f, -2f);
+                // env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_RedSandalTree);
+
+                // spawnPos = Util.MakeSpawnPosition(hero, -2f, -2f);
+                // env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_WillowTree);
+
+                // spawnPos = Util.MakeSpawnPosition(hero, -2f, -2f);
+                // env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_YewTree);
+            }
+
+            {
+                // Rocks
                 Vector3 spawnPos = Util.MakeSpawnPosition(hero, 1f, 2f);
-                Env env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_RedAppleTree);
+                Env env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_SilverRock);
+
+                spawnPos = new Vector3(env.transform.position.x + 2f, env.transform.position.y, 0f);
+                env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_GoldRock);
             }
         }
 
