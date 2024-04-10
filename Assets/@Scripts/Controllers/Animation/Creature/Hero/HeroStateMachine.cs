@@ -10,40 +10,27 @@ namespace STELLAREST_F1
     {
         private Hero _owner = null;
         private HeroAnimation _heroAnim = null;
+        public event System.Action<ECreatureState> OnHeroAnimationComplatedHandler = null;
 
         public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            if (_owner == null && _heroAnim == null)
-            {
-                _heroAnim = animator.GetComponent<HeroAnimation>();
-                _owner = _heroAnim.GetOwner<Hero>();
-            }
+            _heroAnim = _heroAnim == null ? animator.GetComponent<HeroAnimation>() : _heroAnim;
+            _owner = _owner == null ? _heroAnim.GetOwner<Hero>() : _owner;
         }
-
-        // public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-        // {
-        //     // float endThreshold = 0.9f;
-        //     // if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureState.Attack))
-        //     // {
-        //     //     if (stateInfo.normalizedTime >= endThreshold)
-        //     //         _owner.CreatureState = ECreatureState.Idle;
-        //     // }
-        // }
 
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            // Idle 자동
+            if (_owner?.HeroMoveState == EHeroMoveState.ForceMove)
+                return;
+
+            if (stateInfo.shortNameHash == _heroAnim?.GetHash(ECreatureState.Idle))
+                OnHeroAnimationComplatedHandler?.Invoke(ECreatureState.Idle);
+
+            if (stateInfo.shortNameHash == _heroAnim?.GetHash(ECreatureState.Move))
+                OnHeroAnimationComplatedHandler?.Invoke(ECreatureState.Move);
+
             if (stateInfo.shortNameHash == _heroAnim?.GetHash(ECreatureState.Attack))
-            {
-                _owner.CreatureState = ECreatureState.Idle;
-                Debug.Log("ATTACK TO IDLE.");
-            }
+                OnHeroAnimationComplatedHandler?.Invoke(ECreatureState.Attack);
         }
     }
 }
-
-/*
-            CreatureAnimation creatureAnim = animator.GetComponent<CreatureAnimation>();
-            if (stateInfo.shortNameHash == creatureAnim.GetHash(ECreatureState.Attack))
-                Debug.Log("ENTER");
-*/

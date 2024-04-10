@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -8,7 +9,6 @@ namespace STELLAREST_F1
 {
     public class Creature : BaseObject
     {
-        public float Speed { get; protected set; } = 1.0f; // TEMP
         public CreatureBody CreatureBody { get; protected set; } = null;
         public CreatureAnimation CreatureAnim { get; private set; } = null;
         public ECreatureRarity CreatureRarity { get; protected set; } = ECreatureRarity.Common;
@@ -26,10 +26,28 @@ namespace STELLAREST_F1
             }
         }
 
+        [SerializeField] private bool[] _animState = null;
+        public bool this[ECreatureState state]
+        {
+            get => _animState[(int)state];
+            set => _animState[(int)state] = value;
+        }
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.T))
+                CreatureState = ECreatureState.Attack;
+
+            if (Input.GetKeyDown(KeyCode.Q))
+                CreatureState = ECreatureState.Idle;
+        }
+
         public override bool Init()
         {
             if (base.Init() == false)
                 return false;
+
+            _animState = new bool[(int)ECreatureState.Max];
 
             return true;
         }
@@ -43,30 +61,17 @@ namespace STELLAREST_F1
             return true;
         }
 
-        protected override void Refresh()
+        protected override void EnterInGame()
         {
+            Hp = MaxHp;
             CreatureBody.ShowBody(false);
             CreatureState = ECreatureState.Idle;
             StartWait(() => BaseAnim.IsPlay() == false,
                       () => CreatureBody.ShowBody(true));
+
+            StartCoroutine(CoUpdateAI());
         }
 
-        //protected virtual void SetCreatureFromData(int dataID) {  }
-
-        // protected virtual void RefreshCreature()
-        // {
-        //     CreatureBody.ShowBody(false);
-        //     // *** 모든 크리쳐는 Idle State에서 시작 (고정) ***
-        //     CreatureState = ECreatureState.Idle;
-        //     StartWait(() => BaseAnim.IsPlay() == false, 
-        //               () => CreatureBody.ShowBody(true));
-
-        //     // 일단은 몬스터에만..
-        //     //StartCoroutine(CoUpdateAI());
-        // }
-
-        // AI
-        public float UpdateAITick { get; protected set; } = 0f;
         protected IEnumerator CoUpdateAI()
         {
             while (true)
@@ -89,11 +94,8 @@ namespace STELLAREST_F1
                         UpdateDead();
                         break;
                 }
-
-                if (UpdateAITick > 0f)
-                    yield return new WaitForSeconds(UpdateAITick);
-                else
-                    yield return null;
+                
+                yield return null;
             }
         }
 
@@ -107,28 +109,28 @@ namespace STELLAREST_F1
         protected void StartWait(float seconds)
         {
             CancelWait();
-            // _coWait가 null인지 아닌지만 판단할 수 있게 되었다.
             _coWait = StartCoroutine(CoWait(seconds));
         }
-
         private IEnumerator CoWait(float seconds)
         {
             yield return new WaitForSeconds(seconds);
             _coWait = null;
         }
 
-        protected void StartWait(System.Func<bool> func, System.Action callback = null)
+
+        protected void StartWait(System.Func<bool> waitCondition, System.Action callback = null)
         {
             CancelWait();
-            _coWait = StartCoroutine(CoWait(func, callback));
+            _coWait = StartCoroutine(CoWait(waitCondition, callback));
         }
-
-        private IEnumerator CoWait(System.Func<bool> func, System.Action callback = null)
+        private IEnumerator CoWait(System.Func<bool> waitCondition, System.Action callback = null)
         {
-            yield return new WaitUntil(func);
+            yield return new WaitUntil(waitCondition);
             _coWait = null;
             callback?.Invoke();
         }
+
+
 
         protected void CancelWait()
         {
@@ -136,6 +138,30 @@ namespace STELLAREST_F1
                 StopCoroutine(_coWait);
             _coWait = null;
         }
+        #endregion
+
+        #region Animation Events
+        protected void OnAnimationComplated(ECreatureState endState)
+        {
+            switch (endState)
+            {
+                case ECreatureState.Idle:
+                    OnIdleAnimationCompleted();
+                    break;
+
+                case ECreatureState.Move:
+                    OnMoveAnimationCompleted();
+                    break;
+
+                case ECreatureState.Attack:
+                    OnAttackAnimationCompleted();
+                    break;
+            }
+        }
+
+        protected virtual void OnIdleAnimationCompleted() { }
+        protected virtual void OnMoveAnimationCompleted() { }
+        protected virtual void OnAttackAnimationCompleted() { }
         #endregion
     }
 }

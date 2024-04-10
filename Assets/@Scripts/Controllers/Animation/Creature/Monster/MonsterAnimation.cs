@@ -62,9 +62,6 @@ namespace STELLAREST_F1
                     }
                     break;
 
-                case ECreatureState.Skill:
-                    break;
-
                 case ECreatureState.Dead:
                     {
                         _owner.MonsterBody.SetEmoji(EMonsterEmoji.Dead);

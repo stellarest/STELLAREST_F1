@@ -10,6 +10,7 @@ namespace STELLAREST_F1
         public HashSet<Hero> Heroes { get; } = new HashSet<Hero>();
         public HashSet<Monster> Monsters { get; } = new HashSet<Monster>();
         public HashSet<Env> Envs { get; } = new HashSet<Env>();
+        public HeroCamp Camp { get; private set; } = null;
 
         #region Roots
         public Transform GetRoot(string name)
@@ -26,7 +27,7 @@ namespace STELLAREST_F1
         public Transform EnvRoot => GetRoot(ReadOnly.String.EnvRootName);
         #endregion
 
-        public T Spawn<T>(Vector3 position, EObjectType spawnObjectType, int dataID) where T : BaseObject
+        public T Spawn<T>(Vector3 position, EObjectType spawnObjectType, int dataID = -1) where T : BaseObject
         {
             GameObject go = null;
             switch (spawnObjectType)
@@ -84,6 +85,21 @@ namespace STELLAREST_F1
                         Envs.Add(env);
                         return env as T;
                     }
+
+                case EObjectType.HeroCamp:
+                    {
+                        go = Managers.Resource.Instantiate(ReadOnly.String.HeroCamp);
+                        if (go == null)
+                        {
+                            Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{ReadOnly.String.HeroCamp}\"");
+                            return null;
+                        }
+
+                        go.transform.position = position;
+                        go.name = $"@{go.name}";
+                        Camp = go.GetComponent<HeroCamp>();
+                        return Camp as T;
+                    }
             }
 
             return null;
@@ -103,6 +119,10 @@ namespace STELLAREST_F1
 
                 case EObjectType.Env:
                     Envs.Remove(obj as Env);
+                    break;
+
+                case EObjectType.HeroCamp:
+                    Camp = null;
                     break;
             }
 

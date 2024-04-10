@@ -29,6 +29,7 @@ namespace STELLAREST_F1
             None = -1,
             Bird,
             Quadrupeds,
+            Max = Quadrupeds + 1
         }
 
         public enum EMonsterSize
@@ -70,22 +71,34 @@ namespace STELLAREST_F1
 
         public enum EObjectType
         {
-            None,
+            None = -1,
             Hero,
             Monster,
             Env,
+            HeroCamp,
             Projectile,
+            Max = Projectile + 1
         }
 
         public enum ECreatureState
         {
-            None,
+            None = -1,
             Idle,
             Move,
             Attack,
             Skill,
             OnDamaged,
-            Dead
+            Dead,
+            Max = Dead + 1
+        }
+
+        public enum EHeroMoveState
+        {
+            None,
+            TargetMonster,
+            CollectEnv,
+            ReturnToCamp,
+            ForceMove,
         }
 
         public enum ELookAtDirection
@@ -222,11 +235,36 @@ namespace STELLAREST_F1
 
         public enum EEnvState
         {
-            None = -1,
+            None,
             Idle,
             OnDamaged,
             Dead,
-            Max = Dead + 1
+        }
+
+        public enum ELayer
+        {
+            None = -1,
+            Default = 0,
+            Transparent = 1,
+            IgnoreRaycast = 2,
+            Dummy1 = 3,
+            Water = 4,
+            UI = 5,
+            Hero = 6,
+            Monster = 7,
+            Env = 8,
+            Obstacle = 9,
+            Projectile = 10,
+            Max,
+        }
+
+        public enum EStatModType
+        {
+            None,
+            Add,
+            PercentAdd,
+            PercentMulti,
+            Max
         }
 
         public static class ReadOnly
@@ -256,6 +294,7 @@ namespace STELLAREST_F1
                 public static readonly string EnvRootName = "@Envs";
                 public static readonly string UI_Joystick = "UI_Joystick";
                 public static readonly string AnimationBody = "AnimationBody";
+                public static readonly string HeroCamp = "HeroCamp";
 
                 // Sprite - Hero Human Body Type
                 public static readonly string HBody_HumanType_Head_SP = "Human_Head.sprite";
@@ -401,7 +440,7 @@ namespace STELLAREST_F1
                 public static readonly int DataID_Monster_Bunny = 201020;
                 public static readonly int DataID_Monster_Pug = 201021;
 
-                // ID - Envs Trees
+                // ID - Envs Trees & Rocks
                 public static readonly int DataID_Env_AshTree = 301000;
                 public static readonly int DataID_Env_BlackOakTree = 301001;
                 public static readonly int DataID_Env_GreenAppleTree = 301002;
@@ -423,12 +462,6 @@ namespace STELLAREST_F1
                 public static readonly int DataID_Env_WhetstoneRock = 301018;
                 public static readonly int DataID_Env_ZincRock = 301019;
 
-                // public static readonly int DataID_Env_OakTree = 301000;
-                // public static readonly int DataID_Env_RedAppleTree = 301001;
-                // public static readonly int DataID_Env_StoneRock = 301002;
-                // public static readonly int DataID_Env_SilverRock = 301003;
-                // public static readonly int DataID_Env_GoldRock = 301004;
-
                 public static readonly float CamOrthoSize = 12F; 
                 public static readonly float JoystickFocusMinDist = -0.18F;
                 public static readonly float JoystickFocusMaxDist = 0.18F;
@@ -437,8 +470,12 @@ namespace STELLAREST_F1
                 public static readonly float MonsterSize_Medium = 0.8f;
                 public static readonly float MonsterSize_Large = 1.2f;
 
+                public static readonly float DefaultSearchRange = 8.0f;
+                public static readonly float DefaultStopRange = 1.0f;
+
                 // Env
                 public static readonly int RockElementsCount = 3;
+                
 
             }
         }

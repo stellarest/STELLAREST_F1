@@ -18,17 +18,16 @@ namespace STELLAREST_F1
         public static bool IsValid(this GameObject go)
             => go != null && go.activeSelf;
 
+        public static bool IsValid(this Transform tr)
+            => tr != null && tr.gameObject.activeSelf;
+
+        public static bool IsValid(this BaseObject bo)
+            => bo != null && bo.isActiveAndEnabled;
+
         public static void DestroyChild(this GameObject go)
         {
             foreach (Transform child in go.transform)
                 Managers.Resource.Destroy(child.gameObject);
-        }
-
-        public static void TranslateEx(this Transform transform, Vector3 dir)
-        {
-            BaseObject bo = transform.gameObject.GetComponent<BaseObject>();
-            if (bo != null)
-                bo.TranslateEx(dir);
         }
 
         public static void Shuffle<T>(this IList<T> list)

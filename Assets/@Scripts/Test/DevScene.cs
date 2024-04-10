@@ -24,20 +24,31 @@ namespace STELLAREST_F1
         private void Test()
         {
             UI_Joystick joystick = Managers.UI.ShowBaseUI<UI_Joystick>();
-            //Hero hero = Managers.Object.Spawn<Hero>(Vector3.zero, ReadOnly.Numeric.DataID_Lancer);
-
-            Hero hero = Managers.Object.Spawn<Hero>(Vector3.zero, EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
+            HeroCamp camp = Managers.Object.Spawn<HeroCamp>(Vector3.zero, EObjectType.HeroCamp);
             CameraController cam = Camera.main.GetComponent<CameraController>();
-            cam.Target = hero;
+            cam.Target = camp;
 
-            // Spawn Monsters
+            Hero firstSpawnedHero = null;
             {
-                // Vector3 spawnPos = Util.MakeSpawnPosition(hero, 4f, 8f);
-                // Monster mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Chicken);
+                // Heroes
+                for (int i = 0; i < 1; ++i)
+                {
+                    Vector3 spawnPos = Util.MakeSpawnPosition(camp, -5f, 5f);
+                    Hero hero = Managers.Object.Spawn<Hero>(spawnPos, EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
+                    if (i == 0)
+                        firstSpawnedHero = hero;
+                }
+            }
 
-                // spawnPos = Util.MakeSpawnPosition(hero, 4f, 8f);
+            {
+                // Monsters - Bird
+                Vector3 spawnPos = Util.MakeSpawnPosition(firstSpawnedHero, 4f, 8f);
+                Monster mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Chicken);
+
+                // spawnPos = Util.MakeSpawnPosition(firstSpawnedHero, 4f, 8f);
                 // mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Turkey);
 
+                // Monsters - Quadrupeds
                 // spawnPos = Util.MakeSpawnPosition(hero, 4f, 8f);
                 // mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Bunny);
 
@@ -45,10 +56,9 @@ namespace STELLAREST_F1
                 // mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Pug);
             }
 
-            // Spawn Envs
             {
-                // Trees
-                // Vector3 spawnPos = Util.MakeSpawnPosition(hero, -2f, -2f);
+                // Env - Trees
+                // Vector3 spawnPos = Util.MakeSpawnPosition(firstSpawnedHero, -12f, 12f);
                 // Env env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_AshTree);
 
                 // spawnPos = Util.MakeSpawnPosition(hero, -2f, -2f);
@@ -83,12 +93,12 @@ namespace STELLAREST_F1
             }
 
             {
-                // Rocks
-                Vector3 spawnPos = Util.MakeSpawnPosition(hero, 1f, 2f);
-                Env env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_SilverRock);
+                // Env - Rocks
+                // Vector3 spawnPos = Util.MakeSpawnPosition(firstSpawnedHero, -4f, 4f);
+                // Env env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_SilverRock);
 
-                spawnPos = new Vector3(env.transform.position.x + 2f, env.transform.position.y, 0f);
-                env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_GoldRock);
+                // spawnPos = new Vector3(env.transform.position.x + 2f, env.transform.position.y, 0f);
+                // env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_GoldRock);
             }
         }
 

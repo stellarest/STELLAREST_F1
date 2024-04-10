@@ -9,6 +9,7 @@ using UnityEngine;
 // TODO NEXT
 - Wizard Attack Anim 교정
 - 전투 준비 (A* 없이)
+- Monster RigidBody Linear Drag (100 -> 300) : 나중에 종류별로 바꿔야함.
 */
 
 public class T_E_S_T : MonoBehaviour
@@ -57,6 +58,24 @@ Only One류 게임. (벤서류는 아니고)
 정처없이 돌아다니면서 사냥 + 육성 + 대략 100레벨 정도 만들고 클리어하면 끝.
 조금 더 쉽게 클리어 하고 싶다 -> 엘리트 패키지 구매(광고 제거 포함, 3,300 또는 5,500, 걍 돈 쓴거에 대한 경험만 시켜주면 됨)
 
+Rigidbody Velocity는 방향 * 크기만 넣어주면 된다 (시간은 넣는것이 아니다)
+
+// public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+// {
+//     float endThreshold = 0.9f;
+//     if (stateInfo.shortNameHash == _heroAnim?.GetHash(ECreatureState.Attack))
+//     {
+//         if (stateInfo.normalizedTime >= endThreshold)
+//             _owner.CreatureState = ECreatureState.Idle;
+//     }
+// }
+
+private void Update()
+{
+    float moveDistPerFrame = Speed * Time.deltaTime;
+    transform.TranslateEx(MoveDir * moveDistPerFrame);
+}
+
 캐릭터 해금의 재미를 줘야할듯
 1. Paladin
 2. Archer
@@ -94,86 +113,6 @@ Paladin
 
 Archer
 - Skill_A : 더블샷 -> 멀티샷(Unique) -> 연발 멀티샷(Elite)
-- Skill_B : 
+- Skill_B : 윈드 애로우(슬로우) -> 넉백 애로우(넉백 + 스턴)
 
-// Int 타입 제이슨은 무조건 -1등으로 초기화해줘야함. 안그러면 읽어오지못함.
-
-// 히어로 애니메이션 Upper, Lower 나눌 필요가 없을 것 같긴함.
-// 나누면, 애니메이션 제작하기 너무 빡세짐
-// 나눴을 때 이점은 세부적으로, 다양하게 조합이 가능하겠지만, 그럴 이유는 아직까진 없음.
-// 그리고 이점이 하나 더 있긴한데, Movement Speed가 빨라지면 하반신만 빨라지도록. 이런식의 조정이 가능함.
-
-    public SpriteRenderer[] GetSkin()
-    {
-        string[] names = System.Enum.GetNames(typeof(EHeroHead));
-        for (int i = 0; i < names.Length; ++i)
-        {
-            if (names[i].Contains("Skin"))
-            {
-                SpriteRenderer spr = GetSpriteRenderer(Util.GetEnumFromString<EHeroHead>(names[i]));
-                if (spr != null)
-                    Skin.Add(spr);
-                else
-                    Debug.LogWarning($"{nameof(HeroBody)}, {nameof(GetSkin)}, Input : \"{names[i]}\"");
-            }
-        }
-
-        names = System.Enum.GetNames(typeof(EHeroUpperBody));
-        for (int i = 0; i < names.Length; ++i)
-        {
-            if (names[i].Contains("Skin"))
-            {
-                SpriteRenderer spr = GetSpriteRenderer(Util.GetEnumFromString<EHeroUpperBody>(names[i]));
-                if (spr != null)
-                    Skin.Add(spr);
-                else
-                    Debug.LogWarning($"{nameof(HeroBody)}, {nameof(GetSkin)}, Input : \"{names[i]}\"");
-            }
-        }
-
-        names = System.Enum.GetNames(typeof(EHeroLowerBody));
-        for (int i = 0; i < names.Length; ++i)
-        {
-            if (names[i].Contains("Skin"))
-            {
-                SpriteRenderer spr = GetSpriteRenderer(Util.GetEnumFromString<EHeroLowerBody>(names[i]));
-                if (spr != null)
-                    Skin.Add(spr);
-                else
-                    Debug.LogWarning($"{nameof(HeroBody)}, {nameof(GetSkin)}, Input : \"{names[i]}\"");
-            }
-        }
-
-        return Skin.ToArray();
-    }
-
-    // Reflection Memo
-    private void InitHeroSprites(int dataID, Transform[] targets)
-    {
-        Data.HeroSpriteData sprites = Managers.Data.HeroesSpritesDict[dataID];
-        Type type = typeof(Data.HeroSpriteData);
-        FieldInfo[] fields = type.GetFields();
-    }
-
-    private void InitHeroSprites(int dataID, Transform[] targets)
-    {
-        Data.HeroSpriteData sprites = Managers.Data.HeroesSpritesDict[dataID];
-
-        Type type = typeof(Data.HeroSpriteData);
-        FieldInfo[] fields = type.GetFields();
-        for (int i = 0; i < fields.Length; ++i)
-        {
-            if (fields[i].FieldType != typeof(string) || fields[i].Name.Contains("Tag"))
-                continue;
-
-            string fieldValue = (string)fields[i].GetValue(sprites);
-            if (string.IsNullOrEmpty(fieldValue))
-                continue;
-
-            string fieldName = fields[i].Name;
-            EHeroBodyParts bodyPart = Util.GetEnumFromString<EHeroBodyParts>(fieldName);
-            Sprite sprite = Managers.Resource.Load<Sprite>(fieldValue);
-            targets[(int)bodyPart].GetComponent<SpriteRenderer>().sprite = sprite;
-        }
-    }
 */

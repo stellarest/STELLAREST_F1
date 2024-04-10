@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering;
 using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
@@ -14,8 +15,8 @@ namespace STELLAREST_F1
         public BaseAnimation BaseAnim { get; private set; } = null;
         public CircleCollider2D Collider { get; private set; } = null;
         public Rigidbody2D RigidBody { get; private set; } = null;
+        public SortingGroup SortingGroup { get; private set; } = null;
         public float ColliderRadius { get => Collider != null ? Collider.radius : 0.0f; }
-        //public float ColliderRadius2 { get => Collider?.radius ?? 0.0f; }
         public Vector3 CenterPosition { get => transform.position + Vector3.up * ColliderRadius; }
 
         [SerializeField] private ELookAtDirection _lookAtDir = ELookAtDirection.Right;
@@ -33,6 +34,67 @@ namespace STELLAREST_F1
         }
 
         public Vector3 MoveDir { get; protected set; } = Vector2.zero;
+
+
+        #region Stat
+        public float Hp { get; set; } = 0f;
+        
+        protected Stat _maxHp = null; 
+        public float MaxHp
+        {
+            get => _maxHp.BaseValue;
+            protected set
+            {
+                // DO SOMETHING
+            }
+        }
+        
+        protected Stat _atk = null;
+        public float Atk
+        {
+            get => _atk.BaseValue;
+            protected set
+            {
+                // DO SOMETHING
+            }
+        }
+
+        protected Stat _atkRange = null;
+        public float AtkRange
+        {
+            get => _atkRange.BaseValue;
+            protected set
+            {
+                // DO SOMETHING
+            }
+        }
+
+        protected Stat _movementSpeed = null;
+        public float MovementSpeed
+        {
+            get => _movementSpeed.BaseValue;
+            protected set
+            {
+                // DO SOMETHING
+            }
+        }
+        #endregion
+
+        public BaseObject Target { get; protected set; } = null;
+        protected float AttackDistance
+        {
+            get
+            {
+                float env = 2.2f;
+                if (Target != null && Target.ObjectType == EObjectType.Env)
+                    return UnityEngine.Mathf.Max(env, this.Collider.radius + Target.Collider.radius + 0.1f);
+
+                return AtkRange;
+            }
+        }
+        protected float SearchDistanceSQR => ReadOnly.Numeric.DefaultSearchRange * ReadOnly.Numeric.DefaultSearchRange;
+        protected float StopDistanceSQR => ReadOnly.Numeric.DefaultStopRange * ReadOnly.Numeric.DefaultStopRange;
+
         public override bool Init()
         {
             if (base.Init() == false)
@@ -43,6 +105,7 @@ namespace STELLAREST_F1
             RigidBody = gameObject.GetOrAddComponent<Rigidbody2D>();
             RigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
             RigidBody.gravityScale = 0f;
+            SortingGroup = gameObject.GetOrAddComponent<SortingGroup>();
 
             return true;
         }
@@ -58,21 +121,20 @@ namespace STELLAREST_F1
             return true;
         }
 
-        protected virtual void Refresh()
+        protected virtual void EnterInGame()
         {
         }
 
-        public void TranslateEx(Vector3 dir)
+        public void SetRigidBodyVelocity(Vector2 velocity)
         {
-            transform.Translate(dir);
-            if (dir.x > 0)
-            {
-                LookAtDir = ELookAtDirection.Right;
-            }
-            else if (dir.x < 0)
-            {
+            if (RigidBody == null)
+                return;
+                
+            RigidBody.velocity = velocity;
+            if (velocity.x < 0)
                 LookAtDir = ELookAtDirection.Left;
-            }
+            else
+                LookAtDir = ELookAtDirection.Right;
         }
 
         #region Animation

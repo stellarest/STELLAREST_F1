@@ -13,7 +13,7 @@ namespace STELLAREST_F1
         public BaseObject Owner { get; set; } = null;
         public T GetOwner<T>() where T : BaseObject => Owner as T;
         public Animator Animator { get; private set; } = null;
-        public AnimationCallback AnimCallback { get; private set; } = null;
+        public AnimationClipCallback AnimClipCallback { get; private set; } = null;
 
         protected readonly int Play_Idle = Animator.StringToHash(ReadOnly.String.AnimParam_Idle);
         protected readonly int Play_Move = Animator.StringToHash(ReadOnly.String.AnimParam_Move);
@@ -46,7 +46,7 @@ namespace STELLAREST_F1
                 return false;
 
             Animator = GetComponent<Animator>();
-            AnimCallback = GetComponent<AnimationCallback>();
+            AnimClipCallback = GetComponent<AnimationClipCallback>();
             //_originScaleX = transform.localScale.x;
 
             return true;

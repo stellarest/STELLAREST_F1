@@ -40,7 +40,7 @@ namespace STELLAREST_F1
         {
             if (base.SetInfo(dataID) == false)
             {
-                Refresh();
+                EnterInGame();
                 return false;
             }
 
@@ -52,13 +52,17 @@ namespace STELLAREST_F1
             EnvData = Managers.Data.EnvDataDict[dataID];
             gameObject.name += $"_{EnvData.DescriptionTextID.Replace(" ", "")}";
 
-            Refresh();
+            // Set Stat
+            _maxHp = new Stat(EnvData.MaxHp);
+
+            EnterInGame();
             return true;
         }
 
-        protected override void Refresh()
+        protected override void EnterInGame()
         {
-            base.Refresh();
+            base.EnterInGame();
+            Hp = MaxHp;
             EnvState = EEnvState.Idle;
         }
 

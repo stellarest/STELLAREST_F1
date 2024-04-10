@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace STELLAREST_F1
 {
-    public class AnimationCallback : MonoBehaviour
+    public class AnimationClipCallback : MonoBehaviour
     {
         public event System.Action OnDustVFXHandler = null;
         public void OnDustVFX() => OnDustVFXHandler?.Invoke();
