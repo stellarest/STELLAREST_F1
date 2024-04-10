@@ -80,7 +80,7 @@ namespace STELLAREST_F1
         }
         #endregion
 
-        public BaseObject Target { get; protected set; } = null;
+        public BaseObject Target { get; set; } = null;
         protected float AttackDistance
         {
             get
@@ -140,9 +140,16 @@ namespace STELLAREST_F1
         #region Animation
         public void UpdateAnimation()
             => BaseAnim.UpdateAnimation();
+        #endregion
 
-        // public void Flip(LookAtDirection lookAtDir)
-        //     => BaseAnim.Flip(lookAtDir);
+        #region Battle
+        public virtual void OnDamaged(BaseObject attacker)
+        {
+        }
+
+        public virtual void OnDead(BaseObject attacker)
+        {
+        }
         #endregion
     }
 }

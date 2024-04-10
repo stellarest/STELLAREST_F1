@@ -10,6 +10,8 @@ using UnityEngine;
 - Wizard Attack Anim 교정
 - 전투 준비 (A* 없이)
 - Monster RigidBody Linear Drag (100 -> 300) : 나중에 종류별로 바꿔야함.
+- 멀어졌을 때 이동속도가 증가하는 로그함수 구현하기.
+- 객체 죽었을 때 처리. 투명화할것인가? Dead 애니메이션만 재생시키고 Despawn 할 것인가?
 */
 
 public class T_E_S_T : MonoBehaviour
@@ -57,6 +59,8 @@ public class T_E_S_T : MonoBehaviour
 Only One류 게임. (벤서류는 아니고)
 정처없이 돌아다니면서 사냥 + 육성 + 대략 100레벨 정도 만들고 클리어하면 끝.
 조금 더 쉽게 클리어 하고 싶다 -> 엘리트 패키지 구매(광고 제거 포함, 3,300 또는 5,500, 걍 돈 쓴거에 대한 경험만 시켜주면 됨)
+
+데미지 처리는 항상 피해를 받는 입장(Creature.OnDamaged)에서 처리하는 것이 정석.
 
 Rigidbody Velocity는 방향 * 크기만 넣어주면 된다 (시간은 넣는것이 아니다)
 

@@ -50,15 +50,15 @@ namespace STELLAREST_F1
                 switch (value)
                 {
                     case EHeroMoveState.CollectEnv:
-                        NeedArrange = true;
+                        NeedArrange = true; // -> ChangeColliderSize(EColliderSize.Large);
                         break;
 
                     case EHeroMoveState.TargetMonster:
-                        NeedArrange = true;
+                        NeedArrange = true; // -> ChangeColliderSize(EColliderSize.Large);
                         break;
 
                     case EHeroMoveState.ForceMove:
-                        NeedArrange = true;
+                        NeedArrange = true; // -> ChangeColliderSize(EColliderSize.Large);
                         break;
                 }
             }
@@ -71,6 +71,10 @@ namespace STELLAREST_F1
             private set
             {
                 _needArrange = value;
+                if (value)
+                    ChangeColliderSize(EColliderSize.Large);
+                else
+                    TryResizeCollider();
             }
         }
 
@@ -100,8 +104,10 @@ namespace STELLAREST_F1
             HeroAnim = CreatureAnim as HeroAnimation;
             HeroAnim.SetInfo(dataID, this);
             HeroStateMachine heroStateMachine = HeroAnim.Animator.GetBehaviour<HeroStateMachine>();
-            heroStateMachine.OnHeroAnimationComplatedHandler -= OnAnimationComplated;
-            heroStateMachine.OnHeroAnimationComplatedHandler += OnAnimationComplated;
+            heroStateMachine.OnHeroAnimUpdateHandler -= OnAnimationUpdate;
+            heroStateMachine.OnHeroAnimUpdateHandler += OnAnimationUpdate;
+            heroStateMachine.OnHeroAnimComplatedHandler -= OnAnimationComplated;
+            heroStateMachine.OnHeroAnimComplatedHandler += OnAnimationComplated;
             Managers.Sprite.SetInfo(dataID, target: this);
 
             // SetStat
@@ -139,7 +145,9 @@ namespace STELLAREST_F1
             }
 
             if (_coWait != null)
+            {
                 return;
+            }
 
             Creature creature = FindClosestInRange(Managers.Object.Monsters) as Creature;
             if (creature != null)
@@ -221,7 +229,7 @@ namespace STELLAREST_F1
                 {
                     HeroMoveState = EHeroMoveState.None;
                     CreatureState = ECreatureState.Idle;
-                    NeedArrange = false;
+                    NeedArrange = false; // -> TryResizeCollider()
                 }
                 else
                 {
@@ -237,6 +245,55 @@ namespace STELLAREST_F1
             CreatureState = ECreatureState.Idle;
         }
         #endregion
+
+        #region Hero AI - Attack
+        protected override void UpdateAttack()
+        {
+            if (HeroMoveState == EHeroMoveState.ForceMove)
+            {
+                CreatureState = ECreatureState.Move;
+                return;
+            }
+
+            if (Target.IsValid() == false)
+            {
+                CreatureState = ECreatureState.Move;
+                return;
+            }
+            else
+            {
+                Vector3 toTargetDir = Target.transform.position - transform.position;
+                if (toTargetDir.x < 0)
+                    LookAtDir = ELookAtDirection.Left;
+                else
+                    LookAtDir = ELookAtDirection.Right;
+            }
+
+            ChangeColliderSize(EColliderSize.Default);
+        }
+        #endregion
+
+        protected override void UpdateDead()
+        {
+        }
+
+        private void OnJoystickStateChanged(EJoystickState joystickState)
+        {
+            switch (joystickState)
+            {
+                case EJoystickState.PointerUp:
+                    HeroMoveState = EHeroMoveState.None;
+                    break;
+
+                case EJoystickState.Drag:
+                    HeroMoveState = EHeroMoveState.ForceMove;
+                    CancelWait();
+                    break;
+
+                default:
+                    break;
+            }
+        }
 
         private void ChaseOrAttackTarget()
         {
@@ -264,46 +321,41 @@ namespace STELLAREST_F1
             }
         }
 
-        #region Hero AI - Attack
-        protected override void UpdateAttack()
+        protected override void ChangeColliderSize(EColliderSize colliderSize = EColliderSize.Default)
         {
-            if (HeroMoveState == EHeroMoveState.ForceMove)
+            switch (colliderSize)
             {
-                CreatureState = ECreatureState.Move;
-                return;
-            }
-
-            if (Target.IsValid() == false)
-            {
-                CreatureState = ECreatureState.Move;
-                return;
-            }
-        }
-        #endregion
-
-        protected override void UpdateDead()
-        {
-        }
-
-        private void OnJoystickStateChanged(EJoystickState joystickState)
-        {
-            switch (joystickState)
-            {
-                case EJoystickState.PointerUp:
-                    HeroMoveState = EHeroMoveState.None;
+                case EColliderSize.Small:
+                    Collider.radius = HeroData.ColliderRadius * 0.8f;
                     break;
 
-                case EJoystickState.Drag:
-                    HeroMoveState = EHeroMoveState.ForceMove;
-                    CancelWait();
+                case EColliderSize.Default:
+                    Collider.radius = HeroData.ColliderRadius;
                     break;
 
-                default:
+                case EColliderSize.Large:
+                    Collider.radius = HeroData.ColliderRadius * 1.2f;
                     break;
             }
         }
 
-        // Helper
+        protected override void TryResizeCollider()
+        {
+            ChangeColliderSize(EColliderSize.Small);
+            
+            foreach (Hero hero in Managers.Object.Heroes)
+            {
+                if (hero.HeroMoveState == EHeroMoveState.ReturnToCamp)
+                    return;
+            }
+
+            foreach (Hero hero in Managers.Object.Heroes)
+            {
+                if (hero.CreatureState == ECreatureState.Idle)
+                    hero.ChangeColliderSize(EColliderSize.Large);
+            }
+        }
+
         private Transform CampDestination
         {
             get
@@ -316,35 +368,37 @@ namespace STELLAREST_F1
             }
         }
 
-        private BaseObject FindClosestInRange(IEnumerable<BaseObject> objs)
+        #region Hero Animation Events - Update
+        protected override void OnAttackAnimationUpdate()
         {
-            BaseObject target = null;
-            float bestDistanceSQR = float.MaxValue;
+            if (Target.IsValid() == false)
+                return;
 
-            foreach (BaseObject obj in objs)
-            {
-                Vector3 dir = obj.transform.position - transform.position;
-                float distToTargetSqr = dir.sqrMagnitude;
-
-                if (SearchDistanceSQR < distToTargetSqr)
-                    continue;
-
-                if (bestDistanceSQR < distToTargetSqr)
-                    continue;
-
-                bestDistanceSQR = distToTargetSqr;
-                target = obj;
-            }
-
-            return target;
+            Target.OnDamaged(this);
         }
+        #endregion
 
-        public float TestAttackCoolTime = 2f;
-        #region Hero Animation Events
+        #region Hero Animation Events - Completed
+        private float TestCoolTime = 1.25f;
         protected override void OnAttackAnimationCompleted()
         {
+            if (Target.IsValid())
+                StartWait(TestCoolTime);
+
             CreatureState = ECreatureState.Idle;
-            StartWait(TestAttackCoolTime);
+
+        }
+        #endregion
+
+        #region Hero - Battle
+        public override void OnDamaged(BaseObject attacker)
+        {
+            base.OnDamaged(attacker);
+        }
+
+        public override void OnDead(BaseObject attacker)
+        {
+            base.OnDead(attacker);
         }
         #endregion
     }

@@ -26,28 +26,10 @@ namespace STELLAREST_F1
             }
         }
 
-        [SerializeField] private bool[] _animState = null;
-        public bool this[ECreatureState state]
-        {
-            get => _animState[(int)state];
-            set => _animState[(int)state] = value;
-        }
-
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.T))
-                CreatureState = ECreatureState.Attack;
-
-            if (Input.GetKeyDown(KeyCode.Q))
-                CreatureState = ECreatureState.Idle;
-        }
-
         public override bool Init()
         {
             if (base.Init() == false)
                 return false;
-
-            _animState = new bool[(int)ECreatureState.Max];
 
             return true;
         }
@@ -104,6 +86,9 @@ namespace STELLAREST_F1
         protected virtual void UpdateAttack() { }
         protected virtual void UpdateDead() { }
 
+        protected virtual void ChangeColliderSize(EColliderSize colliderSize = EColliderSize.Default) { }
+        protected virtual void TryResizeCollider() { }
+
         #region Wait
         protected Coroutine _coWait = null;
         protected void StartWait(float seconds)
@@ -140,7 +125,31 @@ namespace STELLAREST_F1
         }
         #endregion
 
-        #region Animation Events
+        #region Animation Events - Update
+        protected void OnAnimationUpdate(ECreatureState updateState)
+        {
+            switch (updateState)
+            {
+                case ECreatureState.Idle:
+                    OnIdleAnimationUpdate();
+                    break;
+
+                case ECreatureState.Move:
+                    OnMoveAnimationUpdate();
+                    break;
+
+                case ECreatureState.Attack:
+                    OnAttackAnimationUpdate();
+                    break;
+            }
+        }
+
+        protected virtual void OnIdleAnimationUpdate() { }
+        protected virtual void OnMoveAnimationUpdate() { }
+        protected virtual void OnAttackAnimationUpdate() { }
+        #endregion
+
+        #region Animation Events - Completed
         protected void OnAnimationComplated(ECreatureState endState)
         {
             switch (endState)
@@ -162,6 +171,61 @@ namespace STELLAREST_F1
         protected virtual void OnIdleAnimationCompleted() { }
         protected virtual void OnMoveAnimationCompleted() { }
         protected virtual void OnAttackAnimationCompleted() { }
+        #endregion
+
+        #region Helper
+        protected BaseObject FindClosestInRange(IEnumerable<BaseObject> objs)
+        {
+            BaseObject target = null;
+            float bestDistanceSQR = float.MaxValue;
+
+            foreach (BaseObject obj in objs)
+            {
+                Vector3 dir = obj.transform.position - transform.position;
+                float distToTargetSqr = dir.sqrMagnitude;
+
+                if (SearchDistanceSQR < distToTargetSqr)
+                    continue;
+
+                if (bestDistanceSQR < distToTargetSqr)
+                    continue;
+
+                bestDistanceSQR = distToTargetSqr;
+                target = obj;
+            }
+
+            return target;
+        }
+        #endregion
+
+        #region Battle
+        public override void OnDamaged(BaseObject attacker)
+        {
+            if (attacker.IsValid() == false)
+                return;
+
+            // 나중에 BaseObject(ex. Cannon)에서도 적용하려면 바꿔야함.
+            // 일단 지금은 Creature끼리 데미지를 주고 받도록.
+            Creature creature = attacker as Creature;
+            if (creature == null)
+                return;
+
+            float finalDamage = creature.Atk;
+            Hp = UnityEngine.Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
+
+            if (Hp <= 0f)
+            {
+                Hp = 0f;
+                OnDead(attacker);
+            }
+        }
+
+        public override void OnDead(BaseObject attacker)
+        {
+            attacker.Target = null;
+            Managers.Object.Despawn(this); // TEMP
+            //CreatureState = ECreatureState.Dead;
+        }
         #endregion
     }
 }

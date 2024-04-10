@@ -44,8 +44,10 @@ namespace STELLAREST_F1
             MonsterAnim = CreatureAnim as MonsterAnimation;
             MonsterAnim.SetInfo(dataID, this);
             MonsterStateMachine monsterStateMachine = MonsterAnim.Animator.GetBehaviour<MonsterStateMachine>();
-            monsterStateMachine.OnMonsterAnimationComplatedHandler -= OnAnimationComplated;
-            monsterStateMachine.OnMonsterAnimationComplatedHandler += OnAnimationComplated;
+            monsterStateMachine.OnMonsterAnimUpdateHandler -= OnAnimationUpdate;
+            monsterStateMachine.OnMonsterAnimUpdateHandler += OnAnimationUpdate;
+            monsterStateMachine.OnMonsterAnimComplatedHandler -= OnAnimationComplated;
+            monsterStateMachine.OnMonsterAnimComplatedHandler += OnAnimationComplated;
             Managers.Sprite.SetInfo(dataID, target: this);
 
             // SetStat
@@ -73,56 +75,52 @@ namespace STELLAREST_F1
         private Vector3 _destPos = Vector3.zero;
         private Vector3 _initPos = Vector3.zero;
 
+        public bool Test_IsPatrol = false;
+
         #region Monster - AI
         protected override void UpdateIdle()
         {
+            if (Target.IsValid())
+            {
+                Vector3 toTargetDir = Target.transform.position - transform.position;
+                if (toTargetDir.x < 0)
+                    LookAtDir = ELookAtDirection.Left;
+                else
+                    LookAtDir = ELookAtDirection.Right;
+            }
+
             if (_coWait != null)
                 return;
 
-            // Patrol
             {
-                if (Target == null)
+                if (Target.IsValid() == false)
                 {
                     int patrolPercent = 20;
                     if (UnityEngine.Random.Range(0, 100) <= patrolPercent)
                     {
-                        _destPos = _initPos + new Vector3(Random.Range(-2, 2), Random.Range(-2, 2));
+                        Test_IsPatrol = true;
+                        _destPos = _initPos + new Vector3(Random.Range(-4, 4), Random.Range(-4, 4));
                         CreatureState = ECreatureState.Move;
                         return;
                     }
                 }
             }
 
-            // Search Player
             {
-                Creature target = null;
-                float bestDistSqr = float.MaxValue;
-
-                foreach (Hero hero in Managers.Object.Heroes)
+                Creature creature = FindClosestInRange(Managers.Object.Heroes) as Creature;
+                if (creature != null)
                 {
-                    Vector3 toTargetDir = hero.transform.position - transform.position;
-                    float toTargetDistSQR = toTargetDir.sqrMagnitude;
-
-                    if (toTargetDistSQR > SearchDistanceSQR)
-                        continue;
-
-                    if (toTargetDistSQR > SearchDistanceSQR)
-                        continue;
-
-                    target = hero;
-                    bestDistSqr = toTargetDistSQR;
-                }
-
-                Target = target;
-                Debug.Log(Target != null);
-                if (Target != null)
+                    Test_IsPatrol = false;
+                    Target = creature;
                     CreatureState = ECreatureState.Move;
+                    return;
+                }
             }
         }
 
         protected override void UpdateMove()
         {
-            if (Target == null)
+            if (Target.IsValid() == false)
             {
                 Vector3 toDestDir = _destPos - transform.position;
 
@@ -134,6 +132,13 @@ namespace STELLAREST_F1
                 }
 
                 SetRigidBodyVelocity(toDestDir.normalized * MovementSpeed);
+                Creature creature = FindClosestInRange(Managers.Object.Heroes) as Creature;
+                if (creature != null)
+                {
+                    Test_IsPatrol = false;
+                    Target = creature;
+                    CreatureState = ECreatureState.Move;
+                }
             }
             else
             {
@@ -144,11 +149,6 @@ namespace STELLAREST_F1
                 if (attackDistSQR > toTargetDistSQR)
                 {
                     CreatureState = ECreatureState.Attack;
-                    // [ TODO ]
-                    // ***** Animation이 끝났을 때, Idle로 돌아가고, 스킬의 쿨타임 만큼 Wait로 바꿔야함. *****
-                    // 영웅전설5 같은 느낌으로
-                    // Monster의 Rigidbody.Mass도 본스터별로 설정을 해야할듯. 플레이어한테 밀림.
-                    // StartWait(2f);
                 }
                 else
                 {
@@ -169,14 +169,15 @@ namespace STELLAREST_F1
         // Attack이나 Skill은 실행 이후 Creature Move로 돌아가면 된다.
         protected override void UpdateAttack()
         {
-            if (Target != null)
-            {
-                Vector3 toTargetDir = Target.transform.position - transform.position;
-                if (toTargetDir.x < 0)
-                    LookAtDir = ELookAtDirection.Left;
-                else
-                    LookAtDir = ELookAtDirection.Right;
-            }
+            // TEMPx
+            // if (Target != null)
+            // {
+            //     Vector3 toTargetDir = Target.transform.position - transform.position;
+            //     if (toTargetDir.x < 0)
+            //         LookAtDir = ELookAtDirection.Left;
+            //     else
+            //         LookAtDir = ELookAtDirection.Right;
+            // }
         }
 
         protected override void UpdateDead()
@@ -184,13 +185,39 @@ namespace STELLAREST_F1
         }
         #endregion
 
+        #region Monster Animation Events - Update
+        protected override void OnAttackAnimationUpdate()
+        {
+            if (Target.IsValid() == false)
+                return;
 
-        public float TestAttackCoolTime = 1.25f;
-        #region Monster Animation Events
+            Target.OnDamaged(this);
+        }
+        #endregion
+
+        #region Monster Animation Events - Completed
+        private float TestCoolTime = 2.25f;
         protected override void OnAttackAnimationCompleted()
         {
+            if (Target.IsValid())
+                StartWait(TestCoolTime);
+
             CreatureState = ECreatureState.Idle;
-            StartWait(TestAttackCoolTime);
+        }
+        #endregion
+
+        #region Monster - Battle
+        public override void OnDamaged(BaseObject attacker)
+        {
+            base.OnDamaged(attacker);
+            Debug.Log($"{gameObject.name} Hp : {Hp} / {MaxHp}");
+        }
+
+        public override void OnDead(BaseObject attacker)
+        {
+            base.OnDead(attacker);
+            // TODO : DROP ITEM
+            // Managers.Object.Despawn(this);
         }
         #endregion
     }

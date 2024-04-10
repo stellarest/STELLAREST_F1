@@ -267,6 +267,13 @@ namespace STELLAREST_F1
             Max
         }
 
+        public enum EColliderSize
+        {
+            Small,
+            Default,
+            Large
+        }
+
         public static class ReadOnly
         {
             public static class String
@@ -471,7 +478,7 @@ namespace STELLAREST_F1
                 public static readonly float MonsterSize_Large = 1.2f;
 
                 public static readonly float DefaultSearchRange = 8.0f;
-                public static readonly float DefaultStopRange = 1.0f;
+                public static readonly float DefaultStopRange = 1.25f;
 
                 // Env
                 public static readonly int RockElementsCount = 3;

@@ -50,10 +50,8 @@ namespace STELLAREST_F1
             Managers.Sprite.SetInfo(dataID, this);
 
             EnvData = Managers.Data.EnvDataDict[dataID];
-            gameObject.name += $"_{EnvData.DescriptionTextID.Replace(" ", "")}";
-
-            // Set Stat
             _maxHp = new Stat(EnvData.MaxHp);
+            gameObject.name += $"_{EnvData.DescriptionTextID.Replace(" ", "")}";
 
             EnterInGame();
             return true;
@@ -66,13 +64,30 @@ namespace STELLAREST_F1
             EnvState = EEnvState.Idle;
         }
 
-        private void Update()
+        public override void OnDamaged(BaseObject attacker)
         {
-            if (Input.GetKeyDown(KeyCode.Q))
-                EnvState = EEnvState.Idle;
+            if (EnvState == EEnvState.Dead)
+                return;
 
-            if (Input.GetKeyDown(KeyCode.W))
-                EnvState = EEnvState.Dead;
+            float finalDamage = 1f;
+            EnvState = EEnvState.OnDamaged;
+
+            // TODO : Show UI
+            Hp = UnityEngine.Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
+            Debug.Log($"{gameObject.name} Hp : {Hp} / {MaxHp}");
+            if (Hp <= 0f)
+            {
+                Hp = 0f;
+                OnDead(attacker);
+            }
+        }
+
+        public override void OnDead(BaseObject attacker)
+        {
+            Managers.Object.Despawn(this); // TEMP
+            //EnvState = EEnvState.Dead;
+            // TODO : Drop Item
+            // Managers.Object.Despawn(this);
         }
     }
 }
