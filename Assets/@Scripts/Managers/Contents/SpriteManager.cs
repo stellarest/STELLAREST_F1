@@ -10,6 +10,40 @@ namespace STELLAREST_F1
 {
     public class SpriteManager
     {
+        public Sprite[] Pickaxes { get; private set; } = null;
+        public Dictionary<EEnvType, Sprite[]> HeroCollectEnvWeaponSpritesDict { get; private set; } = null;
+
+        public void Init()
+        {
+            // string key = ReadOnly.String.Pickaxe_Common_SP;
+            // Pickaxe = Managers.Resource.Load<Sprite>(ReadOnly.String.Pickaxe_Common_SP);
+            // if (Pickaxe == null)
+            //     Debug.LogWarning($"{nameof(SpriteManager)}, {nameof(Init)}, Input : \"{data.PrefabLabel}\"");
+
+            // Pickaxes = new Sprite[(int)EObjectRarity.Max];
+            // Pickaxes[(int)EObjectRarity.Common] = Managers.Resource.Load<Sprite>(ReadOnly.String.Pickaxe_Common_SP);
+            // Pickaxes[(int)EObjectRarity.Elite] = Managers.Resource.Load<Sprite>(ReadOnly.String.Pickaxe_Elite_SP);
+            // for (int i = 0; i < Pickaxes.Length; ++i)
+            // {
+            //     if (Pickaxes[i] == null)
+            //         Debug.LogWarning($"{nameof(SpriteManager)}, {nameof(Init)}");
+            // }
+
+            if (HeroCollectEnvWeaponSpritesDict == null)
+            {
+                HeroCollectEnvWeaponSpritesDict = new Dictionary<EEnvType, Sprite[]>();
+                Sprite[] envWeaponSprites = new Sprite[(int)EObjectRarity.Max];
+                HeroCollectEnvWeaponSpritesDict.Add(EEnvType.Tree, envWeaponSprites);
+                envWeaponSprites[(int)EObjectRarity.Common] = Managers.Resource.Load<Sprite>(ReadOnly.String.WoodcutterAxe_Common_SP);
+                envWeaponSprites[(int)EObjectRarity.Elite] = Managers.Resource.Load<Sprite>(ReadOnly.String.WoodcutterAxe_Elite_SP);
+
+                envWeaponSprites = new Sprite[(int)EObjectRarity.Max];
+                HeroCollectEnvWeaponSpritesDict.Add(EEnvType.Rock, envWeaponSprites);
+                envWeaponSprites[(int)EObjectRarity.Common] = Managers.Resource.Load<Sprite>(ReadOnly.String.Pickaxe_Common_SP);
+                envWeaponSprites[(int)EObjectRarity.Elite] = Managers.Resource.Load<Sprite>(ReadOnly.String.Pickaxe_Elite_SP);
+            }
+        }
+
         public void SetInfo(int dataID, BaseObject target)
         {
             switch (target.ObjectType)
@@ -165,27 +199,27 @@ namespace STELLAREST_F1
                         heroBody.GetComponent<SpriteRenderer>(EHeroHead.Hair).color = color;
                 }
 
-                sprite = Managers.Resource.Load<Sprite>(head.Eyebrows[(int)EHeroEmoji.Default]);
+                sprite = Managers.Resource.Load<Sprite>(head.Eyebrows[(int)EHeroEmoji.Idle]);
                 if (sprite != null)
                 {
                     heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).sprite = sprite;
-                    if (ColorUtility.TryParseHtmlString(head.EyebrowsColors[(int)EHeroEmoji.Default], out color))
+                    if (ColorUtility.TryParseHtmlString(head.EyebrowsColors[(int)EHeroEmoji.Idle], out color))
                         heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows).color = color;
                 }
 
-                sprite = Managers.Resource.Load<Sprite>(head.Eyes[(int)EHeroEmoji.Default]);
+                sprite = Managers.Resource.Load<Sprite>(head.Eyes[(int)EHeroEmoji.Idle]);
                 if (sprite != null)
                 {
                     heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).sprite = sprite;
-                    if (ColorUtility.TryParseHtmlString(head.EyesColors[(int)EHeroEmoji.Default], out color))
+                    if (ColorUtility.TryParseHtmlString(head.EyesColors[(int)EHeroEmoji.Idle], out color))
                         heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes).color = color;
                 }
 
-                sprite = Managers.Resource.Load<Sprite>(head.Mouth[(int)EHeroEmoji.Default]);
+                sprite = Managers.Resource.Load<Sprite>(head.Mouth[(int)EHeroEmoji.Idle]);
                 if (sprite != null)
                 {
                     heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).sprite = sprite;
-                    if (ColorUtility.TryParseHtmlString(head.MouthColors[(int)EHeroEmoji.Default], out color))
+                    if (ColorUtility.TryParseHtmlString(head.MouthColors[(int)EHeroEmoji.Idle], out color))
                         heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth).color = color;
                 }
 
@@ -357,11 +391,15 @@ namespace STELLAREST_F1
             }
             else // Wepon
             {
+                Sprite leftWeaponSP = null;
+                Sprite rightWeaponSP = null;
+
                 Data.HeroSpriteData_Weapon weapon = Managers.Data.HeroSpriteDataDict[heroSpriteData.DataID].Weapon;
 
                 // Weapon - Left
                 Transform weaponL = heroBody.GetComponent<Transform>(EHeroWeapon.WeaponL);
                 sprite = Managers.Resource.Load<Sprite>(weapon.LWeapon);
+                leftWeaponSP = sprite;
                 if (sprite != null)
                 {
                     SpriteRenderer spr = heroBody.GetComponent<SpriteRenderer>(EHeroWeapon.WeaponL);
@@ -407,6 +445,7 @@ namespace STELLAREST_F1
                 // Weapon - Right
                 Transform weaponR = heroBody.GetComponent<Transform>(EHeroWeapon.WeaponR);
                 sprite = Managers.Resource.Load<Sprite>(weapon.RWeapon);
+                rightWeaponSP = sprite;
                 if (sprite != null)
                 {
                     SpriteRenderer spr = heroBody.GetComponent<SpriteRenderer>(EHeroWeapon.WeaponR);
@@ -447,6 +486,8 @@ namespace STELLAREST_F1
                         weaponR.GetChild(i).gameObject.SetActive(false);
                     weaponR.gameObject.SetActive(false);
                 }
+
+                heroBody.SetDefaultWeapon(leftWeaponSP, rightWeaponSP);
             }
         }
         #endregion

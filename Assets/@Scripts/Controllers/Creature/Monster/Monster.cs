@@ -46,8 +46,8 @@ namespace STELLAREST_F1
             MonsterStateMachine monsterStateMachine = MonsterAnim.Animator.GetBehaviour<MonsterStateMachine>();
             monsterStateMachine.OnMonsterAnimUpdateHandler -= OnAnimationUpdate;
             monsterStateMachine.OnMonsterAnimUpdateHandler += OnAnimationUpdate;
-            monsterStateMachine.OnMonsterAnimComplatedHandler -= OnAnimationComplated;
-            monsterStateMachine.OnMonsterAnimComplatedHandler += OnAnimationComplated;
+            monsterStateMachine.OnMonsterAnimComplatedHandler -= OnAnimationCompleted;
+            monsterStateMachine.OnMonsterAnimComplatedHandler += OnAnimationCompleted;
             Managers.Sprite.SetInfo(dataID, target: this);
 
             // SetStat
@@ -75,19 +75,11 @@ namespace STELLAREST_F1
         private Vector3 _destPos = Vector3.zero;
         private Vector3 _initPos = Vector3.zero;
 
-        public bool Test_IsPatrol = false;
-
         #region Monster - AI
         protected override void UpdateIdle()
         {
             if (Target.IsValid())
-            {
-                Vector3 toTargetDir = Target.transform.position - transform.position;
-                if (toTargetDir.x < 0)
-                    LookAtDir = ELookAtDirection.Left;
-                else
-                    LookAtDir = ELookAtDirection.Right;
-            }
+                LookAtTarget();
 
             if (_coWait != null)
                 return;
@@ -98,7 +90,6 @@ namespace STELLAREST_F1
                     int patrolPercent = 20;
                     if (UnityEngine.Random.Range(0, 100) <= patrolPercent)
                     {
-                        Test_IsPatrol = true;
                         _destPos = _initPos + new Vector3(Random.Range(-4, 4), Random.Range(-4, 4));
                         CreatureState = ECreatureState.Move;
                         return;
@@ -107,12 +98,12 @@ namespace STELLAREST_F1
             }
 
             {
-                Creature creature = FindClosestInRange(Managers.Object.Heroes) as Creature;
-                if (creature != null)
+                Creature creature = FindClosestInRange(ReadOnly.Numeric.DefaultSearchRange, Managers.Object.Heroes) as Creature;
+                if (creature.IsValid())
                 {
-                    Test_IsPatrol = false;
                     Target = creature;
                     CreatureState = ECreatureState.Move;
+                    CreatureMoveState = ECreatureMoveState.TargetToEnemy;
                     return;
                 }
             }
@@ -123,61 +114,41 @@ namespace STELLAREST_F1
             if (Target.IsValid() == false)
             {
                 Vector3 toDestDir = _destPos - transform.position;
-
                 float endThreshold = 0.01f;
                 if (toDestDir.sqrMagnitude < endThreshold)
                 {
                     CreatureState = ECreatureState.Idle;
+                    CreatureMoveState = ECreatureMoveState.None;
                     return;
                 }
 
                 SetRigidBodyVelocity(toDestDir.normalized * MovementSpeed);
-                Creature creature = FindClosestInRange(Managers.Object.Heroes) as Creature;
-                if (creature != null)
+                Creature creature = FindClosestInRange(ReadOnly.Numeric.DefaultSearchRange, Managers.Object.Heroes, func: IsValid) as Creature;
+                if (creature.IsValid())
                 {
-                    Test_IsPatrol = false;
                     Target = creature;
                     CreatureState = ECreatureState.Move;
+                    CreatureMoveState = ECreatureMoveState.TargetToEnemy;
+                    return;
                 }
             }
             else
             {
-                // Chase
-                Vector3 toTargetDir = Target.transform.position - transform.position;
-                float toTargetDistSQR = toTargetDir.sqrMagnitude;
-                float attackDistSQR = AttackDistance * AttackDistance;
-                if (attackDistSQR > toTargetDistSQR)
+                ChaseOrAttackTarget(AttackDistance, ReadOnly.Numeric.DefaultSearchRange);
+                if (Target.IsValid() == false)
                 {
-                    CreatureState = ECreatureState.Attack;
-                }
-                else
-                {
-                    SetRigidBodyVelocity(toTargetDir.normalized * MovementSpeed);
-                    // 너무 멀어지면 포기
-                    if (toTargetDistSQR > SearchDistanceSQR)
-                    {
-                        _destPos = _initPos;
-                        Target = null;
-                        CreatureState = ECreatureState.Move; // Idle로 가면 안되나. 아 그냥 바로 획돌아가는 것이구만
-                        // 사실 이미 무드상태라 넣어도 그만 안넣어도 그만. 알아서 하셈.
-                        // 그냥 그대로 이동한다는 것을 명시하는 것임.
-                    }
+                    Target = null;
+                    _destPos = _initPos;
+                    return;
                 }
             }
         }
 
         // Attack이나 Skill은 실행 이후 Creature Move로 돌아가면 된다.
-        protected override void UpdateAttack()
+        protected override void UpdateSkillAttack()
         {
-            // TEMPx
-            // if (Target != null)
-            // {
-            //     Vector3 toTargetDir = Target.transform.position - transform.position;
-            //     if (toTargetDir.x < 0)
-            //         LookAtDir = ELookAtDirection.Left;
-            //     else
-            //         LookAtDir = ELookAtDirection.Right;
-            // }
+            if (Target.IsValid())
+                LookAtTarget();
         }
 
         protected override void UpdateDead()
@@ -186,7 +157,7 @@ namespace STELLAREST_F1
         #endregion
 
         #region Monster Animation Events - Update
-        protected override void OnAttackAnimationUpdate()
+        protected override void OnSkillAttackAnimationUpdate()
         {
             if (Target.IsValid() == false)
                 return;
@@ -197,7 +168,7 @@ namespace STELLAREST_F1
 
         #region Monster Animation Events - Completed
         private float TestCoolTime = 2.25f;
-        protected override void OnAttackAnimationCompleted()
+        protected override void OnSkillAttackAnimationCompleted()
         {
             if (Target.IsValid())
                 StartWait(TestCoolTime);

@@ -31,39 +31,78 @@ namespace STELLAREST_F1
             set
             {
                 base.CreatureState = value;
-                if (value == ECreatureState.Move)
-                    RigidBody.mass = 3.0f;
-                else
-                    RigidBody.mass = 0.3f;
-            }
-        }
-
-        public HeroAnimation HeroAnim { get; private set; } = null;
-
-        [SerializeField] private EHeroMoveState _heroMoveState = EHeroMoveState.None;
-        public EHeroMoveState HeroMoveState
-        {
-            get => _heroMoveState;
-            private set
-            {
-                _heroMoveState = value;
                 switch (value)
                 {
-                    case EHeroMoveState.CollectEnv:
-                        NeedArrange = true; // -> ChangeColliderSize(EColliderSize.Large);
+                    case ECreatureState.Move:
+                        RigidBody.mass = 3.0f * 5.0f;
                         break;
 
-                    case EHeroMoveState.TargetMonster:
-                        NeedArrange = true; // -> ChangeColliderSize(EColliderSize.Large);
+                    case ECreatureState.Skill_Attack:
+                        RigidBody.mass = 3.0f * 500.0f;
                         break;
 
-                    case EHeroMoveState.ForceMove:
-                        NeedArrange = true; // -> ChangeColliderSize(EColliderSize.Large);
+                    default:
+                        RigidBody.mass = 3.0f;
                         break;
                 }
             }
         }
 
+        public override ECreatureMoveState CreatureMoveState
+        {
+            get => base.CreatureMoveState;
+            protected set
+            {
+                base.CreatureMoveState = value;
+                switch (value)
+                {
+                    case ECreatureMoveState.TargetToEnemy:
+                        NeedArrange = true; // -> ChangeColliderSize(EColliderSize.Large);
+                        break;
+
+                    case ECreatureMoveState.CollectEnv:
+                        NeedArrange = true; // -> ChangeColliderSize(EColliderSize.Large);
+                        break;
+
+                    case ECreatureMoveState.ForceMove:
+                        NeedArrange = true; // -> ChangeColliderSize(EColliderSize.Large);
+                        CancelWait();
+                        Target = null;
+                        break;
+                }
+            }
+        }
+
+        private Transform Destination 
+        { 
+            get
+            {
+                HeroCamp camp = Managers.Object.Camp;
+                if (CreatureMoveState == ECreatureMoveState.ReturnToBase)
+                    return camp.Pivot;
+
+                return camp.Destination;
+            }
+        }
+
+        public override bool CollectEnv
+        { 
+            get => base.CollectEnv; 
+            protected set
+            {
+                base.CollectEnv = value; 
+                if (value && Target.IsValid())
+                {
+                    Env envTarget = Target as Env;
+                    HeroBody.ChangeEnvWeapon(envTarget.EnvType);
+                }
+                else
+                    HeroBody.ChangeDefaultWeapon();
+            } 
+        }
+
+        public HeroAnimation HeroAnim { get; private set; } = null;
+        
         private bool _needArrange = true;
         public bool NeedArrange
         {
@@ -103,11 +142,15 @@ namespace STELLAREST_F1
             HeroBody = new HeroBody(this, dataID);
             HeroAnim = CreatureAnim as HeroAnimation;
             HeroAnim.SetInfo(dataID, this);
-            HeroStateMachine heroStateMachine = HeroAnim.Animator.GetBehaviour<HeroStateMachine>();
-            heroStateMachine.OnHeroAnimUpdateHandler -= OnAnimationUpdate;
-            heroStateMachine.OnHeroAnimUpdateHandler += OnAnimationUpdate;
-            heroStateMachine.OnHeroAnimComplatedHandler -= OnAnimationComplated;
-            heroStateMachine.OnHeroAnimComplatedHandler += OnAnimationComplated;
+            HeroStateMachine[] heroStateMachines = HeroAnim.Animator.GetBehaviours<HeroStateMachine>();
+            for (int i = 0; i < heroStateMachines.Length; ++i)
+            {
+                heroStateMachines[i].OnHeroAnimUpdateHandler -= OnAnimationUpdate;
+                heroStateMachines[i].OnHeroAnimUpdateHandler += OnAnimationUpdate;
+
+                heroStateMachines[i].OnHeroAnimCompletedHandler -= OnAnimationCompleted;
+                heroStateMachines[i].OnHeroAnimCompletedHandler += OnAnimationCompleted;
+            }
             Managers.Sprite.SetInfo(dataID, target: this);
 
             // SetStat
@@ -116,6 +159,9 @@ namespace STELLAREST_F1
             _atk = new Stat(HeroData.Atk);
             _atkRange = new Stat(HeroData.AtkRange);
             _movementSpeed = new Stat(HeroData.MovementSpeed);
+
+            // TEMP
+            ObjectRarity = EObjectRarity.Elite;
 
             gameObject.name += $"_{HeroData.DescriptionTextID.Replace(" ", "")}";
             Collider.radius = HeroData.ColliderRadius;
@@ -135,42 +181,49 @@ namespace STELLAREST_F1
                 LookAtDir = ELookAtDirection.Left;
         }
 
+        private void Update()
+        {
+            Debug.Log(_isCooltime);;
+        }
+
         #region Hero AI - Idle
         protected override void UpdateIdle()
         {
-            if (HeroMoveState == EHeroMoveState.ForceMove)
+            SetRigidBodyVelocity(Vector2.zero);
+            if (CreatureMoveState == ECreatureMoveState.ForceMove)
             {
                 CreatureState = ECreatureState.Move;
                 return;
             }
 
-            if (_coWait != null)
-            {
-                return;
-            }
+            if (Target.IsValid())
+                LookAtTarget();
 
-            Creature creature = FindClosestInRange(Managers.Object.Monsters) as Creature;
-            if (creature != null)
+            if (_isCooltime)
+                return;
+
+            Creature creature = FindClosestInRange(ReadOnly.Numeric.DefaultSearchRange, Managers.Object.Monsters, func: IsValid) as Creature;
+            if (creature.IsValid())
             {
                 Target = creature;
                 CreatureState = ECreatureState.Move;
-                HeroMoveState = EHeroMoveState.TargetMonster;
+                CreatureMoveState = ECreatureMoveState.TargetToEnemy;
                 return;
             }
 
-            Env env = FindClosestInRange(Managers.Object.Envs) as Env;
-            if (env != null)
+            Env env = FindClosestInRange(ReadOnly.Numeric.DefaultSearchRange, Managers.Object.Envs, func: IsValid) as Env;
+            if (env.IsValid())
             {
                 Target = env;
                 CreatureState = ECreatureState.Move;
-                HeroMoveState = EHeroMoveState.CollectEnv;
+                CreatureMoveState = ECreatureMoveState.CollectEnv;
                 return;
             }
 
             if (NeedArrange)
             {
                 CreatureState = ECreatureState.Move;
-                HeroMoveState = EHeroMoveState.ReturnToCamp;
+                CreatureMoveState = ECreatureMoveState.ReturnToBase;
                 return;
             }
         }
@@ -179,33 +232,33 @@ namespace STELLAREST_F1
         #region Hero AI - Move
         protected override void UpdateMove()
         {
-            if (HeroMoveState == EHeroMoveState.ForceMove)
+            if (CreatureMoveState == ECreatureMoveState.ForceMove)
             {
-                Vector3 dir = CampDestination.transform.position - transform.position;
+                Vector3 dir = Destination.transform.position - transform.position;
                 SetRigidBodyVelocity(dir.normalized * MovementSpeed);
                 return;
             }
 
-            if (HeroMoveState == EHeroMoveState.TargetMonster)
+            if (CreatureMoveState == ECreatureMoveState.TargetToEnemy)
             {
                 if (Target.IsValid() == false)
                 {
-                    HeroMoveState = EHeroMoveState.None;
+                    CreatureMoveState = ECreatureMoveState.None;
                     CreatureState = ECreatureState.Move;
                     return;
                 }
 
-                ChaseOrAttackTarget();
+                ChaseOrAttackTarget(AttackDistance, ReadOnly.Numeric.DefaultSearchRange);
                 return;
             }
 
-            if (HeroMoveState == EHeroMoveState.CollectEnv)
+            if (CreatureMoveState == ECreatureMoveState.CollectEnv)
             {
-                Creature creature = FindClosestInRange(Managers.Object.Monsters) as Creature;
+                Creature creature = FindClosestInRange(ReadOnly.Numeric.DefaultSearchRange, Managers.Object.Monsters, func: IsValid) as Creature;
                 if (creature != null)
                 {
                     Target = creature;
-                    HeroMoveState = EHeroMoveState.TargetMonster;
+                    CreatureMoveState = ECreatureMoveState.TargetToEnemy;
                     CreatureState = ECreatureState.Move;
                     return;
                 }
@@ -213,27 +266,28 @@ namespace STELLAREST_F1
                 // 이미 채집했으면 포기
                 if (Target.IsValid() == false)
                 {
-                    HeroMoveState = EHeroMoveState.None;
+                    CreatureMoveState = ECreatureMoveState.None;
                     CreatureState = ECreatureState.Move;
+                    CollectEnv = false;
                     return;
                 }
 
-                ChaseOrAttackTarget();
+                ChaseOrAttackTarget(AttackDistance, ReadOnly.Numeric.DefaultSearchRange);
                 return;
             }
 
-            if (HeroMoveState == EHeroMoveState.ReturnToCamp)
+            if (CreatureMoveState == ECreatureMoveState.ReturnToBase)
             {
-                Vector3 toDir = CampDestination.position - transform.position;
-                if (toDir.sqrMagnitude < StopDistanceSQR * StopDistanceSQR)
+                Vector3 toDir = Destination.position - transform.position;
+                if (toDir.sqrMagnitude < ReadOnly.Numeric.DefaultStopRange * ReadOnly.Numeric.DefaultStopRange)
                 {
-                    HeroMoveState = EHeroMoveState.None;
+                    CreatureMoveState = ECreatureMoveState.None;
                     CreatureState = ECreatureState.Idle;
                     NeedArrange = false; // -> TryResizeCollider()
                 }
                 else
                 {
-                    // 로그함수로 바꿔보기.
+                    // *** 로그함수로 바꿔보기 ***
                     float ratio = Mathf.Min(1, toDir.magnitude);
                     float moveSpeed = MovementSpeed * (float)Math.Pow(ratio, 3);
                     SetRigidBodyVelocity(toDir.normalized * moveSpeed);
@@ -247,47 +301,97 @@ namespace STELLAREST_F1
         #endregion
 
         #region Hero AI - Attack
-        protected override void UpdateAttack()
+        protected override void UpdateSkillAttack()
         {
-            if (HeroMoveState == EHeroMoveState.ForceMove)
+            SetRigidBodyVelocity(Vector2.zero);
+            if (CreatureMoveState == ECreatureMoveState.ForceMove)
             {
                 CreatureState = ECreatureState.Move;
                 return;
             }
-
-            if (Target.IsValid() == false)
-            {
-                CreatureState = ECreatureState.Move;
-                return;
-            }
-            else
-            {
-                Vector3 toTargetDir = Target.transform.position - transform.position;
-                if (toTargetDir.x < 0)
-                    LookAtDir = ELookAtDirection.Left;
-                else
-                    LookAtDir = ELookAtDirection.Right;
-            }
+            else if (Target.IsValid())
+                LookAtTarget();
 
             ChangeColliderSize(EColliderSize.Default);
         }
         #endregion
 
+        protected override void UpdateCollectEnv()
+        {
+            SetRigidBodyVelocity(Vector2.zero);
+            if (CreatureMoveState == ECreatureMoveState.ForceMove || Target.IsValid() == false)
+            {
+                CollectEnv = false;
+                CreatureState = ECreatureState.Move;
+            }
+            else if (Target.IsValid())
+                LookAtTarget();
+        }
+
         protected override void UpdateDead()
         {
+            SetRigidBodyVelocity(Vector2.zero);
         }
+
+        #region Hero Animation Events - Update
+        private float Test_SkilA_Cooltime = 1.0f;
+        private bool _isCooltime = false;
+        protected override void OnSkillAttackAnimationUpdate()
+        {
+            if (Target.IsValid() == false)
+                return;
+
+            Debug.Log("INVOKED..");
+            // 데미지를 주기 직전 쿨타임 적용. (TEMP, 이후 추적하지않고 Idle로 강제되는 단점이 있음)
+            _isCooltime = true;
+            StartWaitCooltime(Test_SkilA_Cooltime, () => _isCooltime = false);
+            Target.OnDamaged(this);
+        }
+
+        protected override void OnCollectEnvAnimationUpdate()
+        {
+            if (Target.IsValid() == false)
+                return;
+
+            Target.OnDamaged(this);
+            // if (Target.IsValid() == false)
+            // {
+            //     CreatureState = ECreatureState.Idle;
+            //     CollectEnv = false;
+            //     Debug.Log("END COLLECT ENV !!");
+            // }
+        }
+        #endregion
+
+        #region Hero Animation Events - Completed
+        protected override void OnSkillAttackAnimationCompleted()
+        {
+            CreatureState = ECreatureState.Idle;
+        }
+        #endregion
+
+        #region Hero - Battle
+        public override void OnDamaged(BaseObject attacker)
+        {
+            base.OnDamaged(attacker);
+        }
+
+        public override void OnDead(BaseObject attacker)
+        {
+            base.OnDead(attacker);
+        }
+        #endregion
 
         private void OnJoystickStateChanged(EJoystickState joystickState)
         {
             switch (joystickState)
             {
                 case EJoystickState.PointerUp:
-                    HeroMoveState = EHeroMoveState.None;
+                    CreatureMoveState = ECreatureMoveState.None;
                     break;
 
                 case EJoystickState.Drag:
-                    HeroMoveState = EHeroMoveState.ForceMove;
-                    CancelWait();
+                    CreatureMoveState = ECreatureMoveState.ForceMove;
                     break;
 
                 default:
@@ -295,32 +399,8 @@ namespace STELLAREST_F1
             }
         }
 
-        private void ChaseOrAttackTarget()
-        {
-            Vector3 toDir = Target.transform.position - transform.position;
-            float distToTargetSQR = toDir.sqrMagnitude;
-            float attackDistToTargetSQR = AttackDistance * AttackDistance;
-
-            if (attackDistToTargetSQR >= distToTargetSQR)
-            {
-                CreatureState = ECreatureState.Attack;
-                return;
-            }
-            else
-            {
-                SetRigidBodyVelocity(toDir.normalized * MovementSpeed);
-                
-                // 너무 멀어지면 포기
-                if (distToTargetSQR > SearchDistanceSQR)
-                {
-                    Target = null;
-                    HeroMoveState = EHeroMoveState.None;
-                    CreatureState = ECreatureState.Move;
-                }
-                return;
-            }
-        }
-
+        // ColliderRadius 이런건 CreatureData로 빼서 상위로 올려도 될듯
+        // 근데 어차피 길찾기 적용시킬것이라..
         protected override void ChangeColliderSize(EColliderSize colliderSize = EColliderSize.Default)
         {
             switch (colliderSize)
@@ -345,7 +425,7 @@ namespace STELLAREST_F1
             
             foreach (Hero hero in Managers.Object.Heroes)
             {
-                if (hero.HeroMoveState == EHeroMoveState.ReturnToCamp)
+                if (hero.CreatureMoveState == ECreatureMoveState.ReturnToBase)
                     return;
             }
 
@@ -355,51 +435,5 @@ namespace STELLAREST_F1
                     hero.ChangeColliderSize(EColliderSize.Large);
             }
         }
-
-        private Transform CampDestination
-        {
-            get
-            {
-                HeroCamp camp = Managers.Object.Camp;
-                if (HeroMoveState == EHeroMoveState.ReturnToCamp)
-                    return camp.Pivot;
-
-                return camp.Destination;
-            }
-        }
-
-        #region Hero Animation Events - Update
-        protected override void OnAttackAnimationUpdate()
-        {
-            if (Target.IsValid() == false)
-                return;
-
-            Target.OnDamaged(this);
-        }
-        #endregion
-
-        #region Hero Animation Events - Completed
-        private float TestCoolTime = 1.25f;
-        protected override void OnAttackAnimationCompleted()
-        {
-            if (Target.IsValid())
-                StartWait(TestCoolTime);
-
-            CreatureState = ECreatureState.Idle;
-
-        }
-        #endregion
-
-        #region Hero - Battle
-        public override void OnDamaged(BaseObject attacker)
-        {
-            base.OnDamaged(attacker);
-        }
-
-        public override void OnDead(BaseObject attacker)
-        {
-            base.OnDead(attacker);
-        }
-        #endregion
     }
 }

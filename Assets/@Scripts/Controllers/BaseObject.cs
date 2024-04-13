@@ -12,6 +12,7 @@ namespace STELLAREST_F1
     {
         public int DataTemplateID { get; private set; } = -1;
         public EObjectType ObjectType { get; protected set; } = EObjectType.None;
+        public EObjectRarity ObjectRarity { get; protected set; } = EObjectRarity.Common;
         public BaseAnimation BaseAnim { get; private set; } = null;
         public CircleCollider2D Collider { get; private set; } = null;
         public Rigidbody2D RigidBody { get; private set; } = null;
@@ -92,8 +93,6 @@ namespace STELLAREST_F1
                 return AtkRange;
             }
         }
-        protected float SearchDistanceSQR => ReadOnly.Numeric.DefaultSearchRange * ReadOnly.Numeric.DefaultSearchRange;
-        protected float StopDistanceSQR => ReadOnly.Numeric.DefaultStopRange * ReadOnly.Numeric.DefaultStopRange;
 
         public override bool Init()
         {
@@ -131,6 +130,10 @@ namespace STELLAREST_F1
                 return;
                 
             RigidBody.velocity = velocity;
+            
+            if (velocity == Vector2.zero)
+                return;
+
             if (velocity.x < 0)
                 LookAtDir = ELookAtDirection.Left;
             else

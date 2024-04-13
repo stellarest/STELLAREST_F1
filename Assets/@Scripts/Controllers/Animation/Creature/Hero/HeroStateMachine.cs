@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations;
+using UnityEngine.UIElements;
 using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
@@ -11,45 +12,66 @@ namespace STELLAREST_F1
         private Hero _owner = null;
         private HeroAnimation _heroAnim = null;
         private bool _canGiveDamageFlag = false;
+        private bool _canCollectEnvFlag = false;
 
         public event System.Action<ECreatureState> OnHeroAnimUpdateHandler = null;
-        public event System.Action<ECreatureState> OnHeroAnimComplatedHandler = null;
+        public event System.Action<ECreatureState> OnHeroAnimCompletedHandler = null;
 
         public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
             _heroAnim = _heroAnim == null ? animator.GetComponent<HeroAnimation>() : _heroAnim;
             _owner = _owner == null ? _heroAnim.GetOwner<Hero>() : _owner;
 
-            if (stateInfo.shortNameHash == _heroAnim?.GetHash(ECreatureState.Attack))
+            if (stateInfo.shortNameHash == _heroAnim?.GetHash(ECreatureState.Skill_Attack))
                 _canGiveDamageFlag = true;
+
+            // if (stateInfo.shortNameHash == _heroAnim?.GetHash(ECreatureState.CollectEnv))
+            //     _canCollectEnvFlag = true;
         }
+
 
         public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            if (stateInfo.shortNameHash == _heroAnim?.GetHash(ECreatureState.Attack) && _canGiveDamageFlag)
+            float currentPercentage = stateInfo.normalizedTime % 1.0f;
+            if (stateInfo.shortNameHash == _heroAnim?.GetHash(ECreatureState.Skill_Attack) && _canGiveDamageFlag)
             {
-                float endThreshold = 0.5f;
-                if (stateInfo.normalizedTime >= endThreshold)
+                float endThresholdPercentage = 0.5f;
+                if (currentPercentage >= endThresholdPercentage)
                 {
-                    OnHeroAnimUpdateHandler?.Invoke(ECreatureState.Attack);
+                    OnHeroAnimUpdateHandler?.Invoke(ECreatureState.Skill_Attack);
                     _canGiveDamageFlag = false;
                 }
+                return;
+            }
+
+            if (stateInfo.shortNameHash == _heroAnim?.GetHash(ECreatureState.CollectEnv))
+            {
+                float endThresholdPercentage = 0.65f;
+                if (currentPercentage > endThresholdPercentage && _canCollectEnvFlag == false)
+                {
+                    _canCollectEnvFlag = true;
+                    OnHeroAnimUpdateHandler?.Invoke(ECreatureState.CollectEnv);
+                }
+                else if (currentPercentage < endThresholdPercentage && _canCollectEnvFlag)
+                    _canCollectEnvFlag = false;
             }
         }
 
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            if (_owner?.HeroMoveState == EHeroMoveState.ForceMove)
+            if (_owner?.CreatureMoveState == ECreatureMoveState.ForceMove)
                 return;
 
-            if (stateInfo.shortNameHash == _heroAnim?.GetHash(ECreatureState.Attack))
+            // Skill_Attack -> Idle (Has Exit Time)
+            if (stateInfo.shortNameHash == _heroAnim?.GetHash(ECreatureState.Skill_Attack))
             {
-                // Target의 Valid 체크를 하지 않으면, Target이 죽고 다시 한 번 이벤트가 발동되어서 Idle 애니메이션이 한번 더 실행됨
-                if (_owner.Target.IsValid())
-                    OnHeroAnimComplatedHandler?.Invoke(ECreatureState.Attack);
-
-                _canGiveDamageFlag = false; // TEMP
+                OnHeroAnimCompletedHandler?.Invoke(ECreatureState.Skill_Attack);
+                _canGiveDamageFlag = false;
             }
+
+            // 만일을 위해서
+            if (stateInfo.shortNameHash == _heroAnim?.GetHash(ECreatureState.CollectEnv))
+                _canCollectEnvFlag = false;
         }
     }
 }

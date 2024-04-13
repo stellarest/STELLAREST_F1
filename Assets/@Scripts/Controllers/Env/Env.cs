@@ -24,6 +24,7 @@ namespace STELLAREST_F1
         }
 
         public EnvAnimation EnvAnim { get; private set; } = null;
+        public EEnvType EnvType { get; private set; } = EEnvType.None;
 
         public override bool Init()
         {
@@ -50,6 +51,7 @@ namespace STELLAREST_F1
             Managers.Sprite.SetInfo(dataID, this);
 
             EnvData = Managers.Data.EnvDataDict[dataID];
+            EnvType = Util.GetEnumFromString<EEnvType>(EnvData.Type);
             _maxHp = new Stat(EnvData.MaxHp);
             gameObject.name += $"_{EnvData.DescriptionTextID.Replace(" ", "")}";
 
@@ -84,8 +86,8 @@ namespace STELLAREST_F1
 
         public override void OnDead(BaseObject attacker)
         {
-            Managers.Object.Despawn(this); // TEMP
-            //EnvState = EEnvState.Dead;
+            //Managers.Object.Despawn(this); // TEMP
+            EnvState = EEnvState.Dead;
             // TODO : Drop Item
             // Managers.Object.Despawn(this);
         }

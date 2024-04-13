@@ -8,11 +8,12 @@ namespace STELLAREST_F1
 {
     public static class Define
     {
-        public enum ECreatureRarity
+        public enum EObjectRarity
         {
+            None = -1,
             Common,
             Elite,
-            Boss
+            Max = Elite + 1
         }
 
         public enum EHeroBodyType
@@ -85,19 +86,21 @@ namespace STELLAREST_F1
             None = -1,
             Idle,
             Move,
-            Attack,
-            Skill,
+            Skill_Attack,
+            Skill_A,
+            Skill_B,
+            CollectEnv,
             OnDamaged,
             Dead,
             Max = Dead + 1
         }
 
-        public enum EHeroMoveState
+        public enum ECreatureMoveState
         {
             None,
-            TargetMonster,
+            TargetToEnemy,
             CollectEnv,
-            ReturnToCamp,
+            ReturnToBase,
             ForceMove,
         }
 
@@ -110,7 +113,7 @@ namespace STELLAREST_F1
         public enum EHeroEmoji
         {
             None = -1,
-            Default,
+            Idle,
             Move,
             Combat,
             Sick,
@@ -303,6 +306,13 @@ namespace STELLAREST_F1
                 public static readonly string AnimationBody = "AnimationBody";
                 public static readonly string HeroCamp = "HeroCamp";
 
+                // Sprite - Collect Equipment
+                public static readonly string Pickaxe_Common_SP = "Pickaxe_Common.sprite";
+                public static readonly string Pickaxe_Elite_SP = "Pickaxe_Elite.sprite";
+                public static readonly string WoodcutterAxe_Common_SP = "WoodcutterAxe_Common.sprite";
+                public static readonly string WoodcutterAxe_Elite_SP = "WoodcutterAxe_Elite.sprite";
+
+
                 // Sprite - Hero Human Body Type
                 public static readonly string HBody_HumanType_Head_SP = "Human_Head.sprite";
                 public static readonly string HBody_HumanType_Ears_SP = "Human_Ears.sprite";
@@ -418,9 +428,10 @@ namespace STELLAREST_F1
                 // Animation Params
                 public static readonly string AnimParam_Idle = "Idle";
                 public static readonly string AnimParam_Move = "Move";
-                public static readonly string AnimParam_Attack = "Attack";
+                public static readonly string AnimParam_Skill_Attack = "Skill_Attack";
                 public static readonly string AnimParam_Skill_A = "Skill_A";
                 public static readonly string AnimParam_Skill_B = "Skill_B";
+                public static readonly string AnimParam_CollectEnv = "CollectEnv";
                 public static readonly string AnimParam_Dead = "Dead";
             }
 

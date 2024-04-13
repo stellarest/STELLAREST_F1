@@ -20,18 +20,18 @@ namespace STELLAREST_F1
             _monsterAnim = _monsterAnim == null ? animator.GetComponent<MonsterAnimation>() : _monsterAnim;
             _owner = _owner == null ? _monsterAnim.GetOwner<Monster>() : _owner;
 
-            if (stateInfo.shortNameHash == _monsterAnim?.GetHash(ECreatureState.Attack))
+            if (stateInfo.shortNameHash == _monsterAnim?.GetHash(ECreatureState.Skill_Attack))
                 _canGiveDamageFlag = true;
         }
 
         public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            if (stateInfo.shortNameHash == _monsterAnim?.GetHash(ECreatureState.Attack) && _canGiveDamageFlag)
+            if (stateInfo.shortNameHash == _monsterAnim?.GetHash(ECreatureState.Skill_Attack) && _canGiveDamageFlag)
             {
                 float endThreshold = 0.5f;
                 if (stateInfo.normalizedTime >= endThreshold)
                 {
-                    OnMonsterAnimUpdateHandler?.Invoke(ECreatureState.Attack);
+                    OnMonsterAnimUpdateHandler?.Invoke(ECreatureState.Skill_Attack);
                     _canGiveDamageFlag = false;
                 }
             }
@@ -39,10 +39,10 @@ namespace STELLAREST_F1
 
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            if (stateInfo.shortNameHash == _monsterAnim?.GetHash(ECreatureState.Attack))
+            if (stateInfo.shortNameHash == _monsterAnim?.GetHash(ECreatureState.Skill_Attack))
             {
                 if (_owner.Target.IsValid())
-                    OnMonsterAnimComplatedHandler?.Invoke(ECreatureState.Attack);
+                    OnMonsterAnimComplatedHandler?.Invoke(ECreatureState.Skill_Attack);
 
                 _canGiveDamageFlag = false; // temp
             }

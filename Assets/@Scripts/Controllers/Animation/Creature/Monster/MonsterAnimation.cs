@@ -55,10 +55,10 @@ namespace STELLAREST_F1
                     }
                     break;
 
-                case ECreatureState.Attack:
+                case ECreatureState.Skill_Attack:
                     {
                         _owner.MonsterBody.SetEmoji(EMonsterEmoji.Angry);
-                        Attack();
+                        Skill_Attack();
                     }
                     break;
 

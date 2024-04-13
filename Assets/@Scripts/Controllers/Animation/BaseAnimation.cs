@@ -17,11 +17,11 @@ namespace STELLAREST_F1
 
         protected readonly int Play_Idle = Animator.StringToHash(ReadOnly.String.AnimParam_Idle);
         protected readonly int Play_Move = Animator.StringToHash(ReadOnly.String.AnimParam_Move);
-        protected readonly int Play_Attack = Animator.StringToHash(ReadOnly.String.AnimParam_Attack);
+        protected readonly int Play_Skill_Attack = Animator.StringToHash(ReadOnly.String.AnimParam_Skill_Attack);
         protected readonly int Play_Skill_A = Animator.StringToHash(ReadOnly.String.AnimParam_Skill_A);
         protected readonly int Play_Skill_B = Animator.StringToHash(ReadOnly.String.AnimParam_Skill_B);
+        protected readonly int Play_CollectEnv = Animator.StringToHash(ReadOnly.String.AnimParam_CollectEnv);
         protected readonly int Play_Dead = Animator.StringToHash(ReadOnly.String.AnimParam_Dead);
-
         public int GetHash(ECreatureState state)
         {
             switch (state)
@@ -32,8 +32,17 @@ namespace STELLAREST_F1
                 case ECreatureState.Move:
                     return Play_Move;
 
-                case ECreatureState.Attack:
-                    return Play_Attack; // TEMP
+                case ECreatureState.Skill_Attack:
+                    return Play_Skill_Attack;
+
+                case ECreatureState.Skill_A:
+                    return Play_Skill_A;
+
+                case ECreatureState.Skill_B:
+                    return Play_Skill_B;
+
+                case ECreatureState.CollectEnv:
+                    return Play_CollectEnv;
 
                 default:
                     return -1;
@@ -72,14 +81,17 @@ namespace STELLAREST_F1
         protected virtual void Move()
             => Animator.Play(Play_Move);
 
-        protected virtual void Attack()
-            => Animator.Play(Play_Attack);
+        protected virtual void Skill_Attack()
+            => Animator.Play(Play_Skill_Attack);
 
-        protected virtual void SkillA()
+        protected virtual void Skill_A()
             => Animator.Play(Play_Skill_A);
 
-        protected virtual void SkillB()
+        protected virtual void Skill_B()
             => Animator.Play(Play_Skill_B);
+
+        protected virtual void CollectEnv()
+            => Animator.Play(Play_CollectEnv);
 
         protected virtual void Dead()
             => Animator.Play(Play_Dead);

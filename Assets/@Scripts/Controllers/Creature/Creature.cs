@@ -11,8 +11,9 @@ namespace STELLAREST_F1
     {
         public CreatureBody CreatureBody { get; protected set; } = null;
         public CreatureAnimation CreatureAnim { get; private set; } = null;
-        public ECreatureRarity CreatureRarity { get; protected set; } = ECreatureRarity.Common;
-        [SerializeField] protected ECreatureState _creatureState = ECreatureState.None;
+        public EObjectRarity Rarity { get; protected set; } = EObjectRarity.Common;
+
+        [SerializeField] private ECreatureState _creatureState = ECreatureState.None;
         public virtual ECreatureState CreatureState
         {
             get => _creatureState;
@@ -24,6 +25,20 @@ namespace STELLAREST_F1
                     UpdateAnimation();
                 }
             }
+        }
+
+        [SerializeField] private ECreatureMoveState _creatureMoveState = ECreatureMoveState.None;
+        public virtual ECreatureMoveState CreatureMoveState
+        {
+            get => _creatureMoveState;
+            protected set => _creatureMoveState = value;
+        }
+
+        private bool _collectEnv = false;
+        public virtual bool CollectEnv
+        {
+            get => _collectEnv;
+            protected set => _collectEnv = value;
         }
 
         public override bool Init()
@@ -49,7 +64,7 @@ namespace STELLAREST_F1
             CreatureBody.ShowBody(false);
             CreatureState = ECreatureState.Idle;
             StartWait(() => BaseAnim.IsPlay() == false,
-                      () => CreatureBody.ShowBody(true));
+                      () => CreatureBody.ShowBody(true)); // 충돌체나 Rigidbody enable도 ShowBody에서 작업 걸어줘야할듯.
 
             StartCoroutine(CoUpdateAI());
         }
@@ -68,8 +83,12 @@ namespace STELLAREST_F1
                         UpdateMove();
                         break;
 
-                    case ECreatureState.Attack:
-                        UpdateAttack();
+                    case ECreatureState.Skill_Attack:
+                        UpdateSkillAttack();
+                        break;
+
+                    case ECreatureState.CollectEnv:
+                        UpdateCollectEnv();
                         break;
 
                     case ECreatureState.Dead:
@@ -83,7 +102,8 @@ namespace STELLAREST_F1
 
         protected virtual void UpdateIdle() { }
         protected virtual void UpdateMove() { }
-        protected virtual void UpdateAttack() { }
+        protected virtual void UpdateSkillAttack() { }
+        protected virtual void UpdateCollectEnv() { }
         protected virtual void UpdateDead() { }
 
         protected virtual void ChangeColliderSize(EColliderSize colliderSize = EColliderSize.Default) { }
@@ -102,7 +122,6 @@ namespace STELLAREST_F1
             _coWait = null;
         }
 
-
         protected void StartWait(System.Func<bool> waitCondition, System.Action callback = null)
         {
             CancelWait();
@@ -115,7 +134,18 @@ namespace STELLAREST_F1
             callback?.Invoke();
         }
 
-
+        // seconds, callback
+        protected void StartWaitCooltime(float seconds, System.Action callback = null)
+        {
+            //CancelWait();
+            //_coWait = StartCoroutine(CoStartWait(seconds, callback));
+            StartCoroutine(CoStartWaitCooltime(seconds, callback));
+        }
+        private IEnumerator CoStartWaitCooltime(float seconds, System.Action callback = null)
+        {
+            yield return new WaitForSeconds(seconds);
+            callback?.Invoke();
+        }
 
         protected void CancelWait()
         {
@@ -123,6 +153,7 @@ namespace STELLAREST_F1
                 StopCoroutine(_coWait);
             _coWait = null;
         }
+
         #endregion
 
         #region Animation Events - Update
@@ -138,19 +169,24 @@ namespace STELLAREST_F1
                     OnMoveAnimationUpdate();
                     break;
 
-                case ECreatureState.Attack:
-                    OnAttackAnimationUpdate();
+                case ECreatureState.Skill_Attack:
+                    OnSkillAttackAnimationUpdate();
+                    break;
+
+                case ECreatureState.CollectEnv:
+                    OnCollectEnvAnimationUpdate();
                     break;
             }
         }
 
         protected virtual void OnIdleAnimationUpdate() { }
         protected virtual void OnMoveAnimationUpdate() { }
-        protected virtual void OnAttackAnimationUpdate() { }
+        protected virtual void OnSkillAttackAnimationUpdate() { }
+        protected virtual void OnCollectEnvAnimationUpdate() { }
         #endregion
 
         #region Animation Events - Completed
-        protected void OnAnimationComplated(ECreatureState endState)
+        protected void OnAnimationCompleted(ECreatureState endState)
         {
             switch (endState)
             {
@@ -162,32 +198,43 @@ namespace STELLAREST_F1
                     OnMoveAnimationCompleted();
                     break;
 
-                case ECreatureState.Attack:
-                    OnAttackAnimationCompleted();
+                case ECreatureState.Skill_Attack:
+                    OnSkillAttackAnimationCompleted();
+                    break;
+
+                case ECreatureState.CollectEnv:
+                    OnCollectEnvAnimationCompleted();
                     break;
             }
         }
 
         protected virtual void OnIdleAnimationCompleted() { }
         protected virtual void OnMoveAnimationCompleted() { }
-        protected virtual void OnAttackAnimationCompleted() { }
+        protected virtual void OnSkillAttackAnimationCompleted() { }
+        protected virtual void OnCollectEnvAnimationCompleted() { }
         #endregion
 
         #region Helper
-        protected BaseObject FindClosestInRange(IEnumerable<BaseObject> objs)
+        protected BaseObject FindClosestInRange(float range, IEnumerable<BaseObject> objs, Func<BaseObject, bool> func = null)
         {
             BaseObject target = null;
             float bestDistanceSQR = float.MaxValue;
+            float searchDistanceSQR = range * range;
 
             foreach (BaseObject obj in objs)
             {
                 Vector3 dir = obj.transform.position - transform.position;
                 float distToTargetSqr = dir.sqrMagnitude;
 
-                if (SearchDistanceSQR < distToTargetSqr)
+                if (searchDistanceSQR < distToTargetSqr)
                     continue;
 
                 if (bestDistanceSQR < distToTargetSqr)
+                    continue;
+
+                // 추가 조건 (ex)객체가 살아있는가? 람다 기반으로 넘겨줄수도 있으니까 뭐, 편함 이런게 있으면.
+                // 살아있는 객체만 찾아서, 살아있는 객체에게만 Target을 잡을 수 있도록. 이런식으로 가능.
+                if (func?.Invoke(obj) == false)
                     continue;
 
                 bestDistanceSQR = distToTargetSqr;
@@ -196,18 +243,58 @@ namespace STELLAREST_F1
 
             return target;
         }
+
+        protected void ChaseOrAttackTarget(float attackRange, float chaseRange)
+        {
+            Vector3 toDir = Target.transform.position - transform.position;
+            float distToTargetSQR = toDir.sqrMagnitude;
+
+            float attackDistToTargetSQR = attackRange * attackRange;
+            // ATTACK
+            if (attackDistToTargetSQR >= distToTargetSQR)
+            {
+                if (CreatureMoveState == ECreatureMoveState.TargetToEnemy)
+                {
+                    CreatureState = ECreatureState.Skill_Attack;
+                }
+                else if (CreatureMoveState == ECreatureMoveState.CollectEnv)
+                {
+                    CollectEnv = true;
+                    CreatureState = ECreatureState.CollectEnv;
+                }
+                return;
+            }
+            // CHASE
+            else
+            {
+                SetRigidBodyVelocity(toDir.normalized * MovementSpeed);
+                // 너무 멀어지면 포기
+                if (distToTargetSQR > chaseRange * chaseRange)
+                {
+                    Target = null;
+                    CreatureState = ECreatureState.Move;
+                }
+                return;
+            }
+        }
+
+        protected void LookAtTarget()
+        {
+            Vector3 toTargetDir = Target.transform.position - transform.position;
+            if (toTargetDir.x < 0)
+                LookAtDir = ELookAtDirection.Left;
+            else
+                LookAtDir = ELookAtDirection.Right;
+        }
+
+        protected bool IsValid(BaseObject bo) => bo.IsValid();
         #endregion
 
         #region Battle
         public override void OnDamaged(BaseObject attacker)
         {
-            if (attacker.IsValid() == false)
-                return;
-
-            // 나중에 BaseObject(ex. Cannon)에서도 적용하려면 바꿔야함.
-            // 일단 지금은 Creature끼리 데미지를 주고 받도록.
             Creature creature = attacker as Creature;
-            if (creature == null)
+            if (creature.IsValid() == false)
                 return;
 
             float finalDamage = creature.Atk;
@@ -222,8 +309,8 @@ namespace STELLAREST_F1
 
         public override void OnDead(BaseObject attacker)
         {
-            attacker.Target = null;
-            Managers.Object.Despawn(this); // TEMP
+            //attacker.Target = null;
+            //Managers.Object.Despawn(this); // TEMP
             //CreatureState = ECreatureState.Dead;
         }
         #endregion

@@ -22,7 +22,24 @@ namespace STELLAREST_F1
             => tr != null && tr.gameObject.activeSelf;
 
         public static bool IsValid(this BaseObject bo)
-            => bo != null && bo.isActiveAndEnabled;
+        {
+            if (bo != null && bo.isActiveAndEnabled)
+            {
+                switch (bo.ObjectType)
+                {
+                    case EObjectType.Hero:
+                    case EObjectType.Monster:
+                        Creature creature = bo as Creature;
+                        return creature.CreatureState != ECreatureState.Dead;
+
+                    case EObjectType.Env:
+                        Env env = bo as Env;
+                        return env.EnvState != EEnvState.Dead;
+                }
+            }
+
+            return false;
+        }
 
         public static void DestroyChild(this GameObject go)
         {

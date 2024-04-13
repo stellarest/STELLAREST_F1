@@ -19,7 +19,7 @@ namespace STELLAREST_F1
             InitBody(EHeroBodyParts.Weapon, (int)EHeroLowerBody.Max);
         }
 
-        #region Hero Face
+        #region Hero - Face
         public class HeroFace
         {
             public HeroFace(HeroBody heroBody)
@@ -85,16 +85,16 @@ namespace STELLAREST_F1
             {
                 switch (heroEmoji)
                 {
-                    case EHeroEmoji.Default:
+                    case EHeroEmoji.Idle:
                         {
-                            _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Default];
-                            _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Default];
+                            _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Idle];
+                            _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Idle];
 
-                            _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Default];
-                            _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Default];
+                            _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Idle];
+                            _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Idle];
 
-                            _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Default];
-                            _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Default];
+                            _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Idle];
+                            _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Idle];
                         }
                         break;
 
@@ -157,12 +157,6 @@ namespace STELLAREST_F1
         private Dictionary<EHeroBodyParts, Container[]> _bodyDict = new Dictionary<EHeroBodyParts, Container[]>();
         public HeroFace Face { get; private set; } = null;
         public void SetEmoji(EHeroEmoji emoji) => Face?.SetEmoji(emoji);
-
-        public void SetFace()
-        {
-            if (Face == null)
-                Face = new HeroFace(this);
-        }
 
         private void InitBody(EHeroBodyParts bodyParts, int length)
         {
@@ -469,6 +463,76 @@ namespace STELLAREST_F1
                 return containers[(int)findTarget].SPR as T;
 
             return null;
+        }
+
+        public void SetFace()
+        {
+            if (Face == null)
+                Face = new HeroFace(this);
+        }
+
+        Sprite _defaultLeftWeaponSP = null;
+        Sprite _defaultRightWeaponSP = null;
+        public void SetDefaultWeapon(Sprite defaultWeaponL, Sprite defaultWeaponR)
+        {
+            _defaultLeftWeaponSP = defaultWeaponL != null ? defaultWeaponL : null;
+            _defaultRightWeaponSP = defaultWeaponR != null ? defaultWeaponR : null;
+        }
+
+        public void ChangeEnvWeapon(EEnvType envType)
+        {
+            ReleaseWeapon();
+            SpriteRenderer spr = GetComponent<SpriteRenderer>(EHeroWeapon.WeaponR);
+            switch (envType)
+            {
+                case EEnvType.Tree:
+                    if (Owner.ObjectRarity == EObjectRarity.Common)
+                        spr.sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Tree][(int)EObjectRarity.Common];
+                    else if (Owner.ObjectRarity == EObjectRarity.Elite)
+                        spr.sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Tree][(int)EObjectRarity.Elite];
+                    break;
+
+                case EEnvType.Rock:
+                    if (Owner.ObjectRarity == EObjectRarity.Common)
+                        spr.sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Rock][(int)EObjectRarity.Common];
+                    else if (Owner.ObjectRarity == EObjectRarity.Elite)
+                        spr.sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Rock][(int)EObjectRarity.Elite];
+                    break;
+            }
+
+            // switch (Owner.Rarity)
+            // {
+            //     case EObjectRarity.Common:
+            //         spr.sprite = Managers.Sprite.Pickaxes[(int)EObjectRarity.Common];
+            //         break;
+
+            //     case EObjectRarity.Elite:
+            //         spr.sprite = Managers.Sprite.Pickaxes[(int)EObjectRarity.Elite];
+            //         break;
+            // }
+        }
+
+        public void ChangeDefaultWeapon()
+        {
+            ReleaseWeapon();
+            SpriteRenderer spr = GetComponent<SpriteRenderer>(EHeroWeapon.WeaponL);
+            spr.sprite = _defaultLeftWeaponSP != null ? _defaultLeftWeaponSP : null;
+
+            spr = GetComponent<SpriteRenderer>(EHeroWeapon.WeaponR);
+            spr.sprite = _defaultRightWeaponSP != null ? _defaultRightWeaponSP : null;
+
+            Debug.Log("Change - Default Weapon");
+        }
+
+        private void ReleaseWeapon()
+        {
+            SpriteRenderer spr = GetComponent<SpriteRenderer>(EHeroWeapon.WeaponL);
+            if (spr.sprite != null)
+                spr.sprite = null;
+
+            spr = GetComponent<SpriteRenderer>(EHeroWeapon.WeaponR);
+            if (spr.sprite != null)
+                spr.sprite = null;
         }
     }
 }

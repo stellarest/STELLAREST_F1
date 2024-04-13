@@ -45,23 +45,29 @@ namespace STELLAREST_F1
             {
                 case ECreatureState.Idle:
                     {
-                        _owner.HeroBody.SetEmoji(EHeroEmoji.Default);
+                        _owner.HeroBody.SetEmoji(EHeroEmoji.Idle);
                         Idle();
                     }
                     break;
 
                 case ECreatureState.Move:
                     {
-                        //GetOwner<Hero>().HeroBody.SetEmoji(EHeroEmoji.Combat);
                         _owner.HeroBody.SetEmoji(EHeroEmoji.Move);
                         Move();
                     }
                     break;
 
-                case ECreatureState.Attack:
+                case ECreatureState.Skill_Attack:
                     {
                         _owner.HeroBody.SetEmoji(EHeroEmoji.Combat);
-                        Attack(); // ***** TEMP *****
+                        Skill_Attack();
+                    }
+                    break;
+
+                case ECreatureState.CollectEnv:
+                    {
+                        _owner.HeroBody.SetEmoji(EHeroEmoji.Idle);
+                        CollectEnv();
                     }
                     break;
 
