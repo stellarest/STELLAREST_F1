@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
@@ -122,15 +123,16 @@ namespace STELLAREST_F1
 
         protected virtual void EnterInGame()
         {
+            RigidBody.simulated = true;
         }
 
         public void SetRigidBodyVelocity(Vector2 velocity)
         {
             if (RigidBody == null)
                 return;
-                
+
             RigidBody.velocity = velocity;
-            
+
             if (velocity == Vector2.zero)
                 return;
 
@@ -152,7 +154,44 @@ namespace STELLAREST_F1
 
         public virtual void OnDead(BaseObject attacker)
         {
+            RigidBody.simulated = false;
+            StartCoroutine(CoDeadFadeOut(() => Managers.Object.Despawn(this)));
+        }
+
+        private IEnumerator CoDeadFadeOut(System.Action callback = null)
+        {
+            if (this.isActiveAndEnabled == false)
+                yield break;
+
+            yield return new WaitForSeconds(ReadOnly.Numeric.StartDeadFadeOutTime);
+
+            float delta = 0f;
+            float percent = 1f;
+            AnimationCurve curve = Managers.Animation.Curve(EAnimationCurveType.Ease_Out);
+            while (percent > 0f)
+            {
+                delta += Time.deltaTime;
+                percent = 1f - (delta / ReadOnly.Numeric.DesiredDeadFadeOutEndTime);
+                foreach (SpriteRenderer spr in GetComponentsInChildren<SpriteRenderer>())
+                {
+                    float current = Mathf.Lerp(0f, 1f, curve.Evaluate(percent));
+                    spr.color = new Color(spr.color.r, spr.color.g, spr.color.b, current);
+                }
+
+                yield return null;
+            }
+            callback?.Invoke();
         }
         #endregion
+
+        protected void ShowBody(bool show)
+        {
+            foreach (SpriteRenderer spr in GetComponentsInChildren<SpriteRenderer>(includeInactive: true))
+            {
+                spr.enabled = show;
+                if (show)
+                    spr.color = new Color(spr.color.r, spr.color.g, spr.color.b, 1f);
+            }
+        }
     }
 }

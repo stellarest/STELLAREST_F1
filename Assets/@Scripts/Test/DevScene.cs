@@ -42,11 +42,11 @@ namespace STELLAREST_F1
 
             {
                 // Monsters - Bird
-                // for (int i = 0; i < 3; ++i)
-                // {
-                //     Vector3 spawnPos = Util.MakeSpawnPosition(firstSpawnedHero, 2f, 4f);
-                //     Monster mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Chicken);
-                // }
+                for (int i = 0; i < 3; ++i)
+                {
+                    Vector3 spawnPos = Util.MakeSpawnPosition(firstSpawnedHero, 2f, 4f);
+                    Monster mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Chicken);
+                }
 
                 // for (int i = 0; i < 5; ++i)
                 // {
@@ -70,14 +70,14 @@ namespace STELLAREST_F1
 
             {
                 // Env - Trees
-                Vector3 spawnPos = Util.MakeSpawnPosition(firstSpawnedHero, -5f, 5f);
-                Env env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_AshTree);
+                // Vector3 spawnPos = Util.MakeSpawnPosition(firstSpawnedHero, -5f, 5f);
+                // Env env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_AshTree);
 
-                spawnPos = Util.MakeSpawnPosition(firstSpawnedHero, -5f, 5f);
-                env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_BlackOakTree);
+                // spawnPos = Util.MakeSpawnPosition(firstSpawnedHero, -5f, 5f);
+                // env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_BlackOakTree);
 
-                spawnPos = Util.MakeSpawnPosition(firstSpawnedHero, -5f, 5f);
-                env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_GreenAppleTree);
+                // spawnPos = Util.MakeSpawnPosition(firstSpawnedHero, -5f, 5f);
+                // env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_GreenAppleTree);
 
                 // spawnPos = Util.MakeSpawnPosition(hero, -2f, -2f);
                 // env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_IvyTree);
@@ -106,11 +106,11 @@ namespace STELLAREST_F1
 
             {
                 // Env - Rocks
-                Vector3 spawnPos = Util.MakeSpawnPosition(firstSpawnedHero, -5f, 5f);
-                Env env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_SilverRock);
+                // Vector3 spawnPos = Util.MakeSpawnPosition(firstSpawnedHero, -5f, 5f);
+                // Env env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_SilverRock);
 
-                spawnPos = new Vector3(env.transform.position.x + 8f, env.transform.position.y, 0f);
-                env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_GoldRock);
+                // spawnPos = new Vector3(env.transform.position.x + 8f, env.transform.position.y, 0f);
+                // env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_GoldRock);
             }
         }
 
@@ -123,6 +123,7 @@ namespace STELLAREST_F1
                 {
                     Managers.Data.Init();
                     Managers.Sprite.Init();
+                    Managers.Animation.Init();
                     Test();
                 }
             });

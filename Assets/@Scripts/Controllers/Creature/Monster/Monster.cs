@@ -21,6 +21,7 @@ namespace STELLAREST_F1
             }
         }
         public MonsterAnimation MonsterAnim { get; private set; } = null;
+        public EMonsterType MonsterType { get; private set; } = EMonsterType.None;
 
         public override bool Init()
         {
@@ -43,11 +44,16 @@ namespace STELLAREST_F1
             MonsterBody = new MonsterBody(this, dataID);
             MonsterAnim = CreatureAnim as MonsterAnimation;
             MonsterAnim.SetInfo(dataID, this);
-            MonsterStateMachine monsterStateMachine = MonsterAnim.Animator.GetBehaviour<MonsterStateMachine>();
-            monsterStateMachine.OnMonsterAnimUpdateHandler -= OnAnimationUpdate;
-            monsterStateMachine.OnMonsterAnimUpdateHandler += OnAnimationUpdate;
-            monsterStateMachine.OnMonsterAnimComplatedHandler -= OnAnimationCompleted;
-            monsterStateMachine.OnMonsterAnimComplatedHandler += OnAnimationCompleted;
+            MonsterStateMachine[] monsterStateMachines = MonsterAnim.Animator.GetBehaviours<MonsterStateMachine>();
+            for (int i  =0; i < monsterStateMachines.Length; ++i)
+            {
+                monsterStateMachines[i].OnMonsterAnimUpdateHandler -= OnAnimationUpdate;
+                monsterStateMachines[i].OnMonsterAnimUpdateHandler += OnAnimationUpdate;
+
+                monsterStateMachines[i].OnMonsterAnimCompletedHandler -= OnAnimationCompleted;
+                monsterStateMachines[i].OnMonsterAnimCompletedHandler += OnAnimationCompleted;
+            }
+
             Managers.Sprite.SetInfo(dataID, target: this);
 
             // SetStat
@@ -56,8 +62,10 @@ namespace STELLAREST_F1
             _atk = new Stat(MonsterData.Atk);
             _atkRange = new Stat(MonsterData.AtkRange);
             _movementSpeed = new Stat(MonsterData.MovementSpeed);
+            MonsterType = Util.GetEnumFromString<EMonsterType>(MonsterData.Type);
 
-            gameObject.name += $"_{MonsterData.DescriptionTextID.Replace(" ", "")}";
+            // 풀링에 영향에 있는듯.
+            // gameObject.name += $"_{MonsterData.DescriptionTextID.Replace(" ", "")}";
             Collider.radius = MonsterData.ColliderRadius;
             EnterInGame();
             
@@ -156,7 +164,7 @@ namespace STELLAREST_F1
         }
         #endregion
 
-        #region Monster Animation Events - Update
+        #region ANIM EVENTS - UPDATE
         protected override void OnSkillAttackAnimationUpdate()
         {
             if (Target.IsValid() == false)
@@ -164,20 +172,26 @@ namespace STELLAREST_F1
 
             Target.OnDamaged(this);
         }
+
+        protected override void OnDeadAnimationUpdate()
+        {
+            base.OnDeadAnimationUpdate();
+        }
         #endregion
 
-        #region Monster Animation Events - Completed
+        #region ANIM EVENTS - COMPLETED
         private float TestCoolTime = 2.25f;
         protected override void OnSkillAttackAnimationCompleted()
         {
             if (Target.IsValid())
                 StartWait(TestCoolTime);
 
-            CreatureState = ECreatureState.Idle;
+            if (this.IsValid())
+                CreatureState = ECreatureState.Idle;
         }
         #endregion
 
-        #region Monster - Battle
+        #region BATTLE
         public override void OnDamaged(BaseObject attacker)
         {
             base.OnDamaged(attacker);

@@ -11,7 +11,6 @@ namespace STELLAREST_F1
     {
         public CreatureBody CreatureBody { get; protected set; } = null;
         public CreatureAnimation CreatureAnim { get; private set; } = null;
-        public EObjectRarity Rarity { get; protected set; } = EObjectRarity.Common;
 
         [SerializeField] private ECreatureState _creatureState = ECreatureState.None;
         public virtual ECreatureState CreatureState
@@ -61,10 +60,14 @@ namespace STELLAREST_F1
         protected override void EnterInGame()
         {
             Hp = MaxHp;
-            CreatureBody.ShowBody(false);
+            ShowBody(false);
             CreatureState = ECreatureState.Idle;
             StartWait(() => BaseAnim.IsPlay() == false,
-                      () => CreatureBody.ShowBody(true)); // 충돌체나 Rigidbody enable도 ShowBody에서 작업 걸어줘야할듯.
+                      () =>
+                      {
+                          ShowBody(true);
+                          RigidBody.simulated = true;
+                      });
 
             StartCoroutine(CoUpdateAI());
         }
@@ -135,13 +138,13 @@ namespace STELLAREST_F1
         }
 
         // seconds, callback
-        protected void StartWaitCooltime(float seconds, System.Action callback = null)
+        protected void StartWait(float seconds, System.Action callback = null)
         {
             //CancelWait();
             //_coWait = StartCoroutine(CoStartWait(seconds, callback));
-            StartCoroutine(CoStartWaitCooltime(seconds, callback));
+            StartCoroutine(CoWait(seconds, callback));
         }
-        private IEnumerator CoStartWaitCooltime(float seconds, System.Action callback = null)
+        private IEnumerator CoWait(float seconds, System.Action callback = null)
         {
             yield return new WaitForSeconds(seconds);
             callback?.Invoke();
@@ -155,6 +158,17 @@ namespace STELLAREST_F1
         }
 
         #endregion
+
+        /*
+            Idle,
+            Move,
+            Skill_Attack,
+            Skill_A,
+            Skill_B,
+            CollectEnv,
+            OnDamaged,
+            Dead,
+        */
 
         #region Animation Events - Update
         protected void OnAnimationUpdate(ECreatureState updateState)
@@ -173,8 +187,19 @@ namespace STELLAREST_F1
                     OnSkillAttackAnimationUpdate();
                     break;
 
+                case ECreatureState.Skill_A:
+                case ECreatureState.Skill_B:
+                    break;
+
                 case ECreatureState.CollectEnv:
                     OnCollectEnvAnimationUpdate();
+                    break;
+
+                case ECreatureState.OnDamaged:
+                    break;
+
+                case ECreatureState.Dead:
+                    OnDeadAnimationUpdate();
                     break;
             }
         }
@@ -183,7 +208,22 @@ namespace STELLAREST_F1
         protected virtual void OnMoveAnimationUpdate() { }
         protected virtual void OnSkillAttackAnimationUpdate() { }
         protected virtual void OnCollectEnvAnimationUpdate() { }
+        protected virtual void OnDeadAnimationUpdate() 
+        {
+            
+        }
         #endregion
+
+        /*
+            Idle,
+            Move,
+            Skill_Attack,
+            Skill_A,
+            Skill_B,
+            CollectEnv,
+            OnDamaged,
+            Dead,
+        */
 
         #region Animation Events - Completed
         protected void OnAnimationCompleted(ECreatureState endState)
@@ -202,8 +242,18 @@ namespace STELLAREST_F1
                     OnSkillAttackAnimationCompleted();
                     break;
 
+                case ECreatureState.Skill_A:
+                case ECreatureState.Skill_B:
+                    break;
+
                 case ECreatureState.CollectEnv:
                     OnCollectEnvAnimationCompleted();
+                    break;
+
+                case ECreatureState.OnDamaged:
+                    break;
+
+                case ECreatureState.Dead:
                     break;
             }
         }
@@ -311,7 +361,8 @@ namespace STELLAREST_F1
         {
             //attacker.Target = null;
             //Managers.Object.Despawn(this); // TEMP
-            //CreatureState = ECreatureState.Dead;
+            CreatureState = ECreatureState.Dead;
+            base.OnDead(attacker);
         }
         #endregion
     }

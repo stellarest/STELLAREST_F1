@@ -72,6 +72,9 @@ namespace STELLAREST_F1
                 return;
 
             float finalDamage = 1f;
+            if (attacker.ObjectRarity == EObjectRarity.Elite)
+                finalDamage++;
+
             EnvState = EEnvState.OnDamaged;
 
             // TODO : Show UI

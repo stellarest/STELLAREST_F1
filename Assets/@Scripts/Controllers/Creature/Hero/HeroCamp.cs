@@ -11,6 +11,9 @@ namespace STELLAREST_F1
         public Transform Pivot { get; private set; } = null;
         public Transform Destination { get; private set; } = null;
 
+        private SpriteRenderer _circleSPR = null;
+        private SpriteRenderer _arrowSPR = null;
+
         public override bool Init()
         {
             if (base.Init() == false)
@@ -24,8 +27,16 @@ namespace STELLAREST_F1
             Managers.Game.OnMoveDirChangedHandler -= OnMoveDirChanged;
             Managers.Game.OnMoveDirChangedHandler += OnMoveDirChanged;
 
+            Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
+            Managers.Game.OnJoystickStateChangedHandler += OnJoystickStateChanged;
+
             Pivot = transform.GetChild(0).transform;
             Destination = Pivot.GetChild(0).transform;
+
+            _circleSPR = GetComponent<SpriteRenderer>();
+            _arrowSPR = Destination.GetComponent<SpriteRenderer>();
+
+            ShowArrowCircle(false);
 
             return true;
         }
@@ -43,6 +54,26 @@ namespace STELLAREST_F1
                 float angle = Mathf.Atan2(-dir.x, dir.y) * Mathf.Rad2Deg;
                 Pivot.rotation = Quaternion.Euler(0, 0, angle);
             }
+        }
+
+        private void OnJoystickStateChanged(EJoystickState joystickState)
+        {
+            switch (joystickState)
+            {
+                case EJoystickState.PointerDown:
+                    ShowArrowCircle(true);
+                    break;
+
+                case EJoystickState.PointerUp:
+                    ShowArrowCircle(false);
+                    break;
+            }
+        }
+
+        private void ShowArrowCircle(bool show)
+        {
+            _circleSPR.enabled = show;
+            _arrowSPR.enabled = show;
         }
     }
 }

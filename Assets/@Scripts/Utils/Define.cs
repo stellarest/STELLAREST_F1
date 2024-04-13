@@ -90,7 +90,7 @@ namespace STELLAREST_F1
             Skill_A,
             Skill_B,
             CollectEnv,
-            OnDamaged,
+            OnDamaged, // TEMP
             Dead,
             Max = Dead + 1
         }
@@ -277,6 +277,16 @@ namespace STELLAREST_F1
             Large
         }
 
+        public enum EAnimationCurveType
+        {
+            None = -1,
+            Linear,
+            Ease_In,      // 천천히 시작, 후반에 속도 증가
+            Ease_Out,     // 빠르게 시작, 후반에 속도 감소
+            Ease_In_Out,   // 천천히 시작, 중간에 속도 증가, 후반에 속도 감소
+            Max = Ease_In_Out + 1
+        }
+
         public static class ReadOnly
         {
             public static class String
@@ -299,8 +309,8 @@ namespace STELLAREST_F1
                 public static readonly string BaseMap = "BaseMap";
                 public static readonly string Hero = "Hero";
                 public static readonly string AnimBody = "AnimationBody";
-                public static readonly string HeroRootName = "@Heroes";
-                public static readonly string MonsterRootName = "@Monsters";
+                public static readonly string HeroPoolingRootName = "@Pool_Heroes";
+                public static readonly string MonsterPoolingRootName = "@Pool_Monsters";
                 public static readonly string EnvRootName = "@Envs";
                 public static readonly string UI_Joystick = "UI_Joystick";
                 public static readonly string AnimationBody = "AnimationBody";
@@ -311,7 +321,6 @@ namespace STELLAREST_F1
                 public static readonly string Pickaxe_Elite_SP = "Pickaxe_Elite.sprite";
                 public static readonly string WoodcutterAxe_Common_SP = "WoodcutterAxe_Common.sprite";
                 public static readonly string WoodcutterAxe_Elite_SP = "WoodcutterAxe_Elite.sprite";
-
 
                 // Sprite - Hero Human Body Type
                 public static readonly string HBody_HumanType_Head_SP = "Human_Head.sprite";
@@ -484,17 +493,19 @@ namespace STELLAREST_F1
                 public static readonly float JoystickFocusMinDist = -0.18F;
                 public static readonly float JoystickFocusMaxDist = 0.18F;
 
-                public static readonly float MonsterSize_Small = 0.5f;
-                public static readonly float MonsterSize_Medium = 0.8f;
-                public static readonly float MonsterSize_Large = 1.2f;
+                public static readonly float MonsterSize_Small = 0.5F;
+                public static readonly float MonsterSize_Medium = 0.8F;
+                public static readonly float MonsterSize_Large = 1.2F;
 
-                public static readonly float DefaultSearchRange = 8.0f;
-                public static readonly float DefaultStopRange = 1.25f;
+                public static readonly float DefaultSearchRange = 8.0F;
+                public static readonly float DefaultStopRange = 1.25F;
 
                 // Env
                 public static readonly int RockElementsCount = 3;
                 
-
+                // Dead Fade Out Time
+                public static readonly float StartDeadFadeOutTime = 1.0F;
+                public static readonly float DesiredDeadFadeOutEndTime = 2.0F;
             }
         }
     }

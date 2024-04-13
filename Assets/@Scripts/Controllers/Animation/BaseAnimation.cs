@@ -44,6 +44,9 @@ namespace STELLAREST_F1
                 case ECreatureState.CollectEnv:
                     return Play_CollectEnv;
 
+                case ECreatureState.Dead:
+                    return Play_Dead;
+
                 default:
                     return -1;
             }

@@ -44,6 +44,7 @@ namespace STELLAREST_F1
                 return;
             }
 
+            // ECreatureState.CollectEnv : 트렌지션 전환이 없는 단일 애니메이션
             if (stateInfo.shortNameHash == _heroAnim?.GetHash(ECreatureState.CollectEnv))
             {
                 float endThresholdPercentage = 0.65f;
@@ -69,7 +70,6 @@ namespace STELLAREST_F1
                 _canGiveDamageFlag = false;
             }
 
-            // 만일을 위해서
             if (stateInfo.shortNameHash == _heroAnim?.GetHash(ECreatureState.CollectEnv))
                 _canCollectEnvFlag = false;
         }

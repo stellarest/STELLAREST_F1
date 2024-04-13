@@ -13,7 +13,7 @@ namespace STELLAREST_F1
         private bool _canGiveDamageFlag = false;
 
         public event System.Action<ECreatureState> OnMonsterAnimUpdateHandler = null;
-        public event System.Action<ECreatureState> OnMonsterAnimComplatedHandler = null;
+        public event System.Action<ECreatureState> OnMonsterAnimCompletedHandler = null;
 
         public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
@@ -26,24 +26,32 @@ namespace STELLAREST_F1
 
         public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
+            float currentPercentage = stateInfo.normalizedTime % 1.0f;
             if (stateInfo.shortNameHash == _monsterAnim?.GetHash(ECreatureState.Skill_Attack) && _canGiveDamageFlag)
             {
-                float endThreshold = 0.5f;
-                if (stateInfo.normalizedTime >= endThreshold)
+                float endThresholdPercentage = 0.5f;
+                if (currentPercentage >= endThresholdPercentage)
                 {
                     OnMonsterAnimUpdateHandler?.Invoke(ECreatureState.Skill_Attack);
                     _canGiveDamageFlag = false;
+                    return;
                 }
+            }
+
+            if (stateInfo.shortNameHash == _monsterAnim?.GetHash(ECreatureState.Dead))
+            {
+                float endThresholdPercentage = 0.9f;
+                if (currentPercentage >= endThresholdPercentage)
+                    OnMonsterAnimUpdateHandler?.Invoke(ECreatureState.Dead);
             }
         }
 
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
+            // Skill_Attack -> Idle (Has Exit Time)
             if (stateInfo.shortNameHash == _monsterAnim?.GetHash(ECreatureState.Skill_Attack))
             {
-                if (_owner.Target.IsValid())
-                    OnMonsterAnimComplatedHandler?.Invoke(ECreatureState.Skill_Attack);
-
+                OnMonsterAnimCompletedHandler?.Invoke(ECreatureState.Skill_Attack);
                 _canGiveDamageFlag = false; // temp
             }
         }

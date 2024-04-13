@@ -161,7 +161,7 @@ namespace STELLAREST_F1
             _movementSpeed = new Stat(HeroData.MovementSpeed);
 
             // TEMP
-            ObjectRarity = EObjectRarity.Elite;
+            ObjectRarity = EObjectRarity.Common;
 
             gameObject.name += $"_{HeroData.DescriptionTextID.Replace(" ", "")}";
             Collider.radius = HeroData.ColliderRadius;
@@ -183,7 +183,15 @@ namespace STELLAREST_F1
 
         private void Update()
         {
-            Debug.Log(_isCooltime);;
+            if (Input.GetKeyDown(KeyCode.T))
+            {
+                // Monsters - Bird
+                for (int i = 0; i < 1; ++i)
+                {
+                    Vector3 spawnPos = Util.MakeSpawnPosition(this, 2f, 4f);
+                    Monster mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Chicken);
+                }
+            }
         }
 
         #region Hero AI - Idle
@@ -341,10 +349,9 @@ namespace STELLAREST_F1
             if (Target.IsValid() == false)
                 return;
 
-            Debug.Log("INVOKED..");
             // 데미지를 주기 직전 쿨타임 적용. (TEMP, 이후 추적하지않고 Idle로 강제되는 단점이 있음)
-            _isCooltime = true;
-            StartWaitCooltime(Test_SkilA_Cooltime, () => _isCooltime = false);
+            _isCooltime = true; // TEMP
+            StartWait(Test_SkilA_Cooltime, () => _isCooltime = false);
             Target.OnDamaged(this);
         }
 

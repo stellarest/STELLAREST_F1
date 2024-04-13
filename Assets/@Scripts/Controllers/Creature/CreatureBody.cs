@@ -29,11 +29,5 @@ namespace STELLAREST_F1
         public int TemplateID { get; protected set; } = -1;
         public Creature Owner { get; protected set; } = null;
         public T GetOwner<T>() where T : Creature => Owner as T;
-
-        public void ShowBody(bool show)
-        {
-            foreach (var spr in Owner.GetComponentsInChildren<SpriteRenderer>())
-                spr.enabled = show;
-        }
     }
 }

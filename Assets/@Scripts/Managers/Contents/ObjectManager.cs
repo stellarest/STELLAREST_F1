@@ -22,8 +22,8 @@ namespace STELLAREST_F1
             return root.transform;
         }
 
-        public Transform HeroRoot => GetRoot(ReadOnly.String.HeroRootName);
-        public Transform MonsterRoot => GetRoot(ReadOnly.String.MonsterRootName);
+        public Transform HeroRoot => GetRoot(ReadOnly.String.HeroPoolingRootName);
+        public Transform MonsterRoot => GetRoot(ReadOnly.String.MonsterPoolingRootName);
         public Transform EnvRoot => GetRoot(ReadOnly.String.EnvRootName);
         #endregion
 
@@ -35,7 +35,7 @@ namespace STELLAREST_F1
                 case EObjectType.Hero:
                     {
                         Data.HeroData data = Managers.Data.HeroDataDict[dataID];
-                        go = Managers.Resource.Instantiate(data.PrefabLabel);
+                        go = Managers.Resource.Instantiate(data.PrefabLabel, parent: HeroRoot, pooling: true);
                         if (go ==null)
                         {
                             Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{data.PrefabLabel}\"");
@@ -43,7 +43,7 @@ namespace STELLAREST_F1
                         }
 
                         go.transform.position = position;
-                        go.transform.SetParent(HeroRoot);
+                        //go.transform.SetParent(HeroRoot);
                         Hero hero = go.GetComponent<Hero>();
                         hero.SetInfo(dataID);
                         Heroes.Add(hero);
@@ -53,7 +53,7 @@ namespace STELLAREST_F1
                 case EObjectType.Monster:
                     {
                         Data.MonsterData data = Managers.Data.MonsterDataDict[dataID];
-                        go = Managers.Resource.Instantiate(data.PrefabLabel);
+                        go = Managers.Resource.Instantiate(data.PrefabLabel, parent: MonsterRoot, pooling: true);
                         if (go ==null)
                         {
                             Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{data.PrefabLabel}\"");
@@ -61,7 +61,7 @@ namespace STELLAREST_F1
                         }
 
                         go.transform.position = position;
-                        go.transform.SetParent(MonsterRoot);
+                        //go.transform.SetParent(MonsterRoot);
                         Monster monster = go.GetComponent<Monster>();
                         monster.SetInfo(dataID);
                         Monsters.Add(monster);
