@@ -73,8 +73,8 @@ namespace STELLAREST_F1
             }
         }
 
-        private Transform Destination 
-        { 
+        private Transform Destination
+        {
             get
             {
                 HeroCamp camp = Managers.Object.Camp;
@@ -86,11 +86,11 @@ namespace STELLAREST_F1
         }
 
         public override bool CollectEnv
-        { 
-            get => base.CollectEnv; 
+        {
+            get => base.CollectEnv;
             protected set
             {
-                base.CollectEnv = value; 
+                base.CollectEnv = value;
                 if (value && Target.IsValid())
                 {
                     Env envTarget = Target as Env;
@@ -98,11 +98,11 @@ namespace STELLAREST_F1
                 }
                 else
                     HeroBody.ChangeDefaultWeapon();
-            } 
+            }
         }
 
         public HeroAnimation HeroAnim { get; private set; } = null;
-        
+
         private bool _needArrange = true;
         public bool NeedArrange
         {
@@ -142,15 +142,6 @@ namespace STELLAREST_F1
             HeroBody = new HeroBody(this, dataID);
             HeroAnim = CreatureAnim as HeroAnimation;
             HeroAnim.SetInfo(dataID, this);
-            HeroStateMachine[] heroStateMachines = HeroAnim.Animator.GetBehaviours<HeroStateMachine>();
-            for (int i = 0; i < heroStateMachines.Length; ++i)
-            {
-                heroStateMachines[i].OnHeroAnimUpdateHandler -= OnAnimationUpdate;
-                heroStateMachines[i].OnHeroAnimUpdateHandler += OnAnimationUpdate;
-
-                heroStateMachines[i].OnHeroAnimCompletedHandler -= OnAnimationCompleted;
-                heroStateMachines[i].OnHeroAnimCompletedHandler += OnAnimationCompleted;
-            }
             Managers.Sprite.SetInfo(dataID, target: this);
 
             // SetStat
@@ -166,7 +157,7 @@ namespace STELLAREST_F1
             gameObject.name += $"_{HeroData.DescriptionTextID.Replace(" ", "")}";
             Collider.radius = HeroData.ColliderRadius;
             EnterInGame();
-            
+
             return true;
         }
         #endregion
@@ -174,23 +165,33 @@ namespace STELLAREST_F1
         protected override void EnterInGame()
         {
             base.EnterInGame();
-            
-            if (UnityEngine.Random.Range(0, 100) > 50f)
-                LookAtDir = ELookAtDirection.Right;
-            else
-                LookAtDir = ELookAtDirection.Left;
+            HeroStateMachine[] heroStateMachines = HeroAnim.Animator.GetBehaviours<HeroStateMachine>();
+            for (int i = 0; i < heroStateMachines.Length; ++i)
+            {
+                heroStateMachines[i].OnHeroAnimUpdateHandler -= OnAnimationUpdate;
+                heroStateMachines[i].OnHeroAnimUpdateHandler += OnAnimationUpdate;
+
+                heroStateMachines[i].OnHeroAnimCompletedHandler -= OnAnimationCompleted;
+                heroStateMachines[i].OnHeroAnimCompletedHandler += OnAnimationCompleted;
+            }
+            LookAtDir = ELookAtDirection.Right;
         }
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.T))
+            if (Input.GetKeyDown(KeyCode.Q))
             {
-                // Monsters - Bird
-                for (int i = 0; i < 1; ++i)
-                {
-                    Vector3 spawnPos = Util.MakeSpawnPosition(this, 2f, 4f);
-                    Monster mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Chicken);
-                }
+                Vector3 spawnPos = Util.MakeSpawnPosition(this, -4f, 4f);
+                Monster mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Chicken);
+
+                spawnPos = Util.MakeSpawnPosition(this, -4f, 4f);
+                mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Turkey);
+
+                spawnPos = Util.MakeSpawnPosition(this, -4f, 4f);
+                mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Bunny);
+
+                spawnPos = Util.MakeSpawnPosition(this, -4f, 4f);
+                mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Pug);
             }
         }
 
@@ -336,13 +337,8 @@ namespace STELLAREST_F1
                 LookAtTarget();
         }
 
-        protected override void UpdateDead()
-        {
-            SetRigidBodyVelocity(Vector2.zero);
-        }
-
         #region Hero Animation Events - Update
-        private float Test_SkilA_Cooltime = 1.0f;
+        private float TestCoolTime = 0.2f;
         private bool _isCooltime = false;
         protected override void OnSkillAttackAnimationUpdate()
         {
@@ -351,7 +347,7 @@ namespace STELLAREST_F1
 
             // 데미지를 주기 직전 쿨타임 적용. (TEMP, 이후 추적하지않고 Idle로 강제되는 단점이 있음)
             _isCooltime = true; // TEMP
-            StartWait(Test_SkilA_Cooltime, () => _isCooltime = false);
+            StartWait(TestCoolTime, () => _isCooltime = false);
             Target.OnDamaged(this);
         }
 
@@ -429,7 +425,7 @@ namespace STELLAREST_F1
         protected override void TryResizeCollider()
         {
             ChangeColliderSize(EColliderSize.Small);
-            
+
             foreach (Hero hero in Managers.Object.Heroes)
             {
                 if (hero.CreatureMoveState == ECreatureMoveState.ReturnToBase)

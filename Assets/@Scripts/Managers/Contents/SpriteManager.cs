@@ -793,11 +793,11 @@ namespace STELLAREST_F1
                     spr.sprite = sprite;
                 }
             }
-            else
-            {
-                for (int i = 0; i < tr.childCount; ++i)
-                    tr.GetChild(i).gameObject.SetActive(false);
-            }
+            // else
+            // {
+            //     for (int i = 0; i < tr.childCount; ++i)
+            //         tr.GetChild(i).gameObject.SetActive(false);
+            // }
 
             sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.Shadow_SP);
             if (sprite != null)

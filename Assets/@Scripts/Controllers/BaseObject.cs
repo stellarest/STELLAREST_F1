@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using Unity.VisualScripting;
+using Unity.VisualScripting.ReorderableList.Element_Adder_Menu;
 using UnityEngine;
 using UnityEngine.Rendering;
 using static STELLAREST_F1.Define;
@@ -121,10 +122,7 @@ namespace STELLAREST_F1
             return true;
         }
 
-        protected virtual void EnterInGame()
-        {
-            RigidBody.simulated = true;
-        }
+        protected virtual void EnterInGame() { }
 
         public void SetRigidBodyVelocity(Vector2 velocity)
         {
@@ -186,12 +184,18 @@ namespace STELLAREST_F1
 
         protected void ShowBody(bool show)
         {
-            foreach (SpriteRenderer spr in GetComponentsInChildren<SpriteRenderer>(includeInactive: true))
+            foreach (SpriteRenderer spr in GetComponentsInChildren<SpriteRenderer>())
             {
                 spr.enabled = show;
                 if (show)
+                {
                     spr.color = new Color(spr.color.r, spr.color.g, spr.color.b, 1f);
+                    spr.gameObject.SetActive(true);
+                }
             }
+
+            if (show)
+                RigidBody.simulated = true;
         }
     }
 }

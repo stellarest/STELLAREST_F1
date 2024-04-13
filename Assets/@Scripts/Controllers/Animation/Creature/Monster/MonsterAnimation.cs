@@ -24,14 +24,15 @@ namespace STELLAREST_F1
             RuntimeAnimatorController animController = Managers.Resource.Load<RuntimeAnimatorController>(animatorTextID);
             if (string.IsNullOrEmpty(animatorTextID) == false && animController != null)
             {
-                // clone을 꼭 해야되는건지 아직 확실하지 않음
-                RuntimeAnimatorController cloned = UnityEngine.Object.Instantiate(animController);
-                Animator.runtimeAnimatorController = cloned;
+                // Ref Origin
+                Animator.runtimeAnimatorController = animController;
+
+                // Cloned
+                // RuntimeAnimatorController cloned = UnityEngine.Object.Instantiate(animController);
+                // Animator.runtimeAnimatorController = cloned;
             }
 
             _owner = owner as Monster;
-            // 몬스터 sprite는 플레이어와 반대 방향으로 구성되어 있음
-            //_originScaleX = _owner.transform.localScale.x * -1;
         }
 
         public override void UpdateAnimation()

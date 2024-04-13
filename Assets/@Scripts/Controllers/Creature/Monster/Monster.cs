@@ -44,16 +44,6 @@ namespace STELLAREST_F1
             MonsterBody = new MonsterBody(this, dataID);
             MonsterAnim = CreatureAnim as MonsterAnimation;
             MonsterAnim.SetInfo(dataID, this);
-            MonsterStateMachine[] monsterStateMachines = MonsterAnim.Animator.GetBehaviours<MonsterStateMachine>();
-            for (int i  =0; i < monsterStateMachines.Length; ++i)
-            {
-                monsterStateMachines[i].OnMonsterAnimUpdateHandler -= OnAnimationUpdate;
-                monsterStateMachines[i].OnMonsterAnimUpdateHandler += OnAnimationUpdate;
-
-                monsterStateMachines[i].OnMonsterAnimCompletedHandler -= OnAnimationCompleted;
-                monsterStateMachines[i].OnMonsterAnimCompletedHandler += OnAnimationCompleted;
-            }
-
             Managers.Sprite.SetInfo(dataID, target: this);
 
             // SetStat
@@ -76,6 +66,15 @@ namespace STELLAREST_F1
         protected override void EnterInGame()
         {
             base.EnterInGame();
+            MonsterStateMachine[] monsterStateMachines = MonsterAnim.Animator.GetBehaviours<MonsterStateMachine>();
+            for (int i = 0; i < monsterStateMachines.Length; ++i)
+            {
+                monsterStateMachines[i].OnMonsterAnimUpdateHandler -= OnAnimationUpdate;
+                monsterStateMachines[i].OnMonsterAnimUpdateHandler += OnAnimationUpdate;
+
+                monsterStateMachines[i].OnMonsterAnimCompletedHandler -= OnAnimationCompleted;
+                monsterStateMachines[i].OnMonsterAnimCompletedHandler += OnAnimationCompleted;
+            }
             _initPos = transform.position;
             LookAtDir = ELookAtDirection.Left;
         }
@@ -158,10 +157,6 @@ namespace STELLAREST_F1
             if (Target.IsValid())
                 LookAtTarget();
         }
-
-        protected override void UpdateDead()
-        {
-        }
         #endregion
 
         #region ANIM EVENTS - UPDATE
@@ -170,6 +165,7 @@ namespace STELLAREST_F1
             if (Target.IsValid() == false)
                 return;
 
+            LookAtTarget();
             Target.OnDamaged(this);
         }
 
@@ -180,11 +176,12 @@ namespace STELLAREST_F1
         #endregion
 
         #region ANIM EVENTS - COMPLETED
-        private float TestCoolTime = 2.25f;
+        private float TestCoolTime = 1.0f;
         protected override void OnSkillAttackAnimationCompleted()
         {
-            if (Target.IsValid())
-                StartWait(TestCoolTime);
+            StartWait(TestCoolTime);
+            
+            Debug.Log("### EXIT ATTACK STATE.. ###");
 
             if (this.IsValid())
                 CreatureState = ECreatureState.Idle;

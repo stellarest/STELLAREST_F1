@@ -61,15 +61,15 @@ namespace STELLAREST_F1
         {
             Hp = MaxHp;
             ShowBody(false);
-            CreatureState = ECreatureState.Idle;
-            StartWait(() => BaseAnim.IsPlay() == false,
-                      () =>
-                      {
+            StartWait(waitCondition: () => BaseAnim.IsPlay() == false,
+                      waitCompleted: () => {
                           ShowBody(true);
-                          RigidBody.simulated = true;
+                          Target = null;
+                          CancelWait();
+                          CreatureState = ECreatureState.Idle;
+                          CreatureMoveState = ECreatureMoveState.None;
+                          StartCoroutine(CoUpdateAI());
                       });
-
-            StartCoroutine(CoUpdateAI());
         }
 
         protected IEnumerator CoUpdateAI()
@@ -107,7 +107,7 @@ namespace STELLAREST_F1
         protected virtual void UpdateMove() { }
         protected virtual void UpdateSkillAttack() { }
         protected virtual void UpdateCollectEnv() { }
-        protected virtual void UpdateDead() { }
+        protected virtual void UpdateDead() => SetRigidBodyVelocity(Vector2.zero);
 
         protected virtual void ChangeColliderSize(EColliderSize colliderSize = EColliderSize.Default) { }
         protected virtual void TryResizeCollider() { }
@@ -125,16 +125,16 @@ namespace STELLAREST_F1
             _coWait = null;
         }
 
-        protected void StartWait(System.Func<bool> waitCondition, System.Action callback = null)
+        protected void StartWait(System.Func<bool> waitCondition, System.Action waitCompleted = null)
         {
             CancelWait();
-            _coWait = StartCoroutine(CoWait(waitCondition, callback));
+            _coWait = StartCoroutine(CoWait(waitCondition, waitCompleted));
         }
-        private IEnumerator CoWait(System.Func<bool> waitCondition, System.Action callback = null)
+        private IEnumerator CoWait(System.Func<bool> waitCondition, System.Action waitCompleted = null)
         {
             yield return new WaitUntil(waitCondition);
             _coWait = null;
-            callback?.Invoke();
+            waitCompleted?.Invoke();
         }
 
         // seconds, callback

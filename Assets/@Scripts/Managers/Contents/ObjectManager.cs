@@ -24,7 +24,7 @@ namespace STELLAREST_F1
 
         public Transform HeroRoot => GetRoot(ReadOnly.String.HeroPoolingRootName);
         public Transform MonsterRoot => GetRoot(ReadOnly.String.MonsterPoolingRootName);
-        public Transform EnvRoot => GetRoot(ReadOnly.String.EnvRootName);
+        public Transform EnvRoot => GetRoot(ReadOnly.String.EnvPoolingRootName);
         #endregion
 
         public T Spawn<T>(Vector3 position, EObjectType spawnObjectType, int dataID = -1) where T : BaseObject
@@ -71,7 +71,7 @@ namespace STELLAREST_F1
                 case EObjectType.Env:
                     {
                         Data.EnvData data = Managers.Data.EnvDataDict[dataID];
-                        go = Managers.Resource.Instantiate(data.PrefabLabel);
+                        go = Managers.Resource.Instantiate(data.PrefabLabel, parent: EnvRoot, pooling: true);
                         if (go == null)
                         {
                             Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{data.PrefabLabel}\"");
@@ -79,7 +79,7 @@ namespace STELLAREST_F1
                         }
 
                         go.transform.position = position;
-                        go.transform.SetParent(EnvRoot);
+                        //go.transform.SetParent(EnvRoot);
                         Env env = go.GetComponent<Env>();
                         env.SetInfo(dataID);
                         Envs.Add(env);

@@ -311,7 +311,7 @@ namespace STELLAREST_F1
                 public static readonly string AnimBody = "AnimationBody";
                 public static readonly string HeroPoolingRootName = "@Pool_Heroes";
                 public static readonly string MonsterPoolingRootName = "@Pool_Monsters";
-                public static readonly string EnvRootName = "@Envs";
+                public static readonly string EnvPoolingRootName = "@Pool_Envs";
                 public static readonly string UI_Joystick = "UI_Joystick";
                 public static readonly string AnimationBody = "AnimationBody";
                 public static readonly string HeroCamp = "HeroCamp";

@@ -16,6 +16,7 @@ using UnityEngine;
 - 그리고 예를 들어 바위를 채집할 때, 바위 완전 밑에서 채집하면 이상하니까, 이런거 위치 조정해줘야 할 것 같은데.
 - *** 크리쳐 스테이트 - 애니메이션 - AI 대응 ***
 - *** PoolManager 수정 ***
+- *** 시작하자마자 Camp Pivot으로 닥돌하는거 고쳐야함 ***
 */
 
 public class T_E_S_T : MonoBehaviour

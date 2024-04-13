@@ -53,7 +53,9 @@ namespace STELLAREST_F1
             EnvData = Managers.Data.EnvDataDict[dataID];
             EnvType = Util.GetEnumFromString<EEnvType>(EnvData.Type);
             _maxHp = new Stat(EnvData.MaxHp);
-            gameObject.name += $"_{EnvData.DescriptionTextID.Replace(" ", "")}";
+            
+            // 오브젝트 풀에 이름 넘기는거 고민해야함
+            //gameObject.name += $"_{EnvData.DescriptionTextID.Replace(" ", "")}";
 
             EnterInGame();
             return true;
@@ -61,7 +63,7 @@ namespace STELLAREST_F1
 
         protected override void EnterInGame()
         {
-            base.EnterInGame();
+            ShowBody(true);            
             Hp = MaxHp;
             EnvState = EEnvState.Idle;
         }
@@ -91,6 +93,7 @@ namespace STELLAREST_F1
         {
             //Managers.Object.Despawn(this); // TEMP
             EnvState = EEnvState.Dead;
+            base.OnDead(attacker);
             // TODO : Drop Item
             // Managers.Object.Despawn(this);
         }
