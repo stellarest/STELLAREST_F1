@@ -154,7 +154,7 @@ namespace STELLAREST_F1
             // TEMP
             ObjectRarity = EObjectRarity.Common;
 
-            gameObject.name += $"_{HeroData.DescriptionTextID.Replace(" ", "")}";
+            //gameObject.name += $"_{HeroData.DescriptionTextID.Replace(" ", "")}";
             Collider.radius = HeroData.ColliderRadius;
             EnterInGame();
 
@@ -192,6 +192,11 @@ namespace STELLAREST_F1
 
                 spawnPos = Util.MakeSpawnPosition(this, -4f, 4f);
                 mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Pug);
+            }
+
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                
             }
         }
 

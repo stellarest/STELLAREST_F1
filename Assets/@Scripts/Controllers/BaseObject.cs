@@ -153,7 +153,7 @@ namespace STELLAREST_F1
         public virtual void OnDead(BaseObject attacker)
         {
             RigidBody.simulated = false;
-            StartCoroutine(CoDeadFadeOut(() => Managers.Object.Despawn(this)));
+            StartCoroutine(CoDeadFadeOut(() => Managers.Object.Despawn(this, DataTemplateID)));
         }
 
         private IEnumerator CoDeadFadeOut(System.Action callback = null)

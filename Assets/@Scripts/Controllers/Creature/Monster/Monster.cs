@@ -55,7 +55,7 @@ namespace STELLAREST_F1
             MonsterType = Util.GetEnumFromString<EMonsterType>(MonsterData.Type);
 
             // 풀링에 영향에 있는듯.
-            // gameObject.name += $"_{MonsterData.DescriptionTextID.Replace(" ", "")}";
+            gameObject.name += $"_{MonsterData.DescriptionTextID.Replace(" ", "")}";
             Collider.radius = MonsterData.ColliderRadius;
             EnterInGame();
             

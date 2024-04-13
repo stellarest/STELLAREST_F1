@@ -35,7 +35,7 @@ namespace STELLAREST_F1
                 case EObjectType.Hero:
                     {
                         Data.HeroData data = Managers.Data.HeroDataDict[dataID];
-                        go = Managers.Resource.Instantiate(data.PrefabLabel, parent: HeroRoot, pooling: true);
+                        go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: HeroRoot, poolingID: data.DataID);
                         if (go ==null)
                         {
                             Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{data.PrefabLabel}\"");
@@ -53,7 +53,7 @@ namespace STELLAREST_F1
                 case EObjectType.Monster:
                     {
                         Data.MonsterData data = Managers.Data.MonsterDataDict[dataID];
-                        go = Managers.Resource.Instantiate(data.PrefabLabel, parent: MonsterRoot, pooling: true);
+                        go = Managers.Resource.Instantiate(data.PrefabLabel, parent: MonsterRoot, poolingID: data.DataID);
                         if (go ==null)
                         {
                             Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{data.PrefabLabel}\"");
@@ -71,7 +71,7 @@ namespace STELLAREST_F1
                 case EObjectType.Env:
                     {
                         Data.EnvData data = Managers.Data.EnvDataDict[dataID];
-                        go = Managers.Resource.Instantiate(data.PrefabLabel, parent: EnvRoot, pooling: true);
+                        go = Managers.Resource.Instantiate(data.PrefabLabel, parent: EnvRoot, poolingID: data.DataID);
                         if (go == null)
                         {
                             Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{data.PrefabLabel}\"");
@@ -105,7 +105,7 @@ namespace STELLAREST_F1
             return null;
         }
 
-        public void Despawn<T>(T obj) where T : BaseObject
+        public void Despawn<T>(T obj, int poolingID) where T : BaseObject
         {
             switch (obj.ObjectType)
             {
@@ -126,7 +126,7 @@ namespace STELLAREST_F1
                     break;
             }
 
-            Managers.Resource.Destroy(obj.gameObject);
+            Managers.Resource.Destroy(obj.gameObject, poolingID);
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,20 +25,6 @@ namespace STELLAREST_F1
             private set => _root = _root == null ? value : _root;
         }
 
-        // public Transform Root
-        // {
-        //     get
-        //     {
-        //         if (_root == null)
-        //         {
-        //             GameObject go = new GameObject { name = $"{_prefab.name}_Pool" };
-        //             _root = go.transform;
-        //         }
-
-        //         return _root;
-        //     }
-        // }
-
         // 사용후 반납
         public void Push(GameObject go)
         {
@@ -61,30 +48,36 @@ namespace STELLAREST_F1
 
     public class PoolManager
     {
-        private Dictionary<string, Pool> _pools = new Dictionary<string, Pool>();
+        //private Dictionary<string, Pool> _pools = new Dictionary<string, Pool>();
+        private Dictionary<int, Pool> _pools = new Dictionary<int, Pool>();
 
-        public bool Push(GameObject go)
+        public bool Push(GameObject go, int poolingID)
         {
-            if (_pools.ContainsKey(go.name) == false)
+            // if (_pools.ContainsKey(go.name) == false)
+            //     return false;
+
+            if (_pools.ContainsKey(poolingID) == false)
                 return false;
 
-            _pools[go.name].Push(go);
+            _pools[poolingID].Push(go);
             return true;
         }
 
-        public GameObject Pop(GameObject prefab, Transform parent)
+        public GameObject Pop(GameObject prefab, Transform parent, int poolingID)
         {
-            if (_pools.ContainsKey(prefab.name) == false)
-                CreatePool(prefab, parent);
+            if (_pools.ContainsKey(poolingID) == false)
+                CreatePool(prefab, parent, poolingID);
 
-            return _pools[prefab.name].Pop();
+            //return _pools[prefab.name].Pop();
+            return _pools[poolingID].Pop();
         }
 
         public void Clear() => _pools.Clear();
 
-        private void CreatePool(GameObject original, Transform parent)
+        private void CreatePool(GameObject original, Transform parent, int poolingID)
         {
-            _pools.Add(original.name, new Pool(original, parent));
+            //_pools.Add(original.name, new Pool(original, parent));
+            _pools.Add(poolingID, new Pool(original, parent));
         }
     }
 }

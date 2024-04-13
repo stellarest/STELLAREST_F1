@@ -19,7 +19,7 @@ namespace STELLAREST_F1
             return null;
         }
 
-        public GameObject Instantiate(string key, Transform parent = null, bool pooling = false)
+        public GameObject Instantiate(string key, Transform parent = null, int poolingID = -1)
         {
             GameObject prefab = this.Load<GameObject>(key);
             if (prefab == null)
@@ -29,21 +29,20 @@ namespace STELLAREST_F1
             }
 
             // PoolManager
-            if (pooling)
-                return Managers.Pool.Pop(prefab, parent);
+            if (poolingID != -1)
+                return Managers.Pool.Pop(prefab, parent, poolingID);
 
             GameObject go = UnityEngine.Object.Instantiate(prefab);
             go.name = prefab.name;
             return go;
         }
 
-        public void Destroy(GameObject go)
+        public void Destroy(GameObject go, int poolingID = -1)
         {
             if (go == null)
                 return;
 
-            // PoolManager
-            if (Managers.Pool.Push(go))
+            if (Managers.Pool.Push(go, poolingID))
                 return;
 
             UnityEngine.Object.Destroy(go, Time.deltaTime);

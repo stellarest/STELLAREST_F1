@@ -31,7 +31,7 @@ namespace STELLAREST_F1
             Hero firstSpawnedHero = null;
             {
                 // Heroes
-                for (int i = 0; i < 3; ++i)
+                for (int i = 0; i < 1; ++i)
                 {
                     Vector3 spawnPos = Util.MakeSpawnPosition(camp, -5f, 5f);
                     Hero hero = Managers.Object.Spawn<Hero>(spawnPos, EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);

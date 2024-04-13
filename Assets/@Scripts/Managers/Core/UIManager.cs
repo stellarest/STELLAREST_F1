@@ -78,7 +78,7 @@ namespace STELLAREST_F1
             if (string.IsNullOrEmpty(name))
                 name = typeof(T).Name;
 
-            GameObject go = Managers.Resource.Instantiate(name, parent, pooling);
+            GameObject go = Managers.Resource.Instantiate(key: name, parent: parent);
             go.transform.SetParent(parent);
 
             return Util.GetOrAddComponent<T>(go);
