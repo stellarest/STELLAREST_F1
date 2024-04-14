@@ -25,8 +25,8 @@ namespace STELLAREST_F1
             if (stateInfo.shortNameHash == _heroAnim?.GetHash(ECreatureState.Skill_Attack))
                 _canGiveDamageFlag = true;
 
-            // if (stateInfo.shortNameHash == _heroAnim?.GetHash(ECreatureState.CollectEnv))
-            //     _canCollectEnvFlag = true;
+            if (stateInfo.shortNameHash == _heroAnim?.GetHash(ECreatureState.CollectEnv))
+                _canCollectEnvFlag = true;
         }
 
 
@@ -44,7 +44,6 @@ namespace STELLAREST_F1
                 return;
             }
 
-            // ECreatureState.CollectEnv : 트렌지션 전환이 없는 단일 애니메이션
             if (stateInfo.shortNameHash == _heroAnim?.GetHash(ECreatureState.CollectEnv))
             {
                 float endThresholdPercentage = 0.65f;

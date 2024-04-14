@@ -107,7 +107,11 @@ namespace STELLAREST_F1
         protected virtual void UpdateMove() { }
         protected virtual void UpdateSkillAttack() { }
         protected virtual void UpdateCollectEnv() { }
-        protected virtual void UpdateDead() => SetRigidBodyVelocity(Vector2.zero);
+        protected virtual void UpdateDead()
+        {
+            SetRigidBodyVelocity(Vector2.zero);
+            CancelWait();
+        }
 
         protected virtual void ChangeColliderSize(EColliderSize colliderSize = EColliderSize.Default) { }
         protected virtual void TryResizeCollider() { }
@@ -206,7 +210,14 @@ namespace STELLAREST_F1
 
         protected virtual void OnIdleAnimationUpdate() { }
         protected virtual void OnMoveAnimationUpdate() { }
-        protected virtual void OnSkillAttackAnimationUpdate() { }
+        protected virtual void OnSkillAttackAnimationUpdate() 
+        {
+            if (Target.IsValid() == false)
+                return;
+
+            LookAtTarget();
+            Target.OnDamaged(this);
+        }
         protected virtual void OnCollectEnvAnimationUpdate() { }
         protected virtual void OnDeadAnimationUpdate() 
         {
@@ -359,8 +370,6 @@ namespace STELLAREST_F1
 
         public override void OnDead(BaseObject attacker)
         {
-            //attacker.Target = null;
-            //Managers.Object.Despawn(this); // TEMP
             CreatureState = ECreatureState.Dead;
             base.OnDead(attacker);
         }

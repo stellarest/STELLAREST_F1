@@ -146,17 +146,14 @@ namespace STELLAREST_F1
         #endregion
 
         #region Battle
-        public virtual void OnDamaged(BaseObject attacker)
-        {
-        }
-
+        public virtual void OnDamaged(BaseObject attacker) { }
         public virtual void OnDead(BaseObject attacker)
         {
             RigidBody.simulated = false;
             StartCoroutine(CoDeadFadeOut(() => Managers.Object.Despawn(this, DataTemplateID)));
         }
 
-        private IEnumerator CoDeadFadeOut(System.Action callback = null)
+        protected virtual IEnumerator CoDeadFadeOut(System.Action callback = null)
         {
             if (this.isActiveAndEnabled == false)
                 yield break;
@@ -165,7 +162,7 @@ namespace STELLAREST_F1
 
             float delta = 0f;
             float percent = 1f;
-            AnimationCurve curve = Managers.Animation.Curve(EAnimationCurveType.Ease_Out);
+            AnimationCurve curve = Managers.Animation.Curve(EAnimationCurveType.Ease_In);
             while (percent > 0f)
             {
                 delta += Time.deltaTime;

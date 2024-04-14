@@ -54,9 +54,7 @@ namespace STELLAREST_F1
             EnvType = Util.GetEnumFromString<EEnvType>(EnvData.Type);
             _maxHp = new Stat(EnvData.MaxHp);
             
-            // 오브젝트 풀에 이름 넘기는거 고민해야함
-            //gameObject.name += $"_{EnvData.DescriptionTextID.Replace(" ", "")}";
-
+            gameObject.name += $"_{EnvData.DescriptionTextID.Replace(" ", "")}";
             EnterInGame();
             return true;
         }

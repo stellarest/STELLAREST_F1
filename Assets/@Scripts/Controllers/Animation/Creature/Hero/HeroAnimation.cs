@@ -38,7 +38,7 @@ namespace STELLAREST_F1
 
         public override void UpdateAnimation()
         {
-            if (_owner.IsValid() == false)
+            if (_owner == null)
                 return;
 
             switch (_owner.CreatureState)

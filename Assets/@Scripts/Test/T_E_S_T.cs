@@ -11,12 +11,10 @@ using UnityEngine;
 - 전투 준비 (A* 없이)
 - Monster RigidBody Linear Drag (100 -> 300) : 나중에 종류별로 바꿔야함.
 - 멀어졌을 때 이동속도가 증가하는 로그함수 구현하기.
-- 객체 죽었을 때 처리. 투명화할것인가? Dead 애니메이션만 재생시키고 Despawn 할 것인가?
-- 히어로 전용 공용 Collect 애니메이션 만들어야함. 무기도 낫으로 교체. -- ***
+
 - 그리고 예를 들어 바위를 채집할 때, 바위 완전 밑에서 채집하면 이상하니까, 이런거 위치 조정해줘야 할 것 같은데.
-- *** 크리쳐 스테이트 - 애니메이션 - AI 대응 ***
-- *** PoolManager 수정 ***
 - *** 시작하자마자 Camp Pivot으로 닥돌하는거 고쳐야함 ***
+- *** Hero Dead Animation -> Fade ***
 */
 
 public class T_E_S_T : MonoBehaviour

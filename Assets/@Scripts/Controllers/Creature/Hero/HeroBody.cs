@@ -158,6 +158,9 @@ namespace STELLAREST_F1
         public HeroFace Face { get; private set; } = null;
         public void SetEmoji(EHeroEmoji emoji) => Face?.SetEmoji(emoji);
 
+        public List<SpriteRenderer> Skin { get; } = new List<SpriteRenderer>();
+        public List<SpriteRenderer> Appearance { get; } = new List<SpriteRenderer>();
+
         private void InitBody(EHeroBodyParts bodyParts, int length)
         {
             switch (bodyParts)

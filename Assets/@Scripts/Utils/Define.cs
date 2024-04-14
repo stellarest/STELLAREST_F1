@@ -504,8 +504,8 @@ namespace STELLAREST_F1
                 public static readonly int RockElementsCount = 3;
                 
                 // Dead Fade Out Time
-                public static readonly float StartDeadFadeOutTime = 1.0F;
-                public static readonly float DesiredDeadFadeOutEndTime = 2.0F;
+                public static readonly float StartDeadFadeOutTime = 0.85F;
+                public static readonly float DesiredDeadFadeOutEndTime = 1.0F;
             }
         }
     }

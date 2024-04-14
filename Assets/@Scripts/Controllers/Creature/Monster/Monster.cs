@@ -58,7 +58,6 @@ namespace STELLAREST_F1
             gameObject.name += $"_{MonsterData.DescriptionTextID.Replace(" ", "")}";
             Collider.radius = MonsterData.ColliderRadius;
             EnterInGame();
-            
             return true;
         }
         #endregion
@@ -160,29 +159,16 @@ namespace STELLAREST_F1
         #endregion
 
         #region ANIM EVENTS - UPDATE
-        protected override void OnSkillAttackAnimationUpdate()
-        {
-            if (Target.IsValid() == false)
-                return;
-
-            LookAtTarget();
-            Target.OnDamaged(this);
-        }
-
-        protected override void OnDeadAnimationUpdate()
-        {
-            base.OnDeadAnimationUpdate();
-        }
+        protected override void OnSkillAttackAnimationUpdate() 
+            => base.OnSkillAttackAnimationUpdate();
         #endregion
 
         #region ANIM EVENTS - COMPLETED
-        private float TestCoolTime = 1.0f;
+        private float TestCoolTime = 0.8f;
         protected override void OnSkillAttackAnimationCompleted()
         {
             StartWait(TestCoolTime);
             
-            Debug.Log("### EXIT ATTACK STATE.. ###");
-
             if (this.IsValid())
                 CreatureState = ECreatureState.Idle;
         }

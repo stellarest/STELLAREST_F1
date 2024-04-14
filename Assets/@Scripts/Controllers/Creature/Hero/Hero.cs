@@ -151,10 +151,8 @@ namespace STELLAREST_F1
             _atkRange = new Stat(HeroData.AtkRange);
             _movementSpeed = new Stat(HeroData.MovementSpeed);
 
-            // TEMP
-            ObjectRarity = EObjectRarity.Common;
-
-            //gameObject.name += $"_{HeroData.DescriptionTextID.Replace(" ", "")}";
+            ObjectRarity = EObjectRarity.Common; // TEMP
+            gameObject.name += $"_{HeroData.DescriptionTextID.Replace(" ", "")}";
             Collider.radius = HeroData.ColliderRadius;
             EnterInGame();
 
@@ -179,25 +177,8 @@ namespace STELLAREST_F1
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Q))
-            {
-                Vector3 spawnPos = Util.MakeSpawnPosition(this, -4f, 4f);
-                Monster mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Chicken);
-
-                spawnPos = Util.MakeSpawnPosition(this, -4f, 4f);
-                mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Turkey);
-
-                spawnPos = Util.MakeSpawnPosition(this, -4f, 4f);
-                mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Bunny);
-
-                spawnPos = Util.MakeSpawnPosition(this, -4f, 4f);
-                mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Pug);
-            }
-
-            if (Input.GetKeyDown(KeyCode.W))
-            {
-                
-            }
+            if (Input.GetKeyDown(KeyCode.T))
+                CreatureState = ECreatureState.Dead;
         }
 
         #region Hero AI - Idle
@@ -343,17 +324,13 @@ namespace STELLAREST_F1
         }
 
         #region Hero Animation Events - Update
-        private float TestCoolTime = 0.2f;
-        private bool _isCooltime = false;
+        private float TestCoolTime = 0.55f; // TEMP
+        private bool _isCooltime = false; // TEMP
         protected override void OnSkillAttackAnimationUpdate()
         {
-            if (Target.IsValid() == false)
-                return;
-
-            // 데미지를 주기 직전 쿨타임 적용. (TEMP, 이후 추적하지않고 Idle로 강제되는 단점이 있음)
             _isCooltime = true; // TEMP
+            base.OnSkillAttackAnimationUpdate();
             StartWait(TestCoolTime, () => _isCooltime = false);
-            Target.OnDamaged(this);
         }
 
         protected override void OnCollectEnvAnimationUpdate()
@@ -374,7 +351,8 @@ namespace STELLAREST_F1
         #region Hero Animation Events - Completed
         protected override void OnSkillAttackAnimationCompleted()
         {
-            CreatureState = ECreatureState.Idle;
+            if (this.IsValid())
+                CreatureState = ECreatureState.Idle;
         }
         #endregion
 
@@ -382,11 +360,66 @@ namespace STELLAREST_F1
         public override void OnDamaged(BaseObject attacker)
         {
             base.OnDamaged(attacker);
+            Debug.Log($"{gameObject.name} Hp : {Hp} / {MaxHp}");
         }
 
         public override void OnDead(BaseObject attacker)
         {
             base.OnDead(attacker);
+            Debug.Log($"{gameObject.name} is dead.");
+        }
+
+        protected override IEnumerator CoDeadFadeOut(Action callback = null)
+        {
+            // StartCoroutine(base.CoDeadFadeOut(callback));
+            // yield break;
+
+            if (this.isActiveAndEnabled == false)
+                yield break;
+
+            yield return new WaitForSeconds(ReadOnly.Numeric.StartDeadFadeOutTime);
+
+            float delta = 0f;
+            float percent = 1f;
+            AnimationCurve curve = Managers.Animation.Curve(EAnimationCurveType.Ease_In);
+
+            // Skin부터 Fade Out
+            while (percent > 0f)
+            {
+                delta += Time.deltaTime;
+                percent = 1f - (delta / ReadOnly.Numeric.DesiredDeadFadeOutEndTime);
+                for (int i = 0; i < HeroBody.Skin.Count; ++i)
+                {
+                    float current = Mathf.Lerp(0f, 1f, curve.Evaluate(percent));
+                    HeroBody.Skin[i].color = new Color(HeroBody.Skin[i].color.r,
+                                                       HeroBody.Skin[i].color.g, 
+                                                       HeroBody.Skin[i].color.b, current);
+                }
+
+                yield return null;
+            }
+
+            // Skin Fade Out 이후, Appearance Fade
+            // yield return new WaitForSeconds(0.25f);
+            delta = 0f;
+            percent = 1f;
+            while (percent > 0f)
+            {
+                delta += Time.deltaTime;
+                percent = 1f - (delta / ReadOnly.Numeric.DesiredDeadFadeOutEndTime);
+                for (int i = 0; i < HeroBody.Appearance.Count; ++i)
+                {
+                    float current = Mathf.Lerp(0f, 1f, curve.Evaluate(percent));
+                    HeroBody.Appearance[i].color = new Color(HeroBody.Appearance[i].color.r,
+                                                             HeroBody.Appearance[i].color.g,
+                                                             HeroBody.Appearance[i].color.b, current);
+                }
+
+                yield return null;
+            }
+
+            Debug.Log("COMPLETED FADE OUT.");
+            //callback?.Invoke();
         }
         #endregion
 
