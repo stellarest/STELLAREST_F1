@@ -163,12 +163,12 @@ namespace STELLAREST_F1
         }
         #endregion
 
-        #region ANIM EVENTS - UPDATE
+        #region ### ANIM EVENTS - UPDATE ###
         protected override void OnSkillAttackAnimationUpdate() 
             => base.OnSkillAttackAnimationUpdate();
         #endregion
 
-        #region ANIM EVENTS - COMPLETED
+        #region ### ANIM EVENTS - COMPLETED ###
         private float TestCoolTime = 0.8f;
         protected override void OnSkillAttackAnimationCompleted()
         {

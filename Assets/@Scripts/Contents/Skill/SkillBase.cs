@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
@@ -33,18 +34,39 @@ namespace STELLAREST_F1
             SkillData = Managers.Data.SkillDataDict[dataID];
             DataTemplateID = dataID;
 
-            // Rigister Animation Event
-            {
-
-            }
-
             EnterInGame();
             return true;
         }
 
         protected virtual void EnterInGame()
         {
+            AddAnimationEvents();
+        }
 
+        private void AddAnimationEvents()
+        {
+            if (Owner != null && Owner.CreatureAnim != null)
+            {
+                CreatureStateMachine[] creatureStateMachines = Owner.CreatureAnim.Animator.GetBehaviours<CreatureStateMachine>();
+                for (int i = 0; i < creatureStateMachines.Length; ++i)
+                {
+                    creatureStateMachines[i].OnAnimUpdateHandler -= OnAnimationUpdate;
+                    creatureStateMachines[i].OnAnimUpdateHandler += OnAnimationUpdate;
+
+                    creatureStateMachines[i].OnAnimCompletedHandler -= OnAnimationCompleted;
+                    creatureStateMachines[i].OnAnimCompletedHandler += OnAnimationCompleted;
+                }
+            }
+            else
+                Debug.LogError($"{nameof(SkillBase)}, {nameof(AddAnimationEvents)}");
+        }
+
+        protected void OnAnimationUpdate(ECreatureState creatureState)
+        {
+        }
+
+        protected void OnAnimationCompleted(ECreatureState creatureState)
+        {
         }
     }
 }

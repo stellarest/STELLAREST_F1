@@ -320,7 +320,20 @@ namespace STELLAREST_F1
                 CreatureState = ECreatureState.Move;
             }
             else if (Target.IsValid())
+            {
+                // Research Enemies
+                Creature creature = FindClosestInRange(ReadOnly.Numeric.DefaultSearchRange, Managers.Object.Monsters, func: IsValid) as Creature;
+                if (creature != null)
+                {
+                    CollectEnv = false;
+                    Target = creature;
+                    CreatureMoveState = ECreatureMoveState.TargetToEnemy;
+                    CreatureState = ECreatureState.Move;
+                    return;
+                }
+
                 LookAtTarget();
+            }
         }
 
         #region Hero Animation Events - Update
