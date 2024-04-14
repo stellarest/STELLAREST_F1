@@ -13,8 +13,7 @@ using UnityEngine;
 - 멀어졌을 때 이동속도가 증가하는 로그함수 구현하기.
 
 - 그리고 예를 들어 바위를 채집할 때, 바위 완전 밑에서 채집하면 이상하니까, 이런거 위치 조정해줘야 할 것 같은데.
-- *** 시작하자마자 Camp Pivot으로 닥돌하는거 고쳐야함 ***
-- *** Hero Dead Animation -> Fade ***
+- *** ENV 진행중일 때 몬스터가 나타다도 걍 쌩까고 채집하는거 고쳐야함 *** -
 */
 
 public class T_E_S_T : MonoBehaviour

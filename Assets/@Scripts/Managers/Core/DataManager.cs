@@ -30,6 +30,10 @@ namespace STELLAREST_F1
         public Dictionary<int, Data.RockSpriteData> RockSpriteDataDict { get; private set; } = new Dictionary<int, Data.RockSpriteData>();
         #endregion
 
+        #region Skills
+        public Dictionary<int, Data.SkillData> SkillDataDict { get; private set; } = new Dictionary<int, Data.SkillData>();
+        #endregion
+
 
         public void Init()
         {
@@ -43,6 +47,8 @@ namespace STELLAREST_F1
             EnvDataDict = LoadJson<Data.EnvDataLoader, int, Data.EnvData>(ReadOnly.String.EnvData).MakeDict();
             TreeSpriteDataDict = LoadJson<Data.TreeSpriteDataLoader, int, Data.TreeSpriteData>(ReadOnly.String.TreeSpriteData).MakeDict();
             RockSpriteDataDict = LoadJson<Data.RockSpriteDataLoader, int, Data.RockSpriteData>(ReadOnly.String.RockSpriteData).MakeDict();
+
+            SkillDataDict = LoadJson<Data.SkillDataLoader, int, Data.SkillData>(ReadOnly.String.SkillData).MakeDict();
         }
 
         private T LoadJson<T, Key, Value>(string path) where T : ILoader<Key, Value>

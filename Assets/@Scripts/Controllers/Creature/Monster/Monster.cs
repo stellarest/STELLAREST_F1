@@ -65,15 +65,15 @@ namespace STELLAREST_F1
         protected override void EnterInGame()
         {
             base.EnterInGame();
-            MonsterStateMachine[] monsterStateMachines = MonsterAnim.Animator.GetBehaviours<MonsterStateMachine>();
-            for (int i = 0; i < monsterStateMachines.Length; ++i)
-            {
-                monsterStateMachines[i].OnMonsterAnimUpdateHandler -= OnAnimationUpdate;
-                monsterStateMachines[i].OnMonsterAnimUpdateHandler += OnAnimationUpdate;
+            // MonsterStateMachine[] monsterStateMachines = MonsterAnim.Animator.GetBehaviours<MonsterStateMachine>();
+            // for (int i = 0; i < monsterStateMachines.Length; ++i)
+            // {
+            //     monsterStateMachines[i].OnMonsterAnimUpdateHandler -= OnAnimationUpdate;
+            //     monsterStateMachines[i].OnMonsterAnimUpdateHandler += OnAnimationUpdate;
 
-                monsterStateMachines[i].OnMonsterAnimCompletedHandler -= OnAnimationCompleted;
-                monsterStateMachines[i].OnMonsterAnimCompletedHandler += OnAnimationCompleted;
-            }
+            //     monsterStateMachines[i].OnMonsterAnimCompletedHandler -= OnAnimationCompleted;
+            //     monsterStateMachines[i].OnMonsterAnimCompletedHandler += OnAnimationCompleted;
+            // }
             _initPos = transform.position;
             LookAtDir = ELookAtDirection.Left;
         }
@@ -99,6 +99,11 @@ namespace STELLAREST_F1
                         _destPos = _initPos + new Vector3(Random.Range(-4, 4), Random.Range(-4, 4));
                         CreatureState = ECreatureState.Move;
                         return;
+                    }
+                    else
+                    {
+                        SetRigidBodyVelocity(Vector2.zero);
+                        StartWait(Random.Range(1f, 2f));
                     }
                 }
             }

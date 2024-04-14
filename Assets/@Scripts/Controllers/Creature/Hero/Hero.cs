@@ -163,15 +163,15 @@ namespace STELLAREST_F1
         protected override void EnterInGame()
         {
             base.EnterInGame();
-            HeroStateMachine[] heroStateMachines = HeroAnim.Animator.GetBehaviours<HeroStateMachine>();
-            for (int i = 0; i < heroStateMachines.Length; ++i)
-            {
-                heroStateMachines[i].OnHeroAnimUpdateHandler -= OnAnimationUpdate;
-                heroStateMachines[i].OnHeroAnimUpdateHandler += OnAnimationUpdate;
+            // HeroStateMachine[] heroStateMachines = HeroAnim.Animator.GetBehaviours<HeroStateMachine>();
+            // for (int i = 0; i < heroStateMachines.Length; ++i)
+            // {
+            //     heroStateMachines[i].OnHeroAnimUpdateHandler -= OnAnimationUpdate;
+            //     heroStateMachines[i].OnHeroAnimUpdateHandler += OnAnimationUpdate;
 
-                heroStateMachines[i].OnHeroAnimCompletedHandler -= OnAnimationCompleted;
-                heroStateMachines[i].OnHeroAnimCompletedHandler += OnAnimationCompleted;
-            }
+            //     heroStateMachines[i].OnHeroAnimCompletedHandler -= OnAnimationCompleted;
+            //     heroStateMachines[i].OnHeroAnimCompletedHandler += OnAnimationCompleted;
+            // }
             LookAtDir = ELookAtDirection.Right;
         }
 
@@ -371,9 +371,6 @@ namespace STELLAREST_F1
 
         protected override IEnumerator CoDeadFadeOut(Action callback = null)
         {
-            // StartCoroutine(base.CoDeadFadeOut(callback));
-            // yield break;
-
             if (this.isActiveAndEnabled == false)
                 yield break;
 
@@ -400,7 +397,6 @@ namespace STELLAREST_F1
             }
 
             // Skin Fade Out 이후, Appearance Fade
-            // yield return new WaitForSeconds(0.25f);
             delta = 0f;
             percent = 1f;
             while (percent > 0f)
@@ -418,8 +414,7 @@ namespace STELLAREST_F1
                 yield return null;
             }
 
-            Debug.Log("COMPLETED FADE OUT.");
-            //callback?.Invoke();
+            callback?.Invoke();
         }
         #endregion
 

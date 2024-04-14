@@ -66,10 +66,24 @@ namespace STELLAREST_F1
                           ShowBody(true);
                           Target = null;
                           CancelWait();
+                          AddAnimationEvents();
                           CreatureState = ECreatureState.Idle;
                           CreatureMoveState = ECreatureMoveState.None;
                           StartCoroutine(CoUpdateAI());
                       });
+        }
+
+        private void AddAnimationEvents()
+        {
+            CreatureStateMachine[] creatureStateMachines = CreatureAnim.Animator.GetBehaviours<CreatureStateMachine>();
+            for (int i = 0; i < creatureStateMachines.Length; ++i)
+            {
+                creatureStateMachines[i].OnAnimUpdateHandler -= OnAnimationUpdate;
+                creatureStateMachines[i].OnAnimUpdateHandler += OnAnimationUpdate;
+
+                creatureStateMachines[i].OnAnimCompletedHandler -= OnAnimationCompleted;
+                creatureStateMachines[i].OnAnimCompletedHandler += OnAnimationCompleted;
+            }
         }
 
         protected IEnumerator CoUpdateAI()

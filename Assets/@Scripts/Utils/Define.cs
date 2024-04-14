@@ -300,6 +300,7 @@ namespace STELLAREST_F1
                 public static readonly string EnvData = "EnvData";
                 public static readonly string TreeSpriteData = "TreeSpriteData";
                 public static readonly string RockSpriteData = "RockSpriteData";
+                public static readonly string SkillData = "SkillData";
 
                 // Others
                 public static readonly string Managers = "@Managers";

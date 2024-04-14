@@ -1,59 +1,63 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Animations;
-using UnityEngine.UIElements;
 using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
-    public class HeroStateMachine : StateMachineBehaviour
+    public class CreatureStateMachine : StateMachineBehaviour
     {
-        private Hero _owner = null;
-        private HeroAnimation _heroAnim = null;
+        private Creature _owner = null;
+        private CreatureAnimation _creatureAnim = null;
         private bool _canGiveDamageFlag = false;
         private bool _canCollectEnvFlag = false;
 
-        public event System.Action<ECreatureState> OnHeroAnimUpdateHandler = null;
-        public event System.Action<ECreatureState> OnHeroAnimCompletedHandler = null;
+        public event System.Action<ECreatureState> OnAnimUpdateHandler = null;
+        public event System.Action<ECreatureState> OnAnimCompletedHandler = null;
 
         public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            _heroAnim = _heroAnim == null ? animator.GetComponent<HeroAnimation>() : _heroAnim;
-            _owner = _owner == null ? _heroAnim.GetOwner<Hero>() : _owner;
+            _creatureAnim = _creatureAnim == null ? animator.GetComponent<CreatureAnimation>() : _creatureAnim;
+            _owner = _owner == null ? _creatureAnim.GetOwner<Creature>() : _owner;
 
-            if (stateInfo.shortNameHash == _heroAnim?.GetHash(ECreatureState.Skill_Attack))
+            if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureState.Skill_Attack))
                 _canGiveDamageFlag = true;
 
-            if (stateInfo.shortNameHash == _heroAnim?.GetHash(ECreatureState.CollectEnv))
+            if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureState.CollectEnv))
                 _canCollectEnvFlag = true;
         }
-
 
         public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
             float currentPercentage = stateInfo.normalizedTime % 1.0f;
-            if (stateInfo.shortNameHash == _heroAnim?.GetHash(ECreatureState.Skill_Attack) && _canGiveDamageFlag)
+            if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureState.Skill_Attack) && _canGiveDamageFlag)
             {
                 float endThresholdPercentage = 0.5f;
                 if (currentPercentage >= endThresholdPercentage)
                 {
-                    OnHeroAnimUpdateHandler?.Invoke(ECreatureState.Skill_Attack);
+                    OnAnimUpdateHandler?.Invoke(ECreatureState.Skill_Attack);
                     _canGiveDamageFlag = false;
                 }
                 return;
             }
 
-            if (stateInfo.shortNameHash == _heroAnim?.GetHash(ECreatureState.CollectEnv))
+            if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureState.CollectEnv))
             {
                 float endThresholdPercentage = 0.65f;
                 if (currentPercentage > endThresholdPercentage && _canCollectEnvFlag == false)
                 {
                     _canCollectEnvFlag = true;
-                    OnHeroAnimUpdateHandler?.Invoke(ECreatureState.CollectEnv);
+                    OnAnimUpdateHandler?.Invoke(ECreatureState.CollectEnv);
                 }
                 else if (currentPercentage < endThresholdPercentage && _canCollectEnvFlag)
                     _canCollectEnvFlag = false;
+            }
+
+            if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureState.Dead))
+            {
+                float endThresholdPercentage = 0.9f;
+                if (currentPercentage >= endThresholdPercentage)
+                    OnAnimUpdateHandler?.Invoke(ECreatureState.Dead);
             }
         }
 
@@ -62,14 +66,13 @@ namespace STELLAREST_F1
             if (_owner?.CreatureMoveState == ECreatureMoveState.ForceMove)
                 return;
 
-            // Skill_Attack -> Idle (Has Exit Time)
-            if (stateInfo.shortNameHash == _heroAnim?.GetHash(ECreatureState.Skill_Attack))
+            if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureState.Skill_Attack))
             {
-                OnHeroAnimCompletedHandler?.Invoke(ECreatureState.Skill_Attack);
+                OnAnimCompletedHandler?.Invoke(ECreatureState.Skill_Attack);
                 _canGiveDamageFlag = false;
             }
 
-            if (stateInfo.shortNameHash == _heroAnim?.GetHash(ECreatureState.CollectEnv))
+            if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureState.CollectEnv))
                 _canCollectEnvFlag = false;
         }
     }
