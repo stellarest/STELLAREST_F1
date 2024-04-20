@@ -33,6 +33,7 @@ namespace STELLAREST_F1
 
             ObjectType = EObjectType.Env;
             RigidBody.bodyType = RigidbodyType2D.Static;
+            Collider.isTrigger = true; // TEMP
 
             return true;
         }
@@ -66,7 +67,7 @@ namespace STELLAREST_F1
             EnvState = EEnvState.Idle;
         }
 
-        public override void OnDamaged(BaseObject attacker)
+        public override void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
         {
             if (EnvState == EEnvState.Dead)
                 return;
@@ -83,15 +84,15 @@ namespace STELLAREST_F1
             if (Hp <= 0f)
             {
                 Hp = 0f;
-                OnDead(attacker);
+                OnDead(attacker, skillFromAttacker);
             }
         }
 
-        public override void OnDead(BaseObject attacker)
+        public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
         {
             //Managers.Object.Despawn(this); // TEMP
             EnvState = EEnvState.Dead;
-            base.OnDead(attacker);
+            base.OnDead(attacker, skillFromAttacker);
             // TODO : Drop Item
             // Managers.Object.Despawn(this);
         }

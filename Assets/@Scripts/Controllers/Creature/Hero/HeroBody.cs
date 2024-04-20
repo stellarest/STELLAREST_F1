@@ -111,17 +111,23 @@ namespace STELLAREST_F1
                         }
                         break;
 
-                    case EHeroEmoji.Combat:
+                    case EHeroEmoji.Skill_Attack:
                         {
-                            _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Combat];
-                            _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Combat];
+                            _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Skill_Attack];
+                            _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Skill_Attack];
 
-                            _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Combat];
-                            _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Combat];
+                            _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Skill_Attack];
+                            _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Skill_Attack];
 
-                            _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Combat];
-                            _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Combat];
+                            _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Skill_Attack];
+                            _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Skill_Attack];
                         }
+                        break;
+
+                    case EHeroEmoji.Skill_A:
+                        break;
+
+                    case EHeroEmoji.Skill_B:
                         break;
 
                     case EHeroEmoji.Sick:
@@ -490,29 +496,18 @@ namespace STELLAREST_F1
             {
                 case EEnvType.Tree:
                     if (Owner.ObjectRarity == EObjectRarity.Common)
-                        spr.sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Tree][(int)EObjectRarity.Common];
+                        spr.sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Tree][(int)ECollectEnvRarity.Common];
                     else if (Owner.ObjectRarity == EObjectRarity.Elite)
-                        spr.sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Tree][(int)EObjectRarity.Elite];
+                        spr.sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Tree][(int)ECollectEnvRarity.Elite];
                     break;
 
                 case EEnvType.Rock:
                     if (Owner.ObjectRarity == EObjectRarity.Common)
-                        spr.sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Rock][(int)EObjectRarity.Common];
+                        spr.sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Rock][(int)ECollectEnvRarity.Common];
                     else if (Owner.ObjectRarity == EObjectRarity.Elite)
-                        spr.sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Rock][(int)EObjectRarity.Elite];
+                        spr.sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Rock][(int)ECollectEnvRarity.Elite];
                     break;
             }
-
-            // switch (Owner.Rarity)
-            // {
-            //     case EObjectRarity.Common:
-            //         spr.sprite = Managers.Sprite.Pickaxes[(int)EObjectRarity.Common];
-            //         break;
-
-            //     case EObjectRarity.Elite:
-            //         spr.sprite = Managers.Sprite.Pickaxes[(int)EObjectRarity.Elite];
-            //         break;
-            // }
         }
 
         public void ChangeDefaultWeapon()

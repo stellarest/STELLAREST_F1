@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
@@ -10,7 +11,12 @@ namespace STELLAREST_F1
     {
         public enum EObjectRarity
         {
-            None = -1,
+            Common = 0,
+            Elite = 9,
+        }
+
+        public enum ECollectEnvRarity
+        {
             Common,
             Elite,
             Max = Elite + 1
@@ -115,7 +121,9 @@ namespace STELLAREST_F1
             None = -1,
             Idle,
             Move,
-            Combat,
+            Skill_Attack,
+            Skill_A,
+            Skill_B,
             Sick,
             Dead,
             Max = Dead + 1
@@ -287,6 +295,20 @@ namespace STELLAREST_F1
             Max = Ease_In_Out + 1
         }
 
+        public enum ESkillType
+        {
+            None = -1,
+            Skill_Attack,
+            Skill_A,
+            Skill_B,
+            Max = Skill_B + 1
+        }
+
+        public enum EClassName
+        {
+            MeleeAttack,
+        }
+
         public static class ReadOnly
         {
             public static class String
@@ -300,6 +322,7 @@ namespace STELLAREST_F1
                 public static readonly string EnvData = "EnvData";
                 public static readonly string TreeSpriteData = "TreeSpriteData";
                 public static readonly string RockSpriteData = "RockSpriteData";
+                public static readonly string StatData = "StatData";
                 public static readonly string SkillData = "SkillData";
 
                 // Others
@@ -447,6 +470,7 @@ namespace STELLAREST_F1
 
             public static class Numeric
             {
+                // [ INTEGER ]
                 public static readonly int SortingOrder_SpellIndicator = 200;
                 public static readonly int SortingOrder_Creature = 300;
                 public static readonly int SortingOrder_Env = 300;
@@ -463,10 +487,10 @@ namespace STELLAREST_F1
                 public static readonly int DataID_Hero_Lancer = 101999;
 
                 // ID - Monsters
-                public static readonly int DataID_Monster_Chicken = 201000;
-                public static readonly int DataID_Monster_Turkey = 201001;
-                public static readonly int DataID_Monster_Bunny = 201020;
-                public static readonly int DataID_Monster_Pug = 201021;
+                public static readonly int DataID_Monster_Chicken = 102000;
+                public static readonly int DataID_Monster_Turkey = 102001;
+                public static readonly int DataID_Monster_Bunny = 102002;
+                public static readonly int DataID_Monster_Pug = 102003;
 
                 // ID - Envs Trees & Rocks
                 public static readonly int DataID_Env_AshTree = 301000;
@@ -490,7 +514,11 @@ namespace STELLAREST_F1
                 public static readonly int DataID_Env_WhetstoneRock = 301018;
                 public static readonly int DataID_Env_ZincRock = 301019;
 
-                public static readonly float CamOrthoSize = 12F; 
+                // Env
+                public static readonly int RockElementsCount = 3;
+
+                // [ FLOATING ]
+                public static readonly float CamOrthoSize = 12.0F; 
                 public static readonly float JoystickFocusMinDist = -0.18F;
                 public static readonly float JoystickFocusMaxDist = 0.18F;
 
@@ -498,11 +526,8 @@ namespace STELLAREST_F1
                 public static readonly float MonsterSize_Medium = 0.8F;
                 public static readonly float MonsterSize_Large = 1.2F;
 
-                public static readonly float DefaultSearchRange = 8.0F;
-                public static readonly float DefaultStopRange = 1.25F;
-
-                // Env
-                public static readonly int RockElementsCount = 3;
+                public static readonly float Temp_SearchDistance = 8.0F;
+                public static readonly float Temp_StopDistance = 1.25F;
                 
                 // Dead Fade Out Time
                 public static readonly float StartDeadFadeOutTime = 0.85F;

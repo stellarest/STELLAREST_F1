@@ -9,6 +9,7 @@ namespace STELLAREST_F1
 {
     public class Creature : BaseObject
     {
+        public SkillComponent CreatureSkillComponent { get; protected set; } = null;
         public CreatureBody CreatureBody { get; protected set; } = null;
         public CreatureAnimation CreatureAnim { get; private set; } = null;
 
@@ -78,16 +79,38 @@ namespace STELLAREST_F1
             CreatureStateMachine[] creatureStateMachines = CreatureAnim.Animator.GetBehaviours<CreatureStateMachine>();
             for (int i = 0; i < creatureStateMachines.Length; ++i)
             {
-                creatureStateMachines[i].OnAnimUpdateHandler -= OnAnimationUpdate;
-                creatureStateMachines[i].OnAnimUpdateHandler += OnAnimationUpdate;
+                creatureStateMachines[i].OnAnimationEnterHandler -= OnAnimationEnter;
+                creatureStateMachines[i].OnAnimationEnterHandler += OnAnimationEnter;
 
-                creatureStateMachines[i].OnAnimCompletedHandler -= OnAnimationCompleted;
-                creatureStateMachines[i].OnAnimCompletedHandler += OnAnimationCompleted;
+                creatureStateMachines[i].OnAnimationUpdateHandler -= OnAnimationUpdate;
+                creatureStateMachines[i].OnAnimationUpdateHandler += OnAnimationUpdate;
+
+                creatureStateMachines[i].OnAnimationCompletedHandler -= OnAnimationCompleted;
+                creatureStateMachines[i].OnAnimationCompletedHandler += OnAnimationCompleted;
+            }
+        }
+
+        private void ReleaseAnimationEvents()
+        {
+            if (CreatureAnim == null)
+                return;
+
+            CreatureStateMachine[] creatureStateMachines = CreatureAnim.Animator.GetBehaviours<CreatureStateMachine>();
+            for (int i = 0; i < creatureStateMachines.Length; ++i)
+            {
+                creatureStateMachines[i].OnAnimationEnterHandler -= OnAnimationEnter;
+                creatureStateMachines[i].OnAnimationUpdateHandler -= OnAnimationUpdate;
+                creatureStateMachines[i].OnAnimationCompletedHandler -= OnAnimationCompleted;
             }
         }
 
         protected IEnumerator CoUpdateAI()
         {
+            // ###################### TEST ######################
+            if (this.ObjectType == EObjectType.Monster)
+                yield break;
+            // ###################### TEST ######################
+
             while (true)
             {
                 switch (CreatureState)
@@ -101,7 +124,9 @@ namespace STELLAREST_F1
                         break;
 
                     case ECreatureState.Skill_Attack:
-                        UpdateSkillAttack();
+                    case ECreatureState.Skill_A:
+                    case ECreatureState.Skill_B:
+                        UpdateSkill();
                         break;
 
                     case ECreatureState.CollectEnv:
@@ -119,18 +144,18 @@ namespace STELLAREST_F1
 
         protected virtual void UpdateIdle() { }
         protected virtual void UpdateMove() { }
-        protected virtual void UpdateSkillAttack() { }
+        protected virtual void UpdateSkill() { }
         protected virtual void UpdateCollectEnv() { }
         protected virtual void UpdateDead()
         {
             SetRigidBodyVelocity(Vector2.zero);
             CancelWait();
         }
-
         protected virtual void ChangeColliderSize(EColliderSize colliderSize = EColliderSize.Default) { }
         protected virtual void TryResizeCollider() { }
 
-        #region Wait
+        #region Coroutines
+        // Co Wait 없앨준비하라네
         protected Coroutine _coWait = null;
         protected void StartWait(float seconds)
         {
@@ -143,29 +168,16 @@ namespace STELLAREST_F1
             _coWait = null;
         }
 
-        protected void StartWait(System.Func<bool> waitCondition, System.Action waitCompleted = null)
+        protected void StartWait(Func<bool> waitCondition, Action waitCompleted = null)
         {
             CancelWait();
             _coWait = StartCoroutine(CoWait(waitCondition, waitCompleted));
         }
-        private IEnumerator CoWait(System.Func<bool> waitCondition, System.Action waitCompleted = null)
+        private IEnumerator CoWait(Func<bool> waitCondition, Action waitCompleted = null)
         {
             yield return new WaitUntil(waitCondition);
             _coWait = null;
             waitCompleted?.Invoke();
-        }
-
-        // seconds, callback
-        protected void StartWait(float seconds, System.Action callback = null)
-        {
-            //CancelWait();
-            //_coWait = StartCoroutine(CoStartWait(seconds, callback));
-            StartCoroutine(CoWait(seconds, callback));
-        }
-        private IEnumerator CoWait(float seconds, System.Action callback = null)
-        {
-            yield return new WaitForSeconds(seconds);
-            callback?.Invoke();
         }
 
         protected void CancelWait()
@@ -174,21 +186,32 @@ namespace STELLAREST_F1
                 StopCoroutine(_coWait);
             _coWait = null;
         }
-
         #endregion
 
-        /*
-            Idle,
-            Move,
-            Skill_Attack,
-            Skill_A,
-            Skill_B,
-            CollectEnv,
-            OnDamaged,
-            Dead,
-        */
+        #region Animation Events
+        protected void OnAnimationEnter(ECreatureState enterState)
+        {
+            switch (enterState)
+            {
+                case ECreatureState.Idle:
+                    OnIdleAnimationEnter();
+                    break;
 
-        #region Animation Events - Update
+                case ECreatureState.Move:
+                    OnMoveAnimationEnter();
+                    break;
+
+                case ECreatureState.Skill_Attack:
+                case ECreatureState.Skill_A:
+                case ECreatureState.Skill_B:
+                    CreatureSkillComponent?.PassOnSkillEnter(enterState);
+                    break;
+            }
+        }
+
+        protected virtual void OnIdleAnimationEnter() { }
+        protected virtual void OnMoveAnimationEnter() { }
+
         protected void OnAnimationUpdate(ECreatureState updateState)
         {
             switch (updateState)
@@ -202,11 +225,10 @@ namespace STELLAREST_F1
                     break;
 
                 case ECreatureState.Skill_Attack:
-                    OnSkillAttackAnimationUpdate();
-                    break;
-
                 case ECreatureState.Skill_A:
                 case ECreatureState.Skill_B:
+                    // 스킬을 사용하는 주체가 크리처이기 때문에 여기서 이벤트 등록, 삭제하고 호출
+                    CreatureSkillComponent.PassOnSkillUpdate(updateState);
                     break;
 
                 case ECreatureState.CollectEnv:
@@ -224,33 +246,16 @@ namespace STELLAREST_F1
 
         protected virtual void OnIdleAnimationUpdate() { }
         protected virtual void OnMoveAnimationUpdate() { }
-        protected virtual void OnSkillAttackAnimationUpdate() 
+        protected virtual void OnSkillAnimationUpdate() // Move To SkillBase, Maybe
         {
             if (Target.IsValid() == false)
                 return;
 
-            LookAtTarget();
-            Target.OnDamaged(this);
+            LookAtTarget(Target);
         }
         protected virtual void OnCollectEnvAnimationUpdate() { }
-        protected virtual void OnDeadAnimationUpdate() 
-        {
-            
-        }
-        #endregion
+        protected virtual void OnDeadAnimationUpdate() { }
 
-        /*
-            Idle,
-            Move,
-            Skill_Attack,
-            Skill_A,
-            Skill_B,
-            CollectEnv,
-            OnDamaged,
-            Dead,
-        */
-
-        #region Animation Events - Completed
         protected void OnAnimationCompleted(ECreatureState endState)
         {
             switch (endState)
@@ -264,11 +269,9 @@ namespace STELLAREST_F1
                     break;
 
                 case ECreatureState.Skill_Attack:
-                    OnSkillAttackAnimationCompleted();
-                    break;
-
                 case ECreatureState.Skill_A:
                 case ECreatureState.Skill_B:
+                    CreatureSkillComponent?.PassOnSkillCompleted(endState);
                     break;
 
                 case ECreatureState.CollectEnv:
@@ -285,7 +288,7 @@ namespace STELLAREST_F1
 
         protected virtual void OnIdleAnimationCompleted() { }
         protected virtual void OnMoveAnimationCompleted() { }
-        protected virtual void OnSkillAttackAnimationCompleted() { }
+        protected virtual void OnSkillAnimationCompleted() { }
         protected virtual void OnCollectEnvAnimationCompleted() { }
         #endregion
 
@@ -319,54 +322,8 @@ namespace STELLAREST_F1
             return target;
         }
 
-        protected void ChaseOrAttackTarget(float attackRange, float chaseRange)
-        {
-            Vector3 toDir = Target.transform.position - transform.position;
-            float distToTargetSQR = toDir.sqrMagnitude;
-
-            float attackDistToTargetSQR = attackRange * attackRange;
-            // ATTACK
-            if (attackDistToTargetSQR >= distToTargetSQR)
-            {
-                if (CreatureMoveState == ECreatureMoveState.TargetToEnemy)
-                {
-                    CreatureState = ECreatureState.Skill_Attack;
-                }
-                else if (CreatureMoveState == ECreatureMoveState.CollectEnv)
-                {
-                    CollectEnv = true;
-                    CreatureState = ECreatureState.CollectEnv;
-                }
-                return;
-            }
-            // CHASE
-            else
-            {
-                SetRigidBodyVelocity(toDir.normalized * MovementSpeed);
-                // 너무 멀어지면 포기
-                if (distToTargetSQR > chaseRange * chaseRange)
-                {
-                    Target = null;
-                    CreatureState = ECreatureState.Move;
-                }
-                return;
-            }
-        }
-
-        protected void LookAtTarget()
-        {
-            Vector3 toTargetDir = Target.transform.position - transform.position;
-            if (toTargetDir.x < 0)
-                LookAtDir = ELookAtDirection.Left;
-            else
-                LookAtDir = ELookAtDirection.Right;
-        }
-
-        protected bool IsValid(BaseObject bo) => bo.IsValid();
-        #endregion
-
         #region Battle
-        public override void OnDamaged(BaseObject attacker)
+        public override void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
         {
             Creature creature = attacker as Creature;
             if (creature.IsValid() == false)
@@ -378,15 +335,41 @@ namespace STELLAREST_F1
             if (Hp <= 0f)
             {
                 Hp = 0f;
-                OnDead(attacker);
+                OnDead(attacker, skillFromAttacker);
             }
         }
 
-        public override void OnDead(BaseObject attacker)
+        public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
         {
             CreatureState = ECreatureState.Dead;
-            base.OnDead(attacker);
+            base.OnDead(attacker, skillFromAttacker);
         }
+        #endregion
+
+        protected void ChaseOrAttackTarget(float chaseRange, float atkRange)
+        {
+            Vector3 toTargetDir = Target.transform.position - transform.position;
+            if (DistanceToTargetSQR <= atkRange * atkRange)
+                CreatureSkillComponent?.CurrentSkill.DoSkill();
+            else
+            {
+                SetRigidBodyVelocity(toTargetDir.normalized * MovementSpeed);
+                float searchDistSQR = chaseRange * chaseRange;
+                if (DistanceToTargetSQR > searchDistSQR)
+                {
+                    Target = null;
+                    CreatureState = ECreatureState.Move;
+                }
+            }
+        }
+
+        protected virtual void OnDisable()
+        {
+            Debug.Log("Creature::OnDisable");
+            ReleaseAnimationEvents();
+        }
+
+        protected bool IsValid(BaseObject bo) => bo.IsValid();
         #endregion
     }
 }

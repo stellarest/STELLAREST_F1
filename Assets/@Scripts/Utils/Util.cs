@@ -6,6 +6,7 @@ using System.Reflection;
 using Unity.Burst;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
+using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
@@ -67,6 +68,20 @@ namespace STELLAREST_F1
             {
                 Debug.LogError($"{nameof(Util)}, {nameof(GetEnumFromString)}, Input : \"{value}\"");
                 return default(T);
+            }
+        }
+
+        public static System.Type GetTypeFromClassName(string className)
+        {
+            EClassName eClassName = GetEnumFromString<EClassName>(className);
+            switch (eClassName)
+            {
+                case EClassName.MeleeAttack:
+                    return typeof(MeleeAttack);
+
+                default:
+                    Debug.LogError($"{nameof(Util)}, {nameof(GetTypeFromClassName)}, Input : \"{className}, Please check Define.EClassName\"");
+                    return null;
             }
         }
 

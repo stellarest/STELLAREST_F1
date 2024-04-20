@@ -11,13 +11,12 @@ namespace STELLAREST_F1
         {
         }
 
-        public Stat(float baseValue)
-            : this()
+        public Stat(float baseValue) : this()
         {
             this.BaseValue = baseValue;
         }
 
-        public float BaseValue { get; private set; } = 0f;
+        public float BaseValue { get; private set; }
         private bool _isDirty = false;
 
         [SerializeField] private float _value = 0f;

@@ -36,19 +36,69 @@ namespace STELLAREST_F1
             }
         }
 
+        protected float DistanceToTargetSQR
+        {
+            get
+            {
+                if (Target.IsValid() == false)
+                    return 0.0f;
+
+                Vector3 toTargetDir = Target.transform.position - transform.position;
+                return UnityEngine.Mathf.Max(0.0f, toTargetDir.sqrMagnitude);
+            }
+        }
+
+        protected float AttackDistance // TEMP
+        {
+            get
+            {
+                float threshold = 2.2f;
+                if (Target.IsValid() && Target.ObjectType == EObjectType.Env)
+                    return UnityEngine.Mathf.Max(threshold, Collider.radius + Target.Collider.radius);
+
+                return AtkRange + Collider.radius + Target.ColliderRadius;
+            }
+        }
+
         public Vector3 MoveDir { get; protected set; } = Vector2.zero;
 
 
         #region Stat
+        public Data.StatData StatData { get; private set; } = null;
+        private int _levelCount = -1;
+        private int _levelValue = -1;
+        private int _maxLevelValue = -1;
+        public int Level
+        {
+            get => (_levelValue % DataTemplateID) + 1;
+            private set
+            {
+                if (_levelValue == _maxLevelValue)
+                    return;
+
+                _levelValue++;
+                _levelValue = UnityEngine.Mathf.Clamp(_levelValue, DataTemplateID, _maxLevelValue);
+                if (_levelValue == _maxLevelValue)
+                {
+                    // TODO : DO SOMETHING WHEN GOT MAX LEVEL STATE (EX)COMMON -> ELITE
+                }
+                else
+                {
+                    // TODO : DO SOMETHING WHEN LEVEL UP (EX)EFFECT 
+                }
+            }
+        }
+
+        protected void LevelUp() => Level++;
+
         public float Hp { get; set; } = 0f;
-        
         protected Stat _maxHp = null; 
         public float MaxHp
         {
             get => _maxHp.BaseValue;
             protected set
             {
-                // DO SOMETHING
+                _maxHp = _maxHp == null ? new Stat(value) : _maxHp;
             }
         }
         
@@ -58,7 +108,7 @@ namespace STELLAREST_F1
             get => _atk.BaseValue;
             protected set
             {
-                // DO SOMETHING
+                _atk = _atk == null ? new Stat(value) : _atk;
             }
         }
 
@@ -68,7 +118,7 @@ namespace STELLAREST_F1
             get => _atkRange.BaseValue;
             protected set
             {
-                // DO SOMETHING
+                _atkRange = _atkRange == null ? new Stat(value) : _atkRange;
             }
         }
 
@@ -78,23 +128,12 @@ namespace STELLAREST_F1
             get => _movementSpeed.BaseValue;
             protected set
             {
-                // DO SOMETHING
+                _movementSpeed = _movementSpeed == null ? new Stat(value) : _movementSpeed;
             }
         }
         #endregion
 
         public BaseObject Target { get; set; } = null;
-        protected float AttackDistance
-        {
-            get
-            {
-                float env = 2.2f;
-                if (Target != null && Target.ObjectType == EObjectType.Env)
-                    return UnityEngine.Mathf.Max(env, this.Collider.radius + Target.Collider.radius + 0.1f);
-
-                return AtkRange;
-            }
-        }
 
         public override bool Init()
         {
@@ -111,18 +150,51 @@ namespace STELLAREST_F1
             return true;
         }
 
-        private bool _initialSet = false;
-        public virtual bool SetInfo(int dataID)
+        public override bool SetInfo(int dataID)
         {
-            if (_initialSet)
+            if (base.SetInfo(dataID) == false)
                 return false;
 
-            _initialSet = true;
             DataTemplateID = dataID;
+            ObjectRarity = EObjectRarity.Common;
+
+            if (ObjectType == EObjectType.Hero || ObjectType == EObjectType.Monster)
+                SetStat(dataID);
+
             return true;
         }
 
-        protected virtual void EnterInGame() { }
+        private void SetStat(int dataID)
+        {
+            if (Managers.Data.StatDataDict.TryGetValue(dataID, out Data.StatData statData) == false)
+            {
+                Debug.LogError($"{nameof(BaseObject)}, {nameof(SetStat)}, Input : \"{dataID}\"");
+                return;
+            }
+
+            StatData = statData;
+            _levelCount = Managers.Data.StatDataDict.Count;
+            _levelValue = dataID;
+            _maxLevelValue = _levelValue + _levelCount - 1;
+
+            Hp = statData.MaxHp;
+            MaxHp = statData.MaxHp;
+            Atk = statData.Atk;
+            AtkRange = statData.AtkRange;
+            MovementSpeed = statData.MovementSpeed;
+        }
+
+        public void LookAtTarget(BaseObject target) // TEMP
+        {
+            if (Target.IsValid() == false)
+                return;
+
+            Vector3 toTargetDir = Target.transform.position - transform.position;
+            if (toTargetDir.x < 0)
+                LookAtDir = ELookAtDirection.Left;
+            else
+                LookAtDir = ELookAtDirection.Right;
+        }
 
         public void SetRigidBodyVelocity(Vector2 velocity)
         {
@@ -146,8 +218,8 @@ namespace STELLAREST_F1
         #endregion
 
         #region Battle
-        public virtual void OnDamaged(BaseObject attacker) { }
-        public virtual void OnDead(BaseObject attacker)
+        public virtual void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker) { }
+        public virtual void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
         {
             RigidBody.simulated = false;
             StartCoroutine(CoDeadFadeOut(() => Managers.Object.Despawn(this, DataTemplateID)));
@@ -175,6 +247,8 @@ namespace STELLAREST_F1
 
                 yield return null;
             }
+
+            Debug.Log($"{gameObject.name} is dead.");
             callback?.Invoke();
         }
         #endregion

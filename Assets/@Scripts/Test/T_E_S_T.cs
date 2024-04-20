@@ -6,14 +6,17 @@ using static STELLAREST_F1.Define;
 using UnityEngine;
 
 /*
-// TODO NEXT
+[ TODO LIST ]
 - Wizard Attack Anim 교정
-- 전투 준비 (A* 없이)
 - Monster RigidBody Linear Drag (100 -> 300) : 나중에 종류별로 바꿔야함.
 - 멀어졌을 때 이동속도가 증가하는 로그함수 구현하기.
-
 - 그리고 예를 들어 바위를 채집할 때, 바위 완전 밑에서 채집하면 이상하니까, 이런거 위치 조정해줘야 할 것 같은데.
-- *** ENV 진행중일 때 몬스터가 나타다도 걍 쌩까고 채집하는거 고쳐야함 *** -
+- Melee Attack 구현, Init Stat 구현. Exp는 아직 X
+
+Skill First
+- Skill_Attack : Paladin MeleeAttack
+- Skill_A : Double Attack
+- Skill_B : Shield
 */
 
 public class T_E_S_T : MonoBehaviour
@@ -46,8 +49,8 @@ public class T_E_S_T : MonoBehaviour
     {
         if (Managers.Game.JoystickState == EJoystickState.Drag)
         {
-            float distancePerFrame = _movementSpeed * Time.deltaTime;
-            transform.Translate(_moveDir * distancePerFrame);
+            float moveDistancePerFrame = _movementSpeed * Time.deltaTime;
+            transform.Translate(_moveDir * moveDistancePerFrame);
         }
     }
 
@@ -57,10 +60,36 @@ public class T_E_S_T : MonoBehaviour
     }
 }
 
-/* Memo
-Only One류 게임. (벤서류는 아니고)
+/* 
+[ MEMO ]
+가칭 : 매우 간단한 RPG 게임. (Only One류, FQ4와 비슷한)
 정처없이 돌아다니면서 사냥 + 육성 + 대략 100레벨 정도 만들고 클리어하면 끝.
-조금 더 쉽게 클리어 하고 싶다 -> 엘리트 패키지 구매(광고 제거 포함, 3,300 또는 5,500, 걍 돈 쓴거에 대한 경험만 시켜주면 됨)
+게임 가격은 1100원 또는 2200원. 빠르게 개발하고 출시하는 것이 목적
+
+Cloud Services - Save data in the cloud (iCloud & Saved Games)
+이거 가능한가본데?(Cross-Platform Native Plugins : Essential Kit (Mobile - iOS & Android 에셋 참고)
+
+Data ID Rule Temp 
+1xxxxx : Creature
+- 101xxx : Hero
+- 102xxx : Monster
+- 103xxx : Creature Etc
+
+2xxxxx : Skills
+- 201xxx : Base Skills
+- 202xxx : AoE
+- 203xxx : Effect
+- 204xxx : Projectile
+
+3xxxxx : Items
+- 301xxx : Base Items
+
+9xxxxx : Etc
+- 901xxx : Env
+- 902xxx : NPC
+
+- 레디스는 디비 캐싱용도
+- 요일던전같은 스케쥴관련된 컨텐츠? 세이브파일에 시간 연산을 넣어서. 해킹은 어쩔 수 없이 가능것임.
 
 StateBehaviourMachine - 하나의 스크립트 = 하나의 스테이트로 해야함..ㅅㅂ;;
 
@@ -122,5 +151,40 @@ Paladin
 Archer
 - Skill_A : 더블샷 -> 멀티샷(Unique) -> 연발 멀티샷(Elite)
 - Skill_B : 윈드 애로우(슬로우) -> 넉백 애로우(넉백 + 스턴)
+
+
+        // protected void ChaseOrAttackTarget(float attackRange, float chaseRange)
+        // {
+        //     Vector3 toDir = Target.transform.position - transform.position;
+        //     float distToTargetSQR = toDir.sqrMagnitude;
+
+        //     float attackDistToTargetSQR = attackRange * attackRange;
+        //     // ATTACK
+        //     if (attackDistToTargetSQR >= distToTargetSQR)
+        //     {
+        //         if (CreatureMoveState == ECreatureMoveState.TargetToEnemy)
+        //         {
+        //             CreatureState = ECreatureState.Skill_Attack;
+        //         }
+        //         else if (CreatureMoveState == ECreatureMoveState.CollectEnv)
+        //         {
+        //             CollectEnv = true;
+        //             CreatureState = ECreatureState.CollectEnv;
+        //         }
+        //         return;
+        //     }
+        //     // CHASE
+        //     else
+        //     {
+        //         SetRigidBodyVelocity(toDir.normalized * MovementSpeed);
+        //         // 너무 멀어지면 포기
+        //         if (distToTargetSQR > chaseRange * chaseRange)
+        //         {
+        //             Target = null;
+        //             CreatureState = ECreatureState.Move;
+        //         }
+        //         return;
+        //     }
+        // }
 
 */

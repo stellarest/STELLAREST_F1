@@ -59,8 +59,22 @@ namespace STELLAREST_F1
 
                 case ECreatureState.Skill_Attack:
                     {
-                        _owner.HeroBody.SetEmoji(EHeroEmoji.Combat);
+                        _owner.HeroBody.SetEmoji(EHeroEmoji.Skill_Attack);
                         Skill_Attack();
+                    }
+                    break;
+
+                case ECreatureState.Skill_A:
+                    {
+                        _owner.HeroBody.SetEmoji(EHeroEmoji.Skill_Attack);
+                        Skill_A();
+                    }
+                    break;
+
+                case ECreatureState.Skill_B:
+                    {
+                        _owner.HeroBody.SetEmoji(EHeroEmoji.Skill_Attack);
+                        Skill_B();
                     }
                     break;
 

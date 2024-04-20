@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using STELLAREST_F1.Data;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -127,7 +128,6 @@ namespace STELLAREST_F1
             return true;
         }
 
-        #region Hero SetInfo
         public override bool SetInfo(int dataID)
         {
             if (base.SetInfo(dataID) == false)
@@ -144,44 +144,31 @@ namespace STELLAREST_F1
             HeroAnim.SetInfo(dataID, this);
             Managers.Sprite.SetInfo(dataID, target: this);
 
-            // SetStat
             HeroData = Managers.Data.HeroDataDict[dataID];
-            _maxHp = new Stat(HeroData.MaxHp);
-            _atk = new Stat(HeroData.Atk);
-            _atkRange = new Stat(HeroData.AtkRange);
-            _movementSpeed = new Stat(HeroData.MovementSpeed);
-
-            ObjectRarity = EObjectRarity.Common; // TEMP
             gameObject.name += $"_{HeroData.DescriptionTextID.Replace(" ", "")}";
             Collider.radius = HeroData.ColliderRadius;
-            EnterInGame();
 
+            CreatureSkillComponent = gameObject.GetOrAddComponent<SkillComponent>();
+            CreatureSkillComponent.SetInfo(this, Managers.Data.HeroDataDict[dataID].SkillIDs);
+
+            EnterInGame();
             return true;
         }
-        #endregion
 
         protected override void EnterInGame()
         {
             base.EnterInGame();
-            // HeroStateMachine[] heroStateMachines = HeroAnim.Animator.GetBehaviours<HeroStateMachine>();
-            // for (int i = 0; i < heroStateMachines.Length; ++i)
-            // {
-            //     heroStateMachines[i].OnHeroAnimUpdateHandler -= OnAnimationUpdate;
-            //     heroStateMachines[i].OnHeroAnimUpdateHandler += OnAnimationUpdate;
-
-            //     heroStateMachines[i].OnHeroAnimCompletedHandler -= OnAnimationCompleted;
-            //     heroStateMachines[i].OnHeroAnimCompletedHandler += OnAnimationCompleted;
-            // }
             LookAtDir = ELookAtDirection.Right;
         }
 
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.T))
-                CreatureState = ECreatureState.Dead;
+            {
+                Debug.Log(MovementSpeed);
+            }
         }
 
-        #region Hero AI - Idle
         protected override void UpdateIdle()
         {
             SetRigidBodyVelocity(Vector2.zero);
@@ -192,12 +179,13 @@ namespace STELLAREST_F1
             }
 
             if (Target.IsValid())
-                LookAtTarget();
+                LookAtTarget(Target);
 
-            if (_isCooltime)
+            // 조금 극단적인 방법. 몬스터 쳐다보면서 가만히 짱박혀있어라.
+            if (CreatureSkillComponent.IsRemainingCoolTime((int)ESkillType.Skill_Attack))
                 return;
 
-            Creature creature = FindClosestInRange(ReadOnly.Numeric.DefaultSearchRange, Managers.Object.Monsters, func: IsValid) as Creature;
+            Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_SearchDistance, Managers.Object.Monsters, func: IsValid) as Creature;
             if (creature.IsValid())
             {
                 Target = creature;
@@ -206,7 +194,7 @@ namespace STELLAREST_F1
                 return;
             }
 
-            Env env = FindClosestInRange(ReadOnly.Numeric.DefaultSearchRange, Managers.Object.Envs, func: IsValid) as Env;
+            Env env = FindClosestInRange(ReadOnly.Numeric.Temp_SearchDistance, Managers.Object.Envs, func: IsValid) as Env;
             if (env.IsValid())
             {
                 Target = env;
@@ -222,9 +210,7 @@ namespace STELLAREST_F1
                 return;
             }
         }
-        #endregion
 
-        #region Hero AI - Move
         protected override void UpdateMove()
         {
             if (CreatureMoveState == ECreatureMoveState.ForceMove)
@@ -243,13 +229,14 @@ namespace STELLAREST_F1
                     return;
                 }
 
-                ChaseOrAttackTarget(AttackDistance, ReadOnly.Numeric.DefaultSearchRange);
+                ChaseOrAttackTarget(ReadOnly.Numeric.Temp_SearchDistance, AttackDistance);
                 return;
             }
 
             if (CreatureMoveState == ECreatureMoveState.CollectEnv)
             {
-                Creature creature = FindClosestInRange(ReadOnly.Numeric.DefaultSearchRange, Managers.Object.Monsters, func: IsValid) as Creature;
+                // Research Enemies
+                Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_SearchDistance, Managers.Object.Monsters, func: IsValid) as Creature;
                 if (creature != null)
                 {
                     Target = creature;
@@ -267,14 +254,26 @@ namespace STELLAREST_F1
                     return;
                 }
 
-                ChaseOrAttackTarget(AttackDistance, ReadOnly.Numeric.DefaultSearchRange);
+                ChaseOrAttackTarget(ReadOnly.Numeric.Temp_SearchDistance, AttackDistance);
                 return;
             }
 
             if (CreatureMoveState == ECreatureMoveState.ReturnToBase)
             {
+                // Research Enemies
+                Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_SearchDistance, Managers.Object.Monsters, func: IsValid) as Creature;
+                if (creature != null)
+                {
+                    CollectEnv = false;
+                    Target = creature;
+                    CreatureMoveState = ECreatureMoveState.TargetToEnemy;
+                    CreatureState = ECreatureState.Move;
+                    return;
+                }
+
                 Vector3 toDir = Destination.position - transform.position;
-                if (toDir.sqrMagnitude < ReadOnly.Numeric.DefaultStopRange * ReadOnly.Numeric.DefaultStopRange)
+                float stopDistSQR = ReadOnly.Numeric.Temp_StopDistance * ReadOnly.Numeric.Temp_StopDistance;
+                if (toDir.sqrMagnitude < stopDistSQR)
                 {
                     CreatureMoveState = ECreatureMoveState.None;
                     CreatureState = ECreatureState.Idle;
@@ -293,11 +292,10 @@ namespace STELLAREST_F1
             // 눌렀다가 땟을때
             CreatureState = ECreatureState.Idle;
         }
-        #endregion
 
-        #region Hero AI - Attack
-        protected override void UpdateSkillAttack()
+        protected override void UpdateSkill()
         {
+            base.UpdateSkill();
             SetRigidBodyVelocity(Vector2.zero);
             if (CreatureMoveState == ECreatureMoveState.ForceMove)
             {
@@ -305,11 +303,15 @@ namespace STELLAREST_F1
                 return;
             }
             else if (Target.IsValid())
-                LookAtTarget();
+                LookAtTarget(Target);
+            else if (Target.IsValid() == false)
+            {
+                CreatureState = ECreatureState.Move;
+                return;
+            }
 
             ChangeColliderSize(EColliderSize.Default);
         }
-        #endregion
 
         protected override void UpdateCollectEnv()
         {
@@ -322,7 +324,7 @@ namespace STELLAREST_F1
             else if (Target.IsValid())
             {
                 // Research Enemies
-                Creature creature = FindClosestInRange(ReadOnly.Numeric.DefaultSearchRange, Managers.Object.Monsters, func: IsValid) as Creature;
+                Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_SearchDistance, Managers.Object.Monsters, func: IsValid) as Creature;
                 if (creature != null)
                 {
                     CollectEnv = false;
@@ -332,18 +334,13 @@ namespace STELLAREST_F1
                     return;
                 }
 
-                LookAtTarget();
+                LookAtTarget(Target);
             }
         }
 
-        #region Hero Animation Events - Update
-        private float TestCoolTime = 0.55f; // TEMP
-        private bool _isCooltime = false; // TEMP
-        protected override void OnSkillAttackAnimationUpdate()
+        protected override void OnSkillAnimationUpdate()
         {
-            _isCooltime = true; // TEMP
-            base.OnSkillAttackAnimationUpdate();
-            StartWait(TestCoolTime, () => _isCooltime = false);
+            base.OnSkillAnimationUpdate(); // OnDamaged
         }
 
         protected override void OnCollectEnvAnimationUpdate()
@@ -351,35 +348,13 @@ namespace STELLAREST_F1
             if (Target.IsValid() == false)
                 return;
 
-            Target.OnDamaged(this);
-            // if (Target.IsValid() == false)
-            // {
-            //     CreatureState = ECreatureState.Idle;
-            //     CollectEnv = false;
-            //     Debug.Log("END COLLECT ENV !!");
-            // }
+            //Target.OnDamaged(this);
         }
-        #endregion
 
-        #region Hero Animation Events - Completed
-        protected override void OnSkillAttackAnimationCompleted()
+        protected override void OnSkillAnimationCompleted()
         {
             if (this.IsValid())
-                CreatureState = ECreatureState.Idle;
-        }
-        #endregion
-
-        #region Hero - Battle
-        public override void OnDamaged(BaseObject attacker)
-        {
-            base.OnDamaged(attacker);
-            Debug.Log($"{gameObject.name} Hp : {Hp} / {MaxHp}");
-        }
-
-        public override void OnDead(BaseObject attacker)
-        {
-            base.OnDead(attacker);
-            Debug.Log($"{gameObject.name} is dead.");
+                CreatureState = ECreatureState.Move;
         }
 
         protected override IEnumerator CoDeadFadeOut(Action callback = null)
@@ -393,7 +368,7 @@ namespace STELLAREST_F1
             float percent = 1f;
             AnimationCurve curve = Managers.Animation.Curve(EAnimationCurveType.Ease_In);
 
-            // Skin부터 Fade Out
+            // 1. Fade Out - Skin
             while (percent > 0f)
             {
                 delta += Time.deltaTime;
@@ -409,7 +384,7 @@ namespace STELLAREST_F1
                 yield return null;
             }
 
-            // Skin Fade Out 이후, Appearance Fade
+            // 2. Fade Out - Appearance
             delta = 0f;
             percent = 1f;
             while (percent > 0f)
@@ -429,7 +404,6 @@ namespace STELLAREST_F1
 
             callback?.Invoke();
         }
-        #endregion
 
         private void OnJoystickStateChanged(EJoystickState joystickState)
         {
@@ -483,6 +457,17 @@ namespace STELLAREST_F1
                 if (hero.CreatureState == ECreatureState.Idle)
                     hero.ChangeColliderSize(EColliderSize.Large);
             }
+        }
+
+        protected override void OnDisable()
+        {
+            Debug.Log("Hero::OnDisable");
+            base.OnDisable();
+            
+            if (Managers.Game == null)
+                return;
+
+            Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
         }
     }
 }

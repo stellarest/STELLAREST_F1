@@ -10,37 +10,22 @@ namespace STELLAREST_F1
 {
     public class SpriteManager
     {
-        public Sprite[] Pickaxes { get; private set; } = null;
         public Dictionary<EEnvType, Sprite[]> HeroCollectEnvWeaponSpritesDict { get; private set; } = null;
 
         public void Init()
         {
-            // string key = ReadOnly.String.Pickaxe_Common_SP;
-            // Pickaxe = Managers.Resource.Load<Sprite>(ReadOnly.String.Pickaxe_Common_SP);
-            // if (Pickaxe == null)
-            //     Debug.LogWarning($"{nameof(SpriteManager)}, {nameof(Init)}, Input : \"{data.PrefabLabel}\"");
-
-            // Pickaxes = new Sprite[(int)EObjectRarity.Max];
-            // Pickaxes[(int)EObjectRarity.Common] = Managers.Resource.Load<Sprite>(ReadOnly.String.Pickaxe_Common_SP);
-            // Pickaxes[(int)EObjectRarity.Elite] = Managers.Resource.Load<Sprite>(ReadOnly.String.Pickaxe_Elite_SP);
-            // for (int i = 0; i < Pickaxes.Length; ++i)
-            // {
-            //     if (Pickaxes[i] == null)
-            //         Debug.LogWarning($"{nameof(SpriteManager)}, {nameof(Init)}");
-            // }
-
             if (HeroCollectEnvWeaponSpritesDict == null)
             {
                 HeroCollectEnvWeaponSpritesDict = new Dictionary<EEnvType, Sprite[]>();
-                Sprite[] envWeaponSprites = new Sprite[(int)EObjectRarity.Max];
+                Sprite[] envWeaponSprites = new Sprite[(int)ECollectEnvRarity.Max];
                 HeroCollectEnvWeaponSpritesDict.Add(EEnvType.Tree, envWeaponSprites);
-                envWeaponSprites[(int)EObjectRarity.Common] = Managers.Resource.Load<Sprite>(ReadOnly.String.WoodcutterAxe_Common_SP);
-                envWeaponSprites[(int)EObjectRarity.Elite] = Managers.Resource.Load<Sprite>(ReadOnly.String.WoodcutterAxe_Elite_SP);
+                envWeaponSprites[(int)ECollectEnvRarity.Common] = Managers.Resource.Load<Sprite>(ReadOnly.String.WoodcutterAxe_Common_SP);
+                envWeaponSprites[(int)ECollectEnvRarity.Elite] = Managers.Resource.Load<Sprite>(ReadOnly.String.WoodcutterAxe_Elite_SP);
 
-                envWeaponSprites = new Sprite[(int)EObjectRarity.Max];
+                envWeaponSprites = new Sprite[(int)ECollectEnvRarity.Max];
                 HeroCollectEnvWeaponSpritesDict.Add(EEnvType.Rock, envWeaponSprites);
-                envWeaponSprites[(int)EObjectRarity.Common] = Managers.Resource.Load<Sprite>(ReadOnly.String.Pickaxe_Common_SP);
-                envWeaponSprites[(int)EObjectRarity.Elite] = Managers.Resource.Load<Sprite>(ReadOnly.String.Pickaxe_Elite_SP);
+                envWeaponSprites[(int)ECollectEnvRarity.Common] = Managers.Resource.Load<Sprite>(ReadOnly.String.Pickaxe_Common_SP);
+                envWeaponSprites[(int)ECollectEnvRarity.Elite] = Managers.Resource.Load<Sprite>(ReadOnly.String.Pickaxe_Elite_SP);
             }
         }
 

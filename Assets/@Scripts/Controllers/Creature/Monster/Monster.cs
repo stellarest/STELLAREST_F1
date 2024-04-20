@@ -32,7 +32,6 @@ namespace STELLAREST_F1
             return true;
         }
 
-        #region Monster SetInfo
         public override bool SetInfo(int dataID)
         {
             if (base.SetInfo(dataID) == false)
@@ -46,49 +45,32 @@ namespace STELLAREST_F1
             MonsterAnim.SetInfo(dataID, this);
             Managers.Sprite.SetInfo(dataID, target: this);
 
-            // SetStat
             MonsterData = Managers.Data.MonsterDataDict[dataID];
-            _maxHp = new Stat(MonsterData.MaxHp);
-            _atk = new Stat(MonsterData.Atk);
-            _atkRange = new Stat(MonsterData.AtkRange);
-            _movementSpeed = new Stat(MonsterData.MovementSpeed);
             MonsterType = Util.GetEnumFromString<EMonsterType>(MonsterData.Type);
 
-            // 풀링에 영향에 있는듯.
             gameObject.name += $"_{MonsterData.DescriptionTextID.Replace(" ", "")}";
             Collider.radius = MonsterData.ColliderRadius;
+
+            CreatureSkillComponent = gameObject.GetOrAddComponent<SkillComponent>();
+            CreatureSkillComponent.SetInfo(this, Managers.Data.MonsterDataDict[dataID].SkillIDs);
+
             EnterInGame();
             return true;
         }
-        #endregion
 
         protected override void EnterInGame()
         {
             base.EnterInGame();
-            // MonsterStateMachine[] monsterStateMachines = MonsterAnim.Animator.GetBehaviours<MonsterStateMachine>();
-            // for (int i = 0; i < monsterStateMachines.Length; ++i)
-            // {
-            //     monsterStateMachines[i].OnMonsterAnimUpdateHandler -= OnAnimationUpdate;
-            //     monsterStateMachines[i].OnMonsterAnimUpdateHandler += OnAnimationUpdate;
-
-            //     monsterStateMachines[i].OnMonsterAnimCompletedHandler -= OnAnimationCompleted;
-            //     monsterStateMachines[i].OnMonsterAnimCompletedHandler += OnAnimationCompleted;
-            // }
             _initPos = transform.position;
             LookAtDir = ELookAtDirection.Left;
         }
 
         private Vector3 _destPos = Vector3.zero;
         private Vector3 _initPos = Vector3.zero;
-
-        #region Monster - AI
         protected override void UpdateIdle()
         {
             if (Target.IsValid())
-                LookAtTarget();
-
-            if (_coWait != null)
-                return;
+                LookAtTarget(Target);
 
             {
                 if (Target.IsValid() == false)
@@ -109,7 +91,8 @@ namespace STELLAREST_F1
             }
 
             {
-                Creature creature = FindClosestInRange(ReadOnly.Numeric.DefaultSearchRange, Managers.Object.Heroes) as Creature;
+                // Research Enemy
+                Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_SearchDistance, Managers.Object.Heroes) as Creature;
                 if (creature.IsValid())
                 {
                     Target = creature;
@@ -129,12 +112,12 @@ namespace STELLAREST_F1
                 if (toDestDir.sqrMagnitude < endThreshold)
                 {
                     CreatureState = ECreatureState.Idle;
-                    CreatureMoveState = ECreatureMoveState.None;
                     return;
                 }
 
+                // Research Enemy
                 SetRigidBodyVelocity(toDestDir.normalized * MovementSpeed);
-                Creature creature = FindClosestInRange(ReadOnly.Numeric.DefaultSearchRange, Managers.Object.Heroes, func: IsValid) as Creature;
+                Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_SearchDistance, Managers.Object.Heroes, func: IsValid) as Creature;
                 if (creature.IsValid())
                 {
                     Target = creature;
@@ -145,7 +128,9 @@ namespace STELLAREST_F1
             }
             else
             {
-                ChaseOrAttackTarget(AttackDistance, ReadOnly.Numeric.DefaultSearchRange);
+                // SkillBase skill = Skills.GetReadySkill();
+                // ChaseOrAttackTarget(ReadOnly.Numeric.DefaultTempSearchRange, skill);
+                //ChaseOrAttackTarget(AttackDistance, ReadOnly.Numeric.DefaultSearchRange);
                 if (Target.IsValid() == false)
                 {
                     Target = null;
@@ -156,42 +141,48 @@ namespace STELLAREST_F1
         }
 
         // Attack이나 Skill은 실행 이후 Creature Move로 돌아가면 된다.
-        protected override void UpdateSkillAttack()
+        protected override void UpdateSkill()
         {
+            // TEMP
             if (Target.IsValid())
-                LookAtTarget();
+                LookAtTarget(Target);
+            else
+            {
+                Target = null;
+                _destPos = _initPos;
+                CreatureState = ECreatureState.Move;
+            }
         }
-        #endregion
 
-        #region ### ANIM EVENTS - UPDATE ###
-        protected override void OnSkillAttackAnimationUpdate() 
-            => base.OnSkillAttackAnimationUpdate();
-        #endregion
+        public override void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
+        {
+            base.OnDamaged(attacker, skillFromAttacker);
+            Debug.Log($"{gameObject.name} is damaged. ({Hp} / {MaxHp})");
+        }
 
-        #region ### ANIM EVENTS - COMPLETED ###
+        public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
+        {
+            base.OnDead(attacker, skillFromAttacker);
+        }
+
+        protected override void OnSkillAnimationUpdate()
+        {
+            base.OnSkillAnimationUpdate();
+        }
+
         private float TestCoolTime = 0.8f;
-        protected override void OnSkillAttackAnimationCompleted()
+        protected override void OnSkillAnimationCompleted()
         {
             StartWait(TestCoolTime);
-            
+
             if (this.IsValid())
-                CreatureState = ECreatureState.Idle;
-        }
-        #endregion
-
-        #region BATTLE
-        public override void OnDamaged(BaseObject attacker)
-        {
-            base.OnDamaged(attacker);
-            Debug.Log($"{gameObject.name} Hp : {Hp} / {MaxHp}");
+                CreatureState = ECreatureState.Move;
         }
 
-        public override void OnDead(BaseObject attacker)
+        protected override void OnDisable()
         {
-            base.OnDead(attacker);
-            // TODO : DROP ITEM
-            // Managers.Object.Despawn(this);
+            Debug.Log("Monster::OnDisable");
+            base.OnDisable();
         }
-        #endregion
     }
 }

@@ -10,31 +10,25 @@ namespace STELLAREST_F1.Data
     {
         public int DataID;
         public string PrefabLabel;
-        public string AnimatorLabel;
         public string DescriptionTextID;
-        public string Rarity;
         public string Type;
     }
 
-    public class CreatureData
+    public class CreatureData : BaseData
     {
-        public int DataID;
-        public string PrefabLabel;
-        public string AnimatorLabel;
-        public string DescriptionTextID;
         public string Rarity;
-        public string Type;
+        public string AnimatorLabel;
         public float ColliderRadius;
         public float MaxHp;
         public float Atk;
         public float AtkRange;
         public float MovementSpeed;
+        public List<int> SkillIDs = new List<int>();
     }
 
     [Serializable]
     public class HeroData : CreatureData
     {
-        //TODO : ADD HERO DATA
     }
 
     public class HeroDataLoader : ILoader<int, HeroData>
@@ -50,6 +44,7 @@ namespace STELLAREST_F1.Data
         }
     }
 
+    #region Hero Sprite Data
     [Serializable]
     public class HeroSpriteData
     {
@@ -183,6 +178,7 @@ namespace STELLAREST_F1.Data
             return dict;
         }
     }
+    #endregion
 
     [Serializable]
     public class MonsterData : CreatureData
@@ -205,6 +201,7 @@ namespace STELLAREST_F1.Data
         }
     }
 
+    #region Monster Sprite Data
     [Serializable]
     public class MonsterSpriteData
     {
@@ -300,12 +297,13 @@ namespace STELLAREST_F1.Data
             return dict;
         }
     }
+    #endregion
 
     [Serializable]
     public class EnvData : BaseData
     {
+        public string AnimatorLabel;
         public float MaxHp;
-        public int Amount;
         public int DropItemID;
     }
 
@@ -323,6 +321,7 @@ namespace STELLAREST_F1.Data
         }
     }
 
+    #region Env Sprite Data
     [Serializable]
     public class TreeSpriteData
     {
@@ -392,29 +391,61 @@ namespace STELLAREST_F1.Data
             return dict;
         }
     }
+    #endregion
+
 
     [Serializable]
-    public class SkillData
+    public class StatData : BaseData
     {
-        public int DataID;
-		public string Name;
+        public string LevelText;
+        public float MaxHp;
+        public float Atk;
+        public float AtkRange;
+        public float MovementSpeed;
+    }
+
+    public class StatDataLoader : ILoader<int, StatData>
+    {
+        public List<StatData> Stats = new List<StatData>();
+
+        public Dictionary<int, StatData> MakeDict()
+        {
+            Dictionary<int, StatData> dict = new Dictionary<int, StatData>();
+            foreach (StatData data in Stats)
+                dict.Add(data.DataID, data);
+
+            return dict;
+        }
+    }
+
+    // [Serializable] TEMP
+    // public class SkillData : BaseData
+    // {
+    // 	public string ClassName;
+    // 	public string ComponentName;
+    // 	public string Description;
+    // 	public int ProjectileId;
+    // 	public float CoolTime;
+    // 	public float DamageMultiplier;
+    // 	public float Duration;
+    // 	public float NumProjectiles;
+    // 	public string CastingSound;
+    // 	public float AngleBetweenProj;
+    // 	public float SkillRange;
+    // 	public float RotateSpeed;
+    // 	public float ScaleMultiplier;
+    // 	public float AngleRange;
+
+    //     public float InvokeRatioOnStateUpdate;
+    // }
+
+    [Serializable]
+    public class SkillData : BaseData
+    {
 		public string ClassName;
-		public string ComponentName;
-		public string Description;
-		public int ProjectileId;
-		public string PrefabLabel;
-		public string IconLabel;
-		public string AnimName;
+        public int ProjectileID;
 		public float CoolTime;
-		public float DamageMultiplier;
-		public float Duration;
-		public float NumProjectiles;
-		public string CastingSound;
-		public float AngleBetweenProj;
-		public float SkillRange;
-		public float RotateSpeed;
-		public float ScaleMultiplier;
-		public float AngleRange;
+        public float InvokeRatio; // *** Invoke Ratio OnStateUpdate ***
     }
 
     public class SkillDataLoader : ILoader<int, SkillData>
