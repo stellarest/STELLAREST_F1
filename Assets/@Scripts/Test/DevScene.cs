@@ -23,32 +23,29 @@ namespace STELLAREST_F1
 
         private void Update()
         {
-            // if (Input.GetKeyDown(KeyCode.Q))
-            // {
-            //     Vector3 spawnPos = Util.MakeSpawnPosition(Managers.Object.Camp, -1f, 1f);
-            //     Hero hero = Managers.Object.Spawn<Hero>(spawnPos, EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
-            // }
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                Vector3 spawnPos = Util.MakeSpawnPosition(Managers.Object.Camp, -1f, 1f);
+                Hero hero = Managers.Object.Spawn<Hero>(spawnPos, EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
+            }
 
-            // if (Input.GetKeyDown(KeyCode.W))
-            // {
-            //     Vector3 spawnPos = Util.MakeSpawnPosition(Managers.Object.Camp, -3f, 3f);
-            //     Monster mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Chicken);
-            // }
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                Vector3 spawnPos = Util.MakeSpawnPosition(Managers.Object.Camp, -5f, 5f);
+                Monster mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Chicken);
+            }
 
-            // if (Input.GetKeyDown(KeyCode.E))
-            // {
-            //     Vector3 spawnPos = Util.MakeSpawnPosition(Managers.Object.Camp, -3f, 3f);
-            //     Env env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_AshTree);
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                Vector3 spawnPos = Util.MakeSpawnPosition(Managers.Object.Camp, -7f, 7f);
+                Env env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, GetRandEnvTree);
+            }
 
-            //     spawnPos = Util.MakeSpawnPosition(Managers.Object.Camp, -3f, 3f);
-            //     env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_RedAppleTree);
-
-            //     spawnPos = Util.MakeSpawnPosition(Managers.Object.Camp, -3f, 3f);
-            //     env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_CopperRock);
-
-            //     spawnPos = Util.MakeSpawnPosition(Managers.Object.Camp, -3f, 3f);
-            //     env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, ReadOnly.Numeric.DataID_Env_GoldRock);
-            // }
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                Vector3 spawnPos = Util.MakeSpawnPosition(Managers.Object.Camp, -10f, 10f);
+                Env env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, GetRandEnvRock);
+            }
         }
 
         private void Test()
@@ -64,11 +61,17 @@ namespace STELLAREST_F1
 
             }
 
-            {
-                Monster mon = Managers.Object.Spawn<Monster>(new Vector3(camp.transform.position.x + 5f, camp.transform.position.y + 5f, 0f),
-                                                             EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Chicken);
-            }
+            // {
+            //     Monster mon = Managers.Object.Spawn<Monster>(new Vector3(camp.transform.position.x + 5f, camp.transform.position.y + 5f, 0f),
+            //                                                  EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Chicken);
+            // }
         }
+
+        private int GetRandEnvTree
+            => UnityEngine.Random.Range(ReadOnly.Numeric.DataID_Env_AshTree, ReadOnly.Numeric.DataID_Env_YewTree + 1);
+
+        private int GetRandEnvRock
+            => UnityEngine.Random.Range(ReadOnly.Numeric.DataID_Env_CopperRock, ReadOnly.Numeric.DataID_Env_ZincRock + 1);
 
         private void LoadAsset()
         {

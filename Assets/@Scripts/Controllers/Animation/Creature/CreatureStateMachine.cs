@@ -12,28 +12,22 @@ namespace STELLAREST_F1
         private bool _canGiveDamageFlag = false;
         private bool _canCollectEnvFlag = false;
 
-        public event System.Action<ECreatureState> OnAnimationEnterHandler = null;
-        public event System.Action<ECreatureState> OnAnimationUpdateHandler = null;
-        public event System.Action<ECreatureState> OnAnimationCompletedHandler = null;
+        public event System.Action<ECreatureState> OnStateEnterHandler = null;
+        public event System.Action<ECreatureState> OnStateUpdateHandler = null;
+        public event System.Action<ECreatureState> OnStateEndHandler = null;
 
         public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
             _creatureAnim = _creatureAnim == null ? animator.GetComponent<CreatureAnimation>() : _creatureAnim;
             _owner = _owner == null ? _creatureAnim.GetOwner<Creature>() : _owner;
 
-            // 어차피 스킬 발동은 동시가 아닌 셋중에 하나임.
             if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureState.Skill_Attack))
-            {
                 _canGiveDamageFlag = true;
-                OnAnimationEnterHandler?.Invoke(ECreatureState.Skill_Attack);
-            }
-            else if (stateInfo.shortNameHash == _creatureAnim.GetHash(ECreatureState.Skill_A))
-                OnAnimationEnterHandler?.Invoke(ECreatureState.Skill_A);
-            else if (stateInfo.shortNameHash == _creatureAnim.GetHash(ECreatureState.Skill_B))
-                OnAnimationEnterHandler?.Invoke(ECreatureState.Skill_B);
-
-            if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureState.CollectEnv))
+            else if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureState.CollectEnv))
+            {
                 _canCollectEnvFlag = true;
+                OnStateEnterHandler?.Invoke(ECreatureState.CollectEnv);
+            }
         }
 
         public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -41,18 +35,10 @@ namespace STELLAREST_F1
             float currentPercentage = stateInfo.normalizedTime % 1.0f;
             if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureState.Skill_Attack) && _canGiveDamageFlag)
             {
-                // float endThresholdPercentage = 0.5f;
-                // if (currentPercentage >= endThresholdPercentage)
-                // {
-                //     OnAnimationUpdateHandler?.Invoke(ECreatureState.Skill_Attack);
-                //     _canGiveDamageFlag = false;
-                // }
-
                 float invokeRatio = _owner.CreatureSkillComponent.GetInvokeRatio(ECreatureState.Skill_Attack);
-                Debug.Log($"Check Invoke Ratio : {invokeRatio}");
                 if (currentPercentage >= invokeRatio)
                 {
-                    OnAnimationUpdateHandler?.Invoke(ECreatureState.Skill_Attack);
+                    OnStateUpdateHandler?.Invoke(ECreatureState.Skill_Attack);
                     _canGiveDamageFlag = false;
                 }
 
@@ -65,7 +51,7 @@ namespace STELLAREST_F1
                 if (currentPercentage > endThresholdPercentage && _canCollectEnvFlag == false)
                 {
                     _canCollectEnvFlag = true;
-                    OnAnimationUpdateHandler?.Invoke(ECreatureState.CollectEnv);
+                    OnStateUpdateHandler?.Invoke(ECreatureState.CollectEnv);
                 }
                 else if (currentPercentage < endThresholdPercentage && _canCollectEnvFlag)
                     _canCollectEnvFlag = false;
@@ -73,13 +59,12 @@ namespace STELLAREST_F1
                 return;
             }
 
+            // End State로 옮겨도 될 것 같은데..
             if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureState.Dead))
             {
                 float endThresholdPercentage = 0.9f;
                 if (currentPercentage >= endThresholdPercentage)
-                    OnAnimationUpdateHandler?.Invoke(ECreatureState.Dead);
-
-                return;
+                    OnStateUpdateHandler?.Invoke(ECreatureState.Dead);
             }
         }
 
@@ -90,7 +75,7 @@ namespace STELLAREST_F1
 
             if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureState.Skill_Attack))
             {
-                OnAnimationCompletedHandler?.Invoke(ECreatureState.Skill_Attack);
+                OnStateEndHandler?.Invoke(ECreatureState.Skill_Attack);
                 _canGiveDamageFlag = false;
             }
 

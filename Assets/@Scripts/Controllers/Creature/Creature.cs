@@ -79,14 +79,14 @@ namespace STELLAREST_F1
             CreatureStateMachine[] creatureStateMachines = CreatureAnim.Animator.GetBehaviours<CreatureStateMachine>();
             for (int i = 0; i < creatureStateMachines.Length; ++i)
             {
-                creatureStateMachines[i].OnAnimationEnterHandler -= OnAnimationEnter;
-                creatureStateMachines[i].OnAnimationEnterHandler += OnAnimationEnter;
+                creatureStateMachines[i].OnStateEnterHandler -= OnStateEnter;
+                creatureStateMachines[i].OnStateEnterHandler += OnStateEnter;
 
-                creatureStateMachines[i].OnAnimationUpdateHandler -= OnAnimationUpdate;
-                creatureStateMachines[i].OnAnimationUpdateHandler += OnAnimationUpdate;
+                creatureStateMachines[i].OnStateUpdateHandler -= OnStateUpdate;
+                creatureStateMachines[i].OnStateUpdateHandler += OnStateUpdate;
 
-                creatureStateMachines[i].OnAnimationCompletedHandler -= OnAnimationCompleted;
-                creatureStateMachines[i].OnAnimationCompletedHandler += OnAnimationCompleted;
+                creatureStateMachines[i].OnStateEndHandler -= OnStateEnd;
+                creatureStateMachines[i].OnStateEndHandler += OnStateEnd;
             }
         }
 
@@ -98,19 +98,14 @@ namespace STELLAREST_F1
             CreatureStateMachine[] creatureStateMachines = CreatureAnim.Animator.GetBehaviours<CreatureStateMachine>();
             for (int i = 0; i < creatureStateMachines.Length; ++i)
             {
-                creatureStateMachines[i].OnAnimationEnterHandler -= OnAnimationEnter;
-                creatureStateMachines[i].OnAnimationUpdateHandler -= OnAnimationUpdate;
-                creatureStateMachines[i].OnAnimationCompletedHandler -= OnAnimationCompleted;
+                creatureStateMachines[i].OnStateEnterHandler -= OnStateEnter;
+                creatureStateMachines[i].OnStateUpdateHandler -= OnStateUpdate;
+                creatureStateMachines[i].OnStateEndHandler -= OnStateEnd;
             }
         }
 
         protected IEnumerator CoUpdateAI()
         {
-            // ###################### TEST ######################
-            if (this.ObjectType == EObjectType.Monster)
-                yield break;
-            // ###################### TEST ######################
-
             while (true)
             {
                 switch (CreatureState)
@@ -188,108 +183,62 @@ namespace STELLAREST_F1
         }
         #endregion
 
-        #region Animation Events
-        protected void OnAnimationEnter(ECreatureState enterState)
+        #region State Machine Events 
+        protected void OnStateEnter(ECreatureState enterState)
         {
             switch (enterState)
             {
-                case ECreatureState.Idle:
-                    OnIdleAnimationEnter();
-                    break;
-
-                case ECreatureState.Move:
-                    OnMoveAnimationEnter();
-                    break;
-
                 case ECreatureState.Skill_Attack:
                 case ECreatureState.Skill_A:
                 case ECreatureState.Skill_B:
-                    CreatureSkillComponent?.PassOnSkillEnter(enterState);
+                    CreatureSkillComponent?.PassOnSkillStateEnter(enterState);
+                    break;
+
+                case ECreatureState.CollectEnv:
+                    OnCollectEnvStateEnter();
                     break;
             }
         }
+        protected virtual void OnCollectEnvStateEnter()
+        {
+             CollectEnv = true;
+        }
 
-        protected virtual void OnIdleAnimationEnter() { }
-        protected virtual void OnMoveAnimationEnter() { }
-
-        protected void OnAnimationUpdate(ECreatureState updateState)
+        protected void OnStateUpdate(ECreatureState updateState)
         {
             switch (updateState)
             {
-                case ECreatureState.Idle:
-                    OnIdleAnimationUpdate();
-                    break;
-
-                case ECreatureState.Move:
-                    OnMoveAnimationUpdate();
-                    break;
-
                 case ECreatureState.Skill_Attack:
                 case ECreatureState.Skill_A:
                 case ECreatureState.Skill_B:
                     // 스킬을 사용하는 주체가 크리처이기 때문에 여기서 이벤트 등록, 삭제하고 호출
-                    CreatureSkillComponent.PassOnSkillUpdate(updateState);
+                    CreatureSkillComponent.PassOnSkillStateUpdate(updateState);
                     break;
 
                 case ECreatureState.CollectEnv:
-                    OnCollectEnvAnimationUpdate();
-                    break;
-
-                case ECreatureState.OnDamaged:
+                    OnCollectEnvStateUpdate();
                     break;
 
                 case ECreatureState.Dead:
-                    OnDeadAnimationUpdate();
+                    OnDeadStateUpdate();
                     break;
             }
         }
 
-        protected virtual void OnIdleAnimationUpdate() { }
-        protected virtual void OnMoveAnimationUpdate() { }
-        protected virtual void OnSkillAnimationUpdate() // Move To SkillBase, Maybe
-        {
-            if (Target.IsValid() == false)
-                return;
+        protected virtual void OnCollectEnvStateUpdate() { }
+        protected virtual void OnDeadStateUpdate() { }
 
-            LookAtTarget(Target);
-        }
-        protected virtual void OnCollectEnvAnimationUpdate() { }
-        protected virtual void OnDeadAnimationUpdate() { }
-
-        protected void OnAnimationCompleted(ECreatureState endState)
+        protected void OnStateEnd(ECreatureState endState)
         {
             switch (endState)
             {
-                case ECreatureState.Idle:
-                    OnIdleAnimationCompleted();
-                    break;
-
-                case ECreatureState.Move:
-                    OnMoveAnimationCompleted();
-                    break;
-
                 case ECreatureState.Skill_Attack:
                 case ECreatureState.Skill_A:
                 case ECreatureState.Skill_B:
-                    CreatureSkillComponent?.PassOnSkillCompleted(endState);
-                    break;
-
-                case ECreatureState.CollectEnv:
-                    OnCollectEnvAnimationCompleted();
-                    break;
-
-                case ECreatureState.OnDamaged:
-                    break;
-
-                case ECreatureState.Dead:
+                    CreatureSkillComponent?.PassOnSkillStateEnd(endState);
                     break;
             }
         }
-
-        protected virtual void OnIdleAnimationCompleted() { }
-        protected virtual void OnMoveAnimationCompleted() { }
-        protected virtual void OnSkillAnimationCompleted() { }
-        protected virtual void OnCollectEnvAnimationCompleted() { }
         #endregion
 
         #region Helper
@@ -350,7 +299,12 @@ namespace STELLAREST_F1
         {
             Vector3 toTargetDir = Target.transform.position - transform.position;
             if (DistanceToTargetSQR <= atkRange * atkRange)
-                CreatureSkillComponent?.CurrentSkill.DoSkill();
+            {
+                if (Target.IsValid() && Target.ObjectType == EObjectType.Env)
+                    CreatureState = ECreatureState.CollectEnv;
+                else
+                    CreatureSkillComponent?.CurrentSkill.DoSkill();
+            }
             else
             {
                 SetRigidBodyVelocity(toTargetDir.normalized * MovementSpeed);
@@ -361,6 +315,17 @@ namespace STELLAREST_F1
                     CreatureState = ECreatureState.Move;
                 }
             }
+        }
+
+        protected float CalculateMovementSpeed(float distanceToTargetSQR)
+        {
+            float maxDistance = ReadOnly.Numeric.MaxDistanceForMovementSpeed;
+            float maxMovementSpeed = MovementSpeed * ReadOnly.Numeric.MaxMovementSpeedMultiplier;
+            float movementSpeed = Mathf.Lerp(MovementSpeed, 
+                                            maxMovementSpeed, 
+                                            Mathf.Log(distanceToTargetSQR + 1.0f) / Mathf.Log(maxDistance * maxDistance + 1.0f));
+
+            return movementSpeed;
         }
 
         protected virtual void OnDisable()

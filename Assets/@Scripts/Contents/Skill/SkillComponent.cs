@@ -20,11 +20,11 @@ namespace STELLAREST_F1
                 */
                 if (ActiveSkills.Count == 0)
                     return SkillArray[(int)ESkillType.Skill_Attack];
-                
+
                 return ActiveSkills[UnityEngine.Random.Range(0, ActiveSkills.Count)];
             }
         }
-        
+
         public bool IsRemainingCoolTime(ESkillType skillType)
             => SkillArray[(int)skillType].RemainCoolTime > 0.0f;
 
@@ -56,7 +56,7 @@ namespace STELLAREST_F1
             {
                 Debug.LogError($"{nameof(SkillComponent)}, {nameof(AddSkill)}, Input : \"{skillDataID}\"");
                 return;
-            }            
+            }
 
             Type skillClassType = Util.GetTypeFromClassName(skillData.ClassName);
             SkillBase skill = gameObject.AddComponent(skillClassType) as SkillBase;
@@ -87,77 +87,15 @@ namespace STELLAREST_F1
 
         public float GetInvokeRatio(ECreatureState skillState)
         {
-            float skillInvokeRatio = 0.0f;
-            switch (skillState)
-            {
-                case ECreatureState.Skill_Attack:
-                    skillInvokeRatio = SkillArray[(int)ESkillType.Skill_Attack].InvokeRatio;
-                    break;
-
-                case ECreatureState.Skill_A:
-                    skillInvokeRatio = SkillArray[(int)ESkillType.Skill_Attack].InvokeRatio;
-                    break;
-
-                case ECreatureState.Skill_B:
-                    skillInvokeRatio = SkillArray[(int)ESkillType.Skill_Attack].InvokeRatio;
-                    break;
-            }
-
+            float skillInvokeRatio = SkillArray[(int)skillState - ReadOnly.Numeric.MaxActiveSkillsCount].InvokeRatioOnUpdate;
             return UnityEngine.Mathf.Clamp(skillInvokeRatio, 0.0f, 1.0f);
         }
 
-        public void PassOnSkillEnter(ECreatureState onEnterState)
-        {
-            switch (onEnterState)
-            {
-                case ECreatureState.Skill_Attack:
-                    SkillArray[(int)ESkillType.Skill_Attack]?.OnSkillAnimationEnter();
-                    break;
-
-                case ECreatureState.Skill_A:
-                    SkillArray[(int)ESkillType.Skill_A]?.OnSkillAnimationEnter();
-                    break;
-
-                case ECreatureState.Skill_B:
-                    SkillArray[(int)ESkillType.Skill_B]?.OnSkillAnimationEnter();
-                    break;
-            }
-        }
-
-        public void PassOnSkillUpdate(ECreatureState onUpdateState)
-        {
-            switch (onUpdateState)
-            {
-                case ECreatureState.Skill_Attack:
-                    SkillArray[(int)ESkillType.Skill_Attack]?.OnSkillAnimationUpdate();
-                    break;
-
-                case ECreatureState.Skill_A:
-                    SkillArray[(int)ESkillType.Skill_A]?.OnSkillAnimationUpdate();
-                    break;
-
-                case ECreatureState.Skill_B:
-                    SkillArray[(int)ESkillType.Skill_B]?.OnSkillAnimationUpdate();
-                    break;
-            }
-        }
-
-        public void PassOnSkillCompleted(ECreatureState onEndState)
-        {
-            switch (onEndState)
-            {
-                case ECreatureState.Skill_Attack:
-                    SkillArray[(int)ESkillType.Skill_Attack]?.OnSkillAnimationCompleted();
-                    break;
-
-                case ECreatureState.Skill_A:
-                    SkillArray[(int)ESkillType.Skill_A]?.OnSkillAnimationCompleted();
-                    break;
-
-                case ECreatureState.Skill_B:
-                    SkillArray[(int)ESkillType.Skill_B]?.OnSkillAnimationCompleted();
-                    break;
-            }
-        }
+        public void PassOnSkillStateEnter(ECreatureState onEnterState)
+                => SkillArray[(int)onEnterState - ReadOnly.Numeric.MaxActiveSkillsCount]?.OnSkillStateEnter();
+        public void PassOnSkillStateUpdate(ECreatureState onUpdateState)
+                => SkillArray[(int)onUpdateState - ReadOnly.Numeric.MaxActiveSkillsCount]?.OnSkillStateUpdate();
+        public void PassOnSkillStateEnd(ECreatureState onEndState)
+                => SkillArray[(int)onEndState - ReadOnly.Numeric.MaxActiveSkillsCount]?.OnSkillStateEnd();
     }
 }

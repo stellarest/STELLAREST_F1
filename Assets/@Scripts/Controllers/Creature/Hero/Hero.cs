@@ -136,9 +136,6 @@ namespace STELLAREST_F1
                 return false;
             }
 
-            Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
-            Managers.Game.OnJoystickStateChangedHandler += OnJoystickStateChanged;
-
             HeroBody = new HeroBody(this, dataID);
             HeroAnim = CreatureAnim as HeroAnimation;
             HeroAnim.SetInfo(dataID, this);
@@ -157,18 +154,14 @@ namespace STELLAREST_F1
 
         protected override void EnterInGame()
         {
-            base.EnterInGame();
             LookAtDir = ELookAtDirection.Right;
+            base.EnterInGame();
+            // 나오고 나서 조이스틱 등록
+            Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
+            Managers.Game.OnJoystickStateChangedHandler += OnJoystickStateChanged;
         }
 
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.T))
-            {
-                Debug.Log(MovementSpeed);
-            }
-        }
-
+        #region AI
         protected override void UpdateIdle()
         {
             SetRigidBodyVelocity(Vector2.zero);
@@ -181,7 +174,7 @@ namespace STELLAREST_F1
             if (Target.IsValid())
                 LookAtTarget(Target);
 
-            // 조금 극단적인 방법. 몬스터 쳐다보면서 가만히 짱박혀있어라.
+            // 조금 극단적인 방법. 쳐다보면서 가만히 짱박혀있어라.
             if (CreatureSkillComponent.IsRemainingCoolTime((int)ESkillType.Skill_Attack))
                 return;
 
@@ -282,9 +275,13 @@ namespace STELLAREST_F1
                 else
                 {
                     // *** 로그함수로 바꿔보기 ***
-                    float ratio = Mathf.Min(1, toDir.magnitude);
-                    float moveSpeed = MovementSpeed * (float)Math.Pow(ratio, 3);
-                    SetRigidBodyVelocity(toDir.normalized * moveSpeed);
+                    // float ratio = Mathf.Min(1, toDir.magnitude);
+                    // float moveSpeed = MovementSpeed * (float)Math.Pow(ratio, 3);
+                    // SetRigidBodyVelocity(toDir.normalized * moveSpeed);
+
+                    float movementSpeed = CalculateMovementSpeed(toDir.sqrMagnitude);
+                    SetRigidBodyVelocity(toDir.normalized * movementSpeed);
+
                 }
                 return;
             }
@@ -338,23 +335,18 @@ namespace STELLAREST_F1
             }
         }
 
-        protected override void OnSkillAnimationUpdate()
+        protected override void UpdateDead()
         {
-            base.OnSkillAnimationUpdate(); // OnDamaged
+            base.UpdateDead();
         }
+        #endregion
 
-        protected override void OnCollectEnvAnimationUpdate()
+        protected override void OnCollectEnvStateUpdate()
         {
             if (Target.IsValid() == false)
                 return;
 
-            //Target.OnDamaged(this);
-        }
-
-        protected override void OnSkillAnimationCompleted()
-        {
-            if (this.IsValid())
-                CreatureState = ECreatureState.Move;
+            Target.OnDamaged(this, null);
         }
 
         protected override IEnumerator CoDeadFadeOut(Action callback = null)
@@ -459,15 +451,27 @@ namespace STELLAREST_F1
             }
         }
 
+        #region Battle
+        public override void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
+        {
+            base.OnDamaged(attacker, skillFromAttacker);
+            Debug.Log($"{gameObject.name} is damaged. ({Hp} / {MaxHp})");
+        }
+
+        public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
+        {
+            base.OnDead(attacker, skillFromAttacker);
+        }
         protected override void OnDisable()
         {
             Debug.Log("Hero::OnDisable");
             base.OnDisable();
-            
+
             if (Managers.Game == null)
                 return;
 
             Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
         }
+        #endregion
     }
 }

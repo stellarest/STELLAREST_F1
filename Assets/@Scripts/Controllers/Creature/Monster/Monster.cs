@@ -67,10 +67,15 @@ namespace STELLAREST_F1
 
         private Vector3 _destPos = Vector3.zero;
         private Vector3 _initPos = Vector3.zero;
+
+        #region AI
         protected override void UpdateIdle()
         {
             if (Target.IsValid())
                 LookAtTarget(Target);
+
+            if (CreatureSkillComponent.IsRemainingCoolTime((int)ESkillType.Skill_Attack))
+                return;
 
             {
                 if (Target.IsValid() == false)
@@ -85,7 +90,7 @@ namespace STELLAREST_F1
                     else
                     {
                         SetRigidBodyVelocity(Vector2.zero);
-                        StartWait(Random.Range(1f, 2f));
+                        //StartWait(Random.Range(1f, 2f));
                     }
                 }
             }
@@ -115,7 +120,7 @@ namespace STELLAREST_F1
                     return;
                 }
 
-                // Research Enemy
+                // Research Enemy When Patroling
                 SetRigidBodyVelocity(toDestDir.normalized * MovementSpeed);
                 Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_SearchDistance, Managers.Object.Heroes, func: IsValid) as Creature;
                 if (creature.IsValid())
@@ -128,9 +133,7 @@ namespace STELLAREST_F1
             }
             else
             {
-                // SkillBase skill = Skills.GetReadySkill();
-                // ChaseOrAttackTarget(ReadOnly.Numeric.DefaultTempSearchRange, skill);
-                //ChaseOrAttackTarget(AttackDistance, ReadOnly.Numeric.DefaultSearchRange);
+                ChaseOrAttackTarget(ReadOnly.Numeric.Temp_SearchDistance, AttackDistance);
                 if (Target.IsValid() == false)
                 {
                     Target = null;
@@ -143,7 +146,7 @@ namespace STELLAREST_F1
         // Attack이나 Skill은 실행 이후 Creature Move로 돌아가면 된다.
         protected override void UpdateSkill()
         {
-            // TEMP
+            SetRigidBodyVelocity(Vector2.zero);
             if (Target.IsValid())
                 LookAtTarget(Target);
             else
@@ -153,7 +156,9 @@ namespace STELLAREST_F1
                 CreatureState = ECreatureState.Move;
             }
         }
+        #endregion
 
+        #region Battle
         public override void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
         {
             base.OnDamaged(attacker, skillFromAttacker);
@@ -164,25 +169,11 @@ namespace STELLAREST_F1
         {
             base.OnDead(attacker, skillFromAttacker);
         }
-
-        protected override void OnSkillAnimationUpdate()
-        {
-            base.OnSkillAnimationUpdate();
-        }
-
-        private float TestCoolTime = 0.8f;
-        protected override void OnSkillAnimationCompleted()
-        {
-            StartWait(TestCoolTime);
-
-            if (this.IsValid())
-                CreatureState = ECreatureState.Move;
-        }
-
         protected override void OnDisable()
         {
             Debug.Log("Monster::OnDisable");
             base.OnDisable();
         }
+        #endregion
     }
 }

@@ -303,7 +303,6 @@ namespace STELLAREST_F1.Data
     public class EnvData : BaseData
     {
         public string AnimatorLabel;
-        public float MaxHp;
         public int DropItemID;
     }
 
@@ -445,7 +444,7 @@ namespace STELLAREST_F1.Data
 		public string ClassName;
         public int ProjectileID;
 		public float CoolTime;
-        public float InvokeRatio; // *** Invoke Ratio OnStateUpdate ***
+        public float InvokeRatioOnUpdate; // *** Invoke Ratio OnStateUpdate ***
     }
 
     public class SkillDataLoader : ILoader<int, SkillData>

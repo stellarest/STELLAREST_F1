@@ -32,18 +32,15 @@ namespace STELLAREST_F1
             base.EnterInGame();
         }
 
-        // Called From UpdateSkill
         public override void DoSkill()
         {
             base.DoSkill();
             Owner.LookAtTarget(Owner.Target);
         }
 
-        public override void OnSkillAnimationEnter()
-        {
-        }
+        public override void OnSkillStateEnter() { }
 
-        public override void OnSkillAnimationUpdate()
+        public override void OnSkillStateUpdate()
         {
             if (Owner.Target.IsValid() == false)
                 return;
@@ -51,13 +48,12 @@ namespace STELLAREST_F1
             Owner.Target.OnDamaged(Owner, this);
         }
 
-        public override void OnSkillAnimationCompleted()
+        public override void OnSkillStateEnd()
         {
             if (Owner.IsValid() == false)
                 return;
 
             Owner.CreatureState = ECreatureState.Idle;
-            Debug.Log("I'M IDLE...");
         }
     }
 }

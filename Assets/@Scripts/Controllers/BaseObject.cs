@@ -156,11 +156,10 @@ namespace STELLAREST_F1
                 return false;
 
             DataTemplateID = dataID;
-            ObjectRarity = EObjectRarity.Common;
+            ObjectRarity = EObjectRarity.Common; // TEMP
+            RigidBody.drag = 0f; // TEMP
 
-            if (ObjectType == EObjectType.Hero || ObjectType == EObjectType.Monster)
-                SetStat(dataID);
-
+            SetStat(dataID);
             return true;
         }
 
@@ -202,8 +201,7 @@ namespace STELLAREST_F1
                 return;
 
             RigidBody.velocity = velocity;
-
-            if (velocity == Vector2.zero)
+            if (velocity == Vector2.zero) // DO NOT FLIP.
                 return;
 
             if (velocity.x < 0)

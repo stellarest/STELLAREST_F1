@@ -6,17 +6,17 @@ namespace STELLAREST_F1
 {
     public class BodyAttack : SkillBase
     {
-        public override void OnSkillAnimationCompleted()
+        public override void OnSkillStateEnd()
         {
             throw new System.NotImplementedException();
         }
 
-        public override void OnSkillAnimationEnter()
+        public override void OnSkillStateEnter()
         {
             throw new System.NotImplementedException();
         }
 
-        public override void OnSkillAnimationUpdate()
+        public override void OnSkillStateUpdate()
         {
             throw new System.NotImplementedException();
         }

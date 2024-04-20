@@ -53,7 +53,6 @@ namespace STELLAREST_F1
 
             EnvData = Managers.Data.EnvDataDict[dataID];
             EnvType = Util.GetEnumFromString<EEnvType>(EnvData.Type);
-            _maxHp = new Stat(EnvData.MaxHp);
             
             gameObject.name += $"_{EnvData.DescriptionTextID.Replace(" ", "")}";
             EnterInGame();
@@ -80,7 +79,7 @@ namespace STELLAREST_F1
 
             // TODO : Show UI
             Hp = UnityEngine.Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
-            Debug.Log($"{gameObject.name} Hp : {Hp} / {MaxHp}");
+            Debug.Log($"{gameObject.name} is damaged. ({Hp} / {MaxHp})");
             if (Hp <= 0f)
             {
                 Hp = 0f;
@@ -90,9 +89,9 @@ namespace STELLAREST_F1
 
         public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
         {
-            //Managers.Object.Despawn(this); // TEMP
             EnvState = EEnvState.Dead;
             base.OnDead(attacker, skillFromAttacker);
+            
             // TODO : Drop Item
             // Managers.Object.Despawn(this);
         }

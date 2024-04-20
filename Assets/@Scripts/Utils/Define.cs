@@ -493,29 +493,32 @@ namespace STELLAREST_F1
                 public static readonly int DataID_Monster_Pug = 102003;
 
                 // ID - Envs Trees & Rocks
-                public static readonly int DataID_Env_AshTree = 301000;
-                public static readonly int DataID_Env_BlackOakTree = 301001;
-                public static readonly int DataID_Env_GreenAppleTree = 301002;
-                public static readonly int DataID_Env_IvyTree = 301003;
-                public static readonly int DataID_Env_ManticoreTree = 301004;
-                public static readonly int DataID_Env_MapleTree = 301005;
-                public static readonly int DataID_Env_OakTree = 301006;
-                public static readonly int DataID_Env_RedAppleTree = 301007;
-                public static readonly int DataID_Env_RedSandalTree = 301008;
-                public static readonly int DataID_Env_WillowTree = 301009;
-                public static readonly int DataID_Env_YewTree = 301010;
-                public static readonly int DataID_Env_CopperRock = 301011;
-                public static readonly int DataID_Env_GoldRock = 301012;
-                public static readonly int DataID_Env_IronRock = 301013;
-                public static readonly int DataID_Env_LimestoneRock = 301014;
-                public static readonly int DataID_Env_SilverRock = 301015;
-                public static readonly int DataID_Env_StoneRock = 301016;
-                public static readonly int DataID_Env_TinRock = 301017;
-                public static readonly int DataID_Env_WhetstoneRock = 301018;
-                public static readonly int DataID_Env_ZincRock = 301019;
+                public static readonly int DataID_Env_AshTree = 901000;
+                public static readonly int DataID_Env_BlackOakTree = 901001;
+                public static readonly int DataID_Env_GreenAppleTree = 901002;
+                public static readonly int DataID_Env_IvyTree = 901003;
+                public static readonly int DataID_Env_ManticoreTree = 901004;
+                public static readonly int DataID_Env_MapleTree = 901005;
+                public static readonly int DataID_Env_OakTree = 901006;
+                public static readonly int DataID_Env_RedAppleTree = 901007;
+                public static readonly int DataID_Env_RedSandalTree = 901008;
+                public static readonly int DataID_Env_WillowTree = 901009;
+                public static readonly int DataID_Env_YewTree = 901010;
+
+                public static readonly int DataID_Env_CopperRock = 901011;
+                public static readonly int DataID_Env_GoldRock = 901012;
+                public static readonly int DataID_Env_IronRock = 901013;
+                public static readonly int DataID_Env_LimestoneRock = 901014;
+                public static readonly int DataID_Env_SilverRock = 901015;
+                public static readonly int DataID_Env_StoneRock = 901016;
+                public static readonly int DataID_Env_TinRock = 901017;
+                public static readonly int DataID_Env_WhetstoneRock = 901018;
+                public static readonly int DataID_Env_ZincRock = 901019;
 
                 // Env
                 public static readonly int RockElementsCount = 3;
+
+                public static readonly int MaxActiveSkillsCount = 2;
 
                 // [ FLOATING ]
                 public static readonly float CamOrthoSize = 12.0F; 
@@ -532,6 +535,9 @@ namespace STELLAREST_F1
                 // Dead Fade Out Time
                 public static readonly float StartDeadFadeOutTime = 0.85F;
                 public static readonly float DesiredDeadFadeOutEndTime = 1.0F;
+
+                public static readonly float MaxMovementSpeedMultiplier = 2.0F;
+                public static readonly float MaxDistanceForMovementSpeed = 8.0F;
             }
         }
     }

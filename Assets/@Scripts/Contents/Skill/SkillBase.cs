@@ -12,7 +12,7 @@ namespace STELLAREST_F1
         public int DataTemplateID { get; private set; } = -1;
         public ESkillType SkillType { get; private set; } = ESkillType.None;
         public float RemainCoolTime { get; protected set; } = 0.0f;
-        public float InvokeRatio { get; private set; } = 0.0f;
+        public float InvokeRatioOnUpdate { get; private set; } = 0.0f;
 
         public override bool Init()
         {
@@ -35,7 +35,7 @@ namespace STELLAREST_F1
             SkillData = Managers.Data.SkillDataDict[dataID];
             DataTemplateID = dataID;
             SkillType = Util.GetEnumFromString<ESkillType>(SkillData.Type);
-            InvokeRatio = SkillData.InvokeRatio;
+            InvokeRatioOnUpdate = SkillData.InvokeRatioOnUpdate;
 
             EnterInGame();
             return true;
@@ -43,7 +43,7 @@ namespace STELLAREST_F1
 
         protected override void EnterInGame()
         {
-            //AddAnimationEvents();
+            RemainCoolTime = 0.0f;
         }
 
         private void OnDisable()
@@ -90,8 +90,8 @@ namespace STELLAREST_F1
         }
 
         // TODO : Generate Projectile
-        public abstract void OnSkillAnimationEnter();
-        public abstract void OnSkillAnimationUpdate();
-        public abstract void OnSkillAnimationCompleted();
+        public abstract void OnSkillStateEnter();
+        public abstract void OnSkillStateUpdate();
+        public abstract void OnSkillStateEnd();
     }
 }
