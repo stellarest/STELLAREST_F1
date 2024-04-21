@@ -478,15 +478,13 @@ namespace STELLAREST_F1
             }
             else // Wepon
             {
-                Sprite leftWeaponSP = null;
-                Sprite rightWeaponSP = null;
-
+                List<SpriteRenderer> leftWeaponSPRs = new List<SpriteRenderer>();
+                List<SpriteRenderer> rightWeaponSPRs = new List<SpriteRenderer>();
                 Data.HeroSpriteData_Weapon weapon = Managers.Data.HeroSpriteDataDict[heroSpriteData.DataID].Weapon;
 
                 // Weapon - Left
                 Transform weaponL = heroBody.GetComponent<Transform>(EHeroWeapon.WeaponL);
                 sprite = Managers.Resource.Load<Sprite>(weapon.LWeapon);
-                leftWeaponSP = sprite;
                 if (sprite != null)
                 {
                     spr = heroBody.GetComponent<SpriteRenderer>(EHeroWeapon.WeaponL);
@@ -494,6 +492,7 @@ namespace STELLAREST_F1
                     spr.sortingOrder = weapon.LWeaponSorting;
                     spr.flipX = weapon.LWeaponFlipX;
                     spr.flipY = weapon.LWeaponFlipY;
+                    leftWeaponSPRs.Add(spr);
                     heroBody.Appearance.Add(spr);
 
                     if (weapon.LWeaponChilds.Length != 0)
@@ -509,6 +508,7 @@ namespace STELLAREST_F1
                                 childSPR.sortingOrder = weapon.LWeaponChildSortings[i];
                                 childSPR.flipX = weapon.LWeaponChildFlipXs[i];
                                 childSPR.flipY = weapon.LWeaponChildFlipYs[i];
+                                leftWeaponSPRs.Add(childSPR);
                                 heroBody.Appearance.Add(childSPR);
                             }
                         }
@@ -534,7 +534,6 @@ namespace STELLAREST_F1
                 // Weapon - Right
                 Transform weaponR = heroBody.GetComponent<Transform>(EHeroWeapon.WeaponR);
                 sprite = Managers.Resource.Load<Sprite>(weapon.RWeapon);
-                rightWeaponSP = sprite;
                 if (sprite != null)
                 {
                     spr = heroBody.GetComponent<SpriteRenderer>(EHeroWeapon.WeaponR);
@@ -542,6 +541,7 @@ namespace STELLAREST_F1
                     spr.sortingOrder = weapon.RWeaponSorting;
                     spr.flipX = weapon.RWeaponFlipX;
                     spr.flipY = weapon.RWeaponFlipY;
+                    rightWeaponSPRs.Add(spr);
                     heroBody.Appearance.Add(spr);
 
                     if (weapon.RWeaponChilds.Length != 0)
@@ -557,6 +557,7 @@ namespace STELLAREST_F1
                                 childSPR.sortingOrder = weapon.RWeaponChildSortings[i];
                                 childSPR.flipX = weapon.RWeaponChildFlipXs[i];
                                 childSPR.flipY = weapon.RWeaponChildFlipYs[i];
+                                rightWeaponSPRs.Add(childSPR);
                                 heroBody.Appearance.Add(childSPR);
                             }
                         }
@@ -578,7 +579,7 @@ namespace STELLAREST_F1
                     weaponR.gameObject.SetActive(false);
                 }
 
-                heroBody.SetDefaultWeapon(leftWeaponSP, rightWeaponSP);
+                heroBody.SetDefaultWeaponSprites(leftWeaponSPRs.ToArray(), rightWeaponSPRs.ToArray());
             }
         }
         #endregion

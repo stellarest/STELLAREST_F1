@@ -18,7 +18,8 @@ namespace STELLAREST_F1
             InitBody(EHeroBodyParts.LowerBody, (int)EHeroLowerBody.Max);
             InitBody(EHeroBodyParts.Weapon, (int)EHeroLowerBody.Max);
         }
-
+        
+        // ########## HERO FACE ##########
         #region Hero - Face
         public class HeroFace
         {
@@ -159,6 +160,7 @@ namespace STELLAREST_F1
             }
         }
         #endregion
+        // ########## HERO FACE ##########
 
         private Dictionary<EHeroBodyParts, Container[]> _bodyDict = new Dictionary<EHeroBodyParts, Container[]>();
         public HeroFace Face { get; private set; } = null;
@@ -480,57 +482,63 @@ namespace STELLAREST_F1
                 Face = new HeroFace(this);
         }
 
-        Sprite _defaultLeftWeaponSP = null;
-        Sprite _defaultRightWeaponSP = null;
-        public void SetDefaultWeapon(Sprite defaultWeaponL, Sprite defaultWeaponR)
+        private SpriteRenderer[] _leftWeaponSPRs = null;
+        private Sprite[] _defaultLeftWeaponSPs = null;
+
+        private SpriteRenderer[] _rightWeaponSPRs = null;
+        private Sprite[] _defaultRightWeaponSPs = null;
+
+        public void SetDefaultWeaponSprites(SpriteRenderer[] defaultLeftWeaponSPs, SpriteRenderer[] defaultRightWeaponSPs)
         {
-            _defaultLeftWeaponSP = defaultWeaponL != null ? defaultWeaponL : null;
-            _defaultRightWeaponSP = defaultWeaponR != null ? defaultWeaponR : null;
+            _leftWeaponSPRs = defaultLeftWeaponSPs;
+            _defaultLeftWeaponSPs = new Sprite[defaultLeftWeaponSPs.Length];
+            for (int i = 0; i < defaultLeftWeaponSPs.Length; ++i)
+                _defaultLeftWeaponSPs[i] = defaultLeftWeaponSPs[i].sprite;
+
+            _rightWeaponSPRs = defaultRightWeaponSPs;
+            _defaultRightWeaponSPs = new Sprite[defaultRightWeaponSPs.Length];
+            for (int i = 0; i < defaultRightWeaponSPs.Length; ++i)
+                _defaultRightWeaponSPs[i] = defaultRightWeaponSPs[i].sprite;
         }
 
-        public void ChangeEnvWeapon(EEnvType envType)
+        public void DefaultWeapon()
         {
             ReleaseWeapon();
-            SpriteRenderer spr = GetComponent<SpriteRenderer>(EHeroWeapon.WeaponR);
-            switch (envType)
-            {
-                case EEnvType.Tree:
-                    if (Owner.ObjectRarity == EObjectRarity.Common)
-                        spr.sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Tree][(int)ECollectEnvRarity.Common];
-                    else if (Owner.ObjectRarity == EObjectRarity.Elite)
-                        spr.sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Tree][(int)ECollectEnvRarity.Elite];
-                    break;
+            for (int i = 0; i < _leftWeaponSPRs.Length; ++i)
+                _leftWeaponSPRs[i].sprite = _defaultLeftWeaponSPs[i];
 
-                case EEnvType.Rock:
-                    if (Owner.ObjectRarity == EObjectRarity.Common)
-                        spr.sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Rock][(int)ECollectEnvRarity.Common];
-                    else if (Owner.ObjectRarity == EObjectRarity.Elite)
-                        spr.sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Rock][(int)ECollectEnvRarity.Elite];
-                    break;
-            }
-        }
-
-        public void ChangeDefaultWeapon()
-        {
-            ReleaseWeapon();
-            SpriteRenderer spr = GetComponent<SpriteRenderer>(EHeroWeapon.WeaponL);
-            spr.sprite = _defaultLeftWeaponSP != null ? _defaultLeftWeaponSP : null;
-
-            spr = GetComponent<SpriteRenderer>(EHeroWeapon.WeaponR);
-            spr.sprite = _defaultRightWeaponSP != null ? _defaultRightWeaponSP : null;
-
-            Debug.Log("Change - Default Weapon");
+            for (int i = 0; i < _rightWeaponSPRs.Length; ++i)
+                _rightWeaponSPRs[i].sprite = _defaultRightWeaponSPs[i];
         }
 
         private void ReleaseWeapon()
         {
-            SpriteRenderer spr = GetComponent<SpriteRenderer>(EHeroWeapon.WeaponL);
-            if (spr.sprite != null)
-                spr.sprite = null;
+            for (int i = 0; i < _leftWeaponSPRs.Length; ++i)
+                _leftWeaponSPRs[i].sprite = null;
 
-            spr = GetComponent<SpriteRenderer>(EHeroWeapon.WeaponR);
-            if (spr.sprite != null)
-                spr.sprite = null;
+            for (int i = 0; i < _rightWeaponSPRs.Length; ++i)
+                _rightWeaponSPRs[i].sprite = null;
+        }
+
+        public void EnvWeapon(EEnvType envType)
+        {
+            ReleaseWeapon();
+            switch (envType)
+            {
+                case EEnvType.Tree:
+                    if (Owner.ObjectRarity == EObjectRarity.Common)
+                        _rightWeaponSPRs[0].sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Tree][(int)ECollectEnvRarity.Common];
+                    else
+                        _rightWeaponSPRs[0].sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Tree][(int)ECollectEnvRarity.Elite];
+                    break;
+
+                case EEnvType.Rock:
+                    if (Owner.ObjectRarity == EObjectRarity.Common)
+                        _rightWeaponSPRs[0].sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Rock][(int)ECollectEnvRarity.Common];
+                    else
+                        _rightWeaponSPRs[0].sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Rock][(int)ECollectEnvRarity.Elite];
+                    break;
+            }
         }
     }
 }

@@ -460,4 +460,27 @@ namespace STELLAREST_F1.Data
             return dict;
         }
     }
+
+    [Serializable]
+    public class ProjectileData : BaseData
+    {
+		public string ClassName;
+        public float Duration;
+        public float Range;
+        public float MovementSpeed;
+    }
+
+    public class ProjectileDataLoader : ILoader<int, ProjectileData>
+    {
+        public List<ProjectileData> Projectiles = new List<ProjectileData>();
+
+        public Dictionary<int, ProjectileData> MakeDict()
+        {
+            Dictionary<int, ProjectileData> dict = new Dictionary<int, ProjectileData>();
+            foreach (ProjectileData data in Projectiles)
+                dict.Add(data.DataID, data);
+
+            return dict;
+        }
+    }
 }

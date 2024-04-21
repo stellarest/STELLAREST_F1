@@ -58,14 +58,6 @@ namespace STELLAREST_F1
                 
                 return;
             }
-
-            // End State로 옮겨도 될 것 같은데..
-            if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureState.Dead))
-            {
-                float endThresholdPercentage = 0.9f;
-                if (currentPercentage >= endThresholdPercentage)
-                    OnStateUpdateHandler?.Invoke(ECreatureState.Dead);
-            }
         }
 
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

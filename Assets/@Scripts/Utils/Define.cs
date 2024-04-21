@@ -324,6 +324,7 @@ namespace STELLAREST_F1
                 public static readonly string RockSpriteData = "RockSpriteData";
                 public static readonly string StatData = "StatData";
                 public static readonly string SkillData = "SkillData";
+                public static readonly string ProjectileData = "ProjectileData";
 
                 // Others
                 public static readonly string Managers = "@Managers";
@@ -482,9 +483,9 @@ namespace STELLAREST_F1
 
                 // ID - Heroes
                 public static readonly int DataID_Hero_Paladin = 101000;
-                public static readonly int DataID_Hero_Archer = 101001;
-                public static readonly int DataID_Hero_Wizard = 101002;
-                public static readonly int DataID_Hero_Lancer = 101999;
+                public static readonly int DataID_Hero_Archer = 101010;
+                public static readonly int DataID_Hero_Wizard = 101020;
+                // public static readonly int DataID_Hero_Lancer = 101999; // TEMP
 
                 // ID - Monsters
                 public static readonly int DataID_Monster_Chicken = 102000;

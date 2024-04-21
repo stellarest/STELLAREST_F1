@@ -38,6 +38,9 @@ namespace STELLAREST_F1
         public Dictionary<int, Data.SkillData> SkillDataDict { get; private set; } = new Dictionary<int, Data.SkillData>();
         #endregion
 
+        #region Projectiles
+        public Dictionary<int, Data.ProjectileData> ProjectileDataDict { get; private set; } = new Dictionary<int, Data.ProjectileData>();
+        #endregion
 
         public void Init()
         {
@@ -54,6 +57,7 @@ namespace STELLAREST_F1
 
             StatDataDict = LoadJson<Data.StatDataLoader, int, Data.StatData>(ReadOnly.String.StatData).MakeDict();
             SkillDataDict = LoadJson<Data.SkillDataLoader, int, Data.SkillData>(ReadOnly.String.SkillData).MakeDict();
+            ProjectileDataDict = LoadJson<Data.ProjectileDataLoader, int, Data.ProjectileData>(ReadOnly.String.ProjectileData).MakeDict();
         }
 
         private T LoadJson<T, Key, Value>(string path) where T : ILoader<Key, Value>

@@ -9,7 +9,6 @@ using UnityEngine;
 [ TODO LIST ]
 - Wizard Attack Anim 교정
 - Monster RigidBody Linear Drag (100 -> 300) : 나중에 종류별로 바꿔야함.
-- 멀어졌을 때 이동속도가 증가하는 로그함수 구현하기.
 - 그리고 예를 들어 바위를 채집할 때, 바위 완전 밑에서 채집하면 이상하니까, 이런거 위치 조정해줘야 할 것 같은데.
 - Melee Attack 구현, Init Stat 구현. Exp는 아직 X
 

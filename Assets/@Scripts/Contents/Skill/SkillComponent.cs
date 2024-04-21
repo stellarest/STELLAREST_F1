@@ -26,7 +26,7 @@ namespace STELLAREST_F1
         }
 
         public bool IsRemainingCoolTime(ESkillType skillType)
-            => SkillArray[(int)skillType].RemainCoolTime > 0.0f;
+            => SkillArray[(int)skillType]?.RemainCoolTime > 0.0f;
 
         private Creature _owner = null;
         public override bool Init()
@@ -39,6 +39,13 @@ namespace STELLAREST_F1
 
         public override bool SetInfo(BaseObject owner, List<int> skillDataIDs) // TEMP
         {
+            // SkillComponent를 들고 있다는 것은 객체가 스킬을 최소 1개라도 들고 있다는 의미이므로 SkillCount가 0이면 에러 처리
+            if (skillDataIDs.Count == 0)
+            {
+                Debug.LogError($"{nameof(SkillComponent)}, {nameof(SetInfo)}, Input : \"{skillDataIDs.Count}, Skills zero count\"");
+                return false;
+            }
+
             _owner = owner as Creature;
             foreach (int skillDataID in skillDataIDs)
                 AddSkill(skillDataID);

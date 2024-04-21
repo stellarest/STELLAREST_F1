@@ -95,10 +95,10 @@ namespace STELLAREST_F1
                 if (value && Target.IsValid())
                 {
                     Env envTarget = Target as Env;
-                    HeroBody.ChangeEnvWeapon(envTarget.EnvType);
+                    HeroBody.EnvWeapon(envTarget.EnvType);
                 }
                 else
-                    HeroBody.ChangeDefaultWeapon();
+                    HeroBody.DefaultWeapon();
             }
         }
 
@@ -279,6 +279,7 @@ namespace STELLAREST_F1
                     // float moveSpeed = MovementSpeed * (float)Math.Pow(ratio, 3);
                     // SetRigidBodyVelocity(toDir.normalized * moveSpeed);
 
+                    // 캠프로 돌아올 때만 거리에 따라 스피드 조정
                     float movementSpeed = CalculateMovementSpeed(toDir.sqrMagnitude);
                     SetRigidBodyVelocity(toDir.normalized * movementSpeed);
 

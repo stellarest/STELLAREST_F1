@@ -218,15 +218,10 @@ namespace STELLAREST_F1
                 case ECreatureState.CollectEnv:
                     OnCollectEnvStateUpdate();
                     break;
-
-                case ECreatureState.Dead:
-                    OnDeadStateUpdate();
-                    break;
             }
         }
 
         protected virtual void OnCollectEnvStateUpdate() { }
-        protected virtual void OnDeadStateUpdate() { }
 
         protected void OnStateEnd(ECreatureState endState)
         {

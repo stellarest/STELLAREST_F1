@@ -57,14 +57,9 @@ namespace STELLAREST_F1
 
             {
                 Vector3 spawnPos = new Vector3(camp.transform.position.x - 5f, camp.transform.position.y - 5f, 0f);
-                Hero hero = Managers.Object.Spawn<Hero>(spawnPos, EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
+                Hero hero = Managers.Object.Spawn<Hero>(spawnPos, EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Archer);
 
             }
-
-            // {
-            //     Monster mon = Managers.Object.Spawn<Monster>(new Vector3(camp.transform.position.x + 5f, camp.transform.position.y + 5f, 0f),
-            //                                                  EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Chicken);
-            // }
         }
 
         private int GetRandEnvTree
