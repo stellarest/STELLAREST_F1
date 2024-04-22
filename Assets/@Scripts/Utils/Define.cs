@@ -82,9 +82,9 @@ namespace STELLAREST_F1
             Hero,
             Monster,
             Env,
-            HeroCamp,
             Projectile,
-            Max = Projectile + 1
+            HeroCamp,
+            Max = HeroCamp + 1
         }
 
         public enum ECreatureState
@@ -304,9 +304,23 @@ namespace STELLAREST_F1
             Max = Skill_B + 1
         }
 
+        public enum EProjectileType
+        {
+            SimpleProjectile,
+            ParticleProjectile
+        }
+
         public enum EClassName
         {
             MeleeAttack,
+            Projectile,
+            RangedAttack
+        }
+
+        public enum EComponentClassName
+        {
+            StraightMotion,
+            ParabolaMotion,
         }
 
         public static class ReadOnly
@@ -337,6 +351,7 @@ namespace STELLAREST_F1
                 public static readonly string HeroPoolingRootName = "@Pool_Heroes";
                 public static readonly string MonsterPoolingRootName = "@Pool_Monsters";
                 public static readonly string EnvPoolingRootName = "@Pool_Envs";
+                public static readonly string ProjectilePoolingRootName = "@Pool_Projectiles";
                 public static readonly string UI_Joystick = "UI_Joystick";
                 public static readonly string AnimationBody = "AnimationBody";
                 public static readonly string HeroCamp = "HeroCamp";
@@ -472,14 +487,19 @@ namespace STELLAREST_F1
             public static class Numeric
             {
                 // [ INTEGER ]
-                public static readonly int SortingOrder_SpellIndicator = 200;
-                public static readonly int SortingOrder_Creature = 300;
-                public static readonly int SortingOrder_Env = 300;
-                public static readonly int SortingOrder_Projectile = 310;
-                public static readonly int SortingOrder_SkillEffect = 310;
-                public static readonly int SortingOrder_DamageFont = 410;
-                //public static readonly int SortingOrder_Weapon = 200;
-                public static readonly int SortingOrder_Weapon = 320;
+                public static readonly int SortingLayer_Base = 0;
+                public static readonly int SortingLayer_Projectile = 10;
+                public static readonly int SortingLayer_VFX = 20;
+                public static readonly int SortingLayer_HeroCamp = 90;
+
+                // public static readonly int SortingOrder_SpellIndicator = 200;
+                // public static readonly int SortingOrder_Creature = 300;
+                // public static readonly int SortingOrder_Env = 300;
+                // public static readonly int SortingOrder_Projectile = 310;
+                // public static readonly int SortingOrder_SkillEffect = 310;
+                // public static readonly int SortingOrder_DamageFont = 410;
+                // //public static readonly int SortingOrder_Weapon = 200;
+                // public static readonly int SortingOrder_Weapon = 320;
 
                 // ID - Heroes
                 public static readonly int DataID_Hero_Paladin = 101000;

@@ -33,7 +33,7 @@ namespace STELLAREST_F1
 
             ObjectType = EObjectType.Env;
             RigidBody.bodyType = RigidbodyType2D.Static;
-            Collider.isTrigger = true; // TEMP
+            Collider.isTrigger = true;
 
             return true;
         }
@@ -46,7 +46,6 @@ namespace STELLAREST_F1
                 return false;
             }
 
-            base.SetInfo(dataID);
             EnvAnim = BaseAnim as EnvAnimation;
             EnvAnim.SetInfo(dataID, this);
             Managers.Sprite.SetInfo(dataID, this);
@@ -61,8 +60,8 @@ namespace STELLAREST_F1
 
         protected override void EnterInGame()
         {
+            base.EnterInGame();
             ShowBody(true);            
-            Hp = MaxHp;
             EnvState = EEnvState.Idle;
         }
 

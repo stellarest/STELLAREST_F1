@@ -465,6 +465,7 @@ namespace STELLAREST_F1.Data
     public class ProjectileData : BaseData
     {
 		public string ClassName;
+        public string ComponentClassName;
         public float Duration;
         public float Range;
         public float MovementSpeed;

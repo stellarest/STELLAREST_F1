@@ -37,7 +37,7 @@ namespace STELLAREST_F1
             _arrowSPR = Destination.GetComponent<SpriteRenderer>();
 
             ShowArrowCircle(false);
-
+            SortingGroup.sortingOrder = ReadOnly.Numeric.SortingLayer_HeroCamp;
             return true;
         }
 

@@ -16,6 +16,12 @@ Skill First
 - Skill_Attack : Paladin MeleeAttack
 - Skill_A : Double Attack
 - Skill_B : Shield
+
+Projectile 제작
+EnterInGame 정리
+
+두 번째 아쳐에서 오른손 무기 SPR이 꺼져있음.
+애니메이션으로 켜주면 되긴함. 근데 일단 원인부터.
 */
 
 public class T_E_S_T : MonoBehaviour
@@ -64,6 +70,9 @@ public class T_E_S_T : MonoBehaviour
 가칭 : 매우 간단한 RPG 게임. (Only One류, FQ4와 비슷한)
 정처없이 돌아다니면서 사냥 + 육성 + 대략 100레벨 정도 만들고 클리어하면 끝.
 게임 가격은 1100원 또는 2200원. 빠르게 개발하고 출시하는 것이 목적
+-- 포폴 : 웹
+-- 출시버전 : 싱글
+--- 레스트 서버란 무엇인가?
 
 Cloud Services - Save data in the cloud (iCloud & Saved Games)
 이거 가능한가본데?(Cross-Platform Native Plugins : Essential Kit (Mobile - iOS & Android 에셋 참고)

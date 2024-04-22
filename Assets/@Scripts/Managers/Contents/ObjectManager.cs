@@ -10,6 +10,7 @@ namespace STELLAREST_F1
         public HashSet<Hero> Heroes { get; } = new HashSet<Hero>();
         public HashSet<Monster> Monsters { get; } = new HashSet<Monster>();
         public HashSet<Env> Envs { get; } = new HashSet<Env>();
+        public HashSet<Projectile> Projectiles { get; } = new HashSet<Projectile>();
         public HeroCamp Camp { get; private set; } = null;
 
         #region Roots
@@ -25,6 +26,7 @@ namespace STELLAREST_F1
         public Transform HeroRoot => GetRoot(ReadOnly.String.HeroPoolingRootName);
         public Transform MonsterRoot => GetRoot(ReadOnly.String.MonsterPoolingRootName);
         public Transform EnvRoot => GetRoot(ReadOnly.String.EnvPoolingRootName);
+        public Transform ProjectileRoot => GetRoot(ReadOnly.String.ProjectilePoolingRootName);
         #endregion
 
         public T Spawn<T>(Vector3 position, EObjectType spawnObjectType, int dataID = -1) where T : BaseObject
@@ -43,7 +45,6 @@ namespace STELLAREST_F1
                         }
 
                         go.transform.position = position;
-                        //go.transform.SetParent(HeroRoot);
                         Hero hero = go.GetComponent<Hero>();
                         hero.SetInfo(dataID);
                         Heroes.Add(hero);
@@ -61,7 +62,6 @@ namespace STELLAREST_F1
                         }
 
                         go.transform.position = position;
-                        //go.transform.SetParent(MonsterRoot);
                         Monster monster = go.GetComponent<Monster>();
                         monster.SetInfo(dataID);
                         Monsters.Add(monster);
@@ -79,11 +79,27 @@ namespace STELLAREST_F1
                         }
 
                         go.transform.position = position;
-                        //go.transform.SetParent(EnvRoot);
                         Env env = go.GetComponent<Env>();
                         env.SetInfo(dataID);
                         Envs.Add(env);
                         return env as T;
+                    }
+
+                case EObjectType.Projectile:
+                    {
+                        Data.ProjectileData data = Managers.Data.ProjectileDataDict[dataID];
+                        go = Managers.Resource.Instantiate(data.PrefabLabel, parent: ProjectileRoot, poolingID: data.DataID);
+                        if (go == null)
+                        {
+                            Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{data.PrefabLabel}\"");
+                            return null;
+                        }
+
+                        go.transform.position = position;
+                        Projectile projectile = go.GetComponent<Projectile>();
+                        projectile.SetInfo(dataID);
+                        Projectiles.Add(projectile);
+                        return projectile as T;
                     }
 
                 case EObjectType.HeroCamp:

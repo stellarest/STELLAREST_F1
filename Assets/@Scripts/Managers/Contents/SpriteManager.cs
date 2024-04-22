@@ -44,6 +44,9 @@ namespace STELLAREST_F1
                 case EObjectType.Env:
                     SetSpritesSet(dataID, target as Env);
                     break;
+
+                case EObjectType.Projectile:
+                    break;
             }
         }
 

@@ -60,9 +60,9 @@ namespace STELLAREST_F1
 
         protected override void EnterInGame()
         {
-            base.EnterInGame();
             _initPos = transform.position;
             LookAtDir = ELookAtDirection.Left;
+            base.EnterInGame();
         }
 
         private Vector3 _destPos = Vector3.zero;

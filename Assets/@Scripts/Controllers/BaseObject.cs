@@ -146,6 +146,7 @@ namespace STELLAREST_F1
             RigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
             RigidBody.gravityScale = 0f;
             SortingGroup = gameObject.GetOrAddComponent<SortingGroup>();
+            SortingGroup.sortingOrder = ReadOnly.Numeric.SortingLayer_Base;
 
             return true;
         }
@@ -153,14 +154,26 @@ namespace STELLAREST_F1
         public override bool SetInfo(int dataID)
         {
             if (base.SetInfo(dataID) == false)
+            {
+                EnterInGame();
                 return false;
+            }
 
             DataTemplateID = dataID;
             ObjectRarity = EObjectRarity.Common; // TEMP
             RigidBody.drag = 0f; // TEMP
-
             SetStat(dataID);
             return true;
+        }
+
+        protected override void EnterInGame()
+        {
+            // Reset Stat (TEMP)
+            MaxHp = StatData.MaxHp;
+            Hp = MaxHp;
+            Atk = StatData.Atk;
+            AtkRange = StatData.AtkRange;
+            MovementSpeed = StatData.MovementSpeed;
         }
 
         private void SetStat(int dataID)
@@ -253,7 +266,8 @@ namespace STELLAREST_F1
 
         protected void ShowBody(bool show)
         {
-            foreach (SpriteRenderer spr in GetComponentsInChildren<SpriteRenderer>())
+            // includeInactive: true (임시, 나중에 개선 필요)
+            foreach (SpriteRenderer spr in GetComponentsInChildren<SpriteRenderer>(includeInactive: true))
             {
                 spr.enabled = show;
                 if (show)
@@ -262,9 +276,6 @@ namespace STELLAREST_F1
                     spr.gameObject.SetActive(true);
                 }
             }
-
-            if (show)
-                RigidBody.simulated = true;
         }
     }
 }

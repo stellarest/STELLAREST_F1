@@ -78,6 +78,19 @@ namespace STELLAREST_F1
             }
         }
 
+        protected virtual void GenerateProjectile(Creature owner, Vector3 spawnPos)
+        {
+            Projectile projectile = Managers.Object.Spawn<Projectile>(spawnPos, EObjectType.Projectile, SkillData.ProjectileID);
+            
+            LayerMask excludeLayerMask = 0;
+            excludeLayerMask.AddLayer(ELayer.Default);
+            excludeLayerMask.AddLayer(ELayer.Projectile);
+            excludeLayerMask.AddLayer(ELayer.Env);
+            excludeLayerMask.AddLayer(ELayer.Obstacle);
+
+            projectile.SetSpawnInfo(owner, this, excludeLayerMask);
+        }
+
         private IEnumerator CoActivateSkill()
         {
             RemainCoolTime = SkillData.CoolTime;

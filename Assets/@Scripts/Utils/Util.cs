@@ -79,6 +79,9 @@ namespace STELLAREST_F1
                 case EClassName.MeleeAttack:
                     return typeof(MeleeAttack);
 
+                case EClassName.RangedAttack:
+                    return typeof(RangedAttack);
+
                 default:
                     Debug.LogError($"{nameof(Util)}, {nameof(GetTypeFromClassName)}, Input : \"{className}, Please check Define.EClassName\"");
                     return null;

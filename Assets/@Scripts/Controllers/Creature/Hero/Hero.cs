@@ -127,7 +127,7 @@ namespace STELLAREST_F1
 
             return true;
         }
-
+        
         public override bool SetInfo(int dataID)
         {
             if (base.SetInfo(dataID) == false)
@@ -137,6 +137,8 @@ namespace STELLAREST_F1
             }
 
             HeroBody = new HeroBody(this, dataID);
+            this.GetComponent<Creature>().HeroBody = HeroBody; // TEMP
+
             HeroAnim = CreatureAnim as HeroAnimation;
             HeroAnim.SetInfo(dataID, this);
             Managers.Sprite.SetInfo(dataID, target: this);
@@ -156,6 +158,7 @@ namespace STELLAREST_F1
         {
             LookAtDir = ELookAtDirection.Right;
             base.EnterInGame();
+            
             // 나오고 나서 조이스틱 등록
             Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
             Managers.Game.OnJoystickStateChangedHandler += OnJoystickStateChanged;
@@ -164,6 +167,15 @@ namespace STELLAREST_F1
         #region AI
         protected override void UpdateIdle()
         {
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                Transform tr = HeroBody.GetComponent<Transform>(EHeroWeapon.WeaponL);
+                Debug.Log($"L : {tr.GetComponent<SpriteRenderer>().enabled}");
+
+                tr = HeroBody.GetComponent<Transform>(EHeroWeapon.WeaponR);
+                Debug.Log($"R : {tr.GetComponent<SpriteRenderer>().enabled}");
+            }
+
             SetRigidBodyVelocity(Vector2.zero);
             if (CreatureMoveState == ECreatureMoveState.ForceMove)
             {

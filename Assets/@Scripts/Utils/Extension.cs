@@ -47,6 +47,16 @@ namespace STELLAREST_F1
                 Managers.Resource.Destroy(child.gameObject);
         }
 
+        public static void AddLayer(this ref LayerMask mask, Define.ELayer layer)
+        {
+            mask |= 1 << (int)layer;
+        }
+
+        public static void RemoveLayer(this ref LayerMask mask, Define.ELayer layer)
+        {
+            mask &= ~(1 << (int)layer);
+        }
+
         public static void Shuffle<T>(this IList<T> list)
         {
             int n = list.Count;

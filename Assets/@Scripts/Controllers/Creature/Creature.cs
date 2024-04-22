@@ -52,19 +52,27 @@ namespace STELLAREST_F1
         public override bool SetInfo(int dataID)
         {
             if (base.SetInfo(dataID) == false)
+            {
+                EnterInGame();
                 return false;
+            }
 
             CreatureAnim = BaseAnim as CreatureAnimation;
+            //EnterInGame();
             return true;
         }
 
+        public HeroBody HeroBody;
+
         protected override void EnterInGame()
         {
-            Hp = MaxHp;
+            base.EnterInGame();
+            RigidBody.simulated = false;
             ShowBody(false);
             StartWait(waitCondition: () => BaseAnim.IsPlay() == false,
                       waitCompleted: () => {
                           ShowBody(true);
+                          RigidBody.simulated = true;
                           Target = null;
                           CancelWait();
                           AddAnimationEvents();
