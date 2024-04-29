@@ -17,11 +17,9 @@ Skill First
 - Skill_A : Double Attack
 - Skill_B : Shield
 
-Projectile 제작
-EnterInGame 정리
-
-두 번째 아쳐에서 오른손 무기 SPR이 꺼져있음.
-애니메이션으로 켜주면 되긴함. 근데 일단 원인부터.
+Projectile 제작, 종류 정리
+EnterInGame 정리, Socket Programming
+비주얼 스튜디오로 옮겨서 디버그 모드로 동작되는지 확인
 */
 
 public class T_E_S_T : MonoBehaviour

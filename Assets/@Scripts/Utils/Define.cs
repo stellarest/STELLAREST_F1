@@ -304,24 +304,25 @@ namespace STELLAREST_F1
             Max = Skill_B + 1
         }
 
-        public enum EProjectileType
-        {
-            SimpleProjectile,
-            ParticleProjectile
-        }
-
+        // ####################################################
+        // Util.GetTypeFromClassName에 반드시 타입 추가
         public enum EClassName
         {
             MeleeAttack,
+            RangedAttack,
             Projectile,
-            RangedAttack
-        }
-
-        public enum EComponentClassName
-        {
             StraightMotion,
             ParabolaMotion,
         }
+
+        public enum EProjectileMotionType
+        {
+            None = -1,
+            StraightMotion,
+            ParabolaMotion,
+            Max = ParabolaMotion + 1
+        }
+        // ####################################################
 
         public static class ReadOnly
         {
@@ -559,6 +560,8 @@ namespace STELLAREST_F1
 
                 public static readonly float MaxMovementSpeedMultiplier = 2.0F;
                 public static readonly float MaxDistanceForMovementSpeed = 8.0F;
+
+                public static readonly float ProjectileLifeTime = 10.0F;
             }
         }
     }

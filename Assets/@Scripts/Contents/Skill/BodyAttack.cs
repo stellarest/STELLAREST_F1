@@ -8,17 +8,14 @@ namespace STELLAREST_F1
     {
         public override void OnSkillStateEnd()
         {
-            throw new System.NotImplementedException();
         }
 
         public override void OnSkillStateEnter()
         {
-            throw new System.NotImplementedException();
         }
 
         public override void OnSkillStateUpdate()
         {
-            throw new System.NotImplementedException();
         }
     }
 }

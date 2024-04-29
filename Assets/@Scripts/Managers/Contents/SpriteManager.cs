@@ -46,6 +46,7 @@ namespace STELLAREST_F1
                     break;
 
                 case EObjectType.Projectile:
+                    SetSpritesSet(dataID, target as Projectile);
                     break;
             }
         }
@@ -1017,6 +1018,24 @@ namespace STELLAREST_F1
                 tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.EBody_Shadow, true, true);
                 spr = tr.GetComponent<SpriteRenderer>();
                 spr.sprite = sprite;
+            }
+        }
+        #endregion
+
+        #region Init - Projectile Sprites
+        private void SetSpritesSet(int dataID, Projectile projectile)
+        {
+            Data.ProjectileData projectileData = Managers.Data.ProjectileDataDict[dataID];
+            SpriteRenderer spr = projectile.GetComponent<SpriteRenderer>();
+            Sprite sprite = Managers.Resource.Load<Sprite>(projectileData.Body);
+            if (sprite != null)
+            {
+                spr.sprite = sprite;
+                if (ColorUtility.TryParseHtmlString(projectileData.BodyColor, out Color bodyColor))
+                    spr.color = bodyColor;
+
+                // 이미 BaseObject의 SortingGroup으로 layer 정렬 중임
+                //spr.sortingOrder = ReadOnly.Numeric.SortingLayer_Projectile;
             }
         }
         #endregion

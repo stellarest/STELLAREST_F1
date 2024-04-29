@@ -82,6 +82,15 @@ namespace STELLAREST_F1
                 case EClassName.RangedAttack:
                     return typeof(RangedAttack);
 
+                case EClassName.Projectile:
+                    return typeof(Projectile);
+
+                case EClassName.StraightMotion:
+                    return typeof(StraightMotion);
+
+                case EClassName.ParabolaMotion:
+                    return typeof(ParabolaMotion);
+
                 default:
                     Debug.LogError($"{nameof(Util)}, {nameof(GetTypeFromClassName)}, Input : \"{className}, Please check Define.EClassName\"");
                     return null;

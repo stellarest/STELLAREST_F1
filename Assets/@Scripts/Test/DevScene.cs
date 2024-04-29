@@ -26,8 +26,8 @@ namespace STELLAREST_F1
             if (Input.GetKeyDown(KeyCode.Q))
             {
                 int randSpawnId = ReadOnly.Numeric.DataID_Hero_Paladin;
-                if (100f >= UnityEngine.Random.Range(0f, 100f))
-                    randSpawnId += 10;
+                // if (65f >= UnityEngine.Random.Range(0f, 100f))
+                //     randSpawnId += 10;
 
                 Vector3 spawnPos = Util.MakeSpawnPosition(Managers.Object.Camp, -1f, 1f);
                 Hero hero = Managers.Object.Spawn<Hero>(spawnPos, EObjectType.Hero, randSpawnId);

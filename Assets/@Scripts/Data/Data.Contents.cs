@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using UnityEngine;
 using static STELLAREST_F1.Define;
 
@@ -464,9 +465,11 @@ namespace STELLAREST_F1.Data
     [Serializable]
     public class ProjectileData : BaseData
     {
+        public string AnimationCurveType;
+        public string Body;
+        public string BodyColor;
 		public string ClassName;
-        public string ComponentClassName;
-        public float Duration;
+        public bool RotateToTarget;
         public float Range;
         public float MovementSpeed;
     }
@@ -484,4 +487,27 @@ namespace STELLAREST_F1.Data
             return dict;
         }
     }
+
+    // [Serializable]
+    // public class ProjectileInfoData 
+    // {
+    //     public int DataID;
+    //     public string Tag;
+    //     public string BodyColor;
+    //     public string Body;
+    // }
+
+    // public class ProjectileInfoDataLoader : ILoader<int, ProjectileInfoData>
+    // {
+    //     public List<ProjectileInfoData> ProjectileInfos = new List<ProjectileInfoData>();
+
+    //     public Dictionary<int, ProjectileInfoData> MakeDict()
+    //     {
+    //         Dictionary<int, ProjectileInfoData> dict = new Dictionary<int, ProjectileInfoData>();
+    //         foreach (ProjectileInfoData data in ProjectileInfos)
+    //             dict.Add(data.DataID, data);
+
+    //         return dict;
+    //     }
+    // }
 }

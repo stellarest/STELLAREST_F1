@@ -16,15 +16,19 @@ namespace STELLAREST_F1
             get
             {
                 /*
+                    ###########################################################
                     ##### ActiveSkills가 없으면 무조건 자동으로 Default Attack. #####
+                    ###########################################################
                 */
                 if (ActiveSkills.Count == 0)
                     return SkillArray[(int)ESkillType.Skill_Attack];
 
+                // SkillArray로 떔빵 할 수 있을 것 같긴 한데
                 return ActiveSkills[UnityEngine.Random.Range(0, ActiveSkills.Count)];
             }
         }
 
+        // SKILL_ATTACK을 무조건 AI COOLTIME으로 고정할지는 고민
         public bool IsRemainingCoolTime(ESkillType skillType)
             => SkillArray[(int)skillType]?.RemainCoolTime > 0.0f;
 
@@ -39,9 +43,9 @@ namespace STELLAREST_F1
 
         public override bool SetInfo(BaseObject owner, List<int> skillDataIDs) // TEMP
         {
-            // SkillComponent를 들고 있다는 것은 객체가 스킬을 최소 1개라도 들고 있다는 의미이므로 SkillCount가 0이면 에러 처리
             if (skillDataIDs.Count == 0)
             {
+                // SkillComponent를 들고 있다는 것은 크리쳐가 스킬을 최소 1개라도 들고 있다는 의미이므로 SkillCount가 0이면 에러 처리(크리쳐의 경우)
                 Debug.LogError($"{nameof(SkillComponent)}, {nameof(SetInfo)}, Input : \"{skillDataIDs.Count}, Skills zero count\"");
                 return false;
             }
@@ -50,9 +54,13 @@ namespace STELLAREST_F1
             foreach (int skillDataID in skillDataIDs)
                 AddSkill(skillDataID);
 
-            SkillArray = SkillArray == null ? new SkillBase[(int)ESkillType.Max] : SkillArray;
+            if (SkillArray == null)
+                SkillArray = new SkillBase[(int)ESkillType.Max];
+
             return true;
         }
+
+        protected override void EnterInGame() { }
 
         private void AddSkill(int skillDataID)
         {
@@ -95,7 +103,7 @@ namespace STELLAREST_F1
         public float GetInvokeRatio(ECreatureState skillState)
         {
             float skillInvokeRatio = SkillArray[(int)skillState - ReadOnly.Numeric.MaxActiveSkillsCount].InvokeRatioOnUpdate;
-            return UnityEngine.Mathf.Clamp(skillInvokeRatio, 0.0f, 1.0f);
+            return UnityEngine.Mathf.Clamp(skillInvokeRatio, 0.01f, 0.99f);
         }
 
         public void PassOnSkillStateEnter(ECreatureState onEnterState)

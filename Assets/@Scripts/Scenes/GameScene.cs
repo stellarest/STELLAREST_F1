@@ -24,7 +24,7 @@ namespace STELLAREST_F1
 
             return true;
         }
-
+        
         public override void Clear() { }
     }
 }

@@ -22,16 +22,15 @@ namespace STELLAREST_F1
             return true;
         }
 
-        private bool _initialSet = false;
-        public virtual bool SetInfo(Creature owner, int dataID)
+        public override bool SetInfo(BaseObject owner, int dataID)
         {
-            if (_initialSet)
+            if (base.SetInfo(owner, dataID) == false)
             {
                 EnterInGame();
                 return false;
             }
 
-            Owner = owner;
+            Owner = owner as Creature;
             SkillData = Managers.Data.SkillDataDict[dataID];
             DataTemplateID = dataID;
             SkillType = Util.GetEnumFromString<ESkillType>(SkillData.Type);
@@ -58,6 +57,8 @@ namespace STELLAREST_F1
 
         public virtual void DoSkill()
         {
+            Owner.LookAtTarget(Owner.Target);
+
             if (Owner.CreatureSkillComponent != null)
                 Owner.CreatureSkillComponent.ActiveSkills.Remove(this);
 
@@ -80,6 +81,10 @@ namespace STELLAREST_F1
 
         protected virtual void GenerateProjectile(Creature owner, Vector3 spawnPos)
         {
+            // 프로젝타일 객체가 없는 즉발성 스킬
+            if (SkillData.ProjectileID == -1)
+                return;
+
             Projectile projectile = Managers.Object.Spawn<Projectile>(spawnPos, EObjectType.Projectile, SkillData.ProjectileID);
             
             LayerMask excludeLayerMask = 0;
@@ -87,7 +92,7 @@ namespace STELLAREST_F1
             excludeLayerMask.AddLayer(ELayer.Projectile);
             excludeLayerMask.AddLayer(ELayer.Env);
             excludeLayerMask.AddLayer(ELayer.Obstacle);
-
+            
             projectile.SetSpawnInfo(owner, this, excludeLayerMask);
         }
 
@@ -102,9 +107,12 @@ namespace STELLAREST_F1
                 Owner.CreatureSkillComponent.ActiveSkills.Add(this);
         }
 
-        // TODO : Generate Projectile
+        // #########################################
+        // ######## IMPLEMENT SKILL METHODS ########
+        // #########################################
         public abstract void OnSkillStateEnter();
         public abstract void OnSkillStateUpdate();
         public abstract void OnSkillStateEnd();
+        // #########################################
     }
 }

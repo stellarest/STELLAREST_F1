@@ -137,6 +137,10 @@ namespace STELLAREST_F1
                     Envs.Remove(obj as Env);
                     break;
 
+                case EObjectType.Projectile:
+                    Projectiles.Remove(obj as Projectile);
+                    break;
+
                 case EObjectType.HeroCamp:
                     Camp = null;
                     break;

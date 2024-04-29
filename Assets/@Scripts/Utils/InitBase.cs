@@ -31,6 +31,15 @@ namespace STELLAREST_F1
             return true;
         }
 
+        public virtual bool SetInfo(BaseObject owner, int dataID)
+        {
+            if (_initialSet)
+                return false;
+
+            _initialSet = true;
+            return true;
+        }
+
         public virtual bool SetInfo(BaseObject owner, List<int> dataIDs)
         {
             if (_initialSet)

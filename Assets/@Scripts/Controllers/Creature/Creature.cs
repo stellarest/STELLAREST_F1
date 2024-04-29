@@ -62,8 +62,6 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public HeroBody HeroBody;
-
         protected override void EnterInGame()
         {
             base.EnterInGame();
@@ -114,6 +112,9 @@ namespace STELLAREST_F1
 
         protected IEnumerator CoUpdateAI()
         {
+            if (ObjectType == EObjectType.Monster)
+                yield break;
+
             while (true)
             {
                 switch (CreatureState)

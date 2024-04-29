@@ -15,7 +15,7 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public override bool SetInfo(Creature owner, int dataID)
+        public override bool SetInfo(BaseObject owner, int dataID)
         {
             if (base.SetInfo(owner, dataID) == false)
             {
@@ -30,12 +30,6 @@ namespace STELLAREST_F1
         protected override void EnterInGame()
         {
             base.EnterInGame();
-        }
-
-        public override void DoSkill()
-        {
-            base.DoSkill();
-            Owner.LookAtTarget(Owner.Target);
         }
 
         public override void OnSkillStateEnter() { }

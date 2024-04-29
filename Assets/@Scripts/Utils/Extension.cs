@@ -35,6 +35,9 @@ namespace STELLAREST_F1
                     case EObjectType.Env:
                         Env env = bo as Env;
                         return env.EnvState != EEnvState.Dead;
+
+                    case EObjectType.Projectile:
+                        return (bo as Projectile).ProjectileMotion.EndMotion;
                 }
             }
 
