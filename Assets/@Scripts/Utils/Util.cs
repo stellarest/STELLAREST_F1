@@ -113,6 +113,18 @@ namespace STELLAREST_F1
             return new Vector3(xDistance, yDistance, 0) + targetPos;
         }
 
+        // Chase Or Attack
+        public static float CalculateValueFromDistance(float value, float maxValue,
+                                                       float distanceToTargetSQR, float maxDistanceSQR,
+                                                       bool increaseWithDistance = true)
+        {
+            if (increaseWithDistance)
+                value = Mathf.Lerp(value, maxValue, Mathf.Log(distanceToTargetSQR + 0.1f) / Mathf.Log(maxDistanceSQR * maxDistanceSQR + 0.1f));
+            else
+                value = Mathf.Lerp(maxValue, value, Mathf.Log(distanceToTargetSQR + 0.1f) / Mathf.Log(maxDistanceSQR * maxDistanceSQR + 0.1f));
+            return value;
+        }
+
 #if UNITY_EDITOR
         [Conditional("UNITY_EDITOR")]
         public static void ClearLog()

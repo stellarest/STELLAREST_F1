@@ -560,6 +560,11 @@ namespace STELLAREST_F1
 
                 public static readonly float MaxMovementSpeedMultiplier = 2.0F;
                 public static readonly float MaxDistanceForMovementSpeed = 8.0F;
+                
+                // STILL NOT TESTED ##########
+                public static readonly float CalcValueMaxDistanceMultiplier = 2.0F;
+
+                // ##############################
 
                 public static readonly float ProjectileLifeTime = 10.0F;
             }

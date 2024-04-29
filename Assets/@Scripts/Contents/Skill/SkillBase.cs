@@ -81,12 +81,15 @@ namespace STELLAREST_F1
 
         protected virtual void GenerateProjectile(Creature owner, Vector3 spawnPos)
         {
-            // 프로젝타일 객체가 없는 즉발성 스킬
+            // (ex) 프로젝타일 객체가 없는 즉발성 원거리 공격 스킬
             if (SkillData.ProjectileID == -1)
+            {
+                owner.Target.OnDamaged(owner, this);
                 return;
+            }
 
             Projectile projectile = Managers.Object.Spawn<Projectile>(spawnPos, EObjectType.Projectile, SkillData.ProjectileID);
-            
+
             LayerMask excludeLayerMask = 0;
             excludeLayerMask.AddLayer(ELayer.Default);
             excludeLayerMask.AddLayer(ELayer.Projectile);

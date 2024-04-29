@@ -88,10 +88,7 @@ namespace STELLAREST_F1
                         return;
                     }
                     else
-                    {
                         SetRigidBodyVelocity(Vector2.zero);
-                        //StartWait(Random.Range(1f, 2f));
-                    }
                 }
             }
 
@@ -108,6 +105,7 @@ namespace STELLAREST_F1
             }
         }
 
+        // ##### TargetToEnemy였는데 Idle로 되어 있어서 가만히 있었던 버그 있었던 것 같기도... 확인 필요 #####
         protected override void UpdateMove()
         {
             if (Target.IsValid() == false)

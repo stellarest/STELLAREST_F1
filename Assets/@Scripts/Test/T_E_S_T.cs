@@ -19,7 +19,7 @@ Skill First
 
 Projectile 제작, 종류 정리
 EnterInGame 정리, Socket Programming
-비주얼 스튜디오로 옮겨서 디버그 모드로 동작되는지 확인
+*** CalculateValueFromDistance : Util 채우기 ***
 */
 
 public class T_E_S_T : MonoBehaviour

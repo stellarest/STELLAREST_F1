@@ -112,9 +112,6 @@ namespace STELLAREST_F1
 
         protected IEnumerator CoUpdateAI()
         {
-            if (ObjectType == EObjectType.Monster)
-                yield break;
-
             while (true)
             {
                 switch (CreatureState)
@@ -321,6 +318,7 @@ namespace STELLAREST_F1
             }
         }
 
+        // Util로 빼야할듯
         protected float CalculateMovementSpeed(float distanceToTargetSQR)
         {
             float maxDistance = ReadOnly.Numeric.MaxDistanceForMovementSpeed;

@@ -61,7 +61,7 @@ namespace STELLAREST_F1
 
             {
                 Vector3 spawnPos = new Vector3(camp.transform.position.x - 5f, camp.transform.position.y - 5f, 0f);
-                Hero hero = Managers.Object.Spawn<Hero>(spawnPos, EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Archer);
+                Hero hero = Managers.Object.Spawn<Hero>(spawnPos, EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
 
             }
         }

@@ -51,12 +51,20 @@ namespace STELLAREST_F1
             }
             // ******************************************************************************************
             EProjectileMotionType motionType = Util.GetEnumFromString<EProjectileMotionType>(projectileData.Type);
-            if (motionType == EProjectileMotionType.None || ProjectileMotion.MotionType == EProjectileMotionType.Max)
+            if (motionType <= EProjectileMotionType.None || ProjectileMotion.MotionType >= EProjectileMotionType.Max)
             {
                 Debug.LogError($"{nameof(Projectile)}, {nameof(SetInfo)}, Input : \"{ProjectileMotion.MotionType}\"(Invalid motion type)");
                 return false;
             }
             ProjectileMotion.MotionType = motionType;
+
+            EAnimationCurveType curveType = Util.GetEnumFromString<EAnimationCurveType>(projectileData.AnimationCurveType);
+            if (curveType <= EAnimationCurveType.None || curveType >= EAnimationCurveType.Max)
+            {
+                Debug.LogError($"{nameof(Projectile)}, {nameof(SetInfo)}, Input : \"{curveType}\"(Invalid curve type)");
+                return false;
+            }
+            ProjectileMotion.CurveType = curveType;
 
             EnterInGame();
             return true;
@@ -64,7 +72,6 @@ namespace STELLAREST_F1
 
         protected override void EnterInGame()
         {
-            // 뇌피셜 : 프로젝타일을 발사하는 주체마다 Owner가 달라질 수 있다. 오브젝트가 풀링되어있기 때문.
         }
 
         public void SetSpawnInfo(Creature owner, SkillBase skill, LayerMask excludeLayerMask)
@@ -92,7 +99,7 @@ namespace STELLAREST_F1
                                             owner.CenterPosition,
                                             owner.Target.CenterPosition,
                                             () => {
-//                                                Managers.Object.Despawn(this, DataTemplateID);
+                                                Managers.Object.Despawn(this, DataTemplateID);
                                             });
                     break;
 
@@ -100,8 +107,8 @@ namespace STELLAREST_F1
                     (ProjectileMotion as ParabolaMotion).SetMotion(DataTemplateID,
                                             owner.CenterPosition,
                                             owner.Target.CenterPosition,
-                                            () => { 
-                                                //Managers.Object.Despawn(this, DataTemplateID);
+                                            () => {
+                                                Managers.Object.Despawn(this, DataTemplateID);
                                             });
                     break;
             }

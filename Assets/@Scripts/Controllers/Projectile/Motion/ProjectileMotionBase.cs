@@ -9,6 +9,8 @@ namespace STELLAREST_F1
     public abstract class ProjectileMotionBase : InitBase
     {
         public EProjectileMotionType MotionType { get; set; } = EProjectileMotionType.None;
+        public EAnimationCurveType CurveType { get; set; } = EAnimationCurveType.None;
+        
         private Coroutine _coLaunchProjectile = null;
         public Vector3 StartPosition { get; private set; } = Vector3.zero;
         public Vector3 TargetPosition { get; private set; } = Vector3.zero;

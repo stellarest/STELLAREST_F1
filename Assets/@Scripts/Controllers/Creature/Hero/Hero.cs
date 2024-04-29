@@ -281,7 +281,15 @@ namespace STELLAREST_F1
                     // SetRigidBodyVelocity(toDir.normalized * moveSpeed);
 
                     // 캠프로 돌아올 때만 거리에 따라 스피드 조정
-                    float movementSpeed = CalculateMovementSpeed(toDir.sqrMagnitude);
+                    // float movementSpeed = CalculateMovementSpeed(toDir.sqrMagnitude);
+                    
+                    float movementSpeed = Util.CalculateValueFromDistance(
+                                                value: MovementSpeed, 
+                                                maxValue: MovementSpeed * 2f,
+                                                distanceToTargetSQR: toDir.sqrMagnitude,
+                                                maxDistanceSQR: ReadOnly.Numeric.Temp_SearchDistance);
+
+                    Debug.Log($"MovementSpeed: {movementSpeed}");
                     SetRigidBodyVelocity(toDir.normalized * movementSpeed);
 
                 }
