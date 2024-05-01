@@ -41,7 +41,7 @@ namespace STELLAREST_F1
             float currentPercentage = stateInfo.normalizedTime % 1.0f;
             if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureState.Skill_Attack) && _canSkillAttackFlag)
             {
-                float invokeRatio = _owner.CreatureSkillComponent.GetInvokeRatio(ECreatureState.Skill_Attack);
+                float invokeRatio = _owner.CreatureSkill.GetInvokeRatio(ECreatureState.Skill_Attack);
                 if (currentPercentage >= invokeRatio)
                 {
                     OnStateUpdateHandler?.Invoke(ECreatureState.Skill_Attack);

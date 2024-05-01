@@ -6,6 +6,7 @@ using STELLAREST_F1.Data;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Diagnostics;
+using UnityEngine.PlayerLoop;
 using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
@@ -25,6 +26,9 @@ namespace STELLAREST_F1
                     CreatureBody = value;
             }
         }
+
+        public Transform WeaponLSocket { get; private set; } = null;
+        public Transform WeaponRFireSocket { get; private set; } = null;
 
         public override ECreatureState CreatureState
         {
@@ -117,6 +121,12 @@ namespace STELLAREST_F1
                     TryResizeCollider();
             }
         }
+        #region ##### TEST AREA #####
+        // ########################################
+      
+        // ########################################
+        #endregion
+
 
         public override bool Init()
         {
@@ -128,11 +138,34 @@ namespace STELLAREST_F1
             return true;
         }
 
+        private void Update()
+        {
+            if (Target.IsValid())
+            {
+            }
+
+            if (Input.GetKeyDown(KeyCode.T))
+            {
+                // Debug.Log($"LWeapon World Pos: {WeaponLWorldPosition}");
+                // Debug.Log($"LWeapon Local Pos: {WeaponLLocalPosition}");
+                // Debug.Log($"LWeapon World Rot: {WeaponLWorldRotation}");
+                // Debug.Log($"LWeapon Local Rot: {WeaponLLocalRotation}");
+
+                // TEST
+                // Debug.Log($"LeftWeapon_FireSocket: {HeroBody.GetComponent<Transform>(EHeroWeapon.WeaponLFireSocket).name}");
+                // Transform weaponLChildGroup = HeroBody.GetComponent<Transform>(EHeroWeapon.WeaponLChildGroup);
+                // Debug.Log($"LeftWeapon_ChildGroup: {weaponLChildGroup.name}");
+                // int length = HeroBody.GetComponent<Transform>(EHeroWeapon.WeaponLChildGroup).childCount;
+                // for (int i = 0; i < length; ++i)
+                //     Debug.Log($"LeftWeapon_Child[{i}]: {weaponLChildGroup.GetChild(i).name}");
+            }
+        }
+
         public override bool SetInfo(int dataID)
         {
             if (base.SetInfo(dataID) == false)
             {
-                EnterInGame();
+                EnterInGame(dataID);
                 return false;
             }
             
@@ -141,21 +174,24 @@ namespace STELLAREST_F1
             HeroAnim.SetInfo(dataID, this);
             Managers.Sprite.SetInfo(dataID, target: this);
 
+            // SET WEAPONS SOCKERT INFO
+            WeaponLSocket = HeroBody.GetComponent<Transform>(EHeroWeapon.WeaponLSocket);
+
             HeroData = Managers.Data.HeroDataDict[dataID];
             gameObject.name += $"_{HeroData.DescriptionTextID.Replace(" ", "")}";
             Collider.radius = HeroData.ColliderRadius;
 
-            CreatureSkillComponent = gameObject.GetOrAddComponent<SkillComponent>();
-            CreatureSkillComponent.SetInfo(this, Managers.Data.HeroDataDict[dataID].SkillIDs);
+            CreatureSkill = gameObject.GetOrAddComponent<SkillComponent>();
+            CreatureSkill.SetInfo(owner: this, skillDataIDs: Managers.Data.HeroDataDict[dataID].SkillIDs);
 
-            EnterInGame();
+            EnterInGame(dataID);
             return true;
         }
 
-        protected override void EnterInGame()
+        protected override void EnterInGame(int dataID)
         {
             LookAtDir = ELookAtDirection.Right;
-            base.EnterInGame();
+            base.EnterInGame(dataID);
             
             // 나오고 나서 조이스틱 등록
             Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
@@ -176,10 +212,10 @@ namespace STELLAREST_F1
                 LookAtTarget(Target);
 
             // 조금 극단적인 방법. 쳐다보면서 가만히 짱박혀있어라.
-            if (CreatureSkillComponent.IsRemainingCoolTime((int)ESkillType.Skill_Attack))
+            if (CreatureSkill.IsRemainingCoolTime((int)ESkillType.Skill_Attack))
                 return;
 
-            Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_SearchDistance, Managers.Object.Monsters, func: IsValid) as Creature;
+            Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_ScanRange, Managers.Object.Monsters, func: IsValid) as Creature;
             if (creature.IsValid())
             {
                 Target = creature;
@@ -188,7 +224,7 @@ namespace STELLAREST_F1
                 return;
             }
 
-            Env env = FindClosestInRange(ReadOnly.Numeric.Temp_SearchDistance, Managers.Object.Envs, func: IsValid) as Env;
+            Env env = FindClosestInRange(ReadOnly.Numeric.Temp_ScanRange, Managers.Object.Envs, func: IsValid) as Env;
             if (env.IsValid())
             {
                 Target = env;
@@ -223,14 +259,14 @@ namespace STELLAREST_F1
                     return;
                 }
 
-                ChaseOrAttackTarget(ReadOnly.Numeric.Temp_SearchDistance, AttackDistance);
+                ChaseOrAttackTarget(ReadOnly.Numeric.Temp_ScanRange, AttackDistance);
                 return;
             }
 
             if (CreatureMoveState == ECreatureMoveState.CollectEnv)
             {
                 // Research Enemies
-                Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_SearchDistance, Managers.Object.Monsters, func: IsValid) as Creature;
+                Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_ScanRange, Managers.Object.Monsters, func: IsValid) as Creature;
                 if (creature != null)
                 {
                     Target = creature;
@@ -248,14 +284,14 @@ namespace STELLAREST_F1
                     return;
                 }
 
-                ChaseOrAttackTarget(ReadOnly.Numeric.Temp_SearchDistance, AttackDistance);
+                ChaseOrAttackTarget(ReadOnly.Numeric.Temp_ScanRange, AttackDistance);
                 return;
             }
 
             if (CreatureMoveState == ECreatureMoveState.ReturnToBase)
             {
                 // Research Enemies
-                Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_SearchDistance, Managers.Object.Monsters, func: IsValid) as Creature;
+                Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_ScanRange, Managers.Object.Monsters, func: IsValid) as Creature;
                 if (creature != null)
                 {
                     CollectEnv = false;
@@ -287,9 +323,9 @@ namespace STELLAREST_F1
                                                 value: MovementSpeed, 
                                                 maxValue: MovementSpeed * 2f,
                                                 distanceToTargetSQR: toDir.sqrMagnitude,
-                                                maxDistanceSQR: ReadOnly.Numeric.Temp_SearchDistance);
+                                                maxDistanceSQR: ReadOnly.Numeric.Temp_ScanRange);
 
-                    Debug.Log($"MovementSpeed: {movementSpeed}");
+                    //Debug.Log($"MovementSpeed: {movementSpeed}");
                     SetRigidBodyVelocity(toDir.normalized * movementSpeed);
 
                 }
@@ -331,7 +367,7 @@ namespace STELLAREST_F1
             else if (Target.IsValid())
             {
                 // Research Enemies
-                Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_SearchDistance, Managers.Object.Monsters, func: IsValid) as Creature;
+                Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_ScanRange, Managers.Object.Monsters, func: IsValid) as Creature;
                 if (creature != null)
                 {
                     CollectEnv = false;

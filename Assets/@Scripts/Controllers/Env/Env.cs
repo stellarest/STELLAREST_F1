@@ -42,7 +42,7 @@ namespace STELLAREST_F1
         {
             if (base.SetInfo(dataID) == false)
             {
-                EnterInGame();
+                EnterInGame(dataID);
                 return false;
             }
 
@@ -54,13 +54,13 @@ namespace STELLAREST_F1
             EnvType = Util.GetEnumFromString<EEnvType>(EnvData.Type);
             
             gameObject.name += $"_{EnvData.DescriptionTextID.Replace(" ", "")}";
-            EnterInGame();
+            EnterInGame(dataID);
             return true;
         }
 
-        protected override void EnterInGame()
+        protected override void EnterInGame(int dataID)
         {
-            base.EnterInGame();
+            base.EnterInGame(dataID);
             ShowBody(true);            
             EnvState = EEnvState.Idle;
         }

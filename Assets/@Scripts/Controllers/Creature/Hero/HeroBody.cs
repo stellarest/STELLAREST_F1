@@ -16,7 +16,9 @@ namespace STELLAREST_F1
             InitBody(EHeroBodyParts.Head, (int)EHeroHead.Max);
             InitBody(EHeroBodyParts.UpperBody, (int)EHeroUpperBody.Max);
             InitBody(EHeroBodyParts.LowerBody, (int)EHeroLowerBody.Max);
-            InitBody(EHeroBodyParts.Weapon, (int)EHeroLowerBody.Max);
+            //InitBody(EHeroBodyParts.Weapon, (int)EHeroLowerBody.Max); // NEED FIX
+            InitBody(EHeroBodyParts.Weapon, (int)EHeroWeapon.Max); // NEED FIX
+
         }
         
         // ########## HERO FACE ##########
@@ -398,6 +400,14 @@ namespace STELLAREST_F1
                         SpriteRenderer spr = tr.GetComponent<SpriteRenderer>();
                         containers[(int)EHeroWeapon.WeaponL] = new Container(tag, tr, spr);
 
+                        containers[(int)EHeroWeapon.WeaponLSocket] = new Container(tag: null, 
+                                                                                        tr: tr.GetChild((int)EWeaponChildIndex.Socket), 
+                                                                                        spr: null);
+
+                        containers[(int)EHeroWeapon.WeaponLChildGroup] = new Container(tag: null,
+                                                                                        tr: tr.GetChild((int)EWeaponChildIndex.ChildGroup),
+                                                                                        spr: null);
+
                         tag = ReadOnly.String.HBody_WeaponR;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_WeaponR, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
@@ -539,6 +549,11 @@ namespace STELLAREST_F1
                         _rightWeaponSPRs[0].sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Rock][(int)ECollectEnvRarity.Elite];
                     break;
             }
+        }
+
+        public override Vector3 GetFirePosition() // TEMP
+        {
+            return Vector3.zero;
         }
     }
 }

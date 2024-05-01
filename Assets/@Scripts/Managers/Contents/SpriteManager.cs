@@ -499,6 +499,9 @@ namespace STELLAREST_F1
                     leftWeaponSPRs.Add(spr);
                     heroBody.Appearance.Add(spr);
 
+                    // INIT WEAPON SOCKET POSITION
+                    heroBody.GetComponent<Transform>(EHeroWeapon.WeaponLSocket).localPosition = weapon.LWeaponFireSocketPosition;
+
                     if (weapon.LWeaponChilds.Length != 0)
                     {
                         int childLength = weapon.LWeaponChilds.Length;
@@ -507,7 +510,11 @@ namespace STELLAREST_F1
                             Sprite childSprite = Managers.Resource.Load<Sprite>(weapon.LWeaponChilds[i]);
                             if (childSprite != null)
                             {
-                                SpriteRenderer childSPR = weaponL.GetChild(i).GetComponent<SpriteRenderer>();
+                                Transform childParent = heroBody.GetComponent<Transform>(EHeroWeapon.WeaponLChildGroup); // added
+
+                                //SpriteRenderer childSPR = weaponL.GetChild(i).GetComponent<SpriteRenderer>();
+                                SpriteRenderer childSPR = childParent.GetChild(i).GetComponent<SpriteRenderer>(); // fixed
+
                                 childSPR.sprite = childSprite;
                                 childSPR.sortingOrder = weapon.LWeaponChildSortings[i];
                                 childSPR.flipX = weapon.LWeaponChildFlipXs[i];

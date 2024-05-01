@@ -19,17 +19,17 @@ namespace STELLAREST_F1
         {
             if (base.SetInfo(owner, dataID) == false)
             {
-                EnterInGame();
+                EnterInGame(owner, dataID);
                 return false;
             }
 
-            EnterInGame();
+            EnterInGame(owner, dataID);
             return true;
         }
 
-        protected override void EnterInGame()
+        protected override void EnterInGame(BaseObject owner, int dataID)
         {
-            base.EnterInGame();
+            base.EnterInGame(owner, dataID);
         }
 
         public override void OnSkillStateEnter() { }

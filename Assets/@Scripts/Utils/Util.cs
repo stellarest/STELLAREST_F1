@@ -66,7 +66,8 @@ namespace STELLAREST_F1
                 return enumValue;
             else
             {
-                Debug.LogError($"{nameof(Util)}, {nameof(GetEnumFromString)}, Input : \"{value}\"");
+                //Debug.LogError($"{nameof(Util)}, {nameof(GetEnumFromString)}, Input : \"{value}\"");
+                LogError($"{nameof(Util)}, {nameof(GetEnumFromString)}, Input : \"{value}\"");
                 return default(T);
             }
         }
@@ -92,7 +93,8 @@ namespace STELLAREST_F1
                     return typeof(ParabolaMotion);
 
                 default:
-                    Debug.LogError($"{nameof(Util)}, {nameof(GetTypeFromClassName)}, Input : \"{className}, Please check Define.EClassName\"");
+                    //Debug.LogError($"{nameof(Util)}, {nameof(GetTypeFromClassName)}, Input : \"{className}, Please check Define.EClassName\"");
+                    LogError($"{nameof(Util)}, {nameof(GetTypeFromClassName)}, Input : \"{className}, Please check Define.EClassName\"");
                     return null;
             }
         }
@@ -125,6 +127,14 @@ namespace STELLAREST_F1
             return value;
         }
 
+        public static float Distance(Vector3 pos1, Vector3 pos2, bool isSQR = true)
+        {
+            if (isSQR)
+                return (pos1 - pos2).sqrMagnitude;
+            else
+                return (pos1 - pos2).magnitude;
+        }
+
 #if UNITY_EDITOR
         [Conditional("UNITY_EDITOR")]
         public static void ClearLog()
@@ -134,6 +144,13 @@ namespace STELLAREST_F1
             var method = type.GetMethod("Clear");
             method.Invoke(new object(), null);
             Debug.Log("### CLEAR ###");
+        }
+
+        [Conditional("UNITY_EDITOR")]
+        public static void LogError(object message)
+        {
+            Debug.LogError(message);
+            Debug.Break();
         }
 #endif
     }

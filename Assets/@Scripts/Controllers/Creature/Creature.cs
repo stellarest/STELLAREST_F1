@@ -9,7 +9,7 @@ namespace STELLAREST_F1
 {
     public class Creature : BaseObject
     {
-        public SkillComponent CreatureSkillComponent { get; protected set; } = null;
+        public SkillComponent CreatureSkill { get; protected set; } = null;
         public CreatureBody CreatureBody { get; protected set; } = null;
         public CreatureAnimation CreatureAnim { get; private set; } = null;
 
@@ -53,7 +53,7 @@ namespace STELLAREST_F1
         {
             if (base.SetInfo(dataID) == false)
             {
-                EnterInGame();
+                EnterInGame(dataID);
                 return false;
             }
 
@@ -62,9 +62,9 @@ namespace STELLAREST_F1
             return true;
         }
 
-        protected override void EnterInGame()
+        protected override void EnterInGame(int dataID)
         {
-            base.EnterInGame();
+            base.EnterInGame(dataID);
             RigidBody.simulated = false;
             ShowBody(false);
             StartWait(waitCondition: () => BaseAnim.IsPlay() == false,
@@ -112,6 +112,9 @@ namespace STELLAREST_F1
 
         protected IEnumerator CoUpdateAI()
         {
+            if (ObjectType == EObjectType.Monster)
+                yield break;
+
             while (true)
             {
                 switch (CreatureState)
@@ -197,7 +200,7 @@ namespace STELLAREST_F1
                 case ECreatureState.Skill_Attack:
                 case ECreatureState.Skill_A:
                 case ECreatureState.Skill_B:
-                    CreatureSkillComponent?.PassOnSkillStateEnter(enterState);
+                    CreatureSkill?.PassOnSkillStateEnter(enterState);
                     break;
 
                 case ECreatureState.CollectEnv:
@@ -218,7 +221,7 @@ namespace STELLAREST_F1
                 case ECreatureState.Skill_A:
                 case ECreatureState.Skill_B:
                     // 스킬을 사용하는 주체가 크리처이기 때문에 여기서 이벤트 등록, 삭제하고 호출
-                    CreatureSkillComponent.PassOnSkillStateUpdate(updateState);
+                    CreatureSkill.PassOnSkillStateUpdate(updateState);
                     break;
 
                 case ECreatureState.CollectEnv:
@@ -236,7 +239,7 @@ namespace STELLAREST_F1
                 case ECreatureState.Skill_Attack:
                 case ECreatureState.Skill_A:
                 case ECreatureState.Skill_B:
-                    CreatureSkillComponent?.PassOnSkillStateEnd(endState);
+                    CreatureSkill?.PassOnSkillStateEnd(endState);
                     break;
             }
         }
@@ -304,7 +307,7 @@ namespace STELLAREST_F1
                 if (Target.IsValid() && Target.ObjectType == EObjectType.Env)
                     CreatureState = ECreatureState.CollectEnv;
                 else
-                    CreatureSkillComponent?.CurrentSkill.DoSkill();
+                    CreatureSkill?.CurrentSkill.DoSkill();
             }
             else
             {

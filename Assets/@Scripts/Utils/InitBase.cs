@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -30,6 +31,10 @@ namespace STELLAREST_F1
             _initialSet = true;
             return true;
         }
+        protected virtual void EnterInGame(int dataID) 
+        { 
+        }
+
 
         public virtual bool SetInfo(BaseObject owner, int dataID)
         {
@@ -39,6 +44,10 @@ namespace STELLAREST_F1
             _initialSet = true;
             return true;
         }
+        protected virtual void EnterInGame(BaseObject owner, int dataID) 
+        { 
+        }
+
 
         public virtual bool SetInfo(BaseObject owner, List<int> dataIDs)
         {
@@ -48,7 +57,5 @@ namespace STELLAREST_F1
             _initialSet = true;
             return true;
         }
-
-        protected virtual void EnterInGame() { }
     }
 }

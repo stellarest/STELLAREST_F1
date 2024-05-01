@@ -36,7 +36,7 @@ namespace STELLAREST_F1
         {
             if (base.SetInfo(dataID) == false)
             {
-                EnterInGame();
+                EnterInGame(dataID);
                 return false;
             }
 
@@ -51,18 +51,18 @@ namespace STELLAREST_F1
             gameObject.name += $"_{MonsterData.DescriptionTextID.Replace(" ", "")}";
             Collider.radius = MonsterData.ColliderRadius;
 
-            CreatureSkillComponent = gameObject.GetOrAddComponent<SkillComponent>();
-            CreatureSkillComponent.SetInfo(this, Managers.Data.MonsterDataDict[dataID].SkillIDs);
+            CreatureSkill = gameObject.GetOrAddComponent<SkillComponent>();
+            CreatureSkill.SetInfo(this, Managers.Data.MonsterDataDict[dataID].SkillIDs);
 
-            EnterInGame();
+            EnterInGame(dataID);
             return true;
         }
 
-        protected override void EnterInGame()
+        protected override void EnterInGame(int dataID)
         {
             _initPos = transform.position;
             LookAtDir = ELookAtDirection.Left;
-            base.EnterInGame();
+            base.EnterInGame(dataID);
         }
 
         private Vector3 _destPos = Vector3.zero;
@@ -74,7 +74,7 @@ namespace STELLAREST_F1
             if (Target.IsValid())
                 LookAtTarget(Target);
 
-            if (CreatureSkillComponent.IsRemainingCoolTime((int)ESkillType.Skill_Attack))
+            if (CreatureSkill.IsRemainingCoolTime((int)ESkillType.Skill_Attack))
                 return;
 
             {
@@ -94,7 +94,7 @@ namespace STELLAREST_F1
 
             {
                 // Research Enemy
-                Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_SearchDistance, Managers.Object.Heroes) as Creature;
+                Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_ScanRange, Managers.Object.Heroes) as Creature;
                 if (creature.IsValid())
                 {
                     Target = creature;
@@ -120,7 +120,7 @@ namespace STELLAREST_F1
 
                 // Research Enemy When Patroling
                 SetRigidBodyVelocity(toDestDir.normalized * MovementSpeed);
-                Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_SearchDistance, Managers.Object.Heroes, func: IsValid) as Creature;
+                Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_ScanRange, Managers.Object.Heroes, func: IsValid) as Creature;
                 if (creature.IsValid())
                 {
                     Target = creature;
@@ -131,7 +131,7 @@ namespace STELLAREST_F1
             }
             else
             {
-                ChaseOrAttackTarget(ReadOnly.Numeric.Temp_SearchDistance, AttackDistance);
+                ChaseOrAttackTarget(ReadOnly.Numeric.Temp_ScanRange, AttackDistance);
                 if (Target.IsValid() == false)
                 {
                     Target = null;

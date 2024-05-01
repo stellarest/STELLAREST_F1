@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,17 +9,38 @@ namespace STELLAREST_F1
 {
     public abstract class ProjectileMotionBase : InitBase
     {
-        public EProjectileMotionType MotionType { get; set; } = EProjectileMotionType.None;
-        public EAnimationCurveType CurveType { get; set; } = EAnimationCurveType.None;
-        
-        private Coroutine _coLaunchProjectile = null;
-        public Vector3 StartPosition { get; private set; } = Vector3.zero;
-        public Vector3 TargetPosition { get; private set; } = Vector3.zero;
-        public bool RotateToTarget { get; private set; } = false;
+        public int DataTemplateID { get; set; } = -1;
         public Data.ProjectileData ProjectileData { get; private set; } = null;
-        protected System.Action _endCallback = null;
+
+        public Vector3 StartPosition { get; protected set; } = Vector3.zero; // TEMP
+        public Vector3 TargetPosition { get; private set; } = Vector3.zero;
+
+        private EProjectileMotionType _motionTtype = EProjectileMotionType.None;
+        public EProjectileMotionType MotionType
+        {
+            get => _motionTtype;
+            private set => _motionTtype = value;
+        }
+
+        private EAnimationCurveType _animCurveType { get; set; } = EAnimationCurveType.None;
+        public EAnimationCurveType AnimCurveType
+        {
+            get => _animCurveType;
+            private set => _animCurveType = value;
+        }
+
+        private bool _rotateToTarget = false;
+        public bool RotateToTarget
+        {
+            get => _rotateToTarget;
+            private set => _rotateToTarget = value;
+        }
+
         protected float _movementSpeed = 0.0f;
-        public bool EndMotion { get; protected set; } = false;
+        protected float _atkRange = 0.0f;
+        
+        protected Action _endCallback = null;
+        private Coroutine _coLaunchProjectile = null;
 
         public override bool Init()
         {
@@ -28,33 +50,40 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public void SetMotion(int dataID, Vector3 spawnPosition, Vector3 targetPosition, System.Action endCallback = null)
+        public override bool SetInfo(BaseObject owner, int dataID)
         {
-            EndMotion = false;
-            _movementSpeed = 5.0f;
-            if (dataID != -1)
-            {
-                ProjectileData = Managers.Data.ProjectileDataDict[dataID];
-                _movementSpeed = ProjectileData.MovementSpeed;
-            }
-
-            StartPosition = spawnPosition;
-            TargetPosition = targetPosition;
-            _endCallback = endCallback;
-
+            DataTemplateID = dataID;
+            ProjectileData = Managers.Data.ProjectileDataDict[dataID];
+            MotionType = Util.GetEnumFromString<EProjectileMotionType>(ProjectileData.Type);
+            AnimCurveType = Util.GetEnumFromString<EAnimationCurveType>(ProjectileData.AnimationCurveType);
             RotateToTarget = ProjectileData.RotateToTarget;
+            _movementSpeed = ProjectileData.MovementSpeed;
+
+            StartPosition = transform.position;
+            TargetPosition = owner.Target.CenterPosition;
 
             if (_coLaunchProjectile != null)
                 StopCoroutine(_coLaunchProjectile);
 
+            ReadyToLaunch();
             _coLaunchProjectile = StartCoroutine(CoLaunchProjectile());
+
+            return true;
         }
 
-        protected void Rotation(Vector2 toTargetDir)
+        public void SetEndCallback(Action endCallback)
         {
-            toTargetDir = toTargetDir.normalized;
-            transform.rotation = Quaternion.Euler(0, 0, Mathf.Atan2(toTargetDir.y, toTargetDir.x) * Mathf.Rad2Deg);
+            _endCallback -= endCallback;
+            _endCallback += endCallback;
         }
+
+        protected void Rotation2D(Vector2 targetDir)
+        {
+            targetDir = targetDir.normalized;
+            transform.rotation = Quaternion.Euler(0, 0, Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg);
+        }
+
+        protected abstract void ReadyToLaunch();
 
         protected abstract IEnumerator CoLaunchProjectile(); 
     }

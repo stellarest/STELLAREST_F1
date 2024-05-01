@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static STELLAREST_F1.Define;
 
@@ -10,6 +11,8 @@ namespace STELLAREST_F1
     {
         public List<SkillBase> Skills { get; } = new List<SkillBase>();
         public List<SkillBase> ActiveSkills { get; } = new List<SkillBase>();
+        public SkillBase FindSkill(int dataID) => Skills.FirstOrDefault(n => n.DataTemplateID == dataID);
+
         public SkillBase[] SkillArray { get; private set; } = new SkillBase[(int)ESkillType.Max]; // Caching
         public SkillBase CurrentSkill
         {
@@ -46,7 +49,8 @@ namespace STELLAREST_F1
             if (skillDataIDs.Count == 0)
             {
                 // SkillComponent를 들고 있다는 것은 크리쳐가 스킬을 최소 1개라도 들고 있다는 의미이므로 SkillCount가 0이면 에러 처리(크리쳐의 경우)
-                Debug.LogError($"{nameof(SkillComponent)}, {nameof(SetInfo)}, Input : \"{skillDataIDs.Count}, Skills zero count\"");
+                //Debug.LogError($"{nameof(SkillComponent)}, {nameof(SetInfo)}, Input : \"{skillDataIDs.Count}, Skills zero count\"");
+                Util.LogError($"{nameof(SkillComponent)}, {nameof(SetInfo)}, Input : \"{skillDataIDs.Count}, Skills zero count\"");
                 return false;
             }
 
@@ -60,8 +64,6 @@ namespace STELLAREST_F1
             return true;
         }
 
-        protected override void EnterInGame() { }
-
         private void AddSkill(int skillDataID)
         {
             if (skillDataID == -1)
@@ -69,7 +71,8 @@ namespace STELLAREST_F1
 
             if (Managers.Data.SkillDataDict.TryGetValue(skillDataID, out Data.SkillData skillData) == false)
             {
-                Debug.LogError($"{nameof(SkillComponent)}, {nameof(AddSkill)}, Input : \"{skillDataID}\"");
+                //Debug.LogError($"{nameof(SkillComponent)}, {nameof(AddSkill)}, Input : \"{skillDataID}\"");
+                Util.LogError($"{nameof(SkillComponent)}, {nameof(AddSkill)}, Input : \"{skillDataID}\"");
                 return;
             }
 

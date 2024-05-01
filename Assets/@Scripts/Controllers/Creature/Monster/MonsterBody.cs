@@ -179,5 +179,11 @@ namespace STELLAREST_F1
 
             return null;
         }
+
+        public override Vector3 GetFirePosition()
+        {
+            // 개선 필요
+            return GetOwner<Monster>().MonsterBody.GetFirePosition();
+        }
     }
 }

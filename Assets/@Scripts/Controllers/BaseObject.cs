@@ -12,7 +12,7 @@ namespace STELLAREST_F1
 {
     public class BaseObject : InitBase
     {
-        public int DataTemplateID { get; private set; } = -1;
+        public int DataTemplateID { get; protected set; } = -1;
         public EObjectType ObjectType { get; protected set; } = EObjectType.None;
         public EObjectRarity ObjectRarity { get; protected set; } = EObjectRarity.Common;
         public BaseAnimation BaseAnim { get; private set; } = null;
@@ -144,6 +144,7 @@ namespace STELLAREST_F1
 
             BaseAnim = Util.FindChild<BaseAnimation>(gameObject, name: ReadOnly.String.AnimationBody, recursive: false);
             Collider = gameObject.GetOrAddComponent<CircleCollider2D>();
+            Collider.isTrigger = true; // ##### TEMP #####
             RigidBody = gameObject.GetOrAddComponent<Rigidbody2D>();
             RigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
             RigidBody.gravityScale = 0f;
@@ -157,7 +158,7 @@ namespace STELLAREST_F1
         {
             if (base.SetInfo(dataID) == false)
             {
-                EnterInGame();
+                EnterInGame(dataID);
                 return false;
             }
 
@@ -168,8 +169,11 @@ namespace STELLAREST_F1
             return true;
         }
 
-        protected override void EnterInGame()
+        protected override void EnterInGame(int dataID)
         {
+            if (ObjectType == EObjectType.Projectile)
+                return;
+
             // Reset Stat (TEMP)
             MaxHp = StatData.MaxHp;
             Hp = MaxHp;
@@ -263,8 +267,25 @@ namespace STELLAREST_F1
         }
         #endregion
 
-        protected void ShowBody(bool show)
+        // protected void ShowBody(bool show)
+        // {
+        //     // includeInactive: true (임시, 나중에 개선 필요)
+        //     foreach (SpriteRenderer spr in GetComponentsInChildren<SpriteRenderer>(includeInactive: true))
+        //     {
+        //         spr.enabled = show;
+        //         if (show)
+        //         {
+        //             spr.color = new Color(spr.color.r, spr.color.g, spr.color.b, 1f);
+        //             spr.gameObject.SetActive(true);
+        //         }
+        //     }
+        // }
+
+        public void ShowBody(bool show)
         {
+            if (show == false)
+                Collider.enabled = false;
+
             // includeInactive: true (임시, 나중에 개선 필요)
             foreach (SpriteRenderer spr in GetComponentsInChildren<SpriteRenderer>(includeInactive: true))
             {
@@ -275,6 +296,9 @@ namespace STELLAREST_F1
                     spr.gameObject.SetActive(true);
                 }
             }
+
+            if (show)
+                Collider.enabled = true;
         }
     }
 }

@@ -150,6 +150,7 @@ namespace STELLAREST_F1.Data
         public int LWeaponSorting;
         public bool LWeaponFlipX;
         public bool LWeaponFlipY;
+        public Vector3 LWeaponFireSocketPosition;
 
         public string[] LWeaponChilds;
         public int[] LWeaponChildSortings;
@@ -443,6 +444,7 @@ namespace STELLAREST_F1.Data
     public class SkillData : BaseData
     {
 		public string ClassName;
+        public string AttachmentPoint;
         public int ProjectileID;
 		public float CoolTime;
         public float InvokeRatioOnUpdate; // *** Invoke Ratio OnStateUpdate ***

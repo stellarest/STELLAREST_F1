@@ -17,9 +17,11 @@ Skill First
 - Skill_A : Double Attack
 - Skill_B : Shield
 
-Projectile 제작, 종류 정리
-EnterInGame 정리, Socket Programming
-*** CalculateValueFromDistance : Util 채우기 ***
+
+>> Parabola 모션 개선 필요 (타겟 거리에 따라 HeightArc 조정)
+- changeStraightMotion활용하여 너무 가까이 있으면 직선으로 쏘던지, 아니면 HeightArc 조정하던지
+- (지금 HeightArc가 0.xxx이면 포물선이 반대로 나가거나 이상하게 나가는 버그 있긴함)
+>> 위아래 꼬불꼬불 마법 프로젝타일
 */
 
 public class T_E_S_T : MonoBehaviour
@@ -65,6 +67,7 @@ public class T_E_S_T : MonoBehaviour
 
 /* 
 [ MEMO ]
+GameObject.CreatePrimitive(PrimitiveType.Sphere)
 가칭 : 매우 간단한 RPG 게임. (Only One류, FQ4와 비슷한)
 정처없이 돌아다니면서 사냥 + 육성 + 대략 100레벨 정도 만들고 클리어하면 끝.
 게임 가격은 1100원 또는 2200원. 빠르게 개발하고 출시하는 것이 목적

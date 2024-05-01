@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace STELLAREST_F1
 {
-    public class CreatureBody
+    public abstract class CreatureBody
     {
         public class Container
         {
@@ -29,5 +29,7 @@ namespace STELLAREST_F1
         public int TemplateID { get; protected set; } = -1;
         public Creature Owner { get; protected set; } = null;
         public T GetOwner<T>() where T : Creature => Owner as T;
+
+        public abstract Vector3 GetFirePosition();
     }
 }

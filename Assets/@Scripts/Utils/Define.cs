@@ -207,6 +207,8 @@ namespace STELLAREST_F1
         {
             None = -1,
             WeaponL,
+            WeaponLSocket,
+            WeaponLChildGroup,
             WeaponR,
             Max = WeaponR + 1
         }
@@ -322,6 +324,22 @@ namespace STELLAREST_F1
             ParabolaMotion,
             Max = ParabolaMotion + 1
         }
+
+        public enum EWeaponChildIndex
+        {
+            Socket = 0,
+            ChildGroup = 1
+        }
+
+        public enum EAttachmentPoint
+        {
+            None = -1,
+            WeaponL,
+            WeaponLSocket,
+            WeaponR,
+            WeaponRSocket,
+            Max = WeaponRSocket + 1
+        }
         // ####################################################
 
         public static class ReadOnly
@@ -417,9 +435,11 @@ namespace STELLAREST_F1
 
                 // Hero Armored WeaponL
                 public static readonly string HBody_WeaponL = "WeaponL_Armor";
-                public static readonly string HBody_WeaponLAttachment1 = "WeaponLAttachment1_Armor";
-                public static readonly string HBody_WeaponLAttachment2 = "WeaponLAttachment2_Armor";
-                public static readonly string HBody_WeaponLAttachment3 = "WeaponLAttachment3_Armor";
+                // public static readonly string HBody_WeaponLFireSocket = "WeaponL_FireSocket";
+                // public static readonly string HBody_WeaponLChildsGroup = "WeaponL_Armor_Childs";
+                // public static readonly string HBody_WeaponLAttachment1 = "WeaponLAttachment1_Armor";
+                // public static readonly string HBody_WeaponLAttachment2 = "WeaponLAttachment2_Armor";
+                // public static readonly string HBody_WeaponLAttachment3 = "WeaponLAttachment3_Armor";
 
                 public static readonly string HBody_ArmRSkin = "ArmR";
                 public static readonly string HBody_ArmR = "ArmR_Armor";
@@ -551,7 +571,9 @@ namespace STELLAREST_F1
                 public static readonly float MonsterSize_Medium = 0.8F;
                 public static readonly float MonsterSize_Large = 1.2F;
 
-                public static readonly float Temp_SearchDistance = 8.0F;
+                //public static readonly float Temp_SearchDistance = 8.0F;
+                public static readonly float Temp_ScanRange = 12.0F;
+
                 public static readonly float Temp_StopDistance = 1.25F;
                 
                 // Dead Fade Out Time

@@ -32,7 +32,7 @@ namespace STELLAREST_F1
         // Need Another Type Spawn Method
         
 
-        public T Spawn<T>(Vector3 position, EObjectType spawnObjectType, int dataID = -1) where T : BaseObject
+        public T Spawn<T>(Vector3 position, EObjectType spawnObjectType, int dataID = -1, BaseObject owner = null) where T : BaseObject
         {
             GameObject go = null;
             switch (spawnObjectType)
@@ -98,10 +98,11 @@ namespace STELLAREST_F1
                             return null;
                         }
 
-                        go.transform.position = position;
+                        go.transform.position = position; // .....
                         Projectile projectile = go.GetComponent<Projectile>();
-                        projectile.SetInfo(dataID);
+                        projectile.SetInfo(owner, dataID); // SetInfo(param int[] dataIDs), 또는 List<int>로 받아도 될 것 같긴 한데...
                         Projectiles.Add(projectile);
+                        //go.SetActive(false);
                         return projectile as T;
                     }
 

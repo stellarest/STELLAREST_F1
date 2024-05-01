@@ -11,6 +11,7 @@ namespace STELLAREST_F1
         public Data.SkillData SkillData { get; private set; } = null;
         public int DataTemplateID { get; private set; } = -1;
         public ESkillType SkillType { get; private set; } = ESkillType.None;
+        public EAttachmentPoint SkillFrom { get; private set; } = EAttachmentPoint.None;
         public float RemainCoolTime { get; protected set; } = 0.0f;
         public float InvokeRatioOnUpdate { get; private set; } = 0.0f;
 
@@ -26,7 +27,7 @@ namespace STELLAREST_F1
         {
             if (base.SetInfo(owner, dataID) == false)
             {
-                EnterInGame();
+                EnterInGame(owner, dataID);
                 return false;
             }
 
@@ -34,13 +35,13 @@ namespace STELLAREST_F1
             SkillData = Managers.Data.SkillDataDict[dataID];
             DataTemplateID = dataID;
             SkillType = Util.GetEnumFromString<ESkillType>(SkillData.Type);
+            SkillFrom = Util.GetEnumFromString<EAttachmentPoint>(SkillData.AttachmentPoint);
             InvokeRatioOnUpdate = SkillData.InvokeRatioOnUpdate;
-
-            EnterInGame();
+            EnterInGame(owner, dataID);
             return true;
         }
 
-        protected override void EnterInGame()
+        protected override void EnterInGame(BaseObject owner, int dataID)
         {
             RemainCoolTime = 0.0f;
         }
@@ -59,8 +60,8 @@ namespace STELLAREST_F1
         {
             Owner.LookAtTarget(Owner.Target);
 
-            if (Owner.CreatureSkillComponent != null)
-                Owner.CreatureSkillComponent.ActiveSkills.Remove(this);
+            if (Owner.CreatureSkill != null)
+                Owner.CreatureSkill.ActiveSkills.Remove(this);
 
             StartCoroutine(CoActivateSkill());
             switch (SkillType)
@@ -81,22 +82,22 @@ namespace STELLAREST_F1
 
         protected virtual void GenerateProjectile(Creature owner, Vector3 spawnPos)
         {
-            // (ex) 프로젝타일 객체가 없는 즉발성 원거리 공격 스킬
+            // (ex) 프로젝타일 객체가 없는 즉발성 원거리 공격 스킬. 프로젝타일 오브젝트를 생성할 필요가 없음.
             if (SkillData.ProjectileID == -1)
             {
                 owner.Target.OnDamaged(owner, this);
                 return;
-            }
+            }   
 
-            Projectile projectile = Managers.Object.Spawn<Projectile>(spawnPos, EObjectType.Projectile, SkillData.ProjectileID);
+            Managers.Object.Spawn<Projectile>(spawnPos, EObjectType.Projectile, SkillData.ProjectileID, owner);
 
-            LayerMask excludeLayerMask = 0;
-            excludeLayerMask.AddLayer(ELayer.Default);
-            excludeLayerMask.AddLayer(ELayer.Projectile);
-            excludeLayerMask.AddLayer(ELayer.Env);
-            excludeLayerMask.AddLayer(ELayer.Obstacle);
-            
-            projectile.SetSpawnInfo(owner, this, excludeLayerMask);
+            // Projectile projectile = Managers.Object.Spawn<Projectile>(spawnPos, EObjectType.Projectile, SkillData.ProjectileID);
+            // LayerMask excludeLayerMask = 0;
+            // excludeLayerMask.AddLayer(ELayer.Default);
+            // excludeLayerMask.AddLayer(ELayer.Projectile);
+            // excludeLayerMask.AddLayer(ELayer.Env);
+            // excludeLayerMask.AddLayer(ELayer.Obstacle);
+            // projectile.SetSpawnInfo(owner, spawnPos, this, excludeLayerMask);
         }
 
         private IEnumerator CoActivateSkill()
@@ -104,10 +105,27 @@ namespace STELLAREST_F1
             RemainCoolTime = SkillData.CoolTime;
             yield return new WaitForSeconds(SkillData.CoolTime);            
             RemainCoolTime = 0f;
-            Debug.Log("END COOLTIME.");
 
-            if (Owner.CreatureSkillComponent != null)
-                Owner.CreatureSkillComponent.ActiveSkills.Add(this);
+            if (Owner.CreatureSkill != null)
+                Owner.CreatureSkill.ActiveSkills.Add(this);
+        }
+
+        protected Vector3 GetSpawnPos()
+        {
+            switch (Owner.ObjectType)
+            {
+                case EObjectType.Hero:
+                    {
+                        HeroBody heroBody = (Owner as Hero).HeroBody;
+                        if (SkillFrom == EAttachmentPoint.WeaponL)
+                            return heroBody.GetComponent<Transform>(EHeroWeapon.WeaponL).position;
+                        else if (SkillFrom == EAttachmentPoint.WeaponLSocket)
+                            return heroBody.GetComponent<Transform>(EHeroWeapon.WeaponLSocket).position;
+                    }
+                    break;
+            }
+
+            return Owner.CenterPosition;
         }
 
         // #########################################

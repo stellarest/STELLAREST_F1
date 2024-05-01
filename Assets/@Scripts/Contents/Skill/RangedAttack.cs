@@ -20,19 +20,17 @@ namespace STELLAREST_F1
         {
             if (base.SetInfo(owner, dataID) == false)
             {
-                EnterInGame();
+                EnterInGame(owner, dataID);
                 return false;
             }
 
             // Add ProjectileMotion
-            
-
             return true;
         }
 
-        protected override void EnterInGame()
+        protected override void EnterInGame(BaseObject owner, int dataID)
         {
-            base.EnterInGame();
+            base.EnterInGame(owner, dataID);
         }
 
         public override void OnSkillStateEnter()
@@ -43,10 +41,13 @@ namespace STELLAREST_F1
 
         public override void OnSkillStateUpdate()
         {
-            GenerateProjectile(Owner, Owner.CenterPosition);
+            if (Owner.IsValid() == false)
+                return;
+
+            GenerateProjectile(Owner, GetSpawnPos());
         }
 
-        public override void OnSkillStateEnd()
+    public override void OnSkillStateEnd()
         {
             if (Owner.IsValid() == false)
                 return;
