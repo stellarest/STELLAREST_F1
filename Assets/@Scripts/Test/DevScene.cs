@@ -55,14 +55,15 @@ namespace STELLAREST_F1
         private void Test()
         {
             UI_Joystick joystick = Managers.UI.ShowBaseUI<UI_Joystick>();
-            HeroCamp camp = Managers.Object.Spawn<HeroCamp>(Vector3.zero, EObjectType.HeroCamp);
+
+            Vector3 testSpawnPos = new Vector3(1.425172f, -21.02116f, 0f);
+            HeroCamp camp = Managers.Object.Spawn<HeroCamp>(testSpawnPos, EObjectType.HeroCamp);
             CameraController cam = Camera.main.GetComponent<CameraController>();
             cam.Target = camp;
 
             {
-                Vector3 spawnPos = new Vector3(camp.transform.position.x - 5f, camp.transform.position.y - 5f, 0f);
-                Hero hero = Managers.Object.Spawn<Hero>(spawnPos, EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Archer);
-
+                //Vector3 spawnPos = new Vector3(camp.transform.position.x - 5f, camp.transform.position.y - 5f, 0f);
+                Hero hero = Managers.Object.Spawn<Hero>(testSpawnPos, EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
             }
         }
 

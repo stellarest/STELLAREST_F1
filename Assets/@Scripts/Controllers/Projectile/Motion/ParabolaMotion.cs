@@ -14,7 +14,7 @@ namespace STELLAREST_F1
         private const float MinHeight = 1F;
         private const float MaxHeight = 2F;
         public float HeightArc { get; private set; } = MaxHeight;
-        private bool changeStraightMotion = false;
+        private bool changeStraightMotion = false; // 
         private const float MaxDistanceSQR = 144.0F;
 
         protected override void ReadyToLaunch()
@@ -23,6 +23,7 @@ namespace STELLAREST_F1
             float baseX = Mathf.Lerp(StartPosition.x, TargetPosition.x, firstTick);
             float baseY = Mathf.Lerp(StartPosition.y, TargetPosition.y, firstTick);
 
+            Debug.Log($"<color=cyan>Need to adjust Parabola Motion.</color>");
             HeightArc = Mathf.Lerp(MinHeight, MaxHeight, Util.Distance(StartPosition, TargetPosition, isSQR: true)/ MaxDistanceSQR);
             Debug.Log($"Distance: {Util.Distance(StartPosition, TargetPosition, isSQR: true)}");
             Debug.Log($"Result - HeightArc: {HeightArc}");

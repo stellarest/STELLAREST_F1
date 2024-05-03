@@ -20,8 +20,8 @@ namespace STELLAREST_F1
         public Rigidbody2D RigidBody { get; private set; } = null;
         public SortingGroup SortingGroup { get; private set; } = null;
         public float ColliderRadius { get => Collider != null ? Collider.radius : 0.0f; }
-
         // Creature 및 다른 오브젝트의 경우, 발바닥 부분이 피벗임
+        
         public Vector3 CenterPosition { get => transform.position + Vector3.up * ColliderRadius; }
 
         [SerializeField] private ELookAtDirection _lookAtDir = ELookAtDirection.Right;

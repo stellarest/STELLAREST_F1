@@ -22,6 +22,7 @@ Skill First
 - changeStraightMotion활용하여 너무 가까이 있으면 직선으로 쏘던지, 아니면 HeightArc 조정하던지
 - (지금 HeightArc가 0.xxx이면 포물선이 반대로 나가거나 이상하게 나가는 버그 있긴함)
 >> 위아래 꼬불꼬불 마법 프로젝타일
+>> 그리고 현재 캐릭터 모였을때 임시로 Rigidbody.mass다 풀어버려서 뭉쳐버림. 참고용.
 */
 
 public class T_E_S_T : MonoBehaviour

@@ -38,6 +38,9 @@ namespace STELLAREST_F1
         private GameManager _game = new GameManager();
         public static GameManager Game => Instance?._game;
 
+        private MapManager _map = new MapManager();
+        public static MapManager Map => Instance?._map;
+
         private ObjectManager _object = new ObjectManager();
         public static ObjectManager Object => Instance?._object;
 

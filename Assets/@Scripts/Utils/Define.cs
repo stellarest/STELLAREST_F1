@@ -344,6 +344,13 @@ namespace STELLAREST_F1
 
         public static class ReadOnly
         {
+            public static class Character
+            {
+                public static readonly char Map_Tool_Write_Block_0 = '0';
+                public static readonly char Map_Tool_Write_CanGo_1 = '1';
+                public static readonly char Map_Tool_Write_SemiBlock_2 = '2';
+            }
+
             public static class String
             {
                 // Datas
@@ -503,6 +510,11 @@ namespace STELLAREST_F1
                 public static readonly string AnimParam_Skill_B = "Skill_B";
                 public static readonly string AnimParam_CollectEnv = "CollectEnv";
                 public static readonly string AnimParam_Dead = "Dead";
+
+                // Write Tile
+                public static readonly string Tile_CanGo = "_Go";
+                public static readonly string Tile_SemiBlock = "_Semi";
+                public static readonly string Tile_Block = "_Block";
             }
 
             public static class Numeric
