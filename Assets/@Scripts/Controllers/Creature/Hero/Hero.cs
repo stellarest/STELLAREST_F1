@@ -7,6 +7,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Diagnostics;
 using UnityEngine.PlayerLoop;
+using UnityEngine.Tilemaps;
 using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
@@ -112,7 +113,7 @@ namespace STELLAREST_F1
         public bool NeedArrange
         {
             get => _needArrange;
-            private set
+            private set     
             {
                 _needArrange = value;
                 if (value)
@@ -121,10 +122,21 @@ namespace STELLAREST_F1
                     TryResizeCollider();
             }
         }
-        #region ##### TEST AREA #####
+        #region ##### TEST AREA #####   
         // ########################################
-      
+        private void Update()
+        {
+            Managers.Map.CanMove(transform.position, ignoreObjects: false, ignoreSemiWall: true);
+            // Managers.Map.CheckOnTile(transform.position);
+        }
         // ########################################
+
+        public Vector3Int TestWorldToCell;
+        [ContextMenu("Test_SetSellPos")]
+        public void Test_SetSellPos()
+        {
+            transform.position = Managers.Map.CellToWorld(TestWorldToCell);
+        }
         #endregion
 
 
@@ -136,29 +148,6 @@ namespace STELLAREST_F1
             ObjectType = EObjectType.Hero;
 
             return true;
-        }
-
-        private void Update()
-        {
-            if (Target.IsValid())
-            {
-            }
-
-            if (Input.GetKeyDown(KeyCode.T))
-            {
-                // Debug.Log($"LWeapon World Pos: {WeaponLWorldPosition}");
-                // Debug.Log($"LWeapon Local Pos: {WeaponLLocalPosition}");
-                // Debug.Log($"LWeapon World Rot: {WeaponLWorldRotation}");
-                // Debug.Log($"LWeapon Local Rot: {WeaponLLocalRotation}");
-
-                // TEST
-                // Debug.Log($"LeftWeapon_FireSocket: {HeroBody.GetComponent<Transform>(EHeroWeapon.WeaponLFireSocket).name}");
-                // Transform weaponLChildGroup = HeroBody.GetComponent<Transform>(EHeroWeapon.WeaponLChildGroup);
-                // Debug.Log($"LeftWeapon_ChildGroup: {weaponLChildGroup.name}");
-                // int length = HeroBody.GetComponent<Transform>(EHeroWeapon.WeaponLChildGroup).childCount;
-                // for (int i = 0; i < length; ++i)
-                //     Debug.Log($"LeftWeapon_Child[{i}]: {weaponLChildGroup.GetChild(i).name}");
-            }
         }
 
         public override bool SetInfo(int dataID)

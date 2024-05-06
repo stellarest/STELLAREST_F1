@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using STELLAREST_F1;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Analytics;
 using static STELLAREST_F1.Define;
 
 #if UNITY_EDITOR
@@ -56,14 +57,28 @@ namespace STELLAREST_F1
         {
             UI_Joystick joystick = Managers.UI.ShowBaseUI<UI_Joystick>();
 
-            Vector3 testSpawnPos = new Vector3(1.425172f, -21.02116f, 0f);
-            HeroCamp camp = Managers.Object.Spawn<HeroCamp>(testSpawnPos, EObjectType.HeroCamp);
-            CameraController cam = Camera.main.GetComponent<CameraController>();
-            cam.Target = camp;
+            //Managers.Map.LoadMap(ReadOnly.String.SummerForest_Field_Temp);
+            Managers.Map.LoadMap("SummerForest_Field_Temp_02");
+            Managers.Map.Map.transform.position = new Vector3(-1.5f, 20f, 0f);
 
             {
+                Vector3Int randCellPos = new Vector3Int(0 + Random.Range(-3, 3), 0 + Random.Range(-3, 3), 0);
+                while (Managers.Map.CanMove(randCellPos) == false)
+                {
+                    Debug.Log("<color=magenta>Retry Spawn Pos</color>");
+                    randCellPos = new Vector3Int(0 + Random.Range(-3, 3), 0 + Random.Range(-3, 3), 0);
+                    continue;
+                }
+
+                HeroCamp camp = Managers.Object.Spawn<HeroCamp>(Vector3.zero, EObjectType.HeroCamp);
+                camp.SetCellPos(Managers.Map.WorldToCell(randCellPos), true);
+
+                CameraController cam = Camera.main.GetComponent<CameraController>();
+                cam.Target = camp;
+
                 //Vector3 spawnPos = new Vector3(camp.transform.position.x - 5f, camp.transform.position.y - 5f, 0f);
-                Hero hero = Managers.Object.Spawn<Hero>(testSpawnPos, EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
+                Hero hero = Managers.Object.Spawn<Hero>(Vector3.zero, EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
+                hero.SetCellPos(Managers.Map.WorldToCell(randCellPos), true);
             }
         }
 

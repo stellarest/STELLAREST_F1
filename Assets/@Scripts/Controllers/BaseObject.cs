@@ -300,5 +300,62 @@ namespace STELLAREST_F1
             if (show)
                 Collider.enabled = true;
         }
+
+        #region Map
+        public bool LerpToCellPosCompleted { get; protected set; } = false;
+
+        private Vector3Int _cellPos = Vector3Int.zero;
+        public Vector3Int CellPos // *** CORE ***
+        {
+            // 이제부터, CellPosition이 진짜 정보이고, transform.position은 랜더링용 정보가 된다.
+            // 그래서 만약에 오브젝트의 CellPosition과 transform.position이 일치하지 않을 경우에는
+            // 어떻게든 오브젝트의 이동을 스르르륵 보정을 해줘서 물체가 해당 칸으로 오게끔 유도를 해줘야한다.
+            // 이거와 관련된 부분은 LerpToCellPos(float) 참조
+            get => _cellPos;
+            protected set
+            {
+                _cellPos = value;
+                LerpToCellPosCompleted = false; // ### ??? ###
+            }
+        }
+
+        public void SetCellPos(Vector3Int cellPos, bool forceMove = false)
+        {
+            CellPos = cellPos;
+            LerpToCellPosCompleted = false;
+
+            if (forceMove) // 순간 이동
+            {
+                transform.position = Managers.Map.CellToWorld(cellPos);
+                LerpToCellPosCompleted = true;
+            }
+        }
+
+        // CellPos를 넣으면 그거에 대한 WorldPos를 반환해서 거기로 이동시킴
+        // 즉, 정확하게 Cell위치에 있지 않은 오브젝트를 CellPos로 이동시키는 것임.
+        // 일단 CellPos로 이동시키는 것이긴한데.
+        public void LerpToCellPos(float movementSpeed)
+        {
+            if (LerpToCellPosCompleted)
+                return;
+
+            Vector3 destPos = Managers.Map.CellToWorld(CellPos);
+            Vector3 dir = destPos - transform.position;
+            if (dir.x < 0f)
+                LookAtDir = ELookAtDirection.Left;
+            else
+                LookAtDir = ELookAtDirection.Right;
+
+            if (dir.magnitude < Mathf.Epsilon)
+            {
+                transform.position = destPos;
+                LerpToCellPosCompleted = true;
+                return;
+            }
+
+            float moveDist = Mathf.Min(dir.magnitude, movementSpeed * Time.deltaTime);
+            transform.position += dir.normalized * moveDist;
+        }
+        #endregion
     }
 }

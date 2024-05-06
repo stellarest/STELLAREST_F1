@@ -7,7 +7,7 @@ namespace STELLAREST_F1
 {
     public class HeroCamp : BaseObject
     {
-        public float Speed { get; set; } = 5.0f;
+        public float CampMovementSpeed { get; set; } = 5.0f;
         public Transform Pivot { get; private set; } = null;
         public Transform Destination { get; private set; } = null;
 
@@ -43,7 +43,9 @@ namespace STELLAREST_F1
 
         private void Update()
         {
-            transform.Translate(MoveDir * Time.deltaTime * Speed);
+            //transform.Translate(MoveDir * Time.deltaTime * Speed);
+            
+            transform.Translate(MoveDir * Time.deltaTime * CampMovementSpeed);
         }
 
         private void OnMoveDirChanged(Vector2 dir)

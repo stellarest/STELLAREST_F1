@@ -14,7 +14,7 @@ namespace STELLAREST_F1
         private const float MinHeight = 1F;
         private const float MaxHeight = 2F;
         public float HeightArc { get; private set; } = MaxHeight;
-        private bool changeStraightMotion = false; // 
+        private bool changeStraightMotion = false; // *****
         private const float MaxDistanceSQR = 144.0F;
 
         protected override void ReadyToLaunch()

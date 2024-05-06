@@ -16,6 +16,31 @@ namespace STELLAREST_F1
     public class MapEditor : EditorWindow
     {
 #if UNITY_EDITOR
+        [MenuItem("Tools/PrintTest %#H")]
+        private static void PrintTest()
+        {
+            int value = 0;
+            int[,] arr = new int[3,5];
+            /*
+                [0,0]: 0 | [0,1]: 1 | [0,2]: 2 | [0,3]: 3 | [0,4]: 4
+                [1,0]: 5 | [1,1]: 6 | [1,2]: 7 | [0,3]: 8 | [0,4]: 9
+                [2,0]: 10 | [2,1]: 11 | [2,2]: 12 | [2,3]: 13 | [2,4]: 14
+            */
+
+            for (int i = 0; i < arr.GetLength(0); ++i)
+            {
+                for (int j = 0; j < arr.GetLength(1); ++j)
+                    arr[i, j] = value++;
+            }
+
+            for (int i = 0; i < arr.GetLength(0); ++i)
+            {
+                for (int j = 0; j < arr.GetLength(1); ++j)
+                    Debug.Log($"arr[{i}][{j}]: {arr[i, j]}");
+                Debug.Log("");
+            }
+        }
+
         // Mac: %(Command) #(Shift) K
         [MenuItem("Tools/GenerateMap %#K")]
         private static void GenerateMap()
@@ -23,16 +48,16 @@ namespace STELLAREST_F1
             GameObject[] gameObjects = Selection.gameObjects;
             if (gameObjects.Length == 0)
             {
-                Debug.LogWarning($"Please select map object before.");
+                Debug.LogWarning($"Please select map before.");
                 return;
             }
 
             foreach (GameObject go in gameObjects)
             {
-                Tilemap tm = Util.FindChild<Tilemap>(go, "Tilemap_Collision", true);
+                Tilemap tm = Util.FindChild<Tilemap>(go, Define.ReadOnly.String.Tilemap_Collision, true);
                 if (tm == null)
                 {
-                    Debug.LogWarning("Failed to get Tilemap component on \"Tilemap_Collision\" object.");
+                    Debug.LogWarning($"Failed to get Tilemap component on \"{Define.ReadOnly.String.Tilemap_Collision}\" object.");
                     return;
                 }
                 tm.RefreshAllTiles();
@@ -57,12 +82,12 @@ namespace STELLAREST_F1
                             TileBase tile = tm.GetTile(new Vector3Int(x, y, 0));
                             if (tile != null)
                             {
-                                if (tile.name.Contains(Define.ReadOnly.String.Tile_CanGo))
-                                    writer.Write(Define.ReadOnly.Character.Map_Tool_Write_CanGo_1); 
+                                if (tile.name.Contains(Define.ReadOnly.String.Tile_CanMove))
+                                    writer.Write(Define.ReadOnly.Character.Map_Tool_CanMove_1);  // CanGo -> CanMove로 이름 변경할 것
                                 else if (tile.name.Contains(Define.ReadOnly.String.Tile_SemiBlock))
-                                    writer.Write(Define.ReadOnly.Character.Map_Tool_Write_SemiBlock_2); 
+                                    writer.Write(Define.ReadOnly.Character.Map_Tool_SemiBlock_2); 
                                 else if (tile.name.Contains(Define.ReadOnly.String.Tile_Block))
-                                   writer.Write(Define.ReadOnly.Character.Map_Tool_Write_Block_0);
+                                   writer.Write(Define.ReadOnly.Character.Map_Tool_Block_0);
                             }
                         }
                         writer.WriteLine();

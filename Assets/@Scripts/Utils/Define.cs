@@ -340,15 +340,31 @@ namespace STELLAREST_F1
             WeaponRSocket,
             Max = WeaponRSocket + 1
         }
+
+        public enum ECellCollisionType
+        {
+            CanMove,
+            SemiBlock,
+            Block,
+        }
+
+        public enum EFindPathResult
+        {
+            Fail_LerpCell,
+            Fail_NoPath,
+            Fail_MoveTo,
+            Success
+        }
+
         // ####################################################
 
         public static class ReadOnly
         {
             public static class Character
             {
-                public static readonly char Map_Tool_Write_Block_0 = '0';
-                public static readonly char Map_Tool_Write_CanGo_1 = '1';
-                public static readonly char Map_Tool_Write_SemiBlock_2 = '2';
+                public const char Map_Tool_Block_0 = '0';
+                public const char Map_Tool_CanMove_1 = '1';
+                public const char Map_Tool_SemiBlock_2 = '2';
             }
 
             public static class String
@@ -366,7 +382,7 @@ namespace STELLAREST_F1
                 public static readonly string SkillData = "SkillData";
                 public static readonly string ProjectileData = "ProjectileData";
 
-                // Others
+                // Others Prefab
                 public static readonly string Managers = "@Managers";
                 public static readonly string UI_Root = "@UI_Root";
                 public static readonly string EventSystem = "@EventSystem";
@@ -381,6 +397,7 @@ namespace STELLAREST_F1
                 public static readonly string UI_Joystick = "UI_Joystick";
                 public static readonly string AnimationBody = "AnimationBody";
                 public static readonly string HeroCamp = "HeroCamp";
+                public static readonly string SummerForest_Field_Temp = "SummerForest_Field_Temp";
 
                 // Sprite - Collect Equipment
                 public static readonly string Pickaxe_Common_SP = "Pickaxe_Common.sprite";
@@ -512,9 +529,12 @@ namespace STELLAREST_F1
                 public static readonly string AnimParam_Dead = "Dead";
 
                 // Write Tile
-                public static readonly string Tile_CanGo = "_Go";
-                public static readonly string Tile_SemiBlock = "_Semi";
+                public static readonly string Tile_CanMove = "_CanMove";
+                public static readonly string Tile_SemiBlock = "_SemiBlock";
                 public static readonly string Tile_Block = "_Block";
+
+                // Map
+                public static readonly string Tilemap_Collision = "Tilemap_Collision";
             }
 
             public static class Numeric

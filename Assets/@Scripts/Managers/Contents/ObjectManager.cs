@@ -30,8 +30,7 @@ namespace STELLAREST_F1
         #endregion
 
         // Need Another Type Spawn Method
-        
-
+        // Projectile, Env는 충돌 처리를 안한다고 함.
         public T Spawn<T>(Vector3 position, EObjectType spawnObjectType, int dataID = -1, BaseObject owner = null) where T : BaseObject
         {
             GameObject go = null;
