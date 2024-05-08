@@ -87,8 +87,8 @@ namespace STELLAREST_F1
                         CreatureState = ECreatureState.Move;
                         return;
                     }
-                    else
-                        SetRigidBodyVelocity(Vector2.zero);
+                    // else
+                    //     SetRigidBodyVelocity(Vector2.zero); - DELETED
                 }
             }
 
@@ -119,7 +119,7 @@ namespace STELLAREST_F1
                 }
 
                 // Research Enemy When Patroling
-                SetRigidBodyVelocity(toDestDir.normalized * MovementSpeed);
+                // SetRigidBodyVelocity(toDestDir.normalized * MovementSpeed); - DELETED
                 Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_ScanRange, Managers.Object.Heroes, func: IsValid) as Creature;
                 if (creature.IsValid())
                 {
@@ -144,7 +144,7 @@ namespace STELLAREST_F1
         // Attack이나 Skill은 실행 이후 Creature Move로 돌아가면 된다.
         protected override void UpdateSkill()
         {
-            SetRigidBodyVelocity(Vector2.zero);
+            // SetRigidBodyVelocity(Vector2.zero); - DELETED
             if (Target.IsValid())
                 LookAtTarget(Target);
             else

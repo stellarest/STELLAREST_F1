@@ -6,6 +6,7 @@ using STELLAREST_F1.Data;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Diagnostics;
+using UnityEngine.Lumin;
 using UnityEngine.PlayerLoop;
 using UnityEngine.Tilemaps;
 using static STELLAREST_F1.Define;
@@ -30,30 +31,6 @@ namespace STELLAREST_F1
 
         public Transform WeaponLSocket { get; private set; } = null;
         public Transform WeaponRFireSocket { get; private set; } = null;
-
-        public override ECreatureState CreatureState
-        {
-            get => base.CreatureState;
-            set
-            {
-                base.CreatureState = value;
-                switch (value)
-                {
-                    case ECreatureState.Move:
-                        RigidBody.mass = 3.0f * 5.0f;
-                        break;
-
-                    case ECreatureState.Skill_Attack:
-                        RigidBody.mass = 3.0f * 500.0f;
-                        break;
-
-                    default:
-                        RigidBody.mass = 3.0f;
-                        break;
-                }
-            }
-        }
-
         public override ECreatureMoveState CreatureMoveState
         {
             get => base.CreatureMoveState;
@@ -63,15 +40,12 @@ namespace STELLAREST_F1
                 switch (value)
                 {
                     case ECreatureMoveState.TargetToEnemy:
-                        NeedArrange = true; // -> ChangeColliderSize(EColliderSize.Large);
-                        break;
-
                     case ECreatureMoveState.CollectEnv:
-                        NeedArrange = true; // -> ChangeColliderSize(EColliderSize.Large);
+                        NeedArrange = true;
                         break;
 
                     case ECreatureMoveState.ForceMove:
-                        NeedArrange = true; // -> ChangeColliderSize(EColliderSize.Large);
+                        NeedArrange = true;
                         CancelWait();
                         Target = null;
                         break;
@@ -79,7 +53,7 @@ namespace STELLAREST_F1
             }
         }
 
-        private Transform Destination
+        private Transform CampDestination
         {
             get
             {
@@ -109,36 +83,18 @@ namespace STELLAREST_F1
 
         public HeroAnimation HeroAnim { get; private set; } = null;
 
-        private bool _needArrange = true;
-        public bool NeedArrange
-        {
-            get => _needArrange;
-            private set     
-            {
-                _needArrange = value;
-                if (value)
-                    ChangeColliderSize(EColliderSize.Large);
-                else
-                    TryResizeCollider();
-            }
-        }
+        // NeedArrange -> MoveStartFlag: 이름 바꿔도 될듯
+        [field: SerializeField] public bool NeedArrange { get; set; } = false;
         #region ##### TEST AREA #####   
         // ########################################
         private void Update()
         {
-            Managers.Map.CanMove(transform.position, ignoreObjects: false, ignoreSemiWall: true);
+            // Managers.Map.CanMove(transform.position, ignoreObjects: false, ignoreSemiWall: true);
             // Managers.Map.CheckOnTile(transform.position);
+            // Managers.Map.CheckOnTile(this);
         }
         // ########################################
-
-        public Vector3Int TestWorldToCell;
-        [ContextMenu("Test_SetSellPos")]
-        public void Test_SetSellPos()
-        {
-            transform.position = Managers.Map.CellToWorld(TestWorldToCell);
-        }
         #endregion
-
 
         public override bool Init()
         {
@@ -146,6 +102,8 @@ namespace STELLAREST_F1
                 return false;
 
             ObjectType = EObjectType.Hero;
+            Collider.isTrigger = true;
+            RigidBody.simulated = false;
 
             return true;
         }
@@ -190,7 +148,7 @@ namespace STELLAREST_F1
         #region AI
         protected override void UpdateIdle()
         {
-            SetRigidBodyVelocity(Vector2.zero);
+            // SetRigidBodyVelocity(Vector2.zero); - DELETED
             if (CreatureMoveState == ECreatureMoveState.ForceMove)
             {
                 CreatureState = ECreatureState.Move;
@@ -234,8 +192,7 @@ namespace STELLAREST_F1
         {
             if (CreatureMoveState == ECreatureMoveState.ForceMove)
             {
-                Vector3 dir = Destination.transform.position - transform.position;
-                SetRigidBodyVelocity(dir.normalized * MovementSpeed);
+                //EFindPathResult result = FindPathAndMoveToCellPos(CampDestination.position, ReadOnly.Numeric.HeroDefaultMoveDepth);
                 return;
             }
 
@@ -279,56 +236,43 @@ namespace STELLAREST_F1
 
             if (CreatureMoveState == ECreatureMoveState.ReturnToBase)
             {
-                // Research Enemies
-                Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_ScanRange, Managers.Object.Monsters, func: IsValid) as Creature;
-                if (creature != null)
-                {
-                    CollectEnv = false;
-                    Target = creature;
-                    CreatureMoveState = ECreatureMoveState.TargetToEnemy;
-                    CreatureState = ECreatureState.Move;
+                Vector3 destPos = CampDestination.position;
+                if (FindPathAndMoveToCellPos(destPos, ReadOnly.Numeric.HeroDefaultMoveDepth) == EFindPathResult.Success)
                     return;
-                }
 
-                Vector3 toDir = Destination.position - transform.position;
-                float stopDistSQR = ReadOnly.Numeric.Temp_StopDistance * ReadOnly.Numeric.Temp_StopDistance;
-                if (toDir.sqrMagnitude < stopDistSQR)
+                // 실패사유 검사
+                BaseObject obj = Managers.Map.GetObject(destPos);
+                if (obj.IsValid())
                 {
-                    CreatureMoveState = ECreatureMoveState.None;
-                    CreatureState = ECreatureState.Idle;
-                    NeedArrange = false; // -> TryResizeCollider()
+                    // 그 자리가 이미 나였다면
+                    if (obj == this)
+                    {
+                        CreatureMoveState = ECreatureMoveState.None;
+                        NeedArrange = false;
+                        return;
+                    }
+
+                    // 다른 히어로가 그 자리에 서있는 것임
+                    Hero hero = obj as Hero;
+                    if (hero != null && hero.CreatureState == ECreatureState.Idle)
+                    {
+                        CreatureMoveState = ECreatureMoveState.None;
+                        NeedArrange = false;
+                        return;
+                    }
                 }
-                else
-                {
-                    // *** 로그함수로 바꿔보기 ***
-                    // float ratio = Mathf.Min(1, toDir.magnitude);
-                    // float moveSpeed = MovementSpeed * (float)Math.Pow(ratio, 3);
-                    // SetRigidBodyVelocity(toDir.normalized * moveSpeed);
 
-                    // 캠프로 돌아올 때만 거리에 따라 스피드 조정
-                    // float movementSpeed = CalculateMovementSpeed(toDir.sqrMagnitude);
-                    
-                    float movementSpeed = Util.CalculateValueFromDistance(
-                                                value: MovementSpeed, 
-                                                maxValue: MovementSpeed * 2f,
-                                                distanceToTargetSQR: toDir.sqrMagnitude,
-                                                maxDistanceSQR: ReadOnly.Numeric.Temp_ScanRange);
-
-                    //Debug.Log($"MovementSpeed: {movementSpeed}");
-                    SetRigidBodyVelocity(toDir.normalized * movementSpeed);
-
-                }
                 return;
             }
 
-            // 눌렀다가 땟을때
-            CreatureState = ECreatureState.Idle;
+            if (LerpToCellPosCompleted)
+                CreatureState = ECreatureState.Idle;
         }
 
         protected override void UpdateSkill()
         {
             base.UpdateSkill();
-            SetRigidBodyVelocity(Vector2.zero);
+            // SetRigidBodyVelocity(Vector2.zero); - DELETED
             if (CreatureMoveState == ECreatureMoveState.ForceMove)
             {
                 CreatureState = ECreatureState.Move;
@@ -341,13 +285,11 @@ namespace STELLAREST_F1
                 CreatureState = ECreatureState.Move;
                 return;
             }
-
-            ChangeColliderSize(EColliderSize.Default);
         }
 
         protected override void UpdateCollectEnv()
         {
-            SetRigidBodyVelocity(Vector2.zero);
+            // SetRigidBodyVelocity(Vector2.zero); - DELETED
             if (CreatureMoveState == ECreatureMoveState.ForceMove || Target.IsValid() == false)
             {
                 CollectEnv = false;
@@ -432,6 +374,7 @@ namespace STELLAREST_F1
             callback?.Invoke();
         }
 
+        #region ##### Event: Hero Move State #####
         private void OnJoystickStateChanged(EJoystickState joystickState)
         {
             switch (joystickState)
@@ -448,43 +391,7 @@ namespace STELLAREST_F1
                     break;
             }
         }
-
-        // ColliderRadius 이런건 CreatureData로 빼서 상위로 올려도 될듯
-        // 근데 어차피 길찾기 적용시킬것이라..
-        protected override void ChangeColliderSize(EColliderSize colliderSize = EColliderSize.Default)
-        {
-            switch (colliderSize)
-            {
-                case EColliderSize.Small:
-                    Collider.radius = HeroData.ColliderRadius * 0.8f;
-                    break;
-
-                case EColliderSize.Default:
-                    Collider.radius = HeroData.ColliderRadius;
-                    break;
-
-                case EColliderSize.Large:
-                    Collider.radius = HeroData.ColliderRadius * 1.2f;
-                    break;
-            }
-        }
-
-        protected override void TryResizeCollider()
-        {
-            ChangeColliderSize(EColliderSize.Small);
-
-            foreach (Hero hero in Managers.Object.Heroes)
-            {
-                if (hero.CreatureMoveState == ECreatureMoveState.ReturnToBase)
-                    return;
-            }
-
-            foreach (Hero hero in Managers.Object.Heroes)
-            {
-                if (hero.CreatureState == ECreatureState.Idle)
-                    hero.ChangeColliderSize(EColliderSize.Large);
-            }
-        }
+        #endregion
 
         #region Battle
         public override void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
@@ -510,3 +417,44 @@ namespace STELLAREST_F1
         #endregion
     }
 }
+
+
+/*
+                // Research Enemies
+                // Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_ScanRange, Managers.Object.Monsters, func: IsValid) as Creature;
+                // if (creature != null)
+                // {
+                //     CollectEnv = false;
+                //     Target = creature;
+                //     CreatureMoveState = ECreatureMoveState.TargetToEnemy;
+                //     CreatureState = ECreatureState.Move;
+                //     return;
+                // }
+
+                // Vector3 toDir = CampDestination.position - transform.position;
+                // float stopDistSQR = ReadOnly.Numeric.Temp_StopDistance * ReadOnly.Numeric.Temp_StopDistance;
+                // if (toDir.sqrMagnitude < stopDistSQR)
+                // {
+                //     CreatureMoveState = ECreatureMoveState.None;
+                //     CreatureState = ECreatureState.Idle;
+                //     NeedArrange = false; // -> TryResizeCollider()
+                // }
+                // else
+                // {
+                //     // *** 로그함수로 바꿔보기 ***
+                //     // float ratio = Mathf.Min(1, toDir.magnitude);
+                //     // float moveSpeed = MovementSpeed * (float)Math.Pow(ratio, 3);
+                //     // SetRigidBodyVelocity(toDir.normalized * moveSpeed);
+
+                //     // 캠프로 돌아올 때만 거리에 따라 스피드 조정
+                //     // float movementSpeed = CalculateMovementSpeed(toDir.sqrMagnitude);
+                    
+                //     float movementSpeed = Util.CalculateValueFromDistance(
+                //                                 value: MovementSpeed, 
+                //                                 maxValue: MovementSpeed * 2f,
+                //                                 distanceToTargetSQR: toDir.sqrMagnitude,
+                //                                 maxDistanceSQR: ReadOnly.Numeric.Temp_ScanRange);
+                //     //Debug.Log($"MovementSpeed: {movementSpeed}");
+                //     // SetRigidBodyVelocity(toDir.normalized * movementSpeed); - DELETED
+                // }
+*/

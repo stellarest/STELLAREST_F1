@@ -397,7 +397,7 @@ namespace STELLAREST_F1
                 public static readonly string UI_Joystick = "UI_Joystick";
                 public static readonly string AnimationBody = "AnimationBody";
                 public static readonly string HeroCamp = "HeroCamp";
-                public static readonly string SummerForest_Field_Temp = "SummerForest_Field_Temp";
+                //public static readonly string SummerForest_Field_Temp = "SummerForest_Field_Temp";
 
                 // Sprite - Collect Equipment
                 public static readonly string Pickaxe_Common_SP = "Pickaxe_Common.sprite";
@@ -589,10 +589,11 @@ namespace STELLAREST_F1
                 public static readonly int DataID_Env_WhetstoneRock = 901018;
                 public static readonly int DataID_Env_ZincRock = 901019;
 
-                // Env
+                // MISC
                 public static readonly int RockElementsCount = 3;
-
                 public static readonly int MaxActiveSkillsCount = 2;
+                public static readonly int HeroDefaultMoveDepth = 5;
+                public static readonly int MonsterDefaultMoveDepth = 3;       
 
                 // [ FLOATING ]
                 public static readonly float CamOrthoSize = 12.0F; 
@@ -619,8 +620,8 @@ namespace STELLAREST_F1
                 public static readonly float CalcValueMaxDistanceMultiplier = 2.0F;
 
                 // ##############################
-
                 public static readonly float ProjectileLifeTime = 10.0F;
+                
             }
         }
     }

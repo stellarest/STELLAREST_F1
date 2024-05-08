@@ -10,6 +10,7 @@ namespace STELLAREST_F1
         public float CampMovementSpeed { get; set; } = 5.0f;
         public Transform Pivot { get; private set; } = null;
         public Transform Destination { get; private set; } = null;
+        private Vector3 _movementDirection = Vector3.zero;
 
         private SpriteRenderer _circleSPR = null;
         private SpriteRenderer _arrowSPR = null;
@@ -43,17 +44,23 @@ namespace STELLAREST_F1
 
         private void Update()
         {
-            //transform.Translate(MoveDir * Time.deltaTime * Speed);
-            
-            transform.Translate(MoveDir * Time.deltaTime * CampMovementSpeed);
+            if (Managers.Map == null)
+                return;
+
+            Vector3 dir = _movementDirection * CampMovementSpeed * Time.deltaTime;
+            Vector3 newPos = transform.position + dir;
+            if (Managers.Map.CanMove(newPos, ignoreObjects: true, ignoreSemiWall: true) == false)
+                return;
+
+            transform.position = newPos;
         }
 
-        private void OnMoveDirChanged(Vector2 dir)
+        private void OnMoveDirChanged(Vector2 nDir) // normalized Dir
         {
-            MoveDir = dir;
-            if (dir != Vector2.zero)
+            _movementDirection = nDir;
+            if (nDir != Vector2.zero)
             {
-                float angle = Mathf.Atan2(-dir.x, dir.y) * Mathf.Rad2Deg;
+                float angle = Mathf.Atan2(-nDir.x, nDir.y) * Mathf.Rad2Deg;
                 Pivot.rotation = Quaternion.Euler(0, 0, angle);
             }
         }

@@ -29,8 +29,50 @@ namespace STELLAREST_F1
         public Transform ProjectileRoot => GetRoot(ReadOnly.String.ProjectilePoolingRootName);
         #endregion
 
-        // Need Another Type Spawn Method
-        // Projectile, Env는 충돌 처리를 안한다고 함.
+        public T Spawn<T>(EObjectType objectType, int dataID = -1, BaseObject presetOwner = null) where T : BaseObject
+        {
+            GameObject go = null;
+            switch (objectType)
+            {
+                case EObjectType.Hero:
+                    {
+                        Data.HeroData data = Managers.Data.HeroDataDict[dataID];
+                        go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: HeroRoot, poolingID: data.DataID);
+                        if (go == null)
+                        {
+                            Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{data.PrefabLabel}\"");
+                            return null;
+                        }
+                        Hero hero = go.GetComponent<Hero>();
+                        hero.SetInfo(dataID);
+                        Heroes.Add(hero);
+                        return hero as T;
+                    }
+
+                case EObjectType.Monster:
+                case EObjectType.Env:
+                case EObjectType.Projectile:
+                    throw new System.NotImplementedException();
+
+                case EObjectType.HeroCamp:
+                    {
+                        go = Managers.Resource.Instantiate(ReadOnly.String.HeroCamp);
+                        if (go == null)
+                        {
+                            Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{ReadOnly.String.HeroCamp}\"");
+                            return null;
+                        }
+                        go.name = $"@{go.name}";
+                        Camp = go.GetComponent<HeroCamp>();
+                        return Camp as T;
+                    }
+
+                default:
+                    return default(T);
+            }
+        }
+
+
         public T Spawn<T>(Vector3 position, EObjectType spawnObjectType, int dataID = -1, BaseObject owner = null) where T : BaseObject
         {
             GameObject go = null;

@@ -76,7 +76,7 @@ namespace STELLAREST_F1
 
         public void OnJoystickDrag(PointerEventData evtData)
         {
-            Vector2 dir = (evtData.position - _touchPos);
+            Vector2 dir = evtData.position - _touchPos;
             float maxDist = _radius * GetViewportScale;
             float moveDist = Mathf.Min(dir.magnitude, maxDist);
             Vector2 nDir = dir.normalized;

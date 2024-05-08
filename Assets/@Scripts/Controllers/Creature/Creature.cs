@@ -68,7 +68,7 @@ namespace STELLAREST_F1
             RigidBody.simulated = false;
             ShowBody(false);
             StartWait(waitCondition: () => BaseAnim.IsPlay() == false,
-                      waitCompleted: () => {
+                      callbackWaitCompleted: () => {
                           ShowBody(true);
                           RigidBody.simulated = true;
                           Target = null;
@@ -77,7 +77,13 @@ namespace STELLAREST_F1
                           CreatureState = ECreatureState.Idle;
                           CreatureMoveState = ECreatureMoveState.None;
                           StartCoroutine(CoUpdateAI());
+                          StartCoroutine(CoLerpToCellPos()); // Map
                       });
+
+            // StartWait(waitCondition: () => BaseAnim.IsPlay() == false,
+            //         delegate()
+            //         {
+            //         });
         }
 
         private void AddAnimationEvents()
@@ -112,9 +118,6 @@ namespace STELLAREST_F1
 
         protected IEnumerator CoUpdateAI()
         {
-            if (ObjectType == EObjectType.Monster)
-                yield break;
-
             while (true)
             {
                 switch (CreatureState)
@@ -152,11 +155,9 @@ namespace STELLAREST_F1
         protected virtual void UpdateCollectEnv() { }
         protected virtual void UpdateDead()
         {
-            SetRigidBodyVelocity(Vector2.zero);
+            // SetRigidBodyVelocity(Vector2.zero); - DELETED
             CancelWait();
         }
-        protected virtual void ChangeColliderSize(EColliderSize colliderSize = EColliderSize.Default) { }
-        protected virtual void TryResizeCollider() { }
 
         #region Coroutines
         // Co Wait 없앨준비하라네
@@ -172,10 +173,10 @@ namespace STELLAREST_F1
             _coWait = null;
         }
 
-        protected void StartWait(Func<bool> waitCondition, Action waitCompleted = null)
+        protected void StartWait(Func<bool> waitCondition, Action callbackWaitCompleted = null)
         {
             CancelWait();
-            _coWait = StartCoroutine(CoWait(waitCondition, waitCompleted));
+            _coWait = StartCoroutine(CoWait(waitCondition, callbackWaitCompleted));
         }
         private IEnumerator CoWait(Func<bool> waitCondition, Action waitCompleted = null)
         {
@@ -190,7 +191,7 @@ namespace STELLAREST_F1
                 StopCoroutine(_coWait);
             _coWait = null;
         }
-        #endregion
+        #endregion Coroutines
 
         #region State Machine Events 
         protected void OnStateEnter(ECreatureState enterState)
@@ -243,7 +244,7 @@ namespace STELLAREST_F1
                     break;
             }
         }
-        #endregion
+        #endregion State Machine Events 
 
         #region Helper
         protected BaseObject FindClosestInRange(float range, IEnumerable<BaseObject> objs, Func<BaseObject, bool> func = null)
@@ -297,7 +298,7 @@ namespace STELLAREST_F1
             CreatureState = ECreatureState.Dead;
             base.OnDead(attacker, skillFromAttacker);
         }
-        #endregion
+        #endregion Battle
 
         protected void ChaseOrAttackTarget(float chaseRange, float atkRange)
         {
@@ -311,7 +312,7 @@ namespace STELLAREST_F1
             }
             else
             {
-                SetRigidBodyVelocity(toTargetDir.normalized * MovementSpeed);
+                FindPathAndMoveToCellPos(Target.transform.position, ReadOnly.Numeric.HeroDefaultMoveDepth);;
                 float searchDistSQR = chaseRange * chaseRange;
                 if (DistanceToTargetSQR > searchDistSQR)
                 {
@@ -339,7 +340,79 @@ namespace STELLAREST_F1
             ReleaseAnimationEvents();
         }
 
+        #region Misc
         protected bool IsValid(BaseObject bo) => bo.IsValid();
-        #endregion
+        #endregion Misc
+
+        #region Map
+
+        // maxDepth: Mobile용 성능 조절 Offset 깊이 값
+        public EFindPathResult FindPathAndMoveToCellPos(Vector3 destWorldPos, int maxDepth, bool forceMoveCloser = false)
+        {
+            Vector3Int destCellPos = Managers.Map.WorldToCell(destWorldPos);
+            return FindPathAndMoveToCellPos(destCellPos, maxDepth, forceMoveCloser);
+        }
+
+        // maxDepth: Mobile용 성능 조절 Offset 깊이 값
+        // ##### A*는 BFS랑 느낌이 굉장히 비슷함 #####
+        // 만약 maxDepth를 무한으로하면 맵 전체를 쭈욱 서칭할 것임. 그럼에도 길이 없으면 난리나게됨.
+        public EFindPathResult FindPathAndMoveToCellPos(Vector3Int destCellPos, int maxDepth, bool forceMoveCloser = false)
+        {
+            if (LerpToCellPosCompleted == false)
+                return EFindPathResult.Fail_LerpCell;
+
+            /*
+                ##### A* AREA ##### 
+                if (forceMoveCloser)
+                {
+                }
+                ###################
+            */
+
+            // #####################################
+            // ##### World -> Cell부터 먼저 무조건 #####
+            // #####################################
+            Vector3Int dirCellPos = destCellPos - CellPos;
+            Vector3Int nextPos = CellPos + dirCellPos;
+
+            // ##### 선점부터 #####
+            if (Managers.Map.MoveTo(this, nextPos) == false)
+                return EFindPathResult.Fail_MoveTo;
+
+            return EFindPathResult.Success;
+        }
+
+        public bool MoveToCellPos(Vector3Int destCellPos, int maxDepth, bool forceMoveCloser)
+        {
+            if (LerpToCellPosCompleted == false)
+                return false;
+
+            return Managers.Map.MoveTo(this, cellPos: destCellPos);
+        }
+
+        // 프로젝타일x, 크리쳐만
+        protected IEnumerator CoLerpToCellPos()
+        {
+            while (true)
+            {
+                Hero hero = this as Hero;
+                if (hero != null)
+                {
+                    float divSQR = 5f * 5f;
+                    Vector3 campDestPos = Managers.Object.Camp.Destination.transform.position;
+                    Vector3Int campDestCellPos = Managers.Map.WorldToCell(campDestPos);
+                    //  float ratio = Mathf.Max(1, (CellPos - campDestCellPos).magnitude / div); --> 로그로 바꾸기
+                    float ratio = Mathf.Max(1, (CellPos - campDestCellPos).sqrMagnitude / divSQR);
+                    LerpToCellPos(MovementSpeed * ratio);
+                }
+                else
+                    LerpToCellPos(MovementSpeed);
+
+                yield return null;
+            }
+        }
+
+        #endregion Map
+        #endregion Helper
     }
 }

@@ -57,30 +57,47 @@ namespace STELLAREST_F1
         {
             UI_Joystick joystick = Managers.UI.ShowBaseUI<UI_Joystick>();
 
-            //Managers.Map.LoadMap(ReadOnly.String.SummerForest_Field_Temp);
+            // Managers.Map.LoadMap(ReadOnly.String.SummerForest_Field_Temp);
             Managers.Map.LoadMap("SummerForest_Field_Temp_02");
             Managers.Map.Map.transform.position = new Vector3(-1.5f, 20f, 0f);
 
             {
-                Vector3Int randCellPos = new Vector3Int(0 + Random.Range(-3, 3), 0 + Random.Range(-3, 3), 0);
-                while (Managers.Map.CanMove(randCellPos) == false)
+                int attemptCount = 0;
+                Vector3Int randPos = new Vector3Int(Random.Range(-3, 3), Random.Range(-3, 3), 0);
+                while (Managers.Map.CanMove(randPos) == false && attemptCount++ < 100)
                 {
-                    Debug.Log("<color=magenta>Retry Spawn Pos</color>");
-                    randCellPos = new Vector3Int(0 + Random.Range(-3, 3), 0 + Random.Range(-3, 3), 0);
-                    continue;
+                    if (attemptCount >= 100)
+                    {
+                        Debug.LogWarning("Failed set randPos");
+                        Application.Quit();
+                    }
+                    randPos = new Vector3Int(Random.Range(-3, 3), Random.Range(-3, 3), 0); // Retry
                 }
 
-                HeroCamp camp = Managers.Object.Spawn<HeroCamp>(Vector3.zero, EObjectType.HeroCamp);
-                camp.SetCellPos(Managers.Map.WorldToCell(randCellPos), true);
+                HeroCamp camp = Managers.Object.Spawn<HeroCamp>(EObjectType.HeroCamp);
+                //camp.SetCellPos(randPos, true);
+                camp.SetCellPos(Vector3.zero, true);
+
 
                 CameraController cam = Camera.main.GetComponent<CameraController>();
                 cam.Target = camp;
 
-                //Vector3 spawnPos = new Vector3(camp.transform.position.x - 5f, camp.transform.position.y - 5f, 0f);
-                Hero hero = Managers.Object.Spawn<Hero>(Vector3.zero, EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
-                hero.SetCellPos(Managers.Map.WorldToCell(randCellPos), true);
+                Hero hero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
+                Managers.Map.MoveTo(hero, Vector3.zero, true); 
+                
+                //Managers.Map.MoveTo(hero, randPos, true); // 이젠 크리처는 이걸로 이동해야함
+                // Debug.Log($"randPos: {randPos}");
+                // Debug.Log($"CampCellPos: {camp.CellPos}");
+                // Debug.Log($"HeroCellPos: {hero.CellPos}");
             }
         }
+
+        // private IEnumerator CoSpawnHero(Vector3 spawnPos)
+        // {
+        //     yield return new WaitForSeconds(2f);
+        //     Hero hero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
+        //     Managers.Map.MoveTo(hero, spawnPos, true);
+        // }
 
         private int GetRandEnvTree
             => UnityEngine.Random.Range(ReadOnly.Numeric.DataID_Env_AshTree, ReadOnly.Numeric.DataID_Env_YewTree + 1);

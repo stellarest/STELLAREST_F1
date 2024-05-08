@@ -62,9 +62,6 @@ namespace STELLAREST_F1
             }
         }
 
-        public Vector3 MoveDir { get; protected set; } = Vector2.zero;
-
-
         #region Stat
         public Data.StatData StatData { get; private set; } = null;
         private int _levelCount = -1;
@@ -144,7 +141,6 @@ namespace STELLAREST_F1
 
             BaseAnim = Util.FindChild<BaseAnimation>(gameObject, name: ReadOnly.String.AnimationBody, recursive: false);
             Collider = gameObject.GetOrAddComponent<CircleCollider2D>();
-            Collider.isTrigger = true; // ##### TEMP #####
             RigidBody = gameObject.GetOrAddComponent<Rigidbody2D>();
             RigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
             RigidBody.gravityScale = 0f;
@@ -206,21 +202,6 @@ namespace STELLAREST_F1
 
             Vector3 toTargetDir = Target.transform.position - transform.position;
             if (toTargetDir.x < 0)
-                LookAtDir = ELookAtDirection.Left;
-            else
-                LookAtDir = ELookAtDirection.Right;
-        }
-
-        public void SetRigidBodyVelocity(Vector2 velocity)
-        {
-            if (RigidBody == null)
-                return;
-
-            RigidBody.velocity = velocity;
-            if (velocity == Vector2.zero) // DO NOT FLIP.
-                return;
-
-            if (velocity.x < 0)
                 LookAtDir = ELookAtDirection.Left;
             else
                 LookAtDir = ELookAtDirection.Right;
@@ -307,47 +288,44 @@ namespace STELLAREST_F1
         private Vector3Int _cellPos = Vector3Int.zero;
         public Vector3Int CellPos // *** CORE ***
         {
-            // 이제부터, CellPosition이 진짜 정보이고, transform.position은 랜더링용 정보가 된다.
-            // 그래서 만약에 오브젝트의 CellPosition과 transform.position이 일치하지 않을 경우에는
-            // 어떻게든 오브젝트의 이동을 스르르륵 보정을 해줘서 물체가 해당 칸으로 오게끔 유도를 해줘야한다.
-            // 이거와 관련된 부분은 LerpToCellPos(float) 참조
             get => _cellPos;
             protected set
             {
                 _cellPos = value;
-                LerpToCellPosCompleted = false; // ### ??? ###
+                LerpToCellPosCompleted = false;
             }
         }
+
+        public void SetCellPos(Vector3 position, bool forceMove = false)
+            => SetCellPos(Managers.Map.WorldToCell(position), forceMove);
 
         public void SetCellPos(Vector3Int cellPos, bool forceMove = false)
         {
             CellPos = cellPos;
             LerpToCellPosCompleted = false;
-
             if (forceMove) // 순간 이동
             {
-                transform.position = Managers.Map.CellToWorld(cellPos);
+                transform.position = Managers.Map.CenteredCellToWorld(cellPos);
                 LerpToCellPosCompleted = true;
             }
         }
 
-        // CellPos를 넣으면 그거에 대한 WorldPos를 반환해서 거기로 이동시킴
-        // 즉, 정확하게 Cell위치에 있지 않은 오브젝트를 CellPos로 이동시키는 것임.
-        // 일단 CellPos로 이동시키는 것이긴한데.
-        public void LerpToCellPos(float movementSpeed)
+        public void LerpToCellPos(float movementSpeed) // Coroutine every tick
         {
             if (LerpToCellPosCompleted)
                 return;
 
-            Vector3 destPos = Managers.Map.CellToWorld(CellPos);
+            Vector3 destPos = Managers.Map.CenteredCellToWorld(CellPos);
             Vector3 dir = destPos - transform.position;
+    
             if (dir.x < 0f)
                 LookAtDir = ELookAtDirection.Left;
-            else
+            else if (dir.x > 0f)
                 LookAtDir = ELookAtDirection.Right;
 
             if (dir.magnitude < Mathf.Epsilon)
             {
+                Debug.Log("############## MOVE COMPLETED ####################");
                 transform.position = destPos;
                 LerpToCellPosCompleted = true;
                 return;

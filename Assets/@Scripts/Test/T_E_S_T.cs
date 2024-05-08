@@ -12,17 +12,18 @@ using UnityEngine;
 - 그리고 예를 들어 바위를 채집할 때, 바위 완전 밑에서 채집하면 이상하니까, 이런거 위치 조정해줘야 할 것 같은데.
 - Melee Attack 구현, Init Stat 구현. Exp는 아직 X
 
-Skill First
+Character Skills Ex
 - Skill_Attack : Paladin MeleeAttack
 - Skill_A : Double Attack
 - Skill_B : Shield
-
 
 >> Parabola 모션 개선 필요 (타겟 거리에 따라 HeightArc 조정)
 - changeStraightMotion활용하여 너무 가까이 있으면 직선으로 쏘던지, 아니면 HeightArc 조정하던지
 - (지금 HeightArc가 0.xxx이면 포물선이 반대로 나가거나 이상하게 나가는 버그 있긴함)
 >> 위아래 꼬불꼬불 마법 프로젝타일
 >> 그리고 현재 캐릭터 모였을때 임시로 Rigidbody.mass다 풀어버려서 뭉쳐버림. 참고용.
+>> 타일 도착후 무조건 우측 쳐다보는중...
+>> A* 돌리기 직전인데 지금 이케 어케 대강 어케 돌아가고 있는지 보기
 */
 
 public class T_E_S_T : MonoBehaviour
@@ -198,3 +199,19 @@ Archer
         // }
 
 */
+
+// [Obsolete]
+// public void SetRigidBodyVelocity(Vector2 velocity) - DELETED
+// {
+//     if (RigidBody == null)
+//         return;
+
+//     RigidBody.velocity = velocity;
+//     if (velocity == Vector2.zero) // DO NOT FLIP.
+//         return;
+
+//     if (velocity.x < 0)
+//         LookAtDir = ELookAtDirection.Left;
+//     else
+//         LookAtDir = ELookAtDirection.Right;
+// }
