@@ -24,42 +24,41 @@ namespace STELLAREST_F1
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Q))
-            {
-                int randSpawnId = ReadOnly.Numeric.DataID_Hero_Paladin;
-                // if (65f >= UnityEngine.Random.Range(0f, 100f))
-                //     randSpawnId += 10;
+            // if (Input.GetKeyDown(KeyCode.Q))
+            // {
+            //     int randSpawnId = ReadOnly.Numeric.DataID_Hero_Paladin;
+            //     // if (65f >= UnityEngine.Random.Range(0f, 100f))
+            //     //     randSpawnId += 10;
 
-                Vector3 spawnPos = Util.MakeSpawnPosition(Managers.Object.Camp, -1f, 1f);
-                Hero hero = Managers.Object.Spawn<Hero>(spawnPos, EObjectType.Hero, randSpawnId);
-            }
+            //     Vector3 spawnPos = Util.MakeSpawnPosition(Managers.Object.Camp, -1f, 1f);
+            //     Hero hero = Managers.Object.Spawn<Hero>(spawnPos, EObjectType.Hero, randSpawnId);
+            // }
 
-            if (Input.GetKeyDown(KeyCode.W))
-            {
-                Vector3 spawnPos = Util.MakeSpawnPosition(Managers.Object.Camp, -5f, 5f);
-                Monster mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Chicken);
-            }
+            // if (Input.GetKeyDown(KeyCode.W))
+            // {
+            //     Vector3 spawnPos = Util.MakeSpawnPosition(Managers.Object.Camp, -5f, 5f);
+            //     Monster mon = Managers.Object.Spawn<Monster>(spawnPos, EObjectType.Monster, ReadOnly.Numeric.DataID_Monster_Chicken);
+            // }
 
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                Vector3 spawnPos = Util.MakeSpawnPosition(Managers.Object.Camp, -7f, 7f);
-                Env env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, GetRandEnvTree);
-            }
+            // if (Input.GetKeyDown(KeyCode.E))
+            // {
+            //     Vector3 spawnPos = Util.MakeSpawnPosition(Managers.Object.Camp, -7f, 7f);
+            //     Env env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, GetRandEnvTree);
+            // }
 
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                Vector3 spawnPos = Util.MakeSpawnPosition(Managers.Object.Camp, -10f, 10f);
-                Env env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, GetRandEnvRock);
-            }
+            // if (Input.GetKeyDown(KeyCode.R))
+            // {
+            //     Vector3 spawnPos = Util.MakeSpawnPosition(Managers.Object.Camp, -10f, 10f);
+            //     Env env = Managers.Object.Spawn<Env>(spawnPos, EObjectType.Env, GetRandEnvRock);
+            // }
         }
 
         private void Test()
         {
             UI_Joystick joystick = Managers.UI.ShowBaseUI<UI_Joystick>();
-
             // Managers.Map.LoadMap(ReadOnly.String.SummerForest_Field_Temp);
-            Managers.Map.LoadMap("SummerForest_Field_Temp_02");
-            Managers.Map.Map.transform.position = new Vector3(-1.5f, 20f, 0f);
+            Managers.Map.LoadMap("TempMap02");
+            Managers.Map.Map.transform.position = Vector3.zero;
 
             {
                 int attemptCount = 0;
@@ -68,27 +67,54 @@ namespace STELLAREST_F1
                 {
                     if (attemptCount >= 100)
                     {
-                        Debug.LogWarning("Failed set randPos");
+                        Debug.LogError("Failed set randPos");
                         Application.Quit();
                     }
                     randPos = new Vector3Int(Random.Range(-3, 3), Random.Range(-3, 3), 0); // Retry
                 }
 
                 HeroCamp camp = Managers.Object.Spawn<HeroCamp>(EObjectType.HeroCamp);
-                //camp.SetCellPos(randPos, true);
-                camp.SetCellPos(Vector3.zero, true);
-
-
+                camp.SetCellPos(randPos, forceMove: true);
                 CameraController cam = Camera.main.GetComponent<CameraController>();
                 cam.Target = camp;
 
                 Hero hero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
-                Managers.Map.MoveTo(hero, Vector3.zero, true); 
-                
-                //Managers.Map.MoveTo(hero, randPos, true); // 이젠 크리처는 이걸로 이동해야함
-                // Debug.Log($"randPos: {randPos}");
-                // Debug.Log($"CampCellPos: {camp.CellPos}");
-                // Debug.Log($"HeroCellPos: {hero.CellPos}");
+                Managers.Map.MoveTo(hero, randPos, forceMove: true);
+
+                /*
+                        public static readonly int DataID_Hero_Paladin = 101000;
+                        public static readonly int DataID_Hero_Archer = 101010;
+                        public static readonly int DataID_Hero_Wizard = 101020;
+                */
+
+                int randID = 0;
+                for (int i = 0; i < 10; ++i)
+                {
+                    float rand = UnityEngine.Random.Range(0, 100f);
+                    if (rand >= 0 && rand <= 50f)
+                        randID = ReadOnly.Numeric.DataID_Hero_Paladin;
+                    else if (rand > 50f && rand < 75)
+                        randID = ReadOnly.Numeric.DataID_Hero_Archer;
+                    else
+                        randID = ReadOnly.Numeric.DataID_Hero_Wizard;
+
+                    randPos = new Vector3Int(Random.Range(-3, 3), Random.Range(-3, 3), 0);
+                    if (Managers.Map.CanMove(randPos) == false)
+                        continue;
+
+                    hero = Managers.Object.Spawn<Hero>(EObjectType.Hero, randID);
+                    Managers.Map.MoveTo(creature: hero, randPos, forceMove: false);
+                }
+
+                // for (int i = 0; i < 10; ++i)
+                // {
+                //     randPos = new Vector3Int(Random.Range(-3, 3), Random.Range(-3, 3), 0);
+                //     if (Managers.Map.CanMove(randPos) == false)
+                //         continue;
+
+                //     Hero hero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
+                //     Managers.Map.MoveTo(hero, randPos, forceMove: true);
+                // }
             }
         }
 

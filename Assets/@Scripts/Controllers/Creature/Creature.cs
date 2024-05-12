@@ -41,6 +41,7 @@ namespace STELLAREST_F1
             protected set => _collectEnv = value;
         }
 
+        [SerializeField] protected EFindPathResult _findPathResult = EFindPathResult.None;
         public override bool Init()
         {
             if (base.Init() == false)
@@ -312,7 +313,7 @@ namespace STELLAREST_F1
             }
             else
             {
-                FindPathAndMoveToCellPos(Target.transform.position, ReadOnly.Numeric.HeroDefaultMoveDepth);;
+                _findPathResult = FindPathAndMoveToCellPos(Target.transform.position, ReadOnly.Numeric.HeroDefaultMoveDepth);;
                 float searchDistSQR = chaseRange * chaseRange;
                 if (DistanceToTargetSQR > searchDistSQR)
                 {
@@ -347,42 +348,57 @@ namespace STELLAREST_F1
         #region Map
 
         // maxDepth: Mobile용 성능 조절 Offset 깊이 값
-        public EFindPathResult FindPathAndMoveToCellPos(Vector3 destWorldPos, int maxDepth, bool forceMoveCloser = false)
+        public EFindPathResult FindPathAndMoveToCellPos(Vector3 destPos, int maxDepth, bool forceMoveCloser = false)
         {
-            Vector3Int destCellPos = Managers.Map.WorldToCell(destWorldPos);
+            Vector3Int destCellPos = Managers.Map.WorldToCell(destPos);
             return FindPathAndMoveToCellPos(destCellPos, maxDepth, forceMoveCloser);
         }
 
         // maxDepth: Mobile용 성능 조절 Offset 깊이 값
         // ##### A*는 BFS랑 느낌이 굉장히 비슷함 #####
         // 만약 maxDepth를 무한으로하면 맵 전체를 쭈욱 서칭할 것임. 그럼에도 길이 없으면 난리나게됨.
-        public EFindPathResult FindPathAndMoveToCellPos(Vector3Int destCellPos, int maxDepth, bool forceMoveCloser = false)
+        public EFindPathResult FindPathAndMoveToCellPos(Vector3Int destPos, int maxDepth, bool forceMoveCloser = false)
         {
-            if (LerpToCellPosCompleted == false)
-                return EFindPathResult.Fail_LerpCell;
+            // Fail_LerpCell은 사실 실패한건 아니고, 
+            // 이미 기존에서 스르륵 움직이는 것을 처리 중이었기 때문에 그것에 대한 표시.
+            // ##### 가야할 CellPos는 처음에 정해져있는데 계속 움직이려고하면, 이게 아직 완료가 안되어서 멈춰버림 #####
+            if (LerpToCellPosCompleted == false) // 움직임 진행중
+                return EFindPathResult.Fail_LerpCell; // 위자드 에러,
+            // Move상태라서
 
-            /*
-                ##### A* AREA ##### 
-                if (forceMoveCloser)
-                {
-                }
-                ###################
-            */
+            // ### A* ###
+            List<Vector3Int> path = Managers.Map.FindPath(CellPos, destPos, maxDepth);
+            // 시작점은 기본으로 들어가있고,
+            if (path.Count < 2)
+            {
+                return EFindPathResult.Fail_NoPath; // 진짜로 길이 없을 때
+            }
 
-            // #####################################
-            // ##### World -> Cell부터 먼저 무조건 #####
-            // #####################################
-            Vector3Int dirCellPos = destCellPos - CellPos;
+            // 시작점과 다음점 2개 이상이라면, 길을 찾았다는 의미일것이고 다음으로 가야할 것은 path[1]에 들어가 있을 것임.
+            // 와리가리 막는 용돈데 이해가 안감.
+            // 다른 오브젝트가 길막해서 와리가리할수있다는데, 그럴때 diff1, diff2의 점수 계산을 해서 안가게끔 막는 것이라고 함.
+            // 근데 아주 예외적인 케이스라고함.
+            if (forceMoveCloser)
+            {
+                Vector3Int diff1 = CellPos - destPos;
+                Vector3Int diff2 = path[1] - destPos;
+                if (diff1.sqrMagnitude <= diff2.sqrMagnitude)
+                    return EFindPathResult.Fail_NoPath;
+            }
+
+            Vector3Int dirCellPos = path[1] - CellPos;
+            //Vector3Int dirCellPos = destCellPos - CellPos;
             Vector3Int nextPos = CellPos + dirCellPos;
 
             // ##### 선점부터 #####
             if (Managers.Map.MoveTo(this, nextPos) == false)
                 return EFindPathResult.Fail_MoveTo;
+            // Fail_MoveTo: 이건 길을 찾았으면 원래는 갈 수 있어야 하지만 다른 이유에 의해 못갔을 때
 
-            return EFindPathResult.Success;
+            return EFindPathResult.Success; // Success: 길을 찾고 이동까지 했다.
         }
 
-        public bool MoveToCellPos(Vector3Int destCellPos, int maxDepth, bool forceMoveCloser)
+        public bool MoveToCellPos(Vector3Int destCellPos, int maxDepth, bool forceMoveCloser = false)
         {
             if (LerpToCellPosCompleted == false)
                 return false;
@@ -390,7 +406,7 @@ namespace STELLAREST_F1
             return Managers.Map.MoveTo(this, cellPos: destCellPos);
         }
 
-        // 프로젝타일x, 크리쳐만
+        // ### Creature: O, Projectile: X
         protected IEnumerator CoLerpToCellPos()
         {
             while (true)
@@ -398,11 +414,10 @@ namespace STELLAREST_F1
                 Hero hero = this as Hero;
                 if (hero != null)
                 {
-                    float divSQR = 5f * 5f;
-                    Vector3 campDestPos = Managers.Object.Camp.Destination.transform.position;
-                    Vector3Int campDestCellPos = Managers.Map.WorldToCell(campDestPos);
-                    //  float ratio = Mathf.Max(1, (CellPos - campDestCellPos).magnitude / div); --> 로그로 바꾸기
-                    float ratio = Mathf.Max(1, (CellPos - campDestCellPos).sqrMagnitude / divSQR);
+                    float divOffsetSQR = 5f * 5f;
+                    // pointerCellPos : 중요하진않음. 그냥 이속조절을 위한 용도 뿐
+                    Vector3Int pointerCellPos = Managers.Map.WorldToCell(Managers.Object.Camp.Pointer.position);
+                    float ratio = Mathf.Max(1, (CellPos - pointerCellPos).sqrMagnitude / divOffsetSQR); // --> 로그로 변경 필요
                     LerpToCellPos(MovementSpeed * ratio);
                 }
                 else

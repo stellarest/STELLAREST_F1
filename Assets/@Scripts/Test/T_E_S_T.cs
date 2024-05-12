@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using STELLAREST_F1;
 using static STELLAREST_F1.Define;
 using UnityEngine;
+using Unity.VisualScripting;
 
 /*
 [ TODO LIST ]
@@ -21,10 +22,34 @@ Character Skills Ex
 - changeStraightMotion활용하여 너무 가까이 있으면 직선으로 쏘던지, 아니면 HeightArc 조정하던지
 - (지금 HeightArc가 0.xxx이면 포물선이 반대로 나가거나 이상하게 나가는 버그 있긴함)
 >> 위아래 꼬불꼬불 마법 프로젝타일
->> 그리고 현재 캐릭터 모였을때 임시로 Rigidbody.mass다 풀어버려서 뭉쳐버림. 참고용.
->> 타일 도착후 무조건 우측 쳐다보는중...
 >> A* 돌리기 직전인데 지금 이케 어케 대강 어케 돌아가고 있는지 보기
+---> DevScene에서 먼저 Hero를 MoveTo로 forceMove하기 때문에, LerpToCellPosCompleted가 true인 상태에서 시작됨.
+---> 그래서 Hero UpdateMove에서 마우스를 놓았을 때 Idle로 돌아가는 것이고,
+---> 그리고 이미 ForveMove일 때 NeedArrange는 true로 켜져있는 상태라 Idle에서 바로 Move State로 바뀐뒤에 ReturnToBase로 가게 되는것
 */
+
+public class Test1 : IEnumerator
+{
+    public object Current => throw new System.NotImplementedException();
+
+    public bool MoveNext()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public void Reset()
+    {
+        throw new System.NotImplementedException();
+    }
+}
+
+public class Test2 : IEnumerable
+{
+    public IEnumerator GetEnumerator()
+    {
+        throw new System.NotImplementedException();
+    }
+}
 
 public class T_E_S_T : MonoBehaviour
 {
@@ -32,8 +57,17 @@ public class T_E_S_T : MonoBehaviour
     private Vector2 _moveDir = Vector3.zero;
     private int TestProperty { get; set; }
 
+    private IEnumerator CoStart()
+    {
+        yield return null;
+    }
+
+    private Coroutine _co = null;
+
     private IEnumerator Start()
     {
+        _co = StartCoroutine(CoStart());;
+
         Managers.Game.OnMoveDirChangedHandler -= OnMoveDirChanged;
         Managers.Game.OnMoveDirChangedHandler += OnMoveDirChanged;
         yield return null;

@@ -108,6 +108,7 @@ namespace STELLAREST_F1
             CollectEnv,
             ReturnToBase,
             ForceMove,
+            ForcePath,
         }
 
         public enum ELookAtDirection
@@ -350,6 +351,7 @@ namespace STELLAREST_F1
 
         public enum EFindPathResult
         {
+            None = -1,
             Fail_LerpCell,
             Fail_NoPath,
             Fail_MoveTo,
@@ -604,9 +606,7 @@ namespace STELLAREST_F1
                 public static readonly float MonsterSize_Medium = 0.8F;
                 public static readonly float MonsterSize_Large = 1.2F;
 
-                //public static readonly float Temp_SearchDistance = 8.0F;
                 public static readonly float Temp_ScanRange = 12.0F;
-
                 public static readonly float Temp_StopDistance = 1.25F;
                 
                 // Dead Fade Out Time

@@ -5,6 +5,8 @@ using System;
 using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 using System.IO;
 using UnityEngine.Tilemaps;
+using System.Linq;
+using Unity.Collections;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -13,32 +15,62 @@ using Newtonsoft.Json;
 
 namespace STELLAREST_F1
 {
+    public struct NodeTest : IComparable<NodeTest>
+    {
+        public int H;
+
+        public int CompareTo(NodeTest other)
+        {
+            if (H == other.H)
+                return 0;
+
+            return H < other.H ? 1 : -1;
+        }
+    }
+
     public class MapEditor : EditorWindow
     {
 #if UNITY_EDITOR
         [MenuItem("Tools/PrintTest %#H")]
         private static void PrintTest()
         {
-            int value = 0;
-            int[,] arr = new int[3,5];
-            /*
-                [0,0]: 0 | [0,1]: 1 | [0,2]: 2 | [0,3]: 3 | [0,4]: 4
-                [1,0]: 5 | [1,1]: 6 | [1,2]: 7 | [0,3]: 8 | [0,4]: 9
-                [2,0]: 10 | [2,1]: 11 | [2,2]: 12 | [2,3]: 13 | [2,4]: 14
-            */
+            // ###
+            // int value = 0;
+            // int[,] arr = new int[3,5];
+            // /*
+            //     [0,0]: 0 | [0,1]: 1 | [0,2]: 2 | [0,3]: 3 | [0,4]: 4
+            //     [1,0]: 5 | [1,1]: 6 | [1,2]: 7 | [0,3]: 8 | [0,4]: 9
+            //     [2,0]: 10 | [2,1]: 11 | [2,2]: 12 | [2,3]: 13 | [2,4]: 14
+            // */
 
-            for (int i = 0; i < arr.GetLength(0); ++i)
-            {
-                for (int j = 0; j < arr.GetLength(1); ++j)
-                    arr[i, j] = value++;
-            }
+            // for (int i = 0; i < arr.GetLength(0); ++i)
+            // {
+            //     for (int j = 0; j < arr.GetLength(1); ++j)
+            //         arr[i, j] = value++;
+            // }
 
-            for (int i = 0; i < arr.GetLength(0); ++i)
-            {
-                for (int j = 0; j < arr.GetLength(1); ++j)
-                    Debug.Log($"arr[{i}][{j}]: {arr[i, j]}");
-                Debug.Log("");
-            }
+            // for (int i = 0; i < arr.GetLength(0); ++i)
+            // {
+            //     for (int j = 0; j < arr.GetLength(1); ++j)
+            //         Debug.Log($"arr[{i}][{j}]: {arr[i, j]}");
+            //     Debug.Log("");
+            // }
+
+            // ###
+            // List<int> lst = new List<int>() { 3, 5, 7, 9 ,12 };
+            // int[] arr = lst.Where(n => n <= 7).ToArray();
+            // for (int i = 0; i < arr.Length; ++i)
+            //     Debug.Log($"arr[{i}]: {arr[i]}");
+
+            // ###
+            PriorityQueue<NodeTest> pq = new PriorityQueue<NodeTest>();
+            NodeTest node = new NodeTest() { H = 23 };
+            pq.Push(node);
+            node = new NodeTest() { H = 10 };
+            pq.Push(node);
+
+            for (int i = 0; i < pq.Heap.Count; ++i)
+                Debug.Log($"pq[{i}]: {pq.Heap[i].H}");
         }
 
         // Mac: %(Command) #(Shift) K

@@ -110,28 +110,27 @@ namespace STELLAREST_F1
         {
             if (Target.IsValid() == false)
             {
-                Vector3 toDestDir = _destPos - transform.position;
-                float endThreshold = 0.01f;
-                if (toDestDir.sqrMagnitude < endThreshold)
-                {
-                    CreatureState = ECreatureState.Idle;
-                    return;
-                }
-
-                // Research Enemy When Patroling
-                // SetRigidBodyVelocity(toDestDir.normalized * MovementSpeed); - DELETED
                 Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_ScanRange, Managers.Object.Heroes, func: IsValid) as Creature;
-                if (creature.IsValid())
+                if (creature != null)
                 {
                     Target = creature;
                     CreatureState = ECreatureState.Move;
-                    CreatureMoveState = ECreatureMoveState.TargetToEnemy;
+                    return;
+                }
+
+                _findPathResult = FindPathAndMoveToCellPos(destPos: _destPos, ReadOnly.Numeric.MonsterDefaultMoveDepth);
+                if (LerpToCellPosCompleted)
+                {
+                    CreatureState = ECreatureState.Idle;
                     return;
                 }
             }
             else
             {
+                //SkillBase skill = Skills.GetReadySkill();
                 ChaseOrAttackTarget(ReadOnly.Numeric.Temp_ScanRange, AttackDistance);
+                
+                // 너무 멀어지면 포기
                 if (Target.IsValid() == false)
                 {
                     Target = null;

@@ -9,12 +9,13 @@ namespace STELLAREST_F1
     {
         public float CampMovementSpeed { get; set; } = 5.0f;
         public Transform Pivot { get; private set; } = null;
-        public Transform Destination { get; private set; } = null;
+        private SpriteRenderer _pivotSPR = null;
+
+        public Transform Pointer { get; private set; } = null; // Prev: Destination
+        private SpriteRenderer _pointerSPR = null;
+
         private Vector3 _movementDirection = Vector3.zero;
-
-        private SpriteRenderer _circleSPR = null;
-        private SpriteRenderer _arrowSPR = null;
-
+        
         public override bool Init()
         {
             if (base.Init() == false)
@@ -32,12 +33,12 @@ namespace STELLAREST_F1
             Managers.Game.OnJoystickStateChangedHandler += OnJoystickStateChanged;
 
             Pivot = transform.GetChild(0).transform;
-            Destination = Pivot.GetChild(0).transform;
+            Pointer = Pivot.GetChild(0).transform;
 
-            _circleSPR = GetComponent<SpriteRenderer>();
-            _arrowSPR = Destination.GetComponent<SpriteRenderer>();
+            _pivotSPR = GetComponent<SpriteRenderer>();
+            _pointerSPR = Pointer.GetComponent<SpriteRenderer>();
 
-            ShowArrowCircle(false);
+            ShowArrowCircle(true);
             SortingGroup.sortingOrder = ReadOnly.Numeric.SortingLayer_HeroCamp;
             return true;
         }
@@ -67,22 +68,22 @@ namespace STELLAREST_F1
 
         private void OnJoystickStateChanged(EJoystickState joystickState)
         {
-            switch (joystickState)
-            {
-                case EJoystickState.PointerDown:
-                    ShowArrowCircle(true);
-                    break;
+            // switch (joystickState)
+            // {
+            //     case EJoystickState.PointerDown:
+            //         ShowArrowCircle(true);
+            //         break;
 
-                case EJoystickState.PointerUp:
-                    ShowArrowCircle(false);
-                    break;
-            }
+            //     case EJoystickState.PointerUp:
+            //         ShowArrowCircle(false);
+            //         break;
+            // }
         }
 
         private void ShowArrowCircle(bool show)
         {
-            _circleSPR.enabled = show;
-            _arrowSPR.enabled = show;
+            _pivotSPR.enabled = show;
+            _pointerSPR.enabled = show;
         }
     }
 }

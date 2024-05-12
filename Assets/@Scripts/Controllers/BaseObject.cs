@@ -283,10 +283,10 @@ namespace STELLAREST_F1
         }
 
         #region Map
-        public bool LerpToCellPosCompleted { get; protected set; } = false;
+        [field: SerializeField] public bool LerpToCellPosCompleted { get; protected set; } = false;
 
         private Vector3Int _cellPos = Vector3Int.zero;
-        public Vector3Int CellPos // *** CORE ***
+        public Vector3Int CellPos // ### CORE
         {
             get => _cellPos;
             protected set
@@ -323,11 +323,11 @@ namespace STELLAREST_F1
             else if (dir.x > 0f)
                 LookAtDir = ELookAtDirection.Right;
 
-            if (dir.magnitude < Mathf.Epsilon)
+            if (dir.sqrMagnitude < Mathf.Epsilon)
             {
-                Debug.Log("############## MOVE COMPLETED ####################");
+                Debug.Log("############## MOVEMENT COMPLETED ####################");
                 transform.position = destPos;
-                LerpToCellPosCompleted = true;
+                LerpToCellPosCompleted = true; 
                 return;
             }
 
