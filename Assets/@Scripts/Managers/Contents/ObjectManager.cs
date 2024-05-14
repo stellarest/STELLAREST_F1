@@ -7,7 +7,11 @@ namespace STELLAREST_F1
 {
     public class ObjectManager
     {
-        public HashSet<Hero> Heroes { get; } = new HashSet<Hero>();
+        //public HashSet<Hero> Heroes { get; } = new HashSet<Hero>();
+        // TEMP
+        public List<Hero> Heroes { get; } = new List<Hero>();
+
+
         public HashSet<Monster> Monsters { get; } = new HashSet<Monster>();
         public HashSet<Env> Envs { get; } = new HashSet<Env>();
         public HashSet<Projectile> Projectiles { get; } = new HashSet<Projectile>();
@@ -51,6 +55,20 @@ namespace STELLAREST_F1
 
                 case EObjectType.Monster:
                 case EObjectType.Env:
+                    {
+                        Data.EnvData data = Managers.Data.EnvDataDict[dataID];
+                        go = Managers.Resource.Instantiate(data.PrefabLabel, parent: EnvRoot, poolingID: data.DataID);
+                        if (go == null)
+                        {
+                            Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{data.PrefabLabel}\"");
+                            return null;
+                        }
+
+                        Env env = go.GetComponent<Env>();
+                        env.SetInfo(dataID);
+                        Envs.Add(env);
+                        return env as T;
+                    }
                 case EObjectType.Projectile:
                     throw new System.NotImplementedException();
 

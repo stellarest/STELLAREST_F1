@@ -354,23 +354,31 @@ namespace STELLAREST_F1
             return FindPathAndMoveToCellPos(destCellPos, maxDepth, forceMoveCloser);
         }
 
-        // maxDepth: Mobile용 성능 조절 Offset 깊이 값
-        // ##### A*는 BFS랑 느낌이 굉장히 비슷함 #####
-        // 만약 maxDepth를 무한으로하면 맵 전체를 쭈욱 서칭할 것임. 그럼에도 길이 없으면 난리나게됨.
         public EFindPathResult FindPathAndMoveToCellPos(Vector3Int destPos, int maxDepth, bool forceMoveCloser = false)
         {
-            // Fail_LerpCell은 사실 실패한건 아니고, 
-            // 이미 기존에서 스르륵 움직이는 것을 처리 중이었기 때문에 그것에 대한 표시.
-            // ##### 가야할 CellPos는 처음에 정해져있는데 계속 움직이려고하면, 이게 아직 완료가 안되어서 멈춰버림 #####
+            // 지금 셀 크기는 적당함. 0.5 by 0.5
             if (LerpToCellPosCompleted == false) // 움직임 진행중
-                return EFindPathResult.Fail_LerpCell; // 위자드 에러,
+            {
+                if (this.name.Contains("___1"))
+                {
+                    Debug.Log("111111111111");
+                }
+
+                // ***** // 여기 Path Count 쪽으로 옮겨야할듯. 지금 Cell이 너무 커서
+                return EFindPathResult.Fail_LerpCell; // *** ReplaceMode : 이것때문에 도착지까지 길찾기 실패함. 못갔음.
+            }
             // Move상태라서
 
             // ### A* ###
             List<Vector3Int> path = Managers.Map.FindPath(CellPos, destPos, maxDepth);
             // 시작점은 기본으로 들어가있고,
-            if (path.Count < 2)
+            if (path.Count < 2) // 왠지 OutOfRange 삘
             {
+                if (this.name.Contains("___1"))
+                {
+                    Debug.Log("222222222222");
+                }
+
                 return EFindPathResult.Fail_NoPath; // 진짜로 길이 없을 때
             }
 
@@ -426,7 +434,6 @@ namespace STELLAREST_F1
                 yield return null;
             }
         }
-
         #endregion Map
         #endregion Helper
     }

@@ -8,24 +8,21 @@ using Unity.VisualScripting;
 
 /*
 [ TODO LIST ]
-- Wizard Attack Anim 교정
-- Monster RigidBody Linear Drag (100 -> 300) : 나중에 종류별로 바꿔야함.
-- 그리고 예를 들어 바위를 채집할 때, 바위 완전 밑에서 채집하면 이상하니까, 이런거 위치 조정해줘야 할 것 같은데.
-- Melee Attack 구현, Init Stat 구현. Exp는 아직 X
-
-Character Skills Ex
-- Skill_Attack : Paladin MeleeAttack
-- Skill_A : Double Attack
-- Skill_B : Shield
-
+>> 캐쥬얼하게 만들기.
 >> Parabola 모션 개선 필요 (타겟 거리에 따라 HeightArc 조정)
-- changeStraightMotion활용하여 너무 가까이 있으면 직선으로 쏘던지, 아니면 HeightArc 조정하던지
-- (지금 HeightArc가 0.xxx이면 포물선이 반대로 나가거나 이상하게 나가는 버그 있긴함)
->> 위아래 꼬불꼬불 마법 프로젝타일
->> A* 돌리기 직전인데 지금 이케 어케 대강 어케 돌아가고 있는지 보기
----> DevScene에서 먼저 Hero를 MoveTo로 forceMove하기 때문에, LerpToCellPosCompleted가 true인 상태에서 시작됨.
----> 그래서 Hero UpdateMove에서 마우스를 놓았을 때 Idle로 돌아가는 것이고,
----> 그리고 이미 ForveMove일 때 NeedArrange는 true로 켜져있는 상태라 Idle에서 바로 Move State로 바뀐뒤에 ReturnToBase로 가게 되는것
+>> Wizard Attack Anim 완성.
+>> 채집물 채집할 떄 위치 파악. 어색하지 않게 채집하는지.
+>> 스탯은 나중에
+>> 스킬 예시 Character Skills Ex
+- Skill_Attack : Paladin MeleeAttack - 일반 공격
+- Skill_A : Double Attack - 액티브 스킬1
+- Skill_B : Shield - 액티브 스킬2
+>> 위아래 꼬불꼬불 위자드 특수스킬 프로젝타일
+>>>>> 맵 대충 배치해놓고, 채집물 배치해보고, 몬스터 배치해보고, 기본 전투
+>>>>> 히어로 애니메이션 바디에 있는 sorting group 제거함
+>>>>> TileMapRenderer Mode를 Individual로 바꾸니까 해결된 느낌
+>>>>> 나무쪽 타일맵 랜더러 Sorting Group 추가하지 말고 그냥 Sorting Layer만 BaseObject로
+>>>>> Mode를 Individual로 바꾸고, 나무1 스프라이트의 피벗을 0.5, 0.1로 바꾸면 자동정렬 완성
 */
 
 public class Test1 : IEnumerator

@@ -109,6 +109,8 @@ namespace STELLAREST_F1
             ReturnToBase,
             ForceMove,
             ForcePath,
+
+            Replace,
         }
 
         public enum ELookAtDirection
@@ -358,6 +360,13 @@ namespace STELLAREST_F1
             Success
         }
 
+        public enum EReplaceHeroesMode
+        {
+            FollowBaseCamp = -1, // Default, 
+            FocusingOnLeader = 3,
+            WideFocusingOnLeader = 15,
+        }
+
         // ####################################################
 
         public static class ReadOnly
@@ -594,7 +603,8 @@ namespace STELLAREST_F1
                 // MISC
                 public static readonly int RockElementsCount = 3;
                 public static readonly int MaxActiveSkillsCount = 2;
-                public static readonly int HeroDefaultMoveDepth = 5;
+                public static readonly int HeroDefaultMoveDepth = 5; // default: 5
+                public static readonly int HeroMaxMoveDepth = 100;
                 public static readonly int MonsterDefaultMoveDepth = 3;       
 
                 // [ FLOATING ]

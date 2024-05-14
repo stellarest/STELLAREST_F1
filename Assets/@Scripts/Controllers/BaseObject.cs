@@ -285,7 +285,7 @@ namespace STELLAREST_F1
         #region Map
         [field: SerializeField] public bool LerpToCellPosCompleted { get; protected set; } = false;
 
-        private Vector3Int _cellPos = Vector3Int.zero;
+        [SerializeField] private Vector3Int _cellPos = Vector3Int.zero;
         public Vector3Int CellPos // ### CORE
         {
             get => _cellPos;
@@ -310,6 +310,7 @@ namespace STELLAREST_F1
             }
         }
 
+        // LerpToCellPosComplated: false
         public void LerpToCellPos(float movementSpeed) // Coroutine every tick
         {
             if (LerpToCellPosCompleted)
@@ -323,8 +324,15 @@ namespace STELLAREST_F1
             else if (dir.x > 0f)
                 LookAtDir = ELookAtDirection.Right;
 
-            if (dir.sqrMagnitude < Mathf.Epsilon)
+            // dir.sqrMagnitude < Mathf.Epsilon : 애초에 불가능
+            // Origin : 0.01f (버그는 해결되는데 좀 딱딱해보임)
+            // Mathf.Approximately(dir.sqrMagnitude, Mathf.Epsilon)
+            // 고쳐야될수도 있음. 메모장에 A* 뻑났을 때 예외상황 참고.
+            // ---> 조금 널널하게 값을 주면 제자리 걸음은 고치게됨. 도착으로 인식하게 되어서.
+            // 그러나 와리가리는 안고쳐짐. (Fail_LerpCell) // 0.001f : OK, But ReplaceHeroes not okay
+            if (dir.sqrMagnitude < 0.001f) // 0.001f
             {
+                // 일단 도착점이 나온다는건 알았음. 근데 왜 일로감?
                 Debug.Log("############## MOVEMENT COMPLETED ####################");
                 transform.position = destPos;
                 LerpToCellPosCompleted = true; 

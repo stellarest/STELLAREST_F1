@@ -12,13 +12,6 @@ using UnityEngine.PlayerLoop;
 using UnityEngine.Tilemaps;
 using static STELLAREST_F1.Define;
 
-/*
--6
-7
--8
-5
-*/
-
 namespace STELLAREST_F1
 {
     public class Hero : Creature
@@ -91,18 +84,27 @@ namespace STELLAREST_F1
 
         public HeroAnimation HeroAnim { get; private set; } = null;
 
+        // Test
+        [field: SerializeField] public bool Leader { get; set; } = false;
+
         [field: SerializeField] public bool NeedArrange { get; set; } = false;
-        #region ##### TEST #####   
+        #region ##### TEST AREA #####   
         // ########################################
-        // private void Update()
-        // {
-        //     // Managers.Map.CanMove(transform.position, ignoreObjects: false, ignoreSemiWall: true);
-        //     // Managers.Map.CheckOnTile(transform.position);
-        //     // Managers.Map.CheckOnTile(this);
-        //     // if (Input.GetKeyDown(KeyCode.T))
-        //     // {
-        //     // }
-        // }
+        private void Update()
+        {
+            // Managers.Map.CanMove(transform.position, ignoreObjects: false, ignoreSemiWall: true);
+            // Managers.Map.CheckOnTile(transform.position);
+            // Managers.Map.CheckOnTile(this);
+            // if (Input.GetKeyDown(KeyCode.T))
+            // {
+            // }
+
+            if (Input.GetKeyDown(KeyCode.S))
+            {
+                Managers.Game.ReplaceHeroes();
+            }
+
+        }
         // ########################################
         #endregion
 
@@ -114,7 +116,6 @@ namespace STELLAREST_F1
             ObjectType = EObjectType.Hero;
             Collider.isTrigger = true;
             RigidBody.simulated = false;
-
             return true;
         }
 
@@ -126,6 +127,8 @@ namespace STELLAREST_F1
                 return false;
             }
             
+            SortingGroup.sortingOrder = 20; // TEST - 일단 Wall이랑 똑같이.
+
             HeroBody = new HeroBody(this, dataID);
             HeroAnim = CreatureAnim as HeroAnimation;
             HeroAnim.SetInfo(dataID, this);
@@ -154,7 +157,8 @@ namespace STELLAREST_F1
             Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
             Managers.Game.OnJoystickStateChangedHandler += OnJoystickStateChanged;
 
-            //NeedArrange = true;
+            // A* Test
+            // NeedArrange = true; // TEMP
         }
 
         #region ##### AI #####
@@ -203,8 +207,27 @@ namespace STELLAREST_F1
         // 그룹이동을 만들고 싶으면 이런 이동하는 코드들을 다 HeroCamp에 짱박아서 한번에 관리하게끔 응용해보라고함.
         // 기본적으로 작게 작게 움직이는 것은 문제가 없을거임.
         // 근데... 
+        private Vector3Int _replaceDestCellPos = Vector3Int.zero;
         protected override void UpdateMove()
         {
+            // A* Test
+            if (CreatureMoveState == ECreatureMoveState.Replace)
+            {
+                // 되긴 하는데 장애물 근처에 있을 때 Fail_NoPath 떠가지고 제자리 걸음 하는 녀석도 있긴함.
+                // 이거 고치고 코드 우아하게 수정하면 될듯.
+                FindPathAndMoveToCellPos(_replaceDestCellPos, ReadOnly.Numeric.HeroDefaultMoveDepth); // 되긴 되는데 장애물을 무시함;;;
+                if (LerpToCellPosCompleted) // A* Test
+                {
+                    // A* Test
+                    CreatureMoveState = ECreatureMoveState.None; // 이렇게만 처리하고 싶은데 확실하게 Idle로 안가는 녀석도 있음.
+                    CreatureState = ECreatureState.Idle; // 그래서 이것도 추가
+                    NeedArrange = false;
+                    return;
+                }
+
+                return;
+            }
+
             // ForceMove 보다 더 우선순위
             if (CreatureMoveState == ECreatureMoveState.ForcePath)
             {
@@ -264,45 +287,43 @@ namespace STELLAREST_F1
 
             if (CreatureMoveState == ECreatureMoveState.ReturnToBase)
             {
-                _findPathResult = FindPathAndMoveToCellPos(CampDestination.position, 150);
+                _findPathResult = FindPathAndMoveToCellPos(CampDestination.position, ReadOnly.Numeric.HeroDefaultMoveDepth);
 
                 // 실패사유 검사
                 // 여기서 뭉치는 알고리즘이 진행됨
-                // BaseObject obj = Managers.Map.GetObject(CampDestination.position);
-                // if (obj.IsValid())
-                // {
-                //     // 내가 그 자리를 차지하고 있음.
-                //     if (obj == this)
-                //     {
-                //         //CreatureMoveState = ECreatureMoveState.None;
-                //         Debug.LogWarning("myself");
-                //         Debug.Break();
-                //         NeedArrange = false;
-                //         return;
-                //     }
+                BaseObject obj = Managers.Map.GetObject(CampDestination.position);
+                if (obj.IsValid())
+                {
+                    // 내가 그 자리를 차지하고 있음.
+                    if (obj == this)
+                    {
+                        Debug.Log($"<color=magenta>findPathResult: {_findPathResult}</color>");
+                        CreatureMoveState = ECreatureMoveState.None;
+                        NeedArrange = false;
+                        return;
+                    }
 
-                //     // 다른 영웅이 그 자리를 차지하고 있음.
-                //     Hero hero = obj as Hero;
-                //     if (hero != null && hero.CreatureState == ECreatureState.Idle)
-                //     {
-                //         //CreatureMoveState = ECreatureMoveState.None;
-                //         Debug.LogWarning("other");
-                //         Debug.Break();
-                //         NeedArrange = false;
-                //         return;
-                //     }
-                // }
+                    // 다른 영웅이 그 자리를 차지하고 있음.
+                    Hero hero = obj as Hero;
+                    if (hero != null && hero.CreatureState == ECreatureState.Idle)
+                    {
+                        Debug.Log($"<color=orange>findPathResult: {_findPathResult}</color>");
+                        CreatureMoveState = ECreatureMoveState.None;
+                        NeedArrange = false;
+                        return;
+                    }
+                }
             }
 
             if (LerpToCellPosCompleted)
             {
                 CreatureState = ECreatureState.Idle;
                 // 여기서는 누르지 않은 상태이니까 None
-                if (CreatureMoveState == ECreatureMoveState.ReturnToBase && _findPathResult == EFindPathResult.Fail_NoPath)
+                if (CreatureMoveState == ECreatureMoveState.ReturnToBase && _findPathResult != EFindPathResult.Success)
                 {
                     // 이거 조건걸어서 단체로 움직일때 누구는 캠프 근처로가고 누구는 안가고 이러는건가.
                     NeedArrange = false; // 이것만 해도 임시적으로 되긴함
-                    // CreatureMoveState = ECreatureMoveState.None;
+                    CreatureMoveState = ECreatureMoveState.None;
                     // Lerp하다가 중간에 누가 차지하면 계속 걸어가려고하는데 이거 막아야할듯
                 }
                 // NeedArrange = false; // --> 이거 주면 해결 되긴하는데, 캠프까지 쫓아가질 않음
@@ -311,6 +332,9 @@ namespace STELLAREST_F1
 
         private Queue<Vector3Int> _forcePath = new Queue<Vector3Int>();
 
+        // ####################### TEMP #######################
+        private List<Vector3Int> _pathList = new List<Vector3Int>();
+        //  ###################################################
         private bool CheckHeroCampDistanceAndForthPath()
         {
             Vector3 destPos = CampDestination.position;
@@ -321,7 +345,8 @@ namespace STELLAREST_F1
             if (Managers.Map.CanMove(destCellPos, ignoreObjects: true) == false)
                 return false;
 
-            List<Vector3Int> path = Managers.Map.FindPath(startCellPos: CellPos, destCellPos: destCellPos, 100);
+            // maxDepth: 100이었음.
+            List<Vector3Int> path = Managers.Map.FindPath(startCellPos: CellPos, destCellPos: destCellPos, maxDepth: ReadOnly.Numeric.HeroMaxMoveDepth);
             if (path.Count < 2)
                 return false;
 
@@ -509,9 +534,16 @@ namespace STELLAREST_F1
             Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
         }
         #endregion
+
+        // TEST
+        public void ReplaceHero(Vector3Int cellPos)
+        {
+            CreatureState = ECreatureState.Move;
+            CreatureMoveState = ECreatureMoveState.Replace;
+            _replaceDestCellPos = cellPos;
+        }
     }
 }
-
 
 /*
                 // Research Enemies

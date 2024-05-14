@@ -43,20 +43,11 @@ namespace STELLAREST_F1
             ParseCollisionData(map, mapName);
         }
 
-        public void DestroyMap()
+        private void ParseCollisionData(GameObject map, string mapName, string tileMap = "Tilemap_Collision")
         {
-            ClearObjects();
-
-            if (Map != null)
-                Managers.Resource.Destroy(Map);
-        }
-
-        private void ParseCollisionData(GameObject map, string mapName, string tileMap = "_Collision")
-        {
-            // SummerForest_Field_Temp_Collision
             // GameObject collision = Util.FindChild(map, tileMap, true);
             // if (collision != null)
-            //     collision.SetActive(false); // 타일을 찍은 부분이 실제로 보이면 안됨.
+            //     collision.SetActive(false);
 
             TextAsset txt = Managers.Resource.Load<TextAsset>($"{mapName}_Collision");
             StringReader stringReader = new StringReader(txt.text); // StringReader, 파일 입출력(System.IO)
@@ -180,6 +171,14 @@ namespace STELLAREST_F1
             return false;
         }
 
+        public void DestroyMap()
+        {
+            ClearObjects();
+
+            if (Map != null)
+                Managers.Resource.Destroy(Map);
+        }
+
         public void ClearObjects()
             => _cells.Clear();
         #endregion
@@ -281,7 +280,7 @@ namespace STELLAREST_F1
                     pq.Push(new PQNode() { H = h, CellPos = next, Depth = node.Depth + 1 });
                     parent[next] = pos; // ***** Next위치의 부모는 pos가 된다 *****
                        
-                    if (closestH > h)
+                    if (closestH > h) // 이거 무조건 있어야함. 이게 없으면 만약 다른 녀석이 차지하면 막 난리날듯.
                     {
                         closestH = h;
                         closestCellPos = next;
@@ -291,12 +290,12 @@ namespace STELLAREST_F1
 
             // RetracePath(startNode, targetNode);
             if (parent.ContainsKey(dest) == false)
-                return CalcCellPathFromParent(parent, closestCellPos);
+                return TraceCellPath(parent, closestCellPos);
 
-            return CalcCellPathFromParent(parent, dest);
+            return TraceCellPath(parent, dest);
         }
 
-        private List<Vector3Int> CalcCellPathFromParent(Dictionary<Vector3Int, Vector3Int> parent, Vector3Int dest)
+        private List<Vector3Int> TraceCellPath(Dictionary<Vector3Int, Vector3Int> parent, Vector3Int dest)
         {
             List<Vector3Int> cells = new List<Vector3Int>();
             if (parent.ContainsKey(dest) == false)

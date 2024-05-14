@@ -55,9 +55,11 @@ namespace STELLAREST_F1
 
         private void Test()
         {
+            // MapName: SummerForestField_Test
+            // MapName: SummerForestField_Test2
             UI_Joystick joystick = Managers.UI.ShowBaseUI<UI_Joystick>();
             // Managers.Map.LoadMap(ReadOnly.String.SummerForest_Field_Temp);
-            Managers.Map.LoadMap("TempMap02");
+            Managers.Map.LoadMap("SummerForestField_Test2");
             Managers.Map.Map.transform.position = Vector3.zero;
 
             {
@@ -78,43 +80,33 @@ namespace STELLAREST_F1
                 CameraController cam = Camera.main.GetComponent<CameraController>();
                 cam.Target = camp;
 
+                int testSortingOrder = 100; // Default : 20 - Tilemap Wall이랑 똑같음
                 Hero hero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
+                hero.SortingGroup.sortingOrder = testSortingOrder; 
+                hero.Leader = true;                
                 Managers.Map.MoveTo(hero, randPos, forceMove: true);
+                // // A* Test
+                // Managers.Map.MoveTo(hero, new Vector3Int(-1, 0, 0), forceMove: true);
 
-                /*
-                        public static readonly int DataID_Hero_Paladin = 101000;
-                        public static readonly int DataID_Hero_Archer = 101010;
-                        public static readonly int DataID_Hero_Wizard = 101020;
-                */
 
-                int randID = 0;
-                for (int i = 0; i < 10; ++i)
+                // Env env = Managers.Object.Spawn<Env>(EObjectType.Env, ReadOnly.Numeric.DataID_Env_AshTree);
+                // env.transform.position = Vector3.zero;
+                // 최대 맵 배치 동료 개수 : 7명 - (리더1, 팔로워6), 또는 9명(리더1, 팔로워8)
+                int memberCount = 0;
+                while (memberCount < 6)
                 {
-                    float rand = UnityEngine.Random.Range(0, 100f);
-                    if (rand >= 0 && rand <= 50f)
-                        randID = ReadOnly.Numeric.DataID_Hero_Paladin;
-                    else if (rand > 50f && rand < 75)
-                        randID = ReadOnly.Numeric.DataID_Hero_Archer;
-                    else
-                        randID = ReadOnly.Numeric.DataID_Hero_Wizard;
-
                     randPos = new Vector3Int(Random.Range(-3, 3), Random.Range(-3, 3), 0);
                     if (Managers.Map.CanMove(randPos) == false)
                         continue;
-
-                    hero = Managers.Object.Spawn<Hero>(EObjectType.Hero, randID);
-                    Managers.Map.MoveTo(creature: hero, randPos, forceMove: false);
+                        
+                    memberCount++;
+                    hero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
+                    hero.SortingGroup.sortingOrder = testSortingOrder;
+                    hero.gameObject.name += $"___{memberCount.ToString()}";
+                    Managers.Map.MoveTo(hero, randPos, forceMove: true);
+                    // A* Test
+                    // Managers.Map.MoveTo(hero, new Vector3Int(-1, -1, 0), forceMove: true);
                 }
-
-                // for (int i = 0; i < 10; ++i)
-                // {
-                //     randPos = new Vector3Int(Random.Range(-3, 3), Random.Range(-3, 3), 0);
-                //     if (Managers.Map.CanMove(randPos) == false)
-                //         continue;
-
-                //     Hero hero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
-                //     Managers.Map.MoveTo(hero, randPos, forceMove: true);
-                // }
             }
         }
 
