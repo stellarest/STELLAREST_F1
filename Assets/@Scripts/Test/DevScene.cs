@@ -78,16 +78,17 @@ namespace STELLAREST_F1
                 HeroCamp camp = Managers.Object.Spawn<HeroCamp>(EObjectType.HeroCamp);
                 camp.SetCellPos(randPos, forceMove: true);
                 CameraController cam = Camera.main.GetComponent<CameraController>();
-                cam.Target = camp;
+                // cam.Target = camp; // TEMP
 
                 int testSortingOrder = 100; // Default : 20 - Tilemap Wall이랑 똑같음
                 Hero hero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
                 hero.SortingGroup.sortingOrder = testSortingOrder; 
-                hero.Leader = true;                
+                camp.Leader = hero;
+                cam.Target = hero;
+
                 Managers.Map.MoveTo(hero, randPos, forceMove: true);
                 // // A* Test
                 // Managers.Map.MoveTo(hero, new Vector3Int(-1, 0, 0), forceMove: true);
-
 
                 // Env env = Managers.Object.Spawn<Env>(EObjectType.Env, ReadOnly.Numeric.DataID_Env_AshTree);
                 // env.transform.position = Vector3.zero;

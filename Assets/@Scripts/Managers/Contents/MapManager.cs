@@ -96,7 +96,6 @@ namespace STELLAREST_F1
             RemoveObject(creature);
             AddObject(creature, cellPos);
             creature.SetCellPos(cellPos, forceMove);
-
             return true;
         }
 

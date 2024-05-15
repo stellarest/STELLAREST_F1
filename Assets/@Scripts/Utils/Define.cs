@@ -360,7 +360,8 @@ namespace STELLAREST_F1
             Success
         }
 
-        public enum EReplaceHeroesMode
+        // 이거 한번 더 누르면 뱅글 뱅글 돌면서 재배치하는 기능 있으면 좋을 것 같음.
+        public enum EReplaceHeroMode
         {
             FollowBaseCamp = -1, // Default, 
             FocusingOnLeader = 3,
@@ -408,6 +409,7 @@ namespace STELLAREST_F1
                 public static readonly string UI_Joystick = "UI_Joystick";
                 public static readonly string AnimationBody = "AnimationBody";
                 public static readonly string HeroCamp = "HeroCamp";
+                public static readonly string LeaderMark = "LeaderMark";
                 //public static readonly string SummerForest_Field_Temp = "SummerForest_Field_Temp";
 
                 // Sprite - Collect Equipment

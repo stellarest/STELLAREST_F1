@@ -38,6 +38,14 @@ namespace STELLAREST_F1
 
         public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
+            // Refresh Animation
+            if (stateInfo.shortNameHash != _creatureAnim?.GetHash(_owner.CreatureState))
+            {
+                Debug.Log("!!!!!");
+                _creatureAnim.UpdateAnimation();
+                return;
+            }
+
             float currentPercentage = stateInfo.normalizedTime % 1.0f;
             if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureState.Skill_Attack) && _canSkillAttackFlag)
             {

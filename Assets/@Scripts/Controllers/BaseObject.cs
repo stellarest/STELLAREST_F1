@@ -333,7 +333,7 @@ namespace STELLAREST_F1
             if (dir.sqrMagnitude < 0.001f) // 0.001f
             {
                 // 일단 도착점이 나온다는건 알았음. 근데 왜 일로감?
-                Debug.Log("############## MOVEMENT COMPLETED ####################");
+                // Debug.Log("############## MOVEMENT COMPLETED ####################");
                 transform.position = destPos;
                 LerpToCellPosCompleted = true; 
                 return;

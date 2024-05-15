@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml.Schema;
 using UnityEngine;
 using static STELLAREST_F1.Define;
 
@@ -15,6 +17,33 @@ namespace STELLAREST_F1
         private SpriteRenderer _pointerSPR = null;
 
         private Vector3 _movementDirection = Vector3.zero;
+
+        private Hero _leader = null;
+        public Hero Leader
+        {
+            get => _leader;
+            set
+            {
+                if (_leader == null)
+                {
+                    _leader = value;
+                    _leader.IsLeader = true;
+                }
+                else if (_leader != value)
+                {
+                    _leader.IsLeader = false;
+                    _leader = value;
+                    _leader.IsLeader = true;
+                }
+                else
+                {
+                    Debug.Log("Same leader, and value");
+                    return;
+                }
+
+                Managers.Game.SetHeroLeader(Managers.Object.LeaderMark, value);
+            }
+        }
         
         public override bool Init()
         {

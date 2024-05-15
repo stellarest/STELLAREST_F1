@@ -78,6 +78,7 @@ namespace STELLAREST_F1
 
         public virtual void UpdateAnimation() {  }
 
+        // Animator.StopPlayback(); --> 안해도 됨, 한 프레임안에 애니메이션 갱신에서는 안먹힘
         protected virtual void Idle()
             => Animator.Play(Play_Idle);
 

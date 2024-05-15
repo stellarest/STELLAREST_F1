@@ -357,13 +357,9 @@ namespace STELLAREST_F1
         public EFindPathResult FindPathAndMoveToCellPos(Vector3Int destPos, int maxDepth, bool forceMoveCloser = false)
         {
             // 지금 셀 크기는 적당함. 0.5 by 0.5
+            // 아 움직이고 있는 중에는 길을 못찾겠네 ;;;;;
             if (LerpToCellPosCompleted == false) // 움직임 진행중
             {
-                if (this.name.Contains("___1"))
-                {
-                    Debug.Log("111111111111");
-                }
-
                 // ***** // 여기 Path Count 쪽으로 옮겨야할듯. 지금 Cell이 너무 커서
                 return EFindPathResult.Fail_LerpCell; // *** ReplaceMode : 이것때문에 도착지까지 길찾기 실패함. 못갔음.
             }
@@ -371,19 +367,11 @@ namespace STELLAREST_F1
 
             // ### A* ###
             List<Vector3Int> path = Managers.Map.FindPath(CellPos, destPos, maxDepth);
-            // 시작점은 기본으로 들어가있고,
-            if (path.Count < 2) // 왠지 OutOfRange 삘
+            if (path.Count < 2) // 시작점만 들어가있다는 뜻이니까.
             {
-                if (this.name.Contains("___1"))
-                {
-                    Debug.Log("222222222222");
-                }
-
-                return EFindPathResult.Fail_NoPath; // 진짜로 길이 없을 때
+                return EFindPathResult.Fail_NoPath;
             }
 
-            // 시작점과 다음점 2개 이상이라면, 길을 찾았다는 의미일것이고 다음으로 가야할 것은 path[1]에 들어가 있을 것임.
-            // 와리가리 막는 용돈데 이해가 안감.
             // 다른 오브젝트가 길막해서 와리가리할수있다는데, 그럴때 diff1, diff2의 점수 계산을 해서 안가게끔 막는 것이라고 함.
             // 근데 아주 예외적인 케이스라고함.
             if (forceMoveCloser)
@@ -399,6 +387,7 @@ namespace STELLAREST_F1
             Vector3Int nextPos = CellPos + dirCellPos;
 
             // ##### 선점부터 #####
+            // ****** PathFinder가 한 번만 호출되서 nextPos [0,0]에서 끝난것임
             if (Managers.Map.MoveTo(this, nextPos) == false)
                 return EFindPathResult.Fail_MoveTo;
             // Fail_MoveTo: 이건 길을 찾았으면 원래는 갈 수 있어야 하지만 다른 이유에 의해 못갔을 때

@@ -83,11 +83,8 @@ namespace STELLAREST_F1
         }
 
         public HeroAnimation HeroAnim { get; private set; } = null;
-
-        // Test
-        [field: SerializeField] public bool Leader { get; set; } = false;
-
         [field: SerializeField] public bool NeedArrange { get; set; } = false;
+        [field: SerializeField] public bool IsLeader { get; set; } = false;
         #region ##### TEST AREA #####   
         // ########################################
         private void Update()
@@ -101,7 +98,7 @@ namespace STELLAREST_F1
 
             if (Input.GetKeyDown(KeyCode.S))
             {
-                Managers.Game.ReplaceHeroes();
+                //Managers.Game.ReplaceHeroes();
             }
 
         }
@@ -206,21 +203,22 @@ namespace STELLAREST_F1
         // FindPathAndMoveToCellPos를 히어로에 막바로 넣지않고
         // 그룹이동을 만들고 싶으면 이런 이동하는 코드들을 다 HeroCamp에 짱박아서 한번에 관리하게끔 응용해보라고함.
         // 기본적으로 작게 작게 움직이는 것은 문제가 없을거임.
-        // 근데... 
-        private Vector3Int _replaceDestCellPos = Vector3Int.zero;
+        private Vector3Int _replaceDestPos = Vector3Int.zero;
         protected override void UpdateMove()
         {
             // A* Test
             if (CreatureMoveState == ECreatureMoveState.Replace)
             {
                 // 되긴 하는데 장애물 근처에 있을 때 Fail_NoPath 떠가지고 제자리 걸음 하는 녀석도 있긴함.
-                // 이거 고치고 코드 우아하게 수정하면 될듯.
-                FindPathAndMoveToCellPos(_replaceDestCellPos, ReadOnly.Numeric.HeroDefaultMoveDepth); // 되긴 되는데 장애물을 무시함;;;
+                // 이거 고치고 코드 우아하게 AI 수정. Idle 너무 강제임. 고쳐야함.
+                // 지금도 대강 되긴하는데 이거 고치고, 체인지 포지션?
+                // 그리고 HeroLeader가 Camp의 Dest가 되어야함. --> 이것부터 할까?
+                FindPathAndMoveToCellPos(destPos: _replaceDestPos, 999);
                 if (LerpToCellPosCompleted) // A* Test
                 {
                     // A* Test
                     CreatureMoveState = ECreatureMoveState.None; // 이렇게만 처리하고 싶은데 확실하게 Idle로 안가는 녀석도 있음.
-                    CreatureState = ECreatureState.Idle; // 그래서 이것도 추가
+                    CreatureState = ECreatureState.Idle; // 그래서 이것도 추가 (임시)
                     NeedArrange = false;
                     return;
                 }
@@ -536,11 +534,21 @@ namespace STELLAREST_F1
         #endregion
 
         // TEST
-        public void ReplaceHero(Vector3Int cellPos)
+        public void ReplaceHero(Vector3Int replaceDestPos)
         {
+            if ((CellPos - replaceDestPos).sqrMagnitude < 1f)
+            {
+                Debug.Log("");
+                Debug.Log($"<color=magenta>START:{gameObject.name}</color>");
+                Debug.Log("<color=magenta>Don't Move !!</color>");
+                Debug.Log($"<color=magenta>END:{gameObject.name}</color>");
+                Debug.Log("");
+                return;
+            }
+
             CreatureState = ECreatureState.Move;
             CreatureMoveState = ECreatureMoveState.Replace;
-            _replaceDestCellPos = cellPos;
+            _replaceDestPos = replaceDestPos;
         }
     }
 }

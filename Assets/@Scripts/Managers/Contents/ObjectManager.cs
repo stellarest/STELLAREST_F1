@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.ExceptionServices;
 using UnityEngine;
 using static STELLAREST_F1.Define;
 
@@ -10,12 +11,25 @@ namespace STELLAREST_F1
         //public HashSet<Hero> Heroes { get; } = new HashSet<Hero>();
         // TEMP
         public List<Hero> Heroes { get; } = new List<Hero>();
-
-
         public HashSet<Monster> Monsters { get; } = new HashSet<Monster>();
         public HashSet<Env> Envs { get; } = new HashSet<Env>();
         public HashSet<Projectile> Projectiles { get; } = new HashSet<Projectile>();
         public HeroCamp Camp { get; private set; } = null;
+
+        private Transform _leaderMark = null;
+        public Transform LeaderMark
+        {
+            get
+            {
+                if (_leaderMark == null)
+                {
+                    _leaderMark = Managers.Resource.Instantiate(ReadOnly.String.LeaderMark).transform;
+                    _leaderMark.GetComponent<SpriteRenderer>().sortingOrder = 101;
+                }
+
+                return _leaderMark;
+            }
+        }
 
         #region Roots
         public Transform GetRoot(string name)
