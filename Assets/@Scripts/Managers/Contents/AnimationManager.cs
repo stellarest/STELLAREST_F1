@@ -6,6 +6,7 @@ using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
+    // ***** 폐기처분해야할듯. 엉망임. *****
     public class AnimationManager
     {
         private AnimationCurve[] _curves = null;

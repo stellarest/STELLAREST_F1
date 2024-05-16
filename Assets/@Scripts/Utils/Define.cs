@@ -630,7 +630,7 @@ namespace STELLAREST_F1
                 public static readonly float MaxDistanceForMovementSpeed = 8.0F;
 
                 // CameraController
-                public static readonly float CamDesiredMoveToTargetTime = 1f;
+                public static readonly float CamDesiredMoveToTargetTime = 0.75f;
 
                 // STILL NOT TESTED ##########
                 public static readonly float CalcValueMaxDistanceMultiplier = 2.0F;

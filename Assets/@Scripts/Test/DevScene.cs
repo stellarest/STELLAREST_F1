@@ -77,10 +77,9 @@ namespace STELLAREST_F1
 
                 HeroCamp camp = Managers.Object.Spawn<HeroCamp>(EObjectType.HeroCamp);
                 camp.SetCellPos(randPos, forceMove: true);
-                //CameraController cam = Camera.main.GetComponent<CameraController>();
-
-                CameraController cam = GameObject.Find("@VCam").GetComponent<CameraController>();
-                // cam.Target = camp; // TEMP
+                CameraController cam = Camera.main.GetComponent<CameraController>();
+                // CameraController cam = GameObject.Find("@VCam").GetComponent<CameraController>();
+                // cam.Target = camp; // TEMP // --> 제거, Camp에서 할것임
                 Managers.Object.CameraController = cam;
 
                 int testSortingOrder = 100; // Default : 20 - Tilemap Wall이랑 똑같음

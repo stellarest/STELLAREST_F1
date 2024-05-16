@@ -37,7 +37,7 @@ namespace STELLAREST_F1
                 }
                 else
                 {
-                    Debug.Log("Same leader, and value");
+                    Debug.Log("Same leader == value");
                     return;
                 }
 

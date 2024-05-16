@@ -23,6 +23,8 @@ using Unity.VisualScripting;
 >>>>> TileMapRenderer Mode를 Individual로 바꾸니까 해결된 느낌
 >>>>> 나무쪽 타일맵 랜더러 Sorting Group 추가하지 말고 그냥 Sorting Layer만 BaseObject로
 >>>>> Mode를 Individual로 바꾸고, 나무1 스프라이트의 피벗을 0.5, 0.1로 바꾸면 자동정렬 완성
+>>>>> AnimationCurveManager -> 제거 예정
+>>>>> CAMP == LEADER 동일하게 위치 설정해서 A* 수정
 */
 
 public class Test1 : IEnumerator
