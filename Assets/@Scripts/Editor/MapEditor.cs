@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 using System.IO;
 using UnityEngine.Tilemaps;
-using System.Linq;
-using Unity.Collections;
+using static STELLAREST_F1.Define;
+using UnityEditor.Timeline;
+using STELLAREST_F1.Data;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -117,9 +117,9 @@ namespace STELLAREST_F1
                                 if (tile.name.Contains(Define.ReadOnly.String.Tile_CanMove))
                                     writer.Write(Define.ReadOnly.Character.Map_Tool_CanMove_1);  // CanGo -> CanMove로 이름 변경할 것
                                 else if (tile.name.Contains(Define.ReadOnly.String.Tile_SemiBlock))
-                                    writer.Write(Define.ReadOnly.Character.Map_Tool_SemiBlock_2); 
+                                    writer.Write(Define.ReadOnly.Character.Map_Tool_SemiBlock_2);
                                 else if (tile.name.Contains(Define.ReadOnly.String.Tile_Block))
-                                   writer.Write(Define.ReadOnly.Character.Map_Tool_Block_0);
+                                    writer.Write(Define.ReadOnly.Character.Map_Tool_Block_0);
                             }
                         }
                         writer.WriteLine();
@@ -130,12 +130,167 @@ namespace STELLAREST_F1
             Debug.Log("Map Collision Generation Complete");
         }
 
-        private static T LoadJson<T, Key, value>(string path) where T : ILoader<Key, Value>
+        [MenuItem("Tools/Create Object Tile %#o")]
+        public static void CreateObjectTile()
         {
-            TextAsset textAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>($"Assets/@Resources/Data/JsonData/{path}.json");
+            #region Monster Tile
+            Dictionary<int, MonsterData> monsterDataDict = LoadJson<MonsterDataLoader, int, MonsterData>(ReadOnly.String.MonsterData).MakeDict();
+            foreach (var data in monsterDataDict.Values)
+            {
+                string name = $"{data.DataID}_{data.DescriptionTextID}";;
+                string assetPath = Path.Combine("Assets/@Resources/TileMaps/Dev/Monsters", $"{name}.asset");
+                if (assetPath == "")
+                {
+                    Debug.LogWarning("AssetPath is empty.");
+                    continue;
+                }
+
+                CustomTile customTile = AssetDatabase.LoadAssetAtPath<CustomTile>(assetPath);
+                if (customTile != null)
+                {
+                    // 아이콘의 이미지가 변경되었을 경우
+                    string spriteName = data.IconImage.Replace(".sprite", "");
+                    Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>($"Assets/@Resources/Sprites/Creature/Monsters/Icons/{spriteName}.png");
+                    if (sprite == null)
+                    {
+                        Debug.LogWarning($"Failed to find Sprite - {data.DescriptionTextID}");
+                        continue;
+                    }
+
+                    customTile.DataID = data.DataID;
+                    customTile.Name = data.DescriptionTextID;
+                    customTile.ObjectType = EObjectType.Monster;
+                    customTile.sprite = sprite;
+                    EditorUtility.SetDirty(customTile);;
+                    Debug.Log($"{nameof(CreateObjectTile)}, Completed SetDirty - {data.DescriptionTextID}");
+                }
+                else
+                {
+                    string spriteName = data.IconImage.Replace(".sprite", "");
+                    Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>($"Assets/@Resources/Sprites/Creature/Monsters/Icons/{spriteName}.png");
+                    if (sprite == null)
+                    {
+                        Debug.LogWarning($"Failed to find Sprite - {data.DescriptionTextID}");
+                        continue;
+                    }
+
+                    CustomTile newCustomTile = ScriptableObject.CreateInstance<CustomTile>();
+                    newCustomTile.DataID = data.DataID;
+                    newCustomTile.Name = data.DescriptionTextID;
+                    newCustomTile.ObjectType = EObjectType.Monster;
+                    newCustomTile.sprite = sprite;
+                    AssetDatabase.CreateAsset(newCustomTile, assetPath);
+                    Debug.Log($"{nameof(CreateObjectTile)}, Completed CreateAsset - {data.DescriptionTextID}");
+                }
+            }
+            #endregion
+
+            // 나무, 바위 몸뚱아리 분리 때문에 생략
+            // #region Env Tile
+            // Dictionary<int, EnvData> envDataDict = LoadJson<EnvDataLoader, int, EnvData>(ReadOnly.String.EnvData).MakeDict();
+            // foreach (var data in envDataDict.Values)
+            // {
+            //     string name = $"{data.DataID}_{data.DescriptionTextID}"; ;
+            //     string assetPath = Path.Combine("Assets/@Resources/TileMaps/Dev/Envs", $"{name}.asset");
+            //     if (assetPath == "")
+            //     {
+            //         Debug.LogWarning("AssetPath is empty.");
+            //         continue;
+            //     }
+
+            //     CustomTile customTile = AssetDatabase.LoadAssetAtPath<CustomTile>(assetPath);
+            //     if (customTile != null)
+            //     {
+            //         // 아이콘의 이미지가 변경되었을 경우
+            //         string spriteName = data.IconImage.Replace(".sprite", "");
+            //         Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>($"Assets/@Resources/Sprites/Env/Icons/{spriteName}.png");
+            //         if (sprite == null)
+            //         {
+            //             Debug.LogWarning($"Failed to find Sprite - {data.DescriptionTextID}");
+            //             continue;
+            //         }
+
+            //         customTile.DataID = data.DataID;
+            //         customTile.Name = data.DescriptionTextID;
+            //         customTile.ObjectType = EObjectType.Env;
+            //         customTile.sprite = sprite;
+            //         EditorUtility.SetDirty(customTile); ;
+            //         Debug.Log($"{nameof(CreateObjectTile)}, Completed SetDirty - {data.DescriptionTextID}");
+            //     }
+            //     else
+            //     {
+            //         string spriteName = data.IconImage.Replace(".sprite", "");
+            //         Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>($"Assets/@Resources/Sprites/Env/Icons/{spriteName}.png");
+            //         if (sprite == null)
+            //         {
+            //             Debug.LogWarning($"Failed to find Sprite - {data.DescriptionTextID}");
+            //             continue;
+            //         }
+
+            //         CustomTile newCustomTile = ScriptableObject.CreateInstance<CustomTile>();
+            //         newCustomTile.DataID = data.DataID;
+            //         newCustomTile.Name = data.DescriptionTextID;
+            //         newCustomTile.ObjectType = EObjectType.Env;
+            //         newCustomTile.sprite = sprite;
+            //         AssetDatabase.CreateAsset(newCustomTile, assetPath);
+            //         Debug.Log($"{nameof(CreateObjectTile)}, Completed CreateAsset - {data.DescriptionTextID}");
+            //     }
+            // }
+            // #endregion
+
+            AssetDatabase.SaveAssets();
+        }
+
+        private static T LoadJson<T, Key, Value>(string path) where T : ILoader<Key, Value>
+        {
+            TextAsset textAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>($"Assets/@Resources/Data/{path}.json");
             return JsonConvert.DeserializeObject<T>(textAsset.text);
         }
 #endif
     }
-
 }
+
+
+            // Dictionary<int, BirdSpriteData> birdSpriteDataDict = LoadJson<BirdSpriteDataLoader, int, BirdSpriteData>(ReadOnly.String.BirdSpriteData).MakeDict();
+            // foreach (var data in birdSpriteDataDict.Values)
+            // {
+            //     string name = $"{data.DataID}_{data.DescriptionTextID}";
+            //     string path = Path.Combine("Assets/@Resources/TileMaps/Dev/Monsters", $"{name}.Asset");
+
+            //     if (path == "")
+            //         continue;
+
+            //     CustomTile existingTile = AssetDatabase.LoadAssetAtPath<CustomTile>(path);
+            //     if (existingTile != null)
+            //     {
+            //         /*
+            //             TODO = Sprite 교체
+            //         */
+
+            //         existingTile.Name = name;
+            //         existingTile.DataID = data.DataID;
+            //         existingTile.ObjectType = EObjectType.Monster;
+
+            //         EditorUtility.SetDirty(existingTile);
+            //         Debug.Log($"{nameof(CreateObjectTile)}, Completed - SetDirty.");
+            //     }
+            //     else
+            //     {
+            //         string spriteName = data.IconImage.Replace(".sprite", "");
+            //         Sprite spr = AssetDatabase.LoadAssetAtPath<Sprite>($"Assets/@Resources/TileMaps/Dev/Monsters/{spriteName}.png");
+            //         if (spr == null)
+            //         {
+            //             Debug.LogError($"{nameof(CreateObjectTile)}, Failed to load {data.DescriptionTextID} Sprite.");
+            //             return;
+            //         }
+
+            //         CustomTile customTile = ScriptableObject.CreateInstance<CustomTile>();
+            //         customTile.Name = data.DescriptionTextID;
+            //         customTile.DataID = data.DataID;
+            //         customTile.ObjectType = EObjectType.Monster;
+
+            //         customTile.sprite = spr;
+            //         AssetDatabase.CreateAsset(customTile, path);
+            //         Debug.Log($"{nameof(CreateObjectTile)}, Completed - Create New Asset.");
+            //     }
+            // }

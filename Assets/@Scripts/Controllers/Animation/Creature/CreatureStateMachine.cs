@@ -38,10 +38,10 @@ namespace STELLAREST_F1
 
         public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            // Refresh Animation
+            // Refresh Animation (한 프레임 내에 CreatureState가 변경될 때 애니메이션 갱신이 안될수도 있음)
+            // --> ex) 한 프레임 내에 Animator.Play(Move) -> Animator.Play(Idle) 전환이 안되는 경우도 있어서 체크
             if (stateInfo.shortNameHash != _creatureAnim?.GetHash(_owner.CreatureState))
             {
-                Debug.Log("!!!!!");
                 _creatureAnim.UpdateAnimation();
                 return;
             }

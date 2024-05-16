@@ -15,6 +15,7 @@ namespace STELLAREST_F1
         public HashSet<Env> Envs { get; } = new HashSet<Env>();
         public HashSet<Projectile> Projectiles { get; } = new HashSet<Projectile>();
         public HeroCamp Camp { get; private set; } = null;
+        public CameraController CameraController { get; set; } = null;
 
         private Transform _leaderMark = null;
         public Transform LeaderMark

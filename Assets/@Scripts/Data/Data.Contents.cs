@@ -13,6 +13,7 @@ namespace STELLAREST_F1.Data
         public string PrefabLabel;
         public string DescriptionTextID;
         public string Type;
+        public string IconImage;
     }
 
     public class CreatureData : BaseData
@@ -205,10 +206,8 @@ namespace STELLAREST_F1.Data
 
     #region Monster Sprite Data
     [Serializable]
-    public class MonsterSpriteData
+    public class MonsterSpriteData : BaseData
     {
-        public int DataID;
-        public string Type;
         public string SkinColor;
     }
 

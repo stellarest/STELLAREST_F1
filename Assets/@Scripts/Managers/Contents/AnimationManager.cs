@@ -48,7 +48,8 @@ namespace STELLAREST_F1
             _curves[(int)EAnimationCurveType.Ease_Out].AddKey(0f, 0f);
             _curves[(int)EAnimationCurveType.Ease_Out].AddKey(1f, 1f);
             keys = _curves[(int)EAnimationCurveType.Ease_Out].keys;
-            keys[1].inTangent = 1f; // 두 번째 키프레임의 인 탄젠트를 조정하여 Ease-Out 효과 적용
+            keys[0].outTangent = 0f;
+            keys[1].inTangent = 0f;
             _curves[(int)EAnimationCurveType.Ease_Out].keys = keys;
 
             // Ease-In-Out

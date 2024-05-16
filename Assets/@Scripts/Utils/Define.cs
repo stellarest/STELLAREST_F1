@@ -385,6 +385,7 @@ namespace STELLAREST_F1
                 public static readonly string HeroData = "HeroData";
                 public static readonly string HeroSpriteData = "HeroSpriteData";
                 public static readonly string MonsterData = "MonsterData";
+
                 public static readonly string BirdSpriteData = "BirdSpriteData";
                 public static readonly string QuadrupedsSpriteData = "QuadrupedsSpriteData";
                 public static readonly string EnvData = "EnvData";
@@ -627,7 +628,10 @@ namespace STELLAREST_F1
 
                 public static readonly float MaxMovementSpeedMultiplier = 2.0F;
                 public static readonly float MaxDistanceForMovementSpeed = 8.0F;
-                
+
+                // CameraController
+                public static readonly float CamDesiredMoveToTargetTime = 1f;
+
                 // STILL NOT TESTED ##########
                 public static readonly float CalcValueMaxDistanceMultiplier = 2.0F;
 

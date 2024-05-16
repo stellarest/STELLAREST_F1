@@ -1,10 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
-using System.Runtime.ExceptionServices;
-using Unity.VisualScripting;
 using UnityEngine;
 using static STELLAREST_F1.Define;
 
@@ -15,6 +12,10 @@ namespace STELLAREST_F1
         public GameObject Map { get; private set; } = null;
         public string MapName { get; private set; } = null;
         public Grid CellGrid { get; private set; } = null;
+
+        // 현재 사용하고 있는 이 Cell에 쿼드트리를 얹히면 좋다고 함(TODO LIST)
+        // 스타크래프트 유닛은 아마 일일이 칸 단위로 찾진 않을것임
+        // 갈 수 있는지 큼지막하게 먼저 판단하고 먼저 갈수있는 기본적인것부터 셋팅하는 등의 방법을 썼을 것이라고 함
         private Dictionary<Vector3Int, BaseObject> _cells = new Dictionary<Vector3Int, BaseObject>();
 
         private int _minX = 0;

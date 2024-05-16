@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace STELLAREST_F1
-{
+{ 
     public abstract class CreatureBody
     {
         public class Container

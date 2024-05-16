@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using static STELLAREST_F1.Define;
 
@@ -20,8 +21,10 @@ namespace STELLAREST_F1
 
         public string Tag { get; private set; } = string.Empty;
         public EMonsterType Type { get; private set; } = EMonsterType.None;
-        public EMonsterSize Size { get; private set; } = EMonsterSize.None; 
+        public EMonsterSize Size { get; private set; } = EMonsterSize.None;
 
+        // 전반적인 코드 정리가 필요해보이긴함. 너무 뒤죽박죽.
+        // 각 객체마다 Sprite 데이터도 들고 있어야 할 것 같은데.
         private Sprite[] _heads = null;
         private Dictionary<EBirdBodyParts, Container> _birdBodyDict = null;
         private Dictionary<EQuadrupedsParts, Container> _quadrupedsBodyDict = null; // TODO : 추가해볼것
