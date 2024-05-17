@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.UI;
 using static STELLAREST_F1.Define;
 
 #if UNITY_EDITOR
@@ -22,6 +25,9 @@ namespace STELLAREST_F1
 
         private void Update()
         {
+            if (Input.GetKeyDown(KeyCode.P))
+                ShowCellPosText();
+
             if (Input.GetKeyDown("1"))
                 ChangeRandomHeroLeader();
 
@@ -34,6 +40,42 @@ namespace STELLAREST_F1
             // {
             //     Debug.Log($"sqrDist: {(_heroA.CellPos - _heroB.CellPos).sqrMagnitude}");
             // }
+        }
+
+        private void ShowCellPosText()
+        {
+            /*
+                MinX: -18, MaxX: 18
+                MinY: -24, MaxY: 24
+                
+                좌상단: -18, 23
+                우하단: 17, -24 
+            */
+            int MinX = Managers.Map.MinX;
+            int MaxX = Managers.Map.MaxX;
+            int MinY = Managers.Map.MinY;
+            int MaxY = Managers.Map.MaxY;
+
+            GameObject root = new GameObject { name = "@CellPos" };
+            SortingGroup sg = root.AddComponent<SortingGroup>();
+            sg.sortingLayerName = "BaseObject";
+            sg.sortingOrder = 999;
+
+            for (int y = MaxY - 1; y >= MinY; --y)
+            {
+                for (int x = MinX; x < MaxX; ++x)
+                {
+                    GameObject cell = new GameObject { name = $"{x},{y}" };
+                    cell.transform.position = Managers.Map.CenteredCellToWorld(new Vector3Int(x, y));
+                    TextMeshPro tmPro = cell.AddComponent<TextMeshPro>();
+                    tmPro.fontSize = 3f;
+                    tmPro.text = $"{x},{y}";
+                    tmPro.alignment = TextAlignmentOptions.Center;
+                    tmPro.autoSizeTextContainer = false;
+
+                    cell.transform.SetParent(root.transform);
+                }
+            }
         }
 
         public void ChangeRandomHeroLeader()

@@ -46,7 +46,7 @@ namespace STELLAREST_F1
                     return 0.0f;
 
                 Vector3 toTargetDir = Target.transform.position - transform.position;
-                return UnityEngine.Mathf.Max(0.0f, toTargetDir.sqrMagnitude);
+                return UnityEngine.Mathf.Max(0.0f, toTargetDir.sqrMagnitude); // ??? 의미 없는데 어차피 무조건 양수 나오는데
             }
         }
 
@@ -299,8 +299,10 @@ namespace STELLAREST_F1
         public void SetCellPos(Vector3 position, bool forceMove = false)
             => SetCellPos(Managers.Map.WorldToCell(position), forceMove);
 
+        [Header("TEST")] public Vector3Int TargetToGo;
         public void SetCellPos(Vector3Int cellPos, bool forceMove = false)
         {
+            TargetToGo = cellPos;
             CellPos = cellPos;
             LerpToCellPosCompleted = false;
             if (forceMove) // 순간 이동

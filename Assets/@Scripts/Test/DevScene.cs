@@ -82,9 +82,7 @@ namespace STELLAREST_F1
                 // cam.Target = camp; // TEMP // --> 제거, Camp에서 할것임
                 Managers.Object.CameraController = cam;
 
-                int testSortingOrder = 100; // Default : 20 - Tilemap Wall이랑 똑같음
                 Hero hero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
-                hero.SortingGroup.sortingOrder = testSortingOrder; 
                 camp.Leader = hero;
                 //cam.Target = hero;
 
@@ -96,7 +94,8 @@ namespace STELLAREST_F1
                 // env.transform.position = Vector3.zero;
                 // 최대 맵 배치 동료 개수 : 7명 - (리더1, 팔로워6), 또는 9명(리더1, 팔로워8)
                 int memberCount = 0;
-                while (memberCount < 6)
+                int memberMaxCount = 0;
+                while (memberCount < memberMaxCount)
                 {
                     randPos = new Vector3Int(Random.Range(-3, 3), Random.Range(-3, 3), 0);
                     if (Managers.Map.CanMove(randPos) == false)
@@ -104,7 +103,6 @@ namespace STELLAREST_F1
                         
                     memberCount++;
                     hero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
-                    hero.SortingGroup.sortingOrder = testSortingOrder;
                     hero.gameObject.name += $"___{memberCount.ToString()}";
                     Managers.Map.MoveTo(hero, randPos, forceMove: true);
                     // A* Test

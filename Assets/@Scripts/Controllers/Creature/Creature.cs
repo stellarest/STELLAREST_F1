@@ -303,7 +303,7 @@ namespace STELLAREST_F1
 
         protected void ChaseOrAttackTarget(float chaseRange, float atkRange)
         {
-            Vector3 toTargetDir = Target.transform.position - transform.position;
+            //Vector3 toTargetDir = Target.transform.position - transform.position;
             if (DistanceToTargetSQR <= atkRange * atkRange)
             {
                 if (Target.IsValid() && Target.ObjectType == EObjectType.Env)
@@ -313,7 +313,7 @@ namespace STELLAREST_F1
             }
             else
             {
-                _findPathResult = FindPathAndMoveToCellPos(Target.transform.position, ReadOnly.Numeric.HeroDefaultMoveDepth);;
+                _findPathResult = FindPathAndMoveToCellPos(Target.transform.position, ReadOnly.Numeric.HeroMaxMoveDepth);
                 float searchDistSQR = chaseRange * chaseRange;
                 if (DistanceToTargetSQR > searchDistSQR)
                 {

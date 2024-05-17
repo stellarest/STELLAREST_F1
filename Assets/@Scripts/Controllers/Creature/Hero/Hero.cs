@@ -123,8 +123,8 @@ namespace STELLAREST_F1
                 EnterInGame(dataID);
                 return false;
             }
-            
-            SortingGroup.sortingOrder = 20; // TEST - 일단 Wall이랑 똑같이.
+            // SortingGroup.sortingOrder = 20; // TEST - 일단 Wall이랑 똑같이.
+            SortingGroup.sortingOrder = 100; // TEST - 일단 Wall이랑 똑같이.
 
             HeroBody = new HeroBody(this, dataID);
             HeroAnim = CreatureAnim as HeroAnimation;
@@ -213,7 +213,7 @@ namespace STELLAREST_F1
                 // 이거 고치고 코드 우아하게 AI 수정. Idle 너무 강제임. 고쳐야함.
                 // 지금도 대강 되긴하는데 이거 고치고, 체인지 포지션?
                 // 그리고 HeroLeader가 Camp의 Dest가 되어야함. --> 이것부터 할까?
-                FindPathAndMoveToCellPos(destPos: _replaceDestPos, 999);
+                FindPathAndMoveToCellPos(destPos: _replaceDestPos, ReadOnly.Numeric.HeroMaxMoveDepth);
                 if (LerpToCellPosCompleted) // A* Test
                 {
                     // A* Test

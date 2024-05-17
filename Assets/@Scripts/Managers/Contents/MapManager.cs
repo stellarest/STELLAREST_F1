@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
@@ -18,10 +19,10 @@ namespace STELLAREST_F1
         // 갈 수 있는지 큼지막하게 먼저 판단하고 먼저 갈수있는 기본적인것부터 셋팅하는 등의 방법을 썼을 것이라고 함
         private Dictionary<Vector3Int, BaseObject> _cells = new Dictionary<Vector3Int, BaseObject>();
 
-        private int _minX = 0;
-        private int _maxX = 0;
-        private int _minY = 0;
-        private int _maxY = 0;
+        public int MinX { get; private set; } = 0;
+        public int MaxX { get; private set; } = 0;
+        public int MinY { get; private set; } = 0;
+        public int MaxY { get; private set; } = 0;
 
         // World를 먼저 Cell로 바꾸고
         public Vector3Int WorldToCell(Vector3 worldPos) => CellGrid.WorldToCell(worldPos);
@@ -42,24 +43,30 @@ namespace STELLAREST_F1
             CellGrid = map.GetComponent<Grid>();
 
             ParseCollisionData(map, mapName);
+            // SpawnObjectsByData(map, mapName);
         }
 
         private void ParseCollisionData(GameObject map, string mapName, string tileMap = "Tilemap_Collision")
         {
-            // GameObject collision = Util.FindChild(map, tileMap, true);
-            // if (collision != null)
-            //     collision.SetActive(false);
+            GameObject collision = Util.FindChild(map, tileMap, true);
+            if (collision != null)
+                collision.SetActive(false);
 
             TextAsset txt = Managers.Resource.Load<TextAsset>($"{mapName}_Collision");
             StringReader stringReader = new StringReader(txt.text); // StringReader, 파일 입출력(System.IO)
 
-            _minX = int.Parse(stringReader.ReadLine());
-            _maxX = int.Parse(stringReader.ReadLine());
-            _minY = int.Parse(stringReader.ReadLine());
-            _maxY = int.Parse(stringReader.ReadLine());
+            MinX = int.Parse(stringReader.ReadLine());
+            MaxX = int.Parse(stringReader.ReadLine());
+            MinY = int.Parse(stringReader.ReadLine());
+            MaxY = int.Parse(stringReader.ReadLine());
 
-            int xCount = _maxX - _minX;
-            int yCount = _maxY - _minY;
+            Debug.Log($"MinX: {MinX}");
+            Debug.Log($"MaxX: {MaxX}");
+            Debug.Log($"MinY: {MinY}");
+            Debug.Log($"MaxY: {MaxY}");
+
+            int xCount = MaxX - MinX;
+            int yCount = MaxY - MinY;
 
             _cellCollisionType = new ECellCollisionType[yCount, xCount];
             stringReader.ReadLine(); // 개행
@@ -81,6 +88,40 @@ namespace STELLAREST_F1
                         case ReadOnly.Character.Map_Tool_SemiBlock_2:
                             _cellCollisionType[y, x] = ECellCollisionType.SemiBlock;
                             break;
+                    }
+                }
+            }
+        }
+
+        private void SpawnObjectsByData(GameObject map, string mapName, string tilemap = "Tilemap_Object")
+        {
+            Tilemap tm = Util.FindChild<Tilemap>(map, tilemap, true);
+            if (tm != null)
+                tm.gameObject.SetActive(false);
+
+            // Debug.Log($"xMin: {tm.cellBounds.xMin}");
+            // Debug.Log($"xMax: {tm.cellBounds.xMax}");
+            // Debug.Log($"yMin: {tm.cellBounds.yMin}");
+            // Debug.Log($"yMax: {tm.cellBounds.yMax}");
+
+            for (int y = tm.cellBounds.yMax; y >= tm.cellBounds.yMin; --y)
+            {
+                for (int x = tm.cellBounds.xMin; x <= tm.cellBounds.xMax; ++x)
+                {
+                    Vector3Int cellPos = new Vector3Int(x, y, 0);
+                    CustomTile tile = tm.GetTile(cellPos) as CustomTile;
+                    if (tile == null)
+                        continue;
+
+                    if (tile.ObjectType == EObjectType.Env)
+                    {
+                    }
+                    else if (tile.ObjectType == EObjectType.Monster)
+                    {
+                        // 지금은 이렇게 했지만, Respawn Spawn Data를 만들어서 해야할것같음
+                        Vector3 worldPos = CenteredCellToWorld(cellPos);
+                        Monster monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, tile.DataID);
+                        monster.SetCellPos(cellPos, true);
                     }
                 }
             }
@@ -146,8 +187,8 @@ namespace STELLAREST_F1
 
         public bool CanMove(Vector3Int cellPos, bool ignoreObjects = false, bool ignoreSemiWall = false)
         {
-            int x = cellPos.x - _minX;
-            int y = _maxY - cellPos.y - 1;
+            int x = cellPos.x - MinX;
+            int y = MaxY - cellPos.y - 1;
 
             if (x < 0 || x >= _cellCollisionType.GetLength(1) || y < 0 || y >= _cellCollisionType.GetLength(0))
             {
@@ -331,15 +372,15 @@ namespace STELLAREST_F1
         {
             Debug.Log($"WorldPos: {creature.transform.position}");
             Vector3Int currentPos = Managers.Map.WorldToCell(creature.transform.position);
-            int x = currentPos.x - _minX;
-            int y = _maxY - currentPos.y - 1;
+            int x = currentPos.x - MinX;
+            int y = MaxY - currentPos.y - 1;
             if (x < 0 || x >= _cellCollisionType.GetLength(1) || y < 0 || y >= _cellCollisionType.GetLength(0))
             {
                 Debug.LogWarning($"### Out of index ###");
                 return;
             }
 
-            Debug.Log($"xMin: {_minX}, xMax: {_maxX}, yMin: {_minY}, yMax: {_maxY}");
+            Debug.Log($"xMin: {MinX}, xMax: {MaxX}, yMin: {MinY}, yMax: {MaxY}");
             Debug.Log($"Cell[{currentPos.x}][{currentPos.y}] | Tile[{x}][{y}]: {_cellCollisionType[y, x]}");
         }
 
@@ -348,8 +389,8 @@ namespace STELLAREST_F1
             // xMin: -6, xMax: 7, yMin: -8, yMax: 5
             // CellPos -6, 4 -> [0, 0]
             Vector3Int cellPos = CellGrid.WorldToCell(worldPos);
-            int x = cellPos.x - _minX; // 이건 좌 - 우 이렇게 적용이 되지만
-            int y = _maxY - cellPos.y - 1; // y는 x처럼 적용하면 안됨. 적용 불가. 정사각 기준
+            int x = cellPos.x - MinX; // 이건 좌 - 우 이렇게 적용이 되지만
+            int y = MaxY - cellPos.y - 1; // y는 x처럼 적용하면 안됨. 적용 불가. 정사각 기준
 
             if (x < 0 || x >= _cellCollisionType.GetLength(1) || y < 0 || y >= _cellCollisionType.GetLength(0))
             {

@@ -99,16 +99,16 @@ namespace STELLAREST_F1
 
         private void OnJoystickStateChanged(EJoystickState joystickState)
         {
-            // switch (joystickState)
-            // {
-            //     case EJoystickState.PointerDown:
-            //         ShowArrowCircle(true);
-            //         break;
+            switch (joystickState)
+            {
+                case EJoystickState.PointerDown:
+                    ShowArrowCircle(true);
+                    break;
 
-            //     case EJoystickState.PointerUp:
-            //         ShowArrowCircle(false);
-            //         break;
-            // }
+                case EJoystickState.PointerUp:
+                    ShowArrowCircle(false);
+                    break;
+            }
         }
 
         private void ShowArrowCircle(bool show)

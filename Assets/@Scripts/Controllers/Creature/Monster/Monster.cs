@@ -39,6 +39,7 @@ namespace STELLAREST_F1
                 EnterInGame(dataID);
                 return false;
             }
+            SortingGroup.sortingOrder = 100; // TEST
 
             MonsterBody = new MonsterBody(this, dataID);
             MonsterAnim = CreatureAnim as MonsterAnimation;

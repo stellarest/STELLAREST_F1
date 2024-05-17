@@ -25,6 +25,7 @@ namespace STELLAREST_F1
         private float _radius = 0f;
         private Vector2 _touchPos = Vector2.zero;
 
+        private Vector2 _basePos = Vector2.zero;
         public override bool Init()
         {
             if (base.Init() == false)
@@ -32,6 +33,7 @@ namespace STELLAREST_F1
 
             BindObjects(typeof(GameObjects));
             _bg = GetObject((int)GameObjects.JoystickBG);
+            _basePos = _bg.transform.position;
 
             _bgFocuses = new GameObject[(int)GameObjects.BG_FocusRB];
             _bgFocuses[GetFocusIndex(GameObjects.BG_FocusLT)] = GetObject((int)GameObjects.BG_FocusLT);
@@ -45,14 +47,16 @@ namespace STELLAREST_F1
             gameObject.BindEvent(action: OnJoystickPointerUp, evtType: EUIEvent.PointerUp);
             gameObject.BindEvent(action: OnJoystickDrag, evtType: EUIEvent.Drag);
 
-            ShowJoystick(false);
+            //ShowJoystick(false);
+            ShowJoystick(true);
+
             ShowFocus(Vector2.zero);
             return true;
         }
 
         public void OnJoystickPointerDown(PointerEventData evtData)
         {
-            ShowJoystick(true);
+            //ShowJoystick(true);
             ShowFocus(Vector2.zero);
 
             _bg.transform.position = evtData.position;
@@ -65,13 +69,15 @@ namespace STELLAREST_F1
 
         public void OnJoystickPointerUp(PointerEventData evtData)
         {
-            ShowJoystick(false);
+            _bg.transform.position = _basePos;
+            //ShowJoystick(false);
             ShowFocus(Vector2.zero);
 
-            _cursor.transform.position = _touchPos;
+            // _cursor.transform.position = _touchPos;
+            _cursor.transform.position = _basePos;
             Managers.Game.MoveDir = Vector2.zero;
             Managers.Game.JoystickState = EJoystickState.PointerUp;
-            ShowJoystick(false);
+            //ShowJoystick(false);
         }
 
         public void OnJoystickDrag(PointerEventData evtData)

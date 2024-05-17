@@ -11,7 +11,7 @@ namespace STELLAREST_F1
         //public HashSet<Hero> Heroes { get; } = new HashSet<Hero>();
         // TEMP
         public List<Hero> Heroes { get; } = new List<Hero>();
-        public HashSet<Monster> Monsters { get; } = new HashSet<Monster>();
+        public List<Monster> Monsters { get; } = new List<Monster>();
         public HashSet<Env> Envs { get; } = new HashSet<Env>();
         public HashSet<Projectile> Projectiles { get; } = new HashSet<Projectile>();
         public HeroCamp Camp { get; private set; } = null;
@@ -56,10 +56,10 @@ namespace STELLAREST_F1
                 case EObjectType.Hero:
                     {
                         Data.HeroData data = Managers.Data.HeroDataDict[dataID];
-                        go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: HeroRoot, poolingID: data.DataID);
+                        go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: HeroRoot, poolingID: dataID);
                         if (go == null)
                         {
-                            Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{data.PrefabLabel}\"");
+                            Debug.LogError($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input: \"{data.PrefabLabel}\"");
                             return null;
                         }
                         Hero hero = go.GetComponent<Hero>();
@@ -69,10 +69,23 @@ namespace STELLAREST_F1
                     }
 
                 case EObjectType.Monster:
+                    {
+                        Data.MonsterData data = Managers.Data.MonsterDataDict[dataID];
+                        go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: MonsterRoot, poolingID: dataID);
+                        if (go == null)
+                        {
+                            Debug.LogError($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input: \"{data.PrefabLabel}\"");
+                            return null;
+                        }
+                        Monster monster = go.GetComponent<Monster>();
+                        monster.SetInfo(dataID);
+                        Monsters.Add(monster);
+                        return monster as T;
+                    }
                 case EObjectType.Env:
                     {
                         Data.EnvData data = Managers.Data.EnvDataDict[dataID];
-                        go = Managers.Resource.Instantiate(data.PrefabLabel, parent: EnvRoot, poolingID: data.DataID);
+                        go = Managers.Resource.Instantiate(data.PrefabLabel, parent: EnvRoot, poolingID: dataID);
                         if (go == null)
                         {
                             Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{data.PrefabLabel}\"");
