@@ -47,18 +47,14 @@ namespace STELLAREST_F1
             gameObject.BindEvent(action: OnJoystickPointerUp, evtType: EUIEvent.PointerUp);
             gameObject.BindEvent(action: OnJoystickDrag, evtType: EUIEvent.Drag);
 
-            //ShowJoystick(false);
             ShowJoystick(true);
-
             ShowFocus(Vector2.zero);
             return true;
         }
 
         public void OnJoystickPointerDown(PointerEventData evtData)
         {
-            //ShowJoystick(true);
             ShowFocus(Vector2.zero);
-
             _bg.transform.position = evtData.position;
             _cursor.transform.position = evtData.position;
             _touchPos = evtData.position;
@@ -69,15 +65,12 @@ namespace STELLAREST_F1
 
         public void OnJoystickPointerUp(PointerEventData evtData)
         {
-            _bg.transform.position = _basePos;
-            //ShowJoystick(false);
             ShowFocus(Vector2.zero);
-
-            // _cursor.transform.position = _touchPos;
+            _bg.transform.position = _basePos;
             _cursor.transform.position = _basePos;
+
             Managers.Game.MoveDir = Vector2.zero;
             Managers.Game.JoystickState = EJoystickState.PointerUp;
-            //ShowJoystick(false);
         }
 
         public void OnJoystickDrag(PointerEventData evtData)

@@ -78,7 +78,7 @@ namespace STELLAREST_F1
                           CreatureState = ECreatureState.Idle;
                           CreatureMoveState = ECreatureMoveState.None;
                           StartCoroutine(CoUpdateAI());
-                          StartCoroutine(CoLerpToCellPos()); // Map
+                          // StartCoroutine(CoLerpToCellPos()); // Map
                       });
 
             // StartWait(waitCondition: () => BaseAnim.IsPlay() == false,
@@ -350,7 +350,7 @@ namespace STELLAREST_F1
         // maxDepth: Mobile용 성능 조절 Offset 깊이 값
         public EFindPathResult FindPathAndMoveToCellPos(Vector3 destPos, int maxDepth, bool forceMoveCloser = false)
         {
-            Vector3Int destCellPos = Managers.Map.WorldToCell(destPos);
+            Vector3Int destCellPos = Managers.Map.WorldToCell(destPos); // 여기 Centered로 해야하지 않나?
             return FindPathAndMoveToCellPos(destCellPos, maxDepth, forceMoveCloser);
         }
 
@@ -409,11 +409,16 @@ namespace STELLAREST_F1
             while (true)
             {
                 Hero hero = this as Hero;
+                if (hero.IsLeader)
+                    yield break;
+
                 if (hero != null)
                 {
                     float divOffsetSQR = 5f * 5f;
                     // pointerCellPos : 중요하진않음. 그냥 이속조절을 위한 용도 뿐
-                    Vector3Int pointerCellPos = Managers.Map.WorldToCell(Managers.Object.Camp.Pointer.position);
+                    // ***** Managers.Object.Camp.Pointer.position ---> Leader로 변경 예정 *****
+                    //Vector3Int pointerCellPos = Managers.Map.WorldToCell(Managers.Object.Camp.Pointer.position);
+                    Vector3Int pointerCellPos = Managers.Map.WorldToCell(Managers.Object.LeaderController.PointerPos);
                     float ratio = Mathf.Max(1, (CellPos - pointerCellPos).sqrMagnitude / divOffsetSQR); // --> 로그로 변경 필요
                     LerpToCellPos(MovementSpeed * ratio);
                 }

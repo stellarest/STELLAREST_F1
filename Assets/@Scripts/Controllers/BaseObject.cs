@@ -23,6 +23,7 @@ namespace STELLAREST_F1
         // Creature 및 다른 오브젝트의 경우, 발바닥 부분이 피벗임
         
         public Vector3 CenterPosition { get => transform.position + Vector3.up * ColliderRadius; }
+        public Vector3 CenterLocalPosition => Vector3.up * ColliderRadius;
 
         [SerializeField] private ELookAtDirection _lookAtDir = ELookAtDirection.Right;
         public ELookAtDirection LookAtDir
@@ -283,7 +284,7 @@ namespace STELLAREST_F1
         }
 
         #region Map
-        [field: SerializeField] public bool LerpToCellPosCompleted { get; protected set; } = false;
+        [field: SerializeField] public bool LerpToCellPosCompleted { get; set; } = false;
 
         [SerializeField] private Vector3Int _cellPos = Vector3Int.zero;
         public Vector3Int CellPos // ### CORE
@@ -307,7 +308,7 @@ namespace STELLAREST_F1
             LerpToCellPosCompleted = false;
             if (forceMove) // 순간 이동
             {
-                transform.position = Managers.Map.CenteredCellToWorld(cellPos);
+                transform.position = Managers.Map.CenteredCellToWorld(cellPos); // 이동은 셀 가운데로
                 LerpToCellPosCompleted = true;
             }
         }
@@ -318,7 +319,7 @@ namespace STELLAREST_F1
             if (LerpToCellPosCompleted)
                 return;
 
-            Vector3 destPos = Managers.Map.CenteredCellToWorld(CellPos);
+            Vector3 destPos = Managers.Map.CenteredCellToWorld(CellPos); // 이동은 가운데로.
             Vector3 dir = destPos - transform.position;
     
             if (dir.x < 0f)

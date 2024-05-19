@@ -59,8 +59,9 @@ namespace STELLAREST_F1
             get
             {
                 HeroCamp camp = Managers.Object.Camp;
-                if (CreatureMoveState == ECreatureMoveState.ReturnToBase)
-                    return camp.Pivot;
+                // ***** Leader Test *****
+                // if (CreatureMoveState == ECreatureMoveState.ReturnToBase)
+                //     return camp.Pivot;
 
                 return camp.Pointer;
             }
@@ -167,183 +168,195 @@ namespace STELLAREST_F1
                 return;
             }
 
-            if (Target.IsValid())
-                LookAtTarget(Target);
+            // if (Target.IsValid())
+            //     LookAtTarget(Target);
 
-            // 조금 극단적인 방법. 쳐다보면서 가만히 짱박혀있어라.
-            if (CreatureSkill.IsRemainingCoolTime((int)ESkillType.Skill_Attack))
-                return;
+            // // 조금 극단적인 방법. 쳐다보면서 가만히 짱박혀있어라.
+            // if (CreatureSkill.IsRemainingCoolTime((int)ESkillType.Skill_Attack))
+            //     return;
 
-            Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_ScanRange, Managers.Object.Monsters, func: IsValid) as Creature;
-            if (creature.IsValid())
-            {
-                Target = creature;
-                CreatureState = ECreatureState.Move;
-                CreatureMoveState = ECreatureMoveState.TargetToEnemy;
-                return;
-            }
+            // Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_ScanRange, Managers.Object.Monsters, func: IsValid) as Creature;
+            // if (creature.IsValid())
+            // {
+            //     Target = creature;
+            //     CreatureState = ECreatureState.Move;
+            //     CreatureMoveState = ECreatureMoveState.TargetToEnemy;
+            //     return;
+            // }
 
-            Env env = FindClosestInRange(ReadOnly.Numeric.Temp_ScanRange, Managers.Object.Envs, func: IsValid) as Env;
-            if (env.IsValid())
-            {
-                Target = env;
-                CreatureState = ECreatureState.Move;
-                CreatureMoveState = ECreatureMoveState.CollectEnv;
-                return;
-            }
+            // Env env = FindClosestInRange(ReadOnly.Numeric.Temp_ScanRange, Managers.Object.Envs, func: IsValid) as Env;
+            // if (env.IsValid())
+            // {
+            //     Target = env;
+            //     CreatureState = ECreatureState.Move;
+            //     CreatureMoveState = ECreatureMoveState.CollectEnv;
+            //     return;
+            // }
 
-            if (NeedArrange)
-            {
-                CreatureState = ECreatureState.Move;
-                CreatureMoveState = ECreatureMoveState.ReturnToBase;
-                return;
-            }
+            // if (NeedArrange)
+            // {
+            //     CreatureState = ECreatureState.Move;
+            //     CreatureMoveState = ECreatureMoveState.ReturnToBase;
+            //     return;
+            // }
         }
 
         // FindPathAndMoveToCellPos를 히어로에 막바로 넣지않고
         // 그룹이동을 만들고 싶으면 이런 이동하는 코드들을 다 HeroCamp에 짱박아서 한번에 관리하게끔 응용해보라고함.
         // 기본적으로 작게 작게 움직이는 것은 문제가 없을거임.
         private Vector3Int _replaceDestPos = Vector3Int.zero;
-        protected override void UpdateMove()
+        protected override void UpdateMove() // AI TEST
         {
-            // A* Test
-            if (CreatureMoveState == ECreatureMoveState.Replace)
-            {
-                // 되긴 하는데 장애물 근처에 있을 때 Fail_NoPath 떠가지고 제자리 걸음 하는 녀석도 있긴함.
-                // 이거 고치고 코드 우아하게 AI 수정. Idle 너무 강제임. 고쳐야함.
-                // 지금도 대강 되긴하는데 이거 고치고, 체인지 포지션?
-                // 그리고 HeroLeader가 Camp의 Dest가 되어야함. --> 이것부터 할까?
-                FindPathAndMoveToCellPos(destPos: _replaceDestPos, ReadOnly.Numeric.HeroMaxMoveDepth);
-                if (LerpToCellPosCompleted) // A* Test
-                {
-                    // A* Test
-                    CreatureMoveState = ECreatureMoveState.None; // 이렇게만 처리하고 싶은데 확실하게 Idle로 안가는 녀석도 있음.
-                    CreatureState = ECreatureState.Idle; // 그래서 이것도 추가 (임시)
-                    NeedArrange = false;
-                    return;
-                }
-
-                return;
-            }
-
-            // ForceMove 보다 더 우선순위
-            if (CreatureMoveState == ECreatureMoveState.ForcePath)
-            {
-                // 너무 멀리있으면 무조건 강제이동
-                MoveByForcePath();
-                return;
-            }
-
-            if (CheckHeroCampDistanceAndForthPath())
+            if (IsLeader)
                 return;
 
-            if (CreatureMoveState == ECreatureMoveState.ForceMove)
-            {
-                // ### SET DIR ###
-                _findPathResult = FindPathAndMoveToCellPos(CampDestination.position, ReadOnly.Numeric.HeroDefaultMoveDepth);
-                return;
-            }
-
-            if (CreatureMoveState == ECreatureMoveState.TargetToEnemy)
-            {
-                if (Target.IsValid() == false)
-                {
-                    // 여기서 None
-                    CreatureMoveState = ECreatureMoveState.None;
-                    CreatureState = ECreatureState.Move;
-                    return;
-                }
-
-                ChaseOrAttackTarget(ReadOnly.Numeric.Temp_ScanRange, AttackDistance);
-                return;
-            }
-
-            if (CreatureMoveState == ECreatureMoveState.CollectEnv)
-            {
-                // Research Enemies
-                Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_ScanRange, Managers.Object.Monsters, func: IsValid) as Creature;
-                if (creature != null)
-                {
-                    Target = creature;
-                    CreatureMoveState = ECreatureMoveState.TargetToEnemy;
-                    CreatureState = ECreatureState.Move;
-                    return;
-                }
-
-                // 이미 채집했으면 포기
-                if (Target.IsValid() == false)
-                {
-                    CreatureMoveState = ECreatureMoveState.None;
-                    CreatureState = ECreatureState.Move;
-                    CollectEnv = false;
-                    return;
-                }
-
-                ChaseOrAttackTarget(ReadOnly.Numeric.Temp_ScanRange, AttackDistance);
-                return;
-            }
-
-            if (CreatureMoveState == ECreatureMoveState.ReturnToBase)
-            {
-                _findPathResult = FindPathAndMoveToCellPos(CampDestination.position, ReadOnly.Numeric.HeroDefaultMoveDepth);
-
-                // 실패사유 검사
-                // 여기서 뭉치는 알고리즘이 진행됨
-                BaseObject obj = Managers.Map.GetObject(CampDestination.position);
-                if (obj.IsValid())
-                {
-                    // 내가 그 자리를 차지하고 있음.
-                    if (obj == this)
-                    {
-                        Debug.Log($"<color=magenta>findPathResult: {_findPathResult}</color>");
-                        CreatureMoveState = ECreatureMoveState.None;
-                        NeedArrange = false;
-                        return;
-                    }
-
-                    // 다른 영웅이 그 자리를 차지하고 있음.
-                    Hero hero = obj as Hero;
-                    if (hero != null && hero.CreatureState == ECreatureState.Idle)
-                    {
-                        Debug.Log($"<color=orange>findPathResult: {_findPathResult}</color>");
-                        CreatureMoveState = ECreatureMoveState.None;
-                        NeedArrange = false;
-                        return;
-                    }
-                }
-            }
-
-            if (LerpToCellPosCompleted)
-            {
-                CreatureState = ECreatureState.Idle;
-                // 여기서는 누르지 않은 상태이니까 None
-                if (CreatureMoveState == ECreatureMoveState.ReturnToBase && _findPathResult != EFindPathResult.Success)
-                {
-                    // 이거 조건걸어서 단체로 움직일때 누구는 캠프 근처로가고 누구는 안가고 이러는건가.
-                    NeedArrange = false; // 이것만 해도 임시적으로 되긴함
-                    CreatureMoveState = ECreatureMoveState.None;
-                    // Lerp하다가 중간에 누가 차지하면 계속 걸어가려고하는데 이거 막아야할듯
-                }
-                // NeedArrange = false; // --> 이거 주면 해결 되긴하는데, 캠프까지 쫓아가질 않음
-            }
+            // if (LerpToCellPosCompleted)
+            // {
+            //     CreatureState = ECreatureState.Idle;
+            //     NeedArrange = false;
+            // }
         }
+
+        // protected override void UpdateMove()
+        // {
+        //     // A* Test
+        //     if (CreatureMoveState == ECreatureMoveState.Replace)
+        //     {
+        //         // 되긴 하는데 장애물 근처에 있을 때 Fail_NoPath 떠가지고 제자리 걸음 하는 녀석도 있긴함.
+        //         // 이거 고치고 코드 우아하게 AI 수정. Idle 너무 강제임. 고쳐야함.
+        //         // 지금도 대강 되긴하는데 이거 고치고, 체인지 포지션?
+        //         // 그리고 HeroLeader가 Camp의 Dest가 되어야함. --> 이것부터 할까?
+        //         FindPathAndMoveToCellPos(destPos: _replaceDestPos, ReadOnly.Numeric.HeroMaxMoveDepth);
+        //         if (LerpToCellPosCompleted) // A* Test
+        //         {
+        //             // A* Test
+        //             CreatureMoveState = ECreatureMoveState.None; // 이렇게만 처리하고 싶은데 확실하게 Idle로 안가는 녀석도 있음.
+        //             CreatureState = ECreatureState.Idle; // 그래서 이것도 추가 (임시)
+        //             NeedArrange = false;
+        //             return;
+        //         }
+
+        //         return;
+        //     }
+
+        //     // ***** 일단 생략, 헷갈림 *****
+        //     // ForceMove 보다 더 우선순위
+        //     if (CreatureMoveState == ECreatureMoveState.ForcePath)
+        //     {
+        //         // 너무 멀리있으면 무조건 강제이동
+        //         MoveByForcePath();
+        //         return;
+        //     }
+
+        //     if (CheckHeroCampDistanceAndForcePath())
+        //         return;
+
+        //     if (CreatureMoveState == ECreatureMoveState.ForceMove)
+        //     {
+        //         // ### SET DIR ###
+        //         _findPathResult = FindPathAndMoveToCellPos(CampDestination.position, ReadOnly.Numeric.HeroDefaultMoveDepth);
+        //         return;
+        //     }
+
+        //     if (CreatureMoveState == ECreatureMoveState.TargetToEnemy)
+        //     {
+        //         if (Target.IsValid() == false)
+        //         {
+        //             // 여기서 None
+        //             CreatureMoveState = ECreatureMoveState.None;
+        //             CreatureState = ECreatureState.Move;
+        //             return;
+        //         }
+
+        //         ChaseOrAttackTarget(ReadOnly.Numeric.Temp_ScanRange, AttackDistance);
+        //         return;
+        //     }
+
+        //     if (CreatureMoveState == ECreatureMoveState.CollectEnv)
+        //     {
+        //         // Research Enemies
+        //         Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_ScanRange, Managers.Object.Monsters, func: IsValid) as Creature;
+        //         if (creature != null)
+        //         {
+        //             Target = creature;
+        //             CreatureMoveState = ECreatureMoveState.TargetToEnemy;
+        //             CreatureState = ECreatureState.Move;
+        //             return;
+        //         }
+
+        //         // 이미 채집했으면 포기
+        //         if (Target.IsValid() == false)
+        //         {
+        //             CreatureMoveState = ECreatureMoveState.None;
+        //             CreatureState = ECreatureState.Move;
+        //             CollectEnv = false;
+        //             return;
+        //         }
+
+        //         ChaseOrAttackTarget(ReadOnly.Numeric.Temp_ScanRange, AttackDistance);
+        //         return;
+        //     }
+
+        //     if (CreatureMoveState == ECreatureMoveState.ReturnToBase && IsLeader == false) // ***** TEST *****
+        //     {
+        //         _findPathResult = FindPathAndMoveToCellPos(CampDestination.position, ReadOnly.Numeric.HeroDefaultMoveDepth);
+
+        //         // 실패사유 검사
+        //         // 여기서 뭉치는 알고리즘이 진행됨
+        //         BaseObject obj = Managers.Map.GetObject(CampDestination.position);
+        //         if (obj.IsValid())
+        //         {
+        //             // 내가 그 자리를 차지하고 있음.
+        //             if (obj == this)
+        //             {
+        //                 Debug.Log($"<color=magenta>findPathResult: {_findPathResult}</color>");
+        //                 CreatureMoveState = ECreatureMoveState.None;
+        //                 NeedArrange = false;
+        //                 return;
+        //             }
+
+        //             // 다른 영웅이 그 자리를 차지하고 있음.
+        //             Hero hero = obj as Hero;
+        //             if (hero != null && hero.CreatureState == ECreatureState.Idle)
+        //             {
+        //                 Debug.Log($"<color=orange>findPathResult: {_findPathResult}</color>");
+        //                 CreatureMoveState = ECreatureMoveState.None;
+        //                 NeedArrange = false;
+        //                 return;
+        //             }
+        //         }
+        //     }
+
+        //     if (LerpToCellPosCompleted)
+        //     {
+        //         CreatureState = ECreatureState.Idle;
+        //         // 여기서는 누르지 않은 상태이니까 None
+        //         if (CreatureMoveState == ECreatureMoveState.ReturnToBase && _findPathResult != EFindPathResult.Success)
+        //         {
+        //             // 이거 조건걸어서 단체로 움직일때 누구는 캠프 근처로가고 누구는 안가고 이러는건가.
+        //             NeedArrange = false; // 이것만 해도 임시적으로 되긴함
+        //             CreatureMoveState = ECreatureMoveState.None;
+        //             // Lerp하다가 중간에 누가 차지하면 계속 걸어가려고하는데 이거 막아야할듯
+        //         }
+        //         // NeedArrange = false; // --> 이거 주면 해결 되긴하는데, 캠프까지 쫓아가질 않음
+        //     }
+        // }
 
         private Queue<Vector3Int> _forcePath = new Queue<Vector3Int>();
 
         // ####################### TEMP #######################
         private List<Vector3Int> _pathList = new List<Vector3Int>();
         //  ###################################################
-        private bool CheckHeroCampDistanceAndForthPath()
+        private bool CheckHeroCampDistanceAndForcePath()
         {
             Vector3 destPos = CampDestination.position;
             Vector3Int destCellPos = Managers.Map.WorldToCell(destPos);
-            if ((CellPos - destPos).magnitude <= 10f) // 10칸 이상으로 너무 멀어졌을 경우,, (ㄹㅇ 거리로 판정)
+            if ((CellPos - destCellPos).magnitude <= 10f) // 10칸 이상으로 너무 멀어졌을 경우,, (ㄹㅇ 거리로 판정)
                 return false;
 
             if (Managers.Map.CanMove(destCellPos, ignoreObjects: true) == false)
                 return false;
 
-            // maxDepth: 100이었음.
             List<Vector3Int> path = Managers.Map.FindPath(startCellPos: CellPos, destCellPos: destCellPos, maxDepth: ReadOnly.Numeric.HeroMaxMoveDepth);
             if (path.Count < 2)
                 return false;
@@ -355,7 +368,7 @@ namespace STELLAREST_F1
             {
                 _forcePath.Enqueue(p);
             }
-            _forcePath.Dequeue();
+            _forcePath.Dequeue(); // 시작 위치는 제거한듯?
 
             return true;
         }

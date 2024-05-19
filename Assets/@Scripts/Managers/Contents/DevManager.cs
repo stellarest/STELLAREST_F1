@@ -16,15 +16,46 @@ namespace STELLAREST_F1
         public Hero _heroA = null;
         public Hero _heroB = null;
 
+        public GameObject TestObject = null;
+        //public Hero HeroTest = null;
+        //public bool Magnitude = true;
+
         private void Awake()
         {
             Instance = this;
             ReplaceMode = EReplaceHeroMode.FocusingOnLeader;
             TestReplaceDistance = (float)EReplaceHeroMode.FocusingOnLeader;
+
+            // TestObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            // TestObject.name = "@@@@@TestSphere@@@@@";
+            // SortingGroup sg = TestObject.AddComponent<SortingGroup>();
+            // sg.sortingLayerName = "BaseObject";
+            // sg.sortingOrder = 101;
+            // TestObject.transform.localScale *= 0.5f;
         }
+
+        // [ContextMenu("TestSetPos")]
+        // private void TestSetPos()
+        // {
+        //     TestObject.transform.position = Managers.Map.CenteredCellToWorld(Vector3Int.zero);
+        // }
 
         private void Update()
         {
+            // if (HeroTest != null)
+            // {
+            //     Vector3Int cellPos1 = Managers.Map.WorldToCell(TestObject.transform.position);
+            //     Vector3Int cellPos2 = HeroTest.CellPos;
+            //     if (Magnitude)
+            //     {
+            //         Debug.Log($"magnitude: {(cellPos1 - cellPos2).magnitude}");
+            //     }
+            //     else
+            //     {
+            //         Debug.Log($"sqrMagnitude: {(cellPos1 - cellPos2).sqrMagnitude}");
+            //     }
+            // }
+
             if (Input.GetKeyDown(KeyCode.P))
                 ShowCellPosText();
 
@@ -81,8 +112,7 @@ namespace STELLAREST_F1
         public void ChangeRandomHeroLeader()
         {
             int randIdx = UnityEngine.Random.Range(0, Managers.Object.Heroes.Count);
-            Managers.Object.Camp.Leader = Managers.Object.Heroes[randIdx];
-            Debug.Log($"Completed: {nameof(ChangeRandomHeroLeader)}");
+            Managers.Object.LeaderController.Leader = Managers.Object.Heroes[randIdx];
         }
 
         public float TestReplaceDistance = 3f;

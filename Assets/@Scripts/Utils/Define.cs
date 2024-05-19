@@ -84,7 +84,8 @@ namespace STELLAREST_F1
             Env,
             Projectile,
             HeroCamp,
-            Max = HeroCamp + 1
+            LeaderController,
+            Max = LeaderController + 1
         }
 
         public enum ECreatureState
@@ -410,7 +411,7 @@ namespace STELLAREST_F1
                 public static readonly string UI_Joystick = "UI_Joystick";
                 public static readonly string AnimationBody = "AnimationBody";
                 public static readonly string HeroCamp = "HeroCamp";
-                public static readonly string LeaderMark = "LeaderMark";
+                public static readonly string LeaderController = "LeaderController";
                 //public static readonly string SummerForest_Field_Temp = "SummerForest_Field_Temp";
 
                 // Sprite - Collect Equipment

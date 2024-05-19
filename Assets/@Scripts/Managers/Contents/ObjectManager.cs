@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
+using Unity.Profiling;
+using UnityEditor;
 using UnityEngine;
 using static STELLAREST_F1.Define;
 
@@ -16,6 +18,10 @@ namespace STELLAREST_F1
         public HashSet<Projectile> Projectiles { get; } = new HashSet<Projectile>();
         public HeroCamp Camp { get; private set; } = null;
         public CameraController CameraController { get; set; } = null;
+        
+        public HeroLeaderController LeaderController { get; private set; } = null;
+        public Hero Leader => LeaderController.Leader;
+
 
         private Transform _leaderMark = null;
         public Transform LeaderMark
@@ -24,7 +30,7 @@ namespace STELLAREST_F1
             {
                 if (_leaderMark == null)
                 {
-                    _leaderMark = Managers.Resource.Instantiate(ReadOnly.String.LeaderMark).transform;
+                    _leaderMark = Managers.Resource.Instantiate(ReadOnly.String.LeaderController).transform;
                     _leaderMark.GetComponent<SpriteRenderer>().sortingOrder = 101;
                 }
 
@@ -47,6 +53,19 @@ namespace STELLAREST_F1
         public Transform EnvRoot => GetRoot(ReadOnly.String.EnvPoolingRootName);
         public Transform ProjectileRoot => GetRoot(ReadOnly.String.ProjectilePoolingRootName);
         #endregion
+
+        public HeroLeaderController SpawnLeaderController()
+        {
+            if (LeaderController == null)
+            {
+                Debug.Log("HEY");
+                GameObject go = Managers.Resource.Instantiate(ReadOnly.String.LeaderController);
+                go.name = $"@{go.name}";
+                LeaderController = go.GetComponent<HeroLeaderController>();
+            }
+
+            return LeaderController;
+        }
 
         public T Spawn<T>(EObjectType objectType, int dataID = -1, BaseObject presetOwner = null) where T : BaseObject
         {
@@ -113,11 +132,23 @@ namespace STELLAREST_F1
                         return Camp as T;
                     }
 
+                case EObjectType.LeaderController:
+                    {
+                        go = Managers.Resource.Instantiate(ReadOnly.String.LeaderController);
+                        if (go == null)
+                        {
+                            Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{ReadOnly.String.HeroCamp}\"");
+                            return null;
+                        }
+                        go.name = $"@{go.name}";
+                        LeaderController = go.GetComponent<HeroLeaderController>();
+                        return LeaderController as T;
+                    }
+
                 default:
-                    return default(T);
+                    return null;
             }
         }
-
 
         public T Spawn<T>(Vector3 position, EObjectType spawnObjectType, int dataID = -1, BaseObject owner = null) where T : BaseObject
         {

@@ -18,6 +18,7 @@ namespace STELLAREST_F1
         // 스타크래프트 유닛은 아마 일일이 칸 단위로 찾진 않을것임
         // 갈 수 있는지 큼지막하게 먼저 판단하고 먼저 갈수있는 기본적인것부터 셋팅하는 등의 방법을 썼을 것이라고 함
         private Dictionary<Vector3Int, BaseObject> _cells = new Dictionary<Vector3Int, BaseObject>();
+        public Dictionary<Vector3Int, BaseObject> Cells => _cells;
 
         public int MinX { get; private set; } = 0;
         public int MaxX { get; private set; } = 0;
@@ -48,9 +49,9 @@ namespace STELLAREST_F1
 
         private void ParseCollisionData(GameObject map, string mapName, string tileMap = "Tilemap_Collision")
         {
-            GameObject collision = Util.FindChild(map, tileMap, true);
-            if (collision != null)
-                collision.SetActive(false);
+            // GameObject collision = Util.FindChild(map, tileMap, true);
+            // if (collision != null)
+            //     collision.SetActive(false);
 
             TextAsset txt = Managers.Resource.Load<TextAsset>($"{mapName}_Collision");
             StringReader stringReader = new StringReader(txt.text); // StringReader, 파일 입출력(System.IO)

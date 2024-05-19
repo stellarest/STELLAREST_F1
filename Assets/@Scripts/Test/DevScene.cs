@@ -55,14 +55,12 @@ namespace STELLAREST_F1
 
         private void Test()
         {
-            // MapName: SummerForestField_Test
-            // MapName: SummerForestField_Test2
             UI_Joystick joystick = Managers.UI.ShowBaseUI<UI_Joystick>();
-            // Managers.Map.LoadMap(ReadOnly.String.SummerForest_Field_Temp);
             Managers.Map.LoadMap("SummerForestField_Test2");
             Managers.Map.Map.transform.position = Vector3.zero;
 
             {
+                // RandPos Test
                 int attemptCount = 0;
                 Vector3Int randPos = new Vector3Int(Random.Range(-3, 3), Random.Range(-3, 3), 0);
                 while (Managers.Map.CanMove(randPos) == false && attemptCount++ < 100)
@@ -75,39 +73,47 @@ namespace STELLAREST_F1
                     randPos = new Vector3Int(Random.Range(-3, 3), Random.Range(-3, 3), 0); // Retry
                 }
 
-                HeroCamp camp = Managers.Object.Spawn<HeroCamp>(EObjectType.HeroCamp);
-                camp.SetCellPos(randPos, forceMove: true);
+                // HeroCamp camp = Managers.Object.Spawn<HeroCamp>(EObjectType.HeroCamp);
+                // camp.SetCellPos(randPos, forceMove: true);
+                HeroLeaderController leaderController = Managers.Object.SpawnLeaderController();
+
                 CameraController cam = Camera.main.GetComponent<CameraController>();
-                // CameraController cam = GameObject.Find("@VCam").GetComponent<CameraController>();
-                // cam.Target = camp; // TEMP // --> 제거, Camp에서 할것임
                 Managers.Object.CameraController = cam;
 
-                Hero hero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
-                camp.Leader = hero;
+                Hero firstHero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
+                // Leader는 Map.Move를 하지 않는다. 하면 cells에 Add가 되버려서 못가는 곳으로 인식됨.
+                // Leader는 주변 Cell에 갈 수 있는지 없는지만 체크함녀 된다.
+                
+                firstHero.transform.position = Managers.Map.WorldToCell(Vector3.zero);
+                
+                //camp.Leader = hero;
                 //cam.Target = hero;
-
-                Managers.Map.MoveTo(hero, randPos, forceMove: true);
+                // Managers.Map.MoveTo(hero, randPos, forceMove: true);
+                
                 // // A* Test
                 // Managers.Map.MoveTo(hero, new Vector3Int(-1, 0, 0), forceMove: true);
 
                 // Env env = Managers.Object.Spawn<Env>(EObjectType.Env, ReadOnly.Numeric.DataID_Env_AshTree);
                 // env.transform.position = Vector3.zero;
                 // 최대 맵 배치 동료 개수 : 7명 - (리더1, 팔로워6), 또는 9명(리더1, 팔로워8)
+                // Slowly...
                 int memberCount = 0;
-                int memberMaxCount = 0;
+                int memberMaxCount = 2;
                 while (memberCount < memberMaxCount)
                 {
-                    randPos = new Vector3Int(Random.Range(-3, 3), Random.Range(-3, 3), 0);
+                    randPos = new Vector3Int(Random.Range(-4, 4), Random.Range(-4, 4), 0);
                     if (Managers.Map.CanMove(randPos) == false)
                         continue;
                         
                     memberCount++;
-                    hero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
+                    Hero hero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
                     hero.gameObject.name += $"___{memberCount.ToString()}";
                     Managers.Map.MoveTo(hero, randPos, forceMove: true);
                     // A* Test
                     // Managers.Map.MoveTo(hero, new Vector3Int(-1, -1, 0), forceMove: true);
                 }
+
+                leaderController.Leader = firstHero;
             }
         }
 

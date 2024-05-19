@@ -32,7 +32,7 @@ namespace STELLAREST_F1
         }
         public event Action<EJoystickState> OnJoystickStateChangedHandler = null;
 
-        public Transform SetHeroLeader(Transform leaderMark, Hero leader)
+        public Transform SetHeroLeader(Transform leaderMark, Hero leader) // 이걸 여기서 할 필요가 있을끼???
         {
             if (leader.IsValid() == false)
             {
