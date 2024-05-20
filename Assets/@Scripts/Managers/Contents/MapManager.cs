@@ -242,7 +242,7 @@ namespace STELLAREST_F1
             }
         }
 
-        private List<Vector3Int> _delta = new List<Vector3Int>()
+        public List<Vector3Int> DeltaPos { get; }= new List<Vector3Int>()
         {
             // U기준, 시계 방향
             new Vector3Int(0, 1, 0), // U
@@ -254,6 +254,18 @@ namespace STELLAREST_F1
             new Vector3Int(-1, 0, 0), // L
             new Vector3Int(-1, 1, 0) // LU
         };
+
+        public bool CanMoveDeltaPos(Creature creature)
+        {
+            Vector3Int currentCellPos = WorldToCell(creature.transform.position);
+            for (int i = 0; i < DeltaPos.Count; ++i)
+            {
+                if (CanMove(currentCellPos + DeltaPos[i]) == false)
+                    return false;
+            }
+
+            return true;
+        }
 
         // 모바일에서 꽤 무거운 작업이라 0.1초씩 코루틴으로 돌리던지 바꿔야될수도있음.
         // 그리고 몬스터는 maxDepth를 크게 줄 이유가 없긴함.
@@ -297,7 +309,7 @@ namespace STELLAREST_F1
                 // closedSet.Add(node) 뭐 이런식으로 되는 거고 // 기록을 하고. 역추적용이고.
 
                 // 상하좌우 검색, 예약
-                foreach (Vector3Int delta in _delta)
+                foreach (Vector3Int delta in DeltaPos)
                 {
                     Vector3Int next = pos + delta;
                     if (CanMove(next) == false) // 갈 수 없는 곳이면 오픈셋에 넣지 않는다.

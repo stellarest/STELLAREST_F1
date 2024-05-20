@@ -418,7 +418,7 @@ namespace STELLAREST_F1
                     // pointerCellPos : 중요하진않음. 그냥 이속조절을 위한 용도 뿐
                     // ***** Managers.Object.Camp.Pointer.position ---> Leader로 변경 예정 *****
                     //Vector3Int pointerCellPos = Managers.Map.WorldToCell(Managers.Object.Camp.Pointer.position);
-                    Vector3Int pointerCellPos = Managers.Map.WorldToCell(Managers.Object.LeaderController.PointerPos);
+                    Vector3Int pointerCellPos = Managers.Map.WorldToCell(Managers.Object.LeaderController.LeaderPos);
                     float ratio = Mathf.Max(1, (CellPos - pointerCellPos).sqrMagnitude / divOffsetSQR); // --> 로그로 변경 필요
                     LerpToCellPos(MovementSpeed * ratio);
                 }

@@ -86,6 +86,7 @@ namespace STELLAREST_F1
         public HeroAnimation HeroAnim { get; private set; } = null;
         [field: SerializeField] public bool NeedArrange { get; set; } = false;
         [field: SerializeField] public bool IsLeader { get; set; } = false;
+
         #region ##### TEST AREA #####   
         // ########################################
         private void Update()
@@ -162,11 +163,14 @@ namespace STELLAREST_F1
         #region ##### AI #####
         protected override void UpdateIdle()
         {
-            if (CreatureMoveState == ECreatureMoveState.ForceMove)
-            {
-                CreatureState = ECreatureState.Move;
+            if (IsLeader)
                 return;
-            }
+
+            // if (CreatureMoveState == ECreatureMoveState.ForceMove)
+            // {
+            //     CreatureState = ECreatureState.Move;
+            //     return;
+            // }
 
             // if (Target.IsValid())
             //     LookAtTarget(Target);

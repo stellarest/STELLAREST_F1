@@ -284,7 +284,7 @@ namespace STELLAREST_F1
         }
 
         #region Map
-        [field: SerializeField] public bool LerpToCellPosCompleted { get; set; } = false;
+        [field: SerializeField] public bool LerpToCellPosCompleted { get; protected set; } = false;
 
         [SerializeField] private Vector3Int _cellPos = Vector3Int.zero;
         public Vector3Int CellPos // ### CORE
