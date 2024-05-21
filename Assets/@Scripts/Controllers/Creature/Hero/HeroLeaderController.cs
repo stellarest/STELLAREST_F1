@@ -1,18 +1,76 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
-    // Hero AI랑 별도로 동작, slowly...
     public class HeroLeaderController : InitBase
     {
         private Transform _pointerPivot = null;
         private Transform _pointer = null;
         private Transform _leaderMark = null;
-        private Vector3 _nMovementDir = Vector3.zero; // normalized Vector
+        [SerializeField] private Vector3 _nMovementDir = Vector3.zero;
+        //[SerializeField] private EReplaceMode _replaceMode = EReplaceMode.FollowLeader;
+
+        [SerializeField] private EHeroLeaderChaseMode _heroLeaderChaseMode = EHeroLeaderChaseMode.JustFollowClosely;
+        public EHeroLeaderChaseMode HeroLeaderChaseMode
+        {
+            get => _heroLeaderChaseMode;
+            set
+            {
+                if (_heroLeaderChaseMode != value)
+                {
+                    _heroLeaderChaseMode = value;
+                    MoveStartMembersToTheirChasePos();
+                }
+            }
+        }
+
+        private void MoveStartMembersToTheirChasePos()
+        {
+            List<Hero> heroes = new List<Hero>();
+            for (int i = 0; i < Managers.Object.Heroes.Count; ++i)
+            {
+                Hero hero = Managers.Object.Heroes[i];
+                if (hero.IsValid() == false)
+                    continue;
+
+                heroes.Add(hero);
+            }
+
+            for (int i = 0; i < heroes.Count; ++i)
+                heroes[i].CreatureState = ECreatureState.Move;
+        }
+
+        public void SetJustFollowClosely()
+        {
+            HeroLeaderChaseMode = EHeroLeaderChaseMode.JustFollowClosely;
+        }
+
+        public void SetNarrowFormation()
+        {
+            HeroLeaderChaseMode = EHeroLeaderChaseMode.NarrowFormation;
+        }
+
+        public Vector3Int RequestChaseCellPos(Hero heroMember)
+        {
+            if (heroMember.IsValid() == false)
+                return Managers.Map.WorldToCell(_leader.transform.position);
+
+            float distance = DevManager.Instance.TestReplaceDistance;
+            int index = Managers.Object.Heroes.IndexOf(heroMember);
+            int count = Managers.Object.Heroes.Count - 1;
+
+            float angle = 360f * index / count;
+            angle = Mathf.Deg2Rad * angle;
+
+            float x = Leader.transform.position.x + Mathf.Cos(angle) * distance;
+            float y = Leader.transform.position.y + Mathf.Sin(angle) * distance;
+            return Managers.Map.WorldToCell(new Vector3(x, y, 0));
+        }
 
         private Hero _leader = null;
         public Hero Leader
@@ -20,7 +78,6 @@ namespace STELLAREST_F1
             get => _leader;
             set => SetLeader(value);
         }
-        public Vector3 LeaderPos => _leader.transform.position;
 
         public override bool Init()
         {
@@ -31,8 +88,7 @@ namespace STELLAREST_F1
             _pointer = Util.FindChild<Transform>(_pointerPivot.gameObject, "Pointer");
             _leaderMark = Util.FindChild<Transform>(gameObject, "LeaderMark");
 
-            // 한 번만 설정해놓으면 됨
-            // 히어로 자식으로 두면, Sorting Group 때문에 벽에 가려짐.
+            // 한 번만 설정해놓으면 됨, 히어로 자식으로 두면, Sorting Group 때문에 벽에 가려짐.
             _pointer.localPosition = Vector3.up * 3f;
             _leaderMark.localPosition = Vector2.up * 2f;
 
@@ -41,85 +97,56 @@ namespace STELLAREST_F1
 
             Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
             Managers.Game.OnJoystickStateChangedHandler += OnJoystickStateChanged;
+
+            //_replaceMode = EReplaceMode.FocusingLeader;
+            HeroLeaderChaseMode = EHeroLeaderChaseMode.JustFollowClosely;
+            EnablePointer(false);
             return true;
         }
 
-        private Vector3 TargetPos => _leader.transform.position + (_nMovementDir * _leader.MovementSpeed * Time.deltaTime);
-        private Queue<Vector3Int> _leaderPath = new Queue<Vector3Int>();
-        [SerializeField] public bool _leaderFindPathFlag = true;
-        private Coroutine _coLeaderFindPath = null;
+        // Leader가 걸을 때, 동료들의 위치를 업데이트해주면 될듯...??? 실시간이 아니라..
 
+        public bool _waitFindPath = true;
+        private Vector3 TargetPos => _leader.transform.position + (_nMovementDir * _leader.MovementSpeed * Time.deltaTime);
         private void Update() 
         {
             if (_leader == null)
                 return;
 
             transform.position = _leader.CenterPosition;
-            if (Managers.Map.CanMove(TargetPos) && _leaderFindPathFlag)
+            if (_waitFindPath && Managers.Map.CanMove(TargetPos, ignoreObjects: true))
             {
-                // if (_coLeaderFindPath != null)
-                // {
-                //     StopCoroutine(_coLeaderFindPath);
-                //     _coLeaderFindPath = null;
-                //     _leaderFindPathFlag = true;
-                // }
-
-                //Debug.Log("Normal Move");
-                Move(TargetPos);
+                Move();
             }
-            else if (_leaderFindPathFlag) // A* 강제
+            else if (_waitFindPath)
             {
-                //Debug.Log("Find Path");
-                _leaderFindPathFlag = false;
+                _waitFindPath = false;
                 Vector3Int currentCellPos = Managers.Map.WorldToCell(_leader.transform.position);
-                Vector3Int targetPointerCellPos = Managers.Map.WorldToCell(_pointer.position);
-
-                List<Vector3Int> path = Managers.Map.FindPath(startCellPos: currentCellPos, destCellPos: targetPointerCellPos,
-                        maxDepth: ReadOnly.Numeric.HeroMaxMoveDepth);
-
-                if (path != null && path.Count > 0)
-                {
-                    _leaderPath.Clear();
-                    foreach (var cell in path)
-                        _leaderPath.Enqueue(cell);
-                    _leaderPath.Dequeue();
-
-                    _coLeaderFindPath = StartCoroutine(CoLeaderFindPath());
-                }
+                Vector3Int pointerCellPos = Managers.Map.WorldToCell(_pointer.position);
+                AddLeaderPath(currentCellPos, pointerCellPos);
+                _coLeaderFindPath = StartCoroutine(CoLeaderFindPath());
             }
         }
 
-        private void RetracePath()
+        private Queue<Vector3Int> _leaderPath = new Queue<Vector3Int>();
+        private void AddLeaderPath(Vector3Int startCellPos, Vector3Int targetCellPos)
         {
-            Vector3Int currentCellPos = Managers.Map.WorldToCell(_leader.transform.position);
-            Vector3Int targetPointerCellPos = Managers.Map.WorldToCell(_pointer.position);
-            List<Vector3Int> path = Managers.Map.FindPath(startCellPos: currentCellPos, destCellPos: targetPointerCellPos,
-        maxDepth: ReadOnly.Numeric.HeroMaxMoveDepth);
-
-            if (path != null && path.Count > 0)
-            {
-                _leaderPath.Clear();
-                foreach (var cell in path)
-                    _leaderPath.Enqueue(cell);
-                _leaderPath.Dequeue();
-            }
+            List<Vector3Int> path = Managers.Map.FindPath(startCellPos, targetCellPos, maxDepth: ReadOnly.Numeric.HeroMaxMoveDepth);
+            _leaderPath.Clear();
+            for (int i = 0; i < path.Count; ++i)
+                _leaderPath.Enqueue(path[i]);
+            _leaderPath.Dequeue();
         }
 
+        private Coroutine _coLeaderFindPath = null;
         private IEnumerator CoLeaderFindPath()
         {
             _leader.CreatureState = ECreatureState.Move;
             while (_leaderPath.Count != 0)
             {
-                // RetracePath(); // RetracePath를 조금 건드리면 될것같긴한데
-                // if (_leaderPath.Count == 0)
-                // {
-                //     yield break;
-                // }
-
                 Vector3Int nextPos = _leaderPath.Peek();
                 Vector3 destPos = Managers.Map.CenteredCellToWorld(nextPos);
                 Vector3 dir = destPos - _leader.transform.position;
-
                 if (dir.x < 0f)
                     _leader.LookAtDir = ELookAtDirection.Left;
                 else if (dir.x > 0f)
@@ -129,11 +156,10 @@ namespace STELLAREST_F1
                 {
                     _leader.transform.position = destPos;
                     _leaderPath.Dequeue();
-                    if (Managers.Map.CanMoveDeltaPos(_leader) == false)
-                    {
-                        Debug.Log("### OUT COROUTINE ###");
+
+                    // Path Finding 도중에 중간에 움직일 수 있는 곳이 발견되었을 경우 중지
+                    if (Managers.Map.CanMove(TargetPos, ignoreObjects: true))
                         break;
-                    }
                 }
                 else
                 {
@@ -144,24 +170,26 @@ namespace STELLAREST_F1
                 yield return null;
             }
 
-            _leaderFindPathFlag = true;
-            if (_nMovementDir.x == 0f)
-                _leader.CreatureState = ECreatureState.Idle;
-
-            Debug.Log("End Coroutine.");
+            _waitFindPath = true;
         }
 
-        private void Move(Vector3 targetPos)
+        private void Move()
         {
             if (_nMovementDir == Vector3.zero)
+            {
+                if (_leader.CreatureState == ECreatureState.Move)
+                    _leader.CreatureState = ECreatureState.Idle;
                 return;
+            }
 
             if (_nMovementDir.x < 0f)
                 Leader.LookAtDir = ELookAtDirection.Left;
             else
                 Leader.LookAtDir = ELookAtDirection.Right;
 
-            _leader.transform.position = targetPos;
+            Vector3Int targetCellPos = Managers.Map.WorldToCell(TargetPos);
+            _leader.SetCellPos(cellPos: targetCellPos, stopLerpToCell: true, forceMove: false);
+            _leader.transform.position = TargetPos;
         }
 
         private void SetLeader(Hero newLeader)
@@ -175,22 +203,51 @@ namespace STELLAREST_F1
             {
                 _leader = newLeader;
                 _leader.IsLeader = true;
-                Managers.Map.RemoveObject(newLeader);
+                Managers.Map.RemoveObject(newLeader); // Set New Leader, Cell 위치는 무조건 동료들 것
             }
             else if (_leader != newLeader)
             {
                 // Release Prev Leader
                 _leader.IsLeader = false;
+                // --> 아마 MoveTo로 바꿔야할수도 있음.
                 Managers.Map.AddObject(obj: _leader, cellPos: Managers.Map.WorldToCell(_leader.transform.position));
 
-                // Set Leader
+                // Set New Leader, Cell 위치는 무조건 동료들 것
                 Managers.Map.RemoveObject(newLeader);
                 _leader = newLeader;
                 _leader.IsLeader = true;
             }
 
             Managers.Object.CameraController.Target = newLeader;
-            EnablePointer(false);
+        }
+
+        private IEnumerator CoReadyToReplaceMembers()
+        {
+            while (true)
+            {
+                bool isAllStopped = true;
+                for (int i = 0; i < Managers.Object.Heroes.Count; ++i)
+                {
+                    Hero hero = Managers.Object.Heroes[i];
+                    if (hero == _leader)
+                        continue;
+
+                    if (hero.LerpToCellPosCompleted == false || hero.CreatureState == ECreatureState.Move)
+                    {
+                        isAllStopped = false;
+                        break;
+                    }
+                }
+
+                if (isAllStopped)
+                    break;
+
+                yield return null;
+            }
+
+            yield return null;
+            // Managers.Game.ReplaceHeroes();
+            // StartCoroutine(DevManager.Instance.CoUpdateReplacePosition()); --> 고민, 만들지 말지.
         }
 
         public void EnablePointer(bool enable)
@@ -211,29 +268,30 @@ namespace STELLAREST_F1
         {
             switch (joystickState)
             {
-                case EJoystickState.PointerDown:
-                    EnablePointer(true);
-                    break;
-
                 case EJoystickState.Drag:
                     {
-                        // Drag 중일때는 무조건 Move
                         if (_leader.CreatureState != ECreatureState.Move)
+                        {
+                            EnablePointer(true);
                             _leader.CreatureState = ECreatureState.Move;
+                        }
                     }
                     break;
 
                 case EJoystickState.PointerUp:
                     {
+                        _nMovementDir = Vector3.zero;
                         EnablePointer(false);
                         if (_coLeaderFindPath != null)
                         {
                             StopCoroutine(_coLeaderFindPath);
                             _coLeaderFindPath = null;
-                            _leaderFindPathFlag = true;
+                            _waitFindPath = true;
                         }
 
                         _leader.CreatureState = ECreatureState.Idle;
+                        // if (_replaceMode != EReplaceMode.FollowLeader)
+                        //     StartCoroutine(CoReadyToReplaceMembers());
                     }
                     break;
             }

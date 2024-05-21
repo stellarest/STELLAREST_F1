@@ -111,6 +111,7 @@ namespace STELLAREST_F1
             ForceMove,
             ForcePath,
 
+            FollowLeader,
             Replace,
         }
 
@@ -361,13 +362,27 @@ namespace STELLAREST_F1
             Success
         }
 
-        // 이거 한번 더 누르면 뱅글 뱅글 돌면서 재배치하는 기능 있으면 좋을 것 같음.
-        public enum EReplaceHeroMode
+        public enum EReplaceMode
         {
-            FollowBaseCamp = -1, // Default, 
-            FocusingOnLeader = 3,
-            WideFocusingOnLeader = 15,
+            FollowLeader = 1,
+            FocusingLeader
         }
+
+        public enum EHeroLeaderChaseMode
+        {
+            JustFollowClosely,
+            NarrowFormation,
+            WideFormation,
+            Freedom,
+        }
+
+        // 이거 한번 더 누르면 뱅글 뱅글 돌면서 재배치하는 기능 있으면 좋을 것 같음.
+        // public enum EReplaceHeroMode
+        // {
+        //     FollowBaseCamp = -1, // Default, 
+        //     FocusingOnLeader = 3,
+        //     WideFocusingOnLeader = 15,
+        // }
 
         // ####################################################
 

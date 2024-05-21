@@ -16,11 +16,10 @@ namespace STELLAREST_F1
         public List<Monster> Monsters { get; } = new List<Monster>();
         public HashSet<Env> Envs { get; } = new HashSet<Env>();
         public HashSet<Projectile> Projectiles { get; } = new HashSet<Projectile>();
-        public HeroCamp Camp { get; private set; } = null;
+        //public HeroCamp Camp { get; private set; } = null;
         public CameraController CameraController { get; set; } = null;
-        
-        public HeroLeaderController LeaderController { get; private set; } = null;
-        public Hero Leader => LeaderController.Leader;
+        public HeroLeaderController HeroLeaderController { get; private set; } = null;
+        // public Hero HeroLeader => HeroLeaderController.Leader;
 
 
         private Transform _leaderMark = null;
@@ -54,17 +53,16 @@ namespace STELLAREST_F1
         public Transform ProjectileRoot => GetRoot(ReadOnly.String.ProjectilePoolingRootName);
         #endregion
 
-        public HeroLeaderController SpawnLeaderController()
+        public HeroLeaderController SetHeroLeaderController()
         {
-            if (LeaderController == null)
+            if (HeroLeaderController == null)
             {
-                Debug.Log("HEY");
                 GameObject go = Managers.Resource.Instantiate(ReadOnly.String.LeaderController);
                 go.name = $"@{go.name}";
-                LeaderController = go.GetComponent<HeroLeaderController>();
+                HeroLeaderController = go.GetComponent<HeroLeaderController>();
             }
 
-            return LeaderController;
+            return HeroLeaderController;
         }
 
         public T Spawn<T>(EObjectType objectType, int dataID = -1, BaseObject presetOwner = null) where T : BaseObject
@@ -119,18 +117,18 @@ namespace STELLAREST_F1
                 case EObjectType.Projectile:
                     throw new System.NotImplementedException();
 
-                case EObjectType.HeroCamp:
-                    {
-                        go = Managers.Resource.Instantiate(ReadOnly.String.HeroCamp);
-                        if (go == null)
-                        {
-                            Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{ReadOnly.String.HeroCamp}\"");
-                            return null;
-                        }
-                        go.name = $"@{go.name}";
-                        Camp = go.GetComponent<HeroCamp>();
-                        return Camp as T;
-                    }
+                // case EObjectType.HeroCamp:
+                //     {
+                //         go = Managers.Resource.Instantiate(ReadOnly.String.HeroCamp);
+                //         if (go == null)
+                //         {
+                //             Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{ReadOnly.String.HeroCamp}\"");
+                //             return null;
+                //         }
+                //         go.name = $"@{go.name}";
+                //         Camp = go.GetComponent<HeroCamp>();
+                //         return Camp as T;
+                //     }
 
                 case EObjectType.LeaderController:
                     {
@@ -141,8 +139,8 @@ namespace STELLAREST_F1
                             return null;
                         }
                         go.name = $"@{go.name}";
-                        LeaderController = go.GetComponent<HeroLeaderController>();
-                        return LeaderController as T;
+                        HeroLeaderController = go.GetComponent<HeroLeaderController>();
+                        return HeroLeaderController as T;
                     }
 
                 default:
@@ -224,20 +222,20 @@ namespace STELLAREST_F1
                         return projectile as T;
                     }
 
-                case EObjectType.HeroCamp:
-                    {
-                        go = Managers.Resource.Instantiate(ReadOnly.String.HeroCamp);
-                        if (go == null)
-                        {
-                            Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{ReadOnly.String.HeroCamp}\"");
-                            return null;
-                        }
+                // case EObjectType.HeroCamp:
+                //     {
+                //         go = Managers.Resource.Instantiate(ReadOnly.String.HeroCamp);
+                //         if (go == null)
+                //         {
+                //             Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{ReadOnly.String.HeroCamp}\"");
+                //             return null;
+                //         }
 
-                        go.transform.position = position;
-                        go.name = $"@{go.name}";
-                        Camp = go.GetComponent<HeroCamp>();
-                        return Camp as T;
-                    }
+                //         go.transform.position = position;
+                //         go.name = $"@{go.name}";
+                //         Camp = go.GetComponent<HeroCamp>();
+                //         return Camp as T;
+                //     }
             }
 
             return null;
@@ -264,7 +262,7 @@ namespace STELLAREST_F1
                     break;
 
                 case EObjectType.HeroCamp:
-                    Camp = null;
+                    //Camp = null;
                     break;
             }
 

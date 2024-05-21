@@ -77,8 +77,8 @@ namespace STELLAREST_F1
                           AddAnimationEvents();
                           CreatureState = ECreatureState.Idle;
                           CreatureMoveState = ECreatureMoveState.None;
-                          StartCoroutine(CoUpdateAI());
-                          // StartCoroutine(CoLerpToCellPos()); // Map
+                          StartCoroutine(CoUpdateAI()); // --> Leader도 AI 돌고 있어야함.
+                          StartCoroutine(CoLerpToCellPos()); // Map
                       });
 
             // StartWait(waitCondition: () => BaseAnim.IsPlay() == false,
@@ -350,49 +350,42 @@ namespace STELLAREST_F1
         // maxDepth: Mobile용 성능 조절 Offset 깊이 값
         public EFindPathResult FindPathAndMoveToCellPos(Vector3 destPos, int maxDepth, bool forceMoveCloser = false)
         {
-            Vector3Int destCellPos = Managers.Map.WorldToCell(destPos); // 여기 Centered로 해야하지 않나?
+            Vector3Int destCellPos = Managers.Map.WorldToCell(destPos);
             return FindPathAndMoveToCellPos(destCellPos, maxDepth, forceMoveCloser);
         }
 
         public EFindPathResult FindPathAndMoveToCellPos(Vector3Int destPos, int maxDepth, bool forceMoveCloser = false)
         {
-            // 지금 셀 크기는 적당함. 0.5 by 0.5
-            // 아 움직이고 있는 중에는 길을 못찾겠네 ;;;;;
-            if (LerpToCellPosCompleted == false) // 움직임 진행중
+            // 움직임 진행중
+            if (LerpToCellPosCompleted == false)
             {
-                // ***** // 여기 Path Count 쪽으로 옮겨야할듯. 지금 Cell이 너무 커서
-                return EFindPathResult.Fail_LerpCell; // *** ReplaceMode : 이것때문에 도착지까지 길찾기 실패함. 못갔음.
+                return EFindPathResult.Fail_LerpCell;
             }
-            // Move상태라서
 
-            // ### A* ###
-            List<Vector3Int> path = Managers.Map.FindPath(CellPos, destPos, maxDepth);
-            if (path.Count < 2) // 시작점만 들어가있다는 뜻이니까.
-            {
+            // A*
+            List<Vector3Int> path = Managers.Map.FindPath(startCellPos: CellPos, destPos, maxDepth);
+            if (path.Count < 2)
                 return EFindPathResult.Fail_NoPath;
-            }
 
+            #region TEST
             // 다른 오브젝트가 길막해서 와리가리할수있다는데, 그럴때 diff1, diff2의 점수 계산을 해서 안가게끔 막는 것이라고 함.
             // 근데 아주 예외적인 케이스라고함.
-            if (forceMoveCloser)
-            {
-                Vector3Int diff1 = CellPos - destPos;
-                Vector3Int diff2 = path[1] - destPos;
-                if (diff1.sqrMagnitude <= diff2.sqrMagnitude)
-                    return EFindPathResult.Fail_NoPath;
-            }
+            // if (forceMoveCloser)
+            // {
+            //     Vector3Int diff1 = CellPos - destPos;
+            //     Vector3Int diff2 = path[1] - destPos;
+            //     if (diff1.sqrMagnitude <= diff2.sqrMagnitude)
+            //         return EFindPathResult.Fail_NoPath;
+            // }
+            #endregion
 
             Vector3Int dirCellPos = path[1] - CellPos;
-            //Vector3Int dirCellPos = destCellPos - CellPos;
             Vector3Int nextPos = CellPos + dirCellPos;
 
-            // ##### 선점부터 #####
-            // ****** PathFinder가 한 번만 호출되서 nextPos [0,0]에서 끝난것임
-            if (Managers.Map.MoveTo(this, nextPos) == false)
+            if (Managers.Map.MoveTo(creature: this, nextPos) == false)
                 return EFindPathResult.Fail_MoveTo;
-            // Fail_MoveTo: 이건 길을 찾았으면 원래는 갈 수 있어야 하지만 다른 이유에 의해 못갔을 때
 
-            return EFindPathResult.Success; // Success: 길을 찾고 이동까지 했다.
+            return EFindPathResult.Success;
         }
 
         public bool MoveToCellPos(Vector3Int destCellPos, int maxDepth, bool forceMoveCloser = false)
@@ -410,17 +403,21 @@ namespace STELLAREST_F1
             {
                 Hero hero = this as Hero;
                 if (hero.IsLeader)
+                {
+                    Debug.Log("BREAK LEADER AI.");
                     yield break;
+                }
 
                 if (hero != null)
                 {
-                    float divOffsetSQR = 5f * 5f;
+                    //float divOffsetSQR = 5f * 5f;
                     // pointerCellPos : 중요하진않음. 그냥 이속조절을 위한 용도 뿐
                     // ***** Managers.Object.Camp.Pointer.position ---> Leader로 변경 예정 *****
                     //Vector3Int pointerCellPos = Managers.Map.WorldToCell(Managers.Object.Camp.Pointer.position);
-                    Vector3Int pointerCellPos = Managers.Map.WorldToCell(Managers.Object.LeaderController.LeaderPos);
-                    float ratio = Mathf.Max(1, (CellPos - pointerCellPos).sqrMagnitude / divOffsetSQR); // --> 로그로 변경 필요
-                    LerpToCellPos(MovementSpeed * ratio);
+                    // Vector3Int pointerCellPos = Managers.Map.WorldToCell(Managers.Object.LeaderController.Leader.transform.position);
+                    //float ratio = Mathf.Max(1, (CellPos - pointerCellPos).sqrMagnitude / divOffsetSQR); // --> 로그로 변경 필요
+                    //LerpToCellPos(MovementSpeed * ratio);
+                    LerpToCellPos(MovementSpeed);
                 }
                 else
                     LerpToCellPos(MovementSpeed);
@@ -430,5 +427,7 @@ namespace STELLAREST_F1
         }
         #endregion Map
         #endregion Helper
+
+
     }
 }

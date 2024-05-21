@@ -23,9 +23,6 @@ namespace STELLAREST_F1
         private void Awake()
         {
             Instance = this;
-            ReplaceMode = EReplaceHeroMode.FocusingOnLeader;
-            TestReplaceDistance = (float)EReplaceHeroMode.FocusingOnLeader;
-
             // TestObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             // TestObject.name = "@@@@@TestSphere@@@@@";
             // SortingGroup sg = TestObject.AddComponent<SortingGroup>();
@@ -63,7 +60,10 @@ namespace STELLAREST_F1
                 ChangeRandomHeroLeader();
 
             if (Input.GetKeyDown("2"))
-                Managers.Game.ReplaceHeroes();
+                Managers.Object.HeroLeaderController.SetJustFollowClosely();
+
+            if (Input.GetKeyDown("3"))
+                Managers.Object.HeroLeaderController.SetNarrowFormation();
 
             // Me - 상, 하, 좌, 우 : 1 (한칸)
             // Me - 좌상단 우상단 우하단 좌하단 : 2 (대각선)
@@ -96,7 +96,7 @@ namespace STELLAREST_F1
             {
                 for (int x = MinX; x < MaxX; ++x)
                 {
-                    GameObject cell = new GameObject { name = $"{x},{y}" };
+                    GameObject cell = new GameObject { name = $"{x}, {y}" };
                     cell.transform.position = Managers.Map.CenteredCellToWorld(new Vector3Int(x, y));
                     TextMeshPro tmPro = cell.AddComponent<TextMeshPro>();
                     tmPro.fontSize = 3f;
@@ -111,30 +111,35 @@ namespace STELLAREST_F1
 
         public void ChangeRandomHeroLeader()
         {
+            if (Managers.Object.Heroes.Count == 1)
+                return;
+
             int randIdx = UnityEngine.Random.Range(0, Managers.Object.Heroes.Count);
-            Managers.Object.LeaderController.Leader = Managers.Object.Heroes[randIdx];
+            Hero newHeroLeader = Managers.Object.Heroes[randIdx];
+            Hero currentLeader = Managers.Object.HeroLeaderController.Leader;
+            while (newHeroLeader == currentLeader)
+            {
+                randIdx = UnityEngine.Random.Range(0, Managers.Object.Heroes.Count);
+                newHeroLeader = Managers.Object.Heroes[randIdx];
+            }
+
+            Managers.Object.HeroLeaderController.Leader = newHeroLeader;
         }
 
-        public float TestReplaceDistance = 3f;
-        [field: SerializeField] public EReplaceHeroMode ReplaceMode { get; set; } = EReplaceHeroMode.FocusingOnLeader;
+        public Hero Leader = null;
+        public float TestReplaceDistance = 5f;
         private void OnDrawGizmos()
         {
-            if (ReplaceMode == EReplaceHeroMode.FollowBaseCamp)
-                return;
-            if (Managers.Object.Heroes == null || Managers.Object.Camp == null)
-                return;
-            if (Managers.Object.Heroes.Count < 2 && Managers.Object.Camp.Leader == null)
+            if (Leader == null)
                 return;
 
-            //float testDist = (float)ReplaceMode;
-            Hero leader = Managers.Object.Camp.Leader;
             int memberCount = Managers.Object.Heroes.Count - 1;
             for (int i = 0; i < memberCount; ++i)
             {
                 float degree = 360f * i / memberCount;
                 degree = Mathf.PI / 180f * degree;
-                float x = leader.transform.position.x + Mathf.Cos(degree) * TestReplaceDistance;
-                float y = leader.transform.position.y + Mathf.Sin(degree) * TestReplaceDistance;
+                float x = Leader.transform.position.x + Mathf.Cos(degree) * TestReplaceDistance;
+                float y = Leader.transform.position.y + Mathf.Sin(degree) * TestReplaceDistance;
 
                 Vector3Int cellPos = Managers.Map.WorldToCell(new Vector3(x, y, 0));
                 //Vector3Int cellPos = new Vector3Int(1, 0, 0); // A* Test
@@ -144,6 +149,34 @@ namespace STELLAREST_F1
                 Gizmos.DrawSphere(worldCenterPos, radius: 0.5f);
             }
         }
+
+        // public IEnumerator CoUpdateReplacePosition()
+        // {
+        //     while (true)
+        //     {
+        //         List<Hero> members = new List<Hero>();
+        //         foreach (var hero in Managers.Object.Heroes)
+        //         {
+        //             if (hero.IsLeader == false)
+        //                 members.Add(hero);
+        //         }
+
+        //         float _replaceHeroesDistance_Test = DevManager.Instance.TestReplaceDistance;
+        //         Hero leader = Managers.Object.HeroLeaderController.Leader;
+        //         for (int i = 0; i < members.Count; ++i)
+        //         {
+        //             float degree = 360f * i / members.Count;
+        //             degree = Mathf.PI / 180f * degree;
+        //             float x = leader.transform.position.x + Mathf.Cos(degree) * _replaceHeroesDistance_Test;
+        //             float y = leader.transform.position.y + Mathf.Sin(degree) * _replaceHeroesDistance_Test;
+
+        //             Vector3Int cellPos = Managers.Map.WorldToCell(new Vector3(x, y, 0));
+        //             //members[i].ReplaceHero(cellPos);
+        //             members[i].CoUpdateReplaceDestPosition(cellPos);
+        //             yield return null;
+        //         }
+        //     }
+        // }
     }
 }
 #endif

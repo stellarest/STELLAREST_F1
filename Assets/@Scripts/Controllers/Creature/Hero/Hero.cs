@@ -54,18 +54,18 @@ namespace STELLAREST_F1
             }
         }
 
-        private Transform CampDestination
-        {
-            get
-            {
-                HeroCamp camp = Managers.Object.Camp;
-                // ***** Leader Test *****
-                // if (CreatureMoveState == ECreatureMoveState.ReturnToBase)
-                //     return camp.Pivot;
+        // private Transform CampDestination
+        // {
+        //     get
+        //     {
+        //         HeroCamp camp = Managers.Object.Camp;
+        //         // ***** Leader Test *****
+        //         // if (CreatureMoveState == ECreatureMoveState.ReturnToBase)
+        //         //     return camp.Pivot;
 
-                return camp.Pointer;
-            }
-        }
+        //         return camp.Pointer;
+        //     }
+        // }
 
         public override bool CollectEnv
         {
@@ -156,8 +156,46 @@ namespace STELLAREST_F1
             Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
             Managers.Game.OnJoystickStateChangedHandler += OnJoystickStateChanged;
 
+            // _onLerpToCellPosEndHandler -= OnLerpToCellPosEnd;
+            // _onLerpToCellPosEndHandler += OnLerpToCellPosEnd;
+
+            // TEST
+            // _onFindPathEndHandler += (delegate ()
+            // {
+            //     // 기본적으로는 무지성으로 쫓아오고
+            //     // 리더가 멈추면 Repoistion하게 해도 되고. (쫙 펼쳐지는 느낌으로)
+            //     if (CreatureMoveState != ECreatureMoveState.ForceMove)
+            //     {
+            //         Debug.Log("INVOKE.");
+            //         CreatureMoveState = ECreatureMoveState.None;
+            //         CreatureState = ECreatureState.Idle;
+            //     }
+            // });
+
             // A* Test
             // NeedArrange = true; // TEMP
+        }
+
+        // 요행은 없다.
+        public Vector3Int ChaseCellPos
+        {
+            get
+            {
+                HeroLeaderController heroLeaderController = Managers.Object.HeroLeaderController;
+                switch (heroLeaderController.HeroLeaderChaseMode)
+                {
+                    case EHeroLeaderChaseMode.JustFollowClosely:
+                        return Managers.Map.WorldToCell(heroLeaderController.Leader.transform.position);;
+
+                    case EHeroLeaderChaseMode.NarrowFormation:
+                        return Managers.Object.HeroLeaderController.RequestChaseCellPos(this); ;
+
+                    case EHeroLeaderChaseMode.WideFormation:
+                    case EHeroLeaderChaseMode.Freedom:
+                    default:
+                        return Vector3Int.zero;
+                }
+            }
         }
 
         #region ##### AI #####
@@ -166,7 +204,20 @@ namespace STELLAREST_F1
             if (IsLeader)
                 return;
 
-            // if (CreatureMoveState == ECreatureMoveState.ForceMove)
+            // Idle to Move
+            if (CreatureMoveState == ECreatureMoveState.ForceMove)
+            {
+                CreatureState = ECreatureState.Move;
+                return;
+            }
+
+            // if (CreatureMoveState == ECreatureMoveState.ForceMove || CreatureMoveState == ECreatureMoveState.Replace)
+            // {
+            //     CreatureState = ECreatureState.Move;
+            //     return;
+            // }
+
+            // if (CreatureMoveState == ECreatureMoveState.ForceMove || CreatureMoveState == ECreatureMoveState.Replace)
             // {
             //     CreatureState = ECreatureState.Move;
             //     return;
@@ -205,22 +256,54 @@ namespace STELLAREST_F1
             // }
         }
 
-        // FindPathAndMoveToCellPos를 히어로에 막바로 넣지않고
-        // 그룹이동을 만들고 싶으면 이런 이동하는 코드들을 다 HeroCamp에 짱박아서 한번에 관리하게끔 응용해보라고함.
-        // 기본적으로 작게 작게 움직이는 것은 문제가 없을거임.
-        private Vector3Int _replaceDestPos = Vector3Int.zero;
-        protected override void UpdateMove() // AI TEST
+        protected override void UpdateMove()
         {
             if (IsLeader)
                 return;
 
-            // if (LerpToCellPosCompleted)
+            EFindPathResult result = FindPathAndMoveToCellPos(destPos: ChaseCellPos,
+                maxDepth: ReadOnly.Numeric.HeroDefaultMoveDepth);
+
+            // ForceMove 상태일때는 계속 움직임
+            if (CreatureMoveState == ECreatureMoveState.None)
+            {
+                // 여기 때문에 실시간으로 안따라가는 거긴한데...
+                if (result == EFindPathResult.Fail_NoPath)
+                {
+                    CreatureMoveState = ECreatureMoveState.None;
+                    CreatureState = ECreatureState.Idle;
+                    return;
+                }
+            }
+
+            // if (CreatureState == ECreatureState.Move)
             // {
-            //     CreatureState = ECreatureState.Idle;
-            //     NeedArrange = false;
+            //     if (CreatureMoveState == ECreatureMoveState.Replace)
+            //     {
+            //         EFindPathResult result = FindPathAndMoveToCellPos(destPos: _replaceDestPos, 
+            //             maxDepth: ReadOnly.Numeric.HeroMaxMoveDepth);
+            //         if (result == EFindPathResult.Fail_NoPath)
+            //         {
+            //             Debug.Log($"Replace NoPath: {gameObject.name}");
+            //             CreatureMoveState = ECreatureMoveState.None;
+            //             CreatureState = ECreatureState.Idle;
+            //         }
+            //     }
+            //     else if (CreatureMoveState == ECreatureMoveState.ForceMove)
+            //     {
+            //         EFindPathResult result = FindPathAndMoveToCellPos(destPos: ChaseCellPos, 
+            //             maxDepth: ReadOnly.Numeric.HeroDefaultMoveDepth);
+            //         if (result == EFindPathResult.Fail_NoPath)
+            //         {
+            //             CreatureMoveState = ECreatureMoveState.None;
+            //             CreatureState = ECreatureState.Idle;
+            //         }
+            //     }
+            //     return;
             // }
         }
 
+        // Prev Origin
         // protected override void UpdateMove()
         // {
         //     // A* Test
@@ -353,26 +436,26 @@ namespace STELLAREST_F1
         //  ###################################################
         private bool CheckHeroCampDistanceAndForcePath()
         {
-            Vector3 destPos = CampDestination.position;
-            Vector3Int destCellPos = Managers.Map.WorldToCell(destPos);
-            if ((CellPos - destCellPos).magnitude <= 10f) // 10칸 이상으로 너무 멀어졌을 경우,, (ㄹㅇ 거리로 판정)
-                return false;
+            // Vector3 destPos = CampDestination.position;
+            // Vector3Int destCellPos = Managers.Map.WorldToCell(destPos);
+            // if ((CellPos - destCellPos).magnitude <= 10f) // 10칸 이상으로 너무 멀어졌을 경우,, (ㄹㅇ 거리로 판정)
+            //     return false;
 
-            if (Managers.Map.CanMove(destCellPos, ignoreObjects: true) == false)
-                return false;
+            // if (Managers.Map.CanMove(destCellPos, ignoreObjects: true) == false)
+            //     return false;
 
-            List<Vector3Int> path = Managers.Map.FindPath(startCellPos: CellPos, destCellPos: destCellPos, maxDepth: ReadOnly.Numeric.HeroMaxMoveDepth);
-            if (path.Count < 2)
-                return false;
+            // List<Vector3Int> path = Managers.Map.FindPath(startCellPos: CellPos, destCellPos: destCellPos, maxDepth: ReadOnly.Numeric.HeroMaxMoveDepth);
+            // if (path.Count < 2)
+            //     return false;
 
-            CreatureMoveState = ECreatureMoveState.ForcePath;
+            // CreatureMoveState = ECreatureMoveState.ForcePath;
             
-            _forcePath.Clear();
-            foreach (var p in path)
-            {
-                _forcePath.Enqueue(p);
-            }
-            _forcePath.Dequeue(); // 시작 위치는 제거한듯?
+            // _forcePath.Clear();
+            // foreach (var p in path)
+            // {
+            //     _forcePath.Enqueue(p);
+            // }
+            // _forcePath.Dequeue(); // 시작 위치는 제거한듯?
 
             return true;
         }
@@ -508,7 +591,7 @@ namespace STELLAREST_F1
             callback?.Invoke();
         }
 
-        #region ##### Event #####
+        #region Event
         private void OnJoystickStateChanged(EJoystickState joystickState)
         {
             switch (joystickState)
@@ -551,22 +634,30 @@ namespace STELLAREST_F1
         #endregion
 
         // TEST
-        public void ReplaceHero(Vector3Int replaceDestPos)
-        {
-            if ((CellPos - replaceDestPos).sqrMagnitude < 1f)
-            {
-                Debug.Log("");
-                Debug.Log($"<color=magenta>START:{gameObject.name}</color>");
-                Debug.Log("<color=magenta>Don't Move !!</color>");
-                Debug.Log($"<color=magenta>END:{gameObject.name}</color>");
-                Debug.Log("");
-                return;
-            }
-
-            CreatureState = ECreatureState.Move;
-            CreatureMoveState = ECreatureMoveState.Replace;
-            _replaceDestPos = replaceDestPos;
-        }
+        // private void OnLerpToCellPosEnd()
+        // {
+        //     if (CreatureState == ECreatureState.Move)
+        //     {
+        //         if (CreatureMoveState == ECreatureMoveState.Replace)
+        //         {
+        //             // 이걸로 체크해서 막힌 곳에 갔을 때 Idle 상태로 전환못함.
+        //             // CellPos == _replaceDestPos -> (CellPos - _replaceDestPos).magnitude <= 1f : 1칸 이하일 때
+        //             if (CellPos == _replaceDestPos)
+        //             {
+        //                 CreatureMoveState = ECreatureMoveState.None;
+        //                 CreatureState = ECreatureState.Idle;
+        //                 return;
+        //             }
+        //         }
+        //         // 계속 ForceMove State일 때는... 중간에 Idle로 만들어주면 안된다!!
+        //         else if (CreatureMoveState != ECreatureMoveState.ForceMove)
+        //         {
+        //             CreatureMoveState = ECreatureMoveState.None;
+        //             CreatureState = ECreatureState.Idle;
+        //             return;
+        //         }
+        //     }
+        // }
     }
 }
 

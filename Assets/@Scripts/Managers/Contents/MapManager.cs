@@ -61,16 +61,11 @@ namespace STELLAREST_F1
             MinY = int.Parse(stringReader.ReadLine());
             MaxY = int.Parse(stringReader.ReadLine());
 
-            Debug.Log($"MinX: {MinX}");
-            Debug.Log($"MaxX: {MaxX}");
-            Debug.Log($"MinY: {MinY}");
-            Debug.Log($"MaxY: {MaxY}");
-
             int xCount = MaxX - MinX;
             int yCount = MaxY - MinY;
 
             _cellCollisionType = new ECellCollisionType[yCount, xCount];
-            stringReader.ReadLine(); // 개행
+            stringReader.ReadLine(); // \n
             for (int y = 0; y < yCount; ++y)
             {
                 string line = stringReader.ReadLine();
@@ -131,15 +126,31 @@ namespace STELLAREST_F1
         public bool MoveTo(Creature creature, Vector3 position, bool forceMove = false)
             => MoveTo(creature, Managers.Map.WorldToCell(position), forceMove);
 
-        public bool MoveTo(Creature creature, Vector3Int cellPos, bool forceMove = false)
+        public bool MoveTo(Creature creature, Vector3Int cellPos, bool stopLerpToCell = false, bool forceMove = false)
         {
             if (CanMove(cellPos) == false)
                 return false;
 
             RemoveObject(creature);
             AddObject(creature, cellPos);
-            creature.SetCellPos(cellPos, forceMove);
+            creature.SetCellPos(cellPos, stopLerpToCell, forceMove);
             return true;
+        }
+
+        public void MoveLeader(Hero leader, Vector3 targetPosition)
+        {
+            // 다른 애들이랑 중복되면 안됨
+            // Vector3Int prevCellPos = WorldToCell(leader.transform.position);
+            // if (prevCellPos != targetCellPos)
+            // {
+            //     // 리더 이거 하면 안될듯.
+            //     _cells[prevCellPos] = null;
+            //     _cells[targetCellPos] = leader;
+            // }
+
+            // Vector3Int targetCellPos = WorldToCell(targetPosition);
+            // leader.SetCellPos(cellPos: targetCellPos, stopLerpToCell: true, forceMove: false);
+            // leader.transform.position = targetPosition;
         }
 
         #region Helpers
@@ -254,18 +265,6 @@ namespace STELLAREST_F1
             new Vector3Int(-1, 0, 0), // L
             new Vector3Int(-1, 1, 0) // LU
         };
-
-        public bool CanMoveDeltaPos(Creature creature)
-        {
-            Vector3Int currentCellPos = WorldToCell(creature.transform.position);
-            for (int i = 0; i < DeltaPos.Count; ++i)
-            {
-                if (CanMove(currentCellPos + DeltaPos[i]) == false)
-                    return false;
-            }
-
-            return true;
-        }
 
         // 모바일에서 꽤 무거운 작업이라 0.1초씩 코루틴으로 돌리던지 바꿔야될수도있음.
         // 그리고 몬스터는 maxDepth를 크게 줄 이유가 없긴함.
@@ -477,5 +476,17 @@ namespace STELLAREST_F1
             dmgResult = dmgResult - (dmgResult * armor);
             return (dmgResult, isCritical);
         }
+
+        // public bool CanMoveDeltaPos(Creature creature, bool ignoreObjects = false)
+        // {
+        //     Vector3Int currentCellPos = WorldToCell(creature.transform.position);
+        //     for (int i = 0; i < DeltaPos.Count; ++i)
+        //     {
+        //         if (CanMove(currentCellPos + DeltaPos[i], ignoreObjects) == false)
+        //             return false;
+        //     }
+
+        //     return true;
+        // }
 
 */

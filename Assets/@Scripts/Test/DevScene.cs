@@ -75,7 +75,7 @@ namespace STELLAREST_F1
 
                 // HeroCamp camp = Managers.Object.Spawn<HeroCamp>(EObjectType.HeroCamp);
                 // camp.SetCellPos(randPos, forceMove: true);
-                HeroLeaderController leaderController = Managers.Object.SpawnLeaderController();
+                HeroLeaderController leaderController = Managers.Object.SetHeroLeaderController();
 
                 CameraController cam = Camera.main.GetComponent<CameraController>();
                 Managers.Object.CameraController = cam;
@@ -85,7 +85,6 @@ namespace STELLAREST_F1
                 // Leader는 주변 Cell에 갈 수 있는지 없는지만 체크함녀 된다.
                 
                 firstHero.transform.position = Managers.Map.WorldToCell(Vector3.zero);
-                
                 //camp.Leader = hero;
                 //cam.Target = hero;
                 // Managers.Map.MoveTo(hero, randPos, forceMove: true);
@@ -98,7 +97,7 @@ namespace STELLAREST_F1
                 // 최대 맵 배치 동료 개수 : 7명 - (리더1, 팔로워6), 또는 9명(리더1, 팔로워8)
                 // Slowly...
                 int memberCount = 0;
-                int memberMaxCount = 0;
+                int memberMaxCount = 6;
                 while (memberCount < memberMaxCount)
                 {
                     randPos = new Vector3Int(Random.Range(-4, 4), Random.Range(-4, 4), 0);
@@ -114,6 +113,14 @@ namespace STELLAREST_F1
                 }
 
                 leaderController.Leader = firstHero;
+                DevManager.Instance.Leader = firstHero;
+                //Managers.Game.SetHeroesPosition();
+            }
+
+            if (Managers.Object.HeroLeaderController == null)
+            {
+                Debug.LogError("This game absolutely requires at least one Hero Leader Controller.");
+                Application.Quit();
             }
         }
 

@@ -7,6 +7,10 @@ using UnityEngine;
 using Unity.VisualScripting;
 
 /*
+[ TODO TODAY LIST ]
+>>> 리더가 바뀌었을 때, Replace Again
+>>> 리더 이동시, 진열 유지하는 것 부터.
+
 [ TODO LIST ]
 >> 캐쥬얼하게 만들기.
 >> Parabola 모션 개선 필요 (타겟 거리에 따라 HeightArc 조정)
@@ -25,6 +29,7 @@ using Unity.VisualScripting;
 >>>>> Mode를 Individual로 바꾸고, 나무1 스프라이트의 피벗을 0.5, 0.1로 바꾸면 자동정렬 완성
 >>>>> AnimationCurveManager -> 제거 예정
 >>>>> CAMP == LEADER 동일하게 위치 설정해서 A* 수정
+>>>>> 리더 교체시 다시 Replace 되도록.
 */
 
 public class Test1 : IEnumerator
@@ -102,6 +107,7 @@ public class T_E_S_T : MonoBehaviour
 
 /* 
 [ MEMO ]
+곡선은 삼각함수, 베지에 곡선으로도 가능.
 GameObject.CreatePrimitive(PrimitiveType.Sphere)
 가칭 : 매우 간단한 RPG 게임. (Only One류, FQ4와 비슷한)
 정처없이 돌아다니면서 사냥 + 육성 + 대략 100레벨 정도 만들고 클리어하면 끝.
