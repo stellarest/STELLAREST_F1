@@ -635,7 +635,7 @@ namespace STELLAREST_F1
                 public static readonly float MonsterSize_Medium = 0.8F;
                 public static readonly float MonsterSize_Large = 1.2F;
 
-                public static readonly float Temp_ScanRange = 12.0F;
+                public static readonly float CreatureDefaultScanRange = 12.0F;
                 public static readonly float Temp_StopDistance = 1.25F;
                 
                 // Dead Fade Out Time

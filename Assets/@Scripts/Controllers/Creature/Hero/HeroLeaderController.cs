@@ -63,6 +63,9 @@ namespace STELLAREST_F1
             if (Managers.Object.Heroes.Count < 2)
                 return;
 
+            if (_heroLeaderChaseMode == EHeroLeaderChaseMode.JustFollowClosely)
+                return;
+
             List<Hero> shuffleHeroes = Managers.Object.Heroes.Skip(1).ToList();
             System.Random rnd = new System.Random();
             shuffleHeroes = shuffleHeroes.OrderBy(n => rnd.Next()).ToList();

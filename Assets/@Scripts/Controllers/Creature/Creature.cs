@@ -75,7 +75,7 @@ namespace STELLAREST_F1
                           Target = null;
                           CancelWait();
                           AddAnimationEvents();
-                          CreatureState = ECreatureState.Idle;
+                          //CreatureState = ECreatureState.Idle; --> 각 클래스에서 관리
                           CreatureMoveState = ECreatureMoveState.None;
                           StartCoroutine(CoUpdateAI()); // --> Leader도 AI 돌고 있어야함.
                           TickLerpToCellPos();
@@ -420,6 +420,38 @@ namespace STELLAREST_F1
             while (true)
             {
                 Hero hero = this as Hero;
+                if (hero.IsValid())
+                {
+                    // 1. 리더의 MovementSpeed가 느리면 멤버들의 Movement Speed도 Leader에게 맞춰진다.
+                    // --> 리더 주변으로 Chase해야하기 때문
+                    // 2. 1번이 어색하게 느껴지면 MovementSpeed는 통합 Stat으로 관리
+                    float movementSpeed = Util.CalculateValueFromDistance(
+                        value: Managers.Object.HeroLeaderController.Leader.MovementSpeed,
+                        maxValue: Managers.Object.HeroLeaderController.Leader.MovementSpeed * 2f,
+                        distanceToTargetSQR: (CellPos - Managers.Object.HeroLeaderController.Leader.CellPos).sqrMagnitude,
+                        maxDistanceSQR: ReadOnly.Numeric.CreatureDefaultScanRange * ReadOnly.Numeric.CreatureDefaultScanRange
+                    );
+
+                    LerpToCellPos(movementSpeed);
+                }
+                else
+                    LerpToCellPos(MovementSpeed);
+
+                yield return null;
+            }
+        }
+        #endregion Map
+        #endregion Helper
+    }
+}
+
+/*
+##### Prev #####
+protected IEnumerator CoLerpToCellPos()
+        {
+            while (true)
+            {
+                Hero hero = this as Hero;
                 // if (hero.IsLeader)
                 // {
                 //     Debug.Log("BREAK LEADER AI.");
@@ -444,9 +476,4 @@ namespace STELLAREST_F1
                 yield return null;
             }
         }
-        #endregion Map
-        #endregion Helper
-
-
-    }
-}
+*/

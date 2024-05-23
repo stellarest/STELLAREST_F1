@@ -166,6 +166,7 @@ namespace STELLAREST_F1
         protected override void EnterInGame(int dataID)
         {
             LookAtDir = ELookAtDirection.Right;
+            CreatureState = ECreatureState.Move;
             base.EnterInGame(dataID);
             
             // 나오고 나서 조이스틱 등록
@@ -531,7 +532,7 @@ namespace STELLAREST_F1
             else if (Target.IsValid())
             {
                 // Research Enemies
-                Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_ScanRange, Managers.Object.Monsters, func: IsValid) as Creature;
+                Creature creature = FindClosestInRange(ReadOnly.Numeric.CreatureDefaultScanRange, Managers.Object.Monsters, func: IsValid) as Creature;
                 if (creature != null)
                 {
                     CollectEnv = false;

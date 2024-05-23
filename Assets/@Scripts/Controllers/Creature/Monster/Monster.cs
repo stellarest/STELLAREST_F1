@@ -95,7 +95,7 @@ namespace STELLAREST_F1
 
             {
                 // Research Enemy
-                Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_ScanRange, Managers.Object.Heroes) as Creature;
+                Creature creature = FindClosestInRange(ReadOnly.Numeric.CreatureDefaultScanRange, Managers.Object.Heroes) as Creature;
                 if (creature.IsValid())
                 {
                     Target = creature;
@@ -111,7 +111,7 @@ namespace STELLAREST_F1
         {
             if (Target.IsValid() == false)
             {
-                Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_ScanRange, Managers.Object.Heroes, func: IsValid) as Creature;
+                Creature creature = FindClosestInRange(ReadOnly.Numeric.CreatureDefaultScanRange, Managers.Object.Heroes, func: IsValid) as Creature;
                 if (creature != null)
                 {
                     Target = creature;
@@ -129,7 +129,7 @@ namespace STELLAREST_F1
             else
             {
                 //SkillBase skill = Skills.GetReadySkill();
-                ChaseOrAttackTarget(ReadOnly.Numeric.Temp_ScanRange, AttackDistance);
+                ChaseOrAttackTarget(ReadOnly.Numeric.CreatureDefaultScanRange, AttackDistance);
                 
                 // 너무 멀어지면 포기
                 if (Target.IsValid() == false)

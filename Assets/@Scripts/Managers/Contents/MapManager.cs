@@ -44,14 +44,14 @@ namespace STELLAREST_F1
             CellGrid = map.GetComponent<Grid>();
 
             ParseCollisionData(map, mapName);
-            // SpawnObjectsByData(map, mapName);
+            SpawnObjectsByData(map, mapName);
         }
 
         private void ParseCollisionData(GameObject map, string mapName, string tileMap = "Tilemap_Collision")
         {
-            // GameObject collision = Util.FindChild(map, tileMap, true);
-            // if (collision != null)
-            //     collision.SetActive(false);
+            GameObject collision = Util.FindChild(map, tileMap, true);
+            if (collision != null)
+                collision.SetActive(false);
 
             TextAsset txt = Managers.Resource.Load<TextAsset>($"{mapName}_Collision");
             StringReader stringReader = new StringReader(txt.text); // StringReader, 파일 입출력(System.IO)
