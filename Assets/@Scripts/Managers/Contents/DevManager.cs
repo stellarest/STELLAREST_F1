@@ -50,6 +50,12 @@ namespace STELLAREST_F1
 
             if (Input.GetKeyDown("3"))
                 Managers.Object.HeroLeaderController.SetNarrowFormation();
+
+            if (Input.GetKeyDown("4"))
+                Managers.Object.HeroLeaderController.SetWideFormation();
+
+            if (Input.GetKeyDown("5"))
+                Managers.Object.HeroLeaderController.ShuffleMembersPosition();
         }
 
         private void ShowCellPosText()
@@ -105,29 +111,33 @@ namespace STELLAREST_F1
             Managers.Object.HeroLeaderController.Leader = newHeroLeader;
         }
 
-        public Hero Leader { get; set; } = null; // TMEP
-        public float TestLeaderChaseDistance = 5f;
-        private void OnDrawGizmos()
-        {
-            if (Leader == null)
-                return;
+        // public Hero Leader { get; set; } = null; // TMEP
+        // public EHeroLeaderChaseMode LeaderChaseMode = EHeroLeaderChaseMode.JustFollowClosely;
+        // private void OnDrawGizmos()
+        // {
+        //     if (Leader == null)
+        //         return;
 
-            int memberCount = Managers.Object.Heroes.Count - 1;
-            for (int i = 0; i < memberCount; ++i)
-            {
-                float degree = 360f * i / memberCount;
-                degree = Mathf.PI / 180f * degree;
-                float x = Leader.transform.position.x + Mathf.Cos(degree) * TestLeaderChaseDistance;
-                float y = Leader.transform.position.y + Mathf.Sin(degree) * TestLeaderChaseDistance;
+        //     if (LeaderChaseMode == EHeroLeaderChaseMode.JustFollowClosely)
+        //         return;
 
-                Vector3Int cellPos = Managers.Map.WorldToCell(new Vector3(x, y, 0));
-                //Vector3Int cellPos = new Vector3Int(1, 0, 0); // A* Test
-                Vector3 worldCenterPos = Managers.Map.CenteredCellToWorld(cellPos);
+        //     float distance = (float)LeaderChaseMode;
+        //     int memberCount = Managers.Object.Heroes.Count - 1;
+        //     for (int i = 0; i < memberCount; ++i)
+        //     {
+        //         float degree = 360f * i / memberCount;
+        //         degree = Mathf.PI / 180f * degree;
+        //         float x = Leader.transform.position.x + Mathf.Cos(degree) * distance;
+        //         float y = Leader.transform.position.y + Mathf.Sin(degree) * distance;
 
-                Gizmos.color = Color.red;
-                Gizmos.DrawSphere(worldCenterPos, radius: 0.5f);
-            }
-        }
+        //         Vector3Int cellPos = Managers.Map.WorldToCell(new Vector3(x, y, 0));
+        //         //Vector3Int cellPos = new Vector3Int(1, 0, 0); // A* Test
+        //         Vector3 worldCenterPos = Managers.Map.CenteredCellToWorld(cellPos);
+
+        //         Gizmos.color = Color.red;
+        //         Gizmos.DrawSphere(worldCenterPos, radius: 0.5f);
+        //     }
+        // }
 
         // public IEnumerator CoUpdateReplacePosition()
         // {

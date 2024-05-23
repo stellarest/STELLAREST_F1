@@ -5,6 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 using static STELLAREST_F1.Define;
+using System.Linq;
 
 namespace STELLAREST_F1
 {
@@ -47,13 +48,30 @@ namespace STELLAREST_F1
         }
 
         public void SetJustFollowClosely()
-        {
-            HeroLeaderChaseMode = EHeroLeaderChaseMode.JustFollowClosely;
-        }
+            => HeroLeaderChaseMode = EHeroLeaderChaseMode.JustFollowClosely;
 
         public void SetNarrowFormation()
+            => HeroLeaderChaseMode = EHeroLeaderChaseMode.NarrowFormation;
+
+        public void SetWideFormation() 
+            => HeroLeaderChaseMode = EHeroLeaderChaseMode.WideFormation;
+
+
+        public List<Hero> MembersTemp = new List<Hero>();
+        public void ShuffleMembersPosition()
         {
-            HeroLeaderChaseMode = EHeroLeaderChaseMode.NarrowFormation;
+            if (Managers.Object.Heroes.Count < 2)
+                return;
+
+            List<Hero> shuffleHeroes = Managers.Object.Heroes.Skip(1).ToList();
+            System.Random rnd = new System.Random();
+            shuffleHeroes = shuffleHeroes.OrderBy(n => rnd.Next()).ToList();
+
+            for (int i = 0; i < shuffleHeroes.Count; ++i)
+            {
+                Managers.Object.Heroes[i + 1] = shuffleHeroes[i];
+                Managers.Object.Heroes[i + 1].CreatureState = ECreatureState.Move;
+            }
         }
 
         public Vector3Int RequestChaseCellPos(Hero heroMember)
@@ -61,7 +79,7 @@ namespace STELLAREST_F1
             if (heroMember.IsValid() == false) // 방어
                 return Managers.Map.WorldToCell(_leader.transform.position);
 
-            float distance = DevManager.Instance.TestLeaderChaseDistance;
+            float distance = (float)_heroLeaderChaseMode;
             List<Hero> heroes = Managers.Object.Heroes;
             int index = heroes.IndexOf(heroMember);
 
@@ -250,7 +268,7 @@ namespace STELLAREST_F1
 
             Managers.Map.RemoveObject(newLeader); // Set New Leader, Cell 위치는 무조건 동료들 것
             Managers.Object.CameraController.Target = newLeader;
-            DevManager.Instance.Leader = newLeader; // --> TEMP
+            //DevManager.Instance.Leader = newLeader; // --> TEMP
         }
 
         private IEnumerator CoReadyToReplaceMembers()
@@ -329,5 +347,30 @@ namespace STELLAREST_F1
             }
         }
         #endregion
+
+        private void OnDrawGizmos()
+        {
+            if (_leader == null)
+                return;
+
+            if (_heroLeaderChaseMode == EHeroLeaderChaseMode.JustFollowClosely)
+                return;
+
+            float distance = (float)_heroLeaderChaseMode;
+            int memberCount = Managers.Object.Heroes.Count - 1;
+            for (int i = 0; i < memberCount; ++i)
+            {
+                float degree = 360f * i / memberCount;
+                degree = Mathf.PI / 180f * degree;
+                float x = Leader.transform.position.x + Mathf.Cos(degree) * distance;
+                float y = Leader.transform.position.y + Mathf.Sin(degree) * distance;
+
+                Vector3Int cellPos = Managers.Map.WorldToCell(new Vector3(x, y, 0));
+                Vector3 worldCenterPos = Managers.Map.CenteredCellToWorld(cellPos);
+
+                Gizmos.color = Color.red;
+                Gizmos.DrawSphere(worldCenterPos, radius: 0.5f);
+            }
+        }
     }
 }

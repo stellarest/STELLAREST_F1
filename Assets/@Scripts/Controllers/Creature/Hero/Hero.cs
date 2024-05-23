@@ -204,9 +204,9 @@ namespace STELLAREST_F1
                         return Managers.Map.WorldToCell(heroLeaderController.Leader.transform.position);;
 
                     case EHeroLeaderChaseMode.NarrowFormation:
+                    case EHeroLeaderChaseMode.WideFormation:
                         return Managers.Object.HeroLeaderController.RequestChaseCellPos(this); ;
 
-                    case EHeroLeaderChaseMode.WideFormation:
                     case EHeroLeaderChaseMode.Freedom:
                     default:
                         return Vector3Int.zero;

@@ -48,9 +48,8 @@ namespace STELLAREST_F1
                     return;
                 }
 
-                // 이 부분 너무 많아지면 이벤트 등록해서 해도 될듯
                 Managers.Object.CameraController.Target = value;
-                Managers.Game.SetHeroLeader(Managers.Object.LeaderMark, value);
+                // Managers.Game.SetHeroLeader(Managers.Object.LeaderMark, value);
             }
         }
         

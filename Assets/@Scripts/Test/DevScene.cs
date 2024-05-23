@@ -115,6 +115,8 @@ namespace STELLAREST_F1
                 leaderController.Leader = firstHero;
                 //DevManager.Instance.Leader = firstHero;
                 //Managers.Game.SetHeroesPosition();
+
+                leaderController.MembersTemp = Managers.Object.Heroes;
             }
 
             if (Managers.Object.HeroLeaderController == null)

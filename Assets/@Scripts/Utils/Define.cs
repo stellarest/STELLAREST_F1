@@ -371,8 +371,8 @@ namespace STELLAREST_F1
         public enum EHeroLeaderChaseMode
         {
             JustFollowClosely,
-            NarrowFormation,
-            WideFormation,
+            NarrowFormation = 3,
+            WideFormation = 5,
             Freedom,
         }
 

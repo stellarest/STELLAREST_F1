@@ -31,33 +31,6 @@ namespace STELLAREST_F1
             }
         }
         public event Action<EJoystickState> OnJoystickStateChangedHandler = null;
-
-        public Transform SetHeroLeader(Transform leaderMark, Hero leader) // 이걸 여기서 할 필요가 있을끼???
-        {
-            if (leader.IsValid() == false)
-            {
-                Hero nextHero = null;
-                for (int i = 0; i < Managers.Object.Heroes.Count; ++i)
-                {
-                    nextHero = Managers.Object.Heroes[i];
-                    if (nextHero.IsValid())
-                    {
-                        leader = nextHero;
-                        break;
-                    }
-                }
-
-                if (nextHero == null)
-                {
-                    Debug.LogWarning($"{nameof(GameManager)}, {nameof(SetHeroLeader)}, None of heroes.");
-                    return null;
-                }
-            }
-
-            leaderMark.SetParent(leader.transform);
-            leaderMark.transform.localPosition = Vector3.up * 2.5f;
-            return leaderMark;
-        }
     }
 }
 
