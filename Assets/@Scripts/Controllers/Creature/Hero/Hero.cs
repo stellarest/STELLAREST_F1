@@ -85,7 +85,23 @@ namespace STELLAREST_F1
 
         public HeroAnimation HeroAnim { get; private set; } = null;
         [field: SerializeField] public bool NeedArrange { get; set; } = false;
-        [field: SerializeField] public bool IsLeader { get; set; } = false;
+
+        [SerializeField] private bool _isLeader = false;
+        public bool IsLeader
+        {
+            get => _isLeader;
+            set
+            {
+                if (_isLeader == value)
+                    return;
+
+                _isLeader = value;
+                if (value)
+                    StopLerpToCellPos();
+                else
+                    TickLerpToCellPos();
+            }
+        }
 
         #region ##### TEST AREA #####   
         // ########################################

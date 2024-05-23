@@ -39,20 +39,6 @@ namespace STELLAREST_F1
 
         private void Update()
         {
-            // if (HeroTest != null)
-            // {
-            //     Vector3Int cellPos1 = Managers.Map.WorldToCell(TestObject.transform.position);
-            //     Vector3Int cellPos2 = HeroTest.CellPos;
-            //     if (Magnitude)
-            //     {
-            //         Debug.Log($"magnitude: {(cellPos1 - cellPos2).magnitude}");
-            //     }
-            //     else
-            //     {
-            //         Debug.Log($"sqrMagnitude: {(cellPos1 - cellPos2).sqrMagnitude}");
-            //     }
-            // }
-
             if (Input.GetKeyDown(KeyCode.P))
                 ShowCellPosText();
 
@@ -64,13 +50,6 @@ namespace STELLAREST_F1
 
             if (Input.GetKeyDown("3"))
                 Managers.Object.HeroLeaderController.SetNarrowFormation();
-
-            // Me - 상, 하, 좌, 우 : 1 (한칸)
-            // Me - 좌상단 우상단 우하단 좌하단 : 2 (대각선)
-            // if (Input.GetKeyDown("3"))
-            // {
-            //     Debug.Log($"sqrDist: {(_heroA.CellPos - _heroB.CellPos).sqrMagnitude}");
-            // }
         }
 
         private void ShowCellPosText()
@@ -126,8 +105,8 @@ namespace STELLAREST_F1
             Managers.Object.HeroLeaderController.Leader = newHeroLeader;
         }
 
-        public Hero Leader = null;
-        public float TestReplaceDistance = 5f;
+        public Hero Leader { get; set; } = null; // TMEP
+        public float TestLeaderChaseDistance = 5f;
         private void OnDrawGizmos()
         {
             if (Leader == null)
@@ -138,8 +117,8 @@ namespace STELLAREST_F1
             {
                 float degree = 360f * i / memberCount;
                 degree = Mathf.PI / 180f * degree;
-                float x = Leader.transform.position.x + Mathf.Cos(degree) * TestReplaceDistance;
-                float y = Leader.transform.position.y + Mathf.Sin(degree) * TestReplaceDistance;
+                float x = Leader.transform.position.x + Mathf.Cos(degree) * TestLeaderChaseDistance;
+                float y = Leader.transform.position.y + Mathf.Sin(degree) * TestLeaderChaseDistance;
 
                 Vector3Int cellPos = Managers.Map.WorldToCell(new Vector3(x, y, 0));
                 //Vector3Int cellPos = new Vector3Int(1, 0, 0); // A* Test

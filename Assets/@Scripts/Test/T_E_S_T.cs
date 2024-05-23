@@ -9,7 +9,8 @@ using Unity.VisualScripting;
 /*
 [ TODO TODAY LIST ]
 >>> 리더가 바뀌었을 때, Replace Again
->>> 리더 이동시, 진열 유지하는 것 부터.
+>>> 멤버 뺑글뺑글 돌리면서 위치 교환
+>>> CoLerpToCellPos Log함수로 변경하기.
 
 [ TODO LIST ]
 >> 캐쥬얼하게 만들기.
@@ -70,7 +71,7 @@ public class T_E_S_T : MonoBehaviour
 
     private IEnumerator Start()
     {
-        _co = StartCoroutine(CoStart());;
+        _co = StartCoroutine(CoStart());
 
         Managers.Game.OnMoveDirChangedHandler -= OnMoveDirChanged;
         Managers.Game.OnMoveDirChangedHandler += OnMoveDirChanged;

@@ -316,8 +316,6 @@ namespace STELLAREST_F1
             }
         }
 
-        // LerpToCellPosComplated: false
-        //protected event Action _onLerpToCellPosEndHandler = null;
         public void LerpToCellPos(float movementSpeed) // Coroutine every tick
         {
             if (LerpToCellPosCompleted)
@@ -337,7 +335,6 @@ namespace STELLAREST_F1
             {
                 transform.position = destPos;
                 LerpToCellPosCompleted = true; 
-                //_onLerpToCellPosEndHandler?.Invoke();
                 return;
             }
 

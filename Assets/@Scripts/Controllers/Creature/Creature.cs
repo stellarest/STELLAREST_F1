@@ -78,7 +78,8 @@ namespace STELLAREST_F1
                           CreatureState = ECreatureState.Idle;
                           CreatureMoveState = ECreatureMoveState.None;
                           StartCoroutine(CoUpdateAI()); // --> Leader도 AI 돌고 있어야함.
-                          StartCoroutine(CoLerpToCellPos()); // Map
+                          TickLerpToCellPos();
+                          // StartCoroutine(CoLerpToCellPos()); // Map
                       });
 
             // StartWait(waitCondition: () => BaseAnim.IsPlay() == false,
@@ -396,18 +397,36 @@ namespace STELLAREST_F1
             return Managers.Map.MoveTo(this, cellPos: destCellPos);
         }
 
+
+        protected void TickLerpToCellPos()
+        {
+            StopLerpToCellPos();
+            _coLerpToCellPos = StartCoroutine(CoLerpToCellPos());
+        }
+
+        protected void StopLerpToCellPos()
+        {
+            if (_coLerpToCellPos != null)
+            {
+                StopCoroutine(_coLerpToCellPos);
+                _coLerpToCellPos = null;
+            }
+        }
+
         // ### Creature: O, Projectile: X
+        protected Coroutine _coLerpToCellPos = null;
         protected IEnumerator CoLerpToCellPos()
         {
             while (true)
             {
                 Hero hero = this as Hero;
-                if (hero.IsLeader)
-                {
-                    Debug.Log("BREAK LEADER AI.");
-                    yield break;
-                }
+                // if (hero.IsLeader)
+                // {
+                //     Debug.Log("BREAK LEADER AI.");
+                //     yield break;
+                // }
 
+                // 여기도 고쳐야할듯
                 if (hero != null)
                 {
                     //float divOffsetSQR = 5f * 5f;

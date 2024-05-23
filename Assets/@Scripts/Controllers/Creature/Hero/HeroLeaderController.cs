@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -57,20 +58,42 @@ namespace STELLAREST_F1
 
         public Vector3Int RequestChaseCellPos(Hero heroMember)
         {
-            if (heroMember.IsValid() == false)
+            if (heroMember.IsValid() == false) // 방어
                 return Managers.Map.WorldToCell(_leader.transform.position);
 
-            float distance = DevManager.Instance.TestReplaceDistance;
-            int index = Managers.Object.Heroes.IndexOf(heroMember);
-            int count = Managers.Object.Heroes.Count - 1;
+            float distance = DevManager.Instance.TestLeaderChaseDistance;
+            List<Hero> heroes = Managers.Object.Heroes;
+            int index = heroes.IndexOf(heroMember);
 
-            float angle = 360f * index / count;
+            // Leader는 0번 인덱스에 있으므로, 다른 Hero들의 index를 1부터 시작하도록 조정
+            int count = heroes.Count - 1;
+            float angle = 360f * (index - 1) / count; // / 1부터 시작하도록 -1
+
+            if (index == 0) // 방어
+                return Managers.Map.WorldToCell(_leader.transform.position);
+
             angle = Mathf.Deg2Rad * angle;
-
-            float x = Leader.transform.position.x + Mathf.Cos(angle) * distance;
-            float y = Leader.transform.position.y + Mathf.Sin(angle) * distance;
+            float x = _leader.transform.position.x + Mathf.Cos(angle) * distance;
+            float y = _leader.transform.position.y + Mathf.Sin(angle) * distance;
             return Managers.Map.WorldToCell(new Vector3(x, y, 0));
         }
+
+        // public Vector3Int RequestChaseCellPos(Hero heroMember) // Prev Ver
+        // {
+        //     if (heroMember.IsValid() == false)
+        //         return Managers.Map.WorldToCell(_leader.transform.position);
+
+        //     float distance = DevManager.Instance.TestLeaderChaseDistance;
+        //     int index = Managers.Object.Heroes.IndexOf(heroMember);
+        //     int count = Managers.Object.Heroes.Count - 1;
+
+        //     float angle = 360f * index / count;
+        //     angle = Mathf.Deg2Rad * angle;
+
+        //     float x = Leader.transform.position.x + Mathf.Cos(angle) * distance;
+        //     float y = Leader.transform.position.y + Mathf.Sin(angle) * distance;
+        //     return Managers.Map.WorldToCell(new Vector3(x, y, 0));
+        // }
 
         private Hero _leader = null;
         public Hero Leader
@@ -203,22 +226,31 @@ namespace STELLAREST_F1
             {
                 _leader = newLeader;
                 _leader.IsLeader = true;
-                Managers.Map.RemoveObject(newLeader); // Set New Leader, Cell 위치는 무조건 동료들 것
             }
             else if (_leader != newLeader)
             {
                 // Release Prev Leader
                 _leader.IsLeader = false;
                 // --> 아마 MoveTo로 바꿔야할수도 있음.
-                Managers.Map.AddObject(obj: _leader, cellPos: Managers.Map.WorldToCell(_leader.transform.position));
+                //Managers.Map.AddObject(obj: _leader, cellPos: Managers.Map.WorldToCell(_leader.transform.position));
 
-                // Set New Leader, Cell 위치는 무조건 동료들 것
-                Managers.Map.RemoveObject(newLeader);
                 _leader = newLeader;
                 _leader.IsLeader = true;
             }
 
+            // Leader Hero는 항상 0번 인덱스로 변경
+            List<Hero> heroes = Managers.Object.Heroes;
+            if (heroes.Contains(newLeader))
+                heroes.Remove(newLeader);
+            heroes.Insert(0, newLeader);
+
+            // Leader 제외 인덱스
+            for (int i = 1; i < heroes.Count; ++i)
+                heroes[i].CreatureState = ECreatureState.Move;
+
+            Managers.Map.RemoveObject(newLeader); // Set New Leader, Cell 위치는 무조건 동료들 것
             Managers.Object.CameraController.Target = newLeader;
+            DevManager.Instance.Leader = newLeader; // --> TEMP
         }
 
         private IEnumerator CoReadyToReplaceMembers()
