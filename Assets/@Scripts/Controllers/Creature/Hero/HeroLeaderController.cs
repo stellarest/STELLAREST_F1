@@ -56,6 +56,8 @@ namespace STELLAREST_F1
         public void SetWideFormation() 
             => HeroLeaderChaseMode = EHeroLeaderChaseMode.WideFormation;
 
+        public void SetPatrolFree()
+            => HeroLeaderChaseMode = EHeroLeaderChaseMode.PatrolFree;
 
         public List<Hero> MembersTemp = new List<Hero>();
         public void ShuffleMembersPosition()
@@ -63,6 +65,7 @@ namespace STELLAREST_F1
             if (Managers.Object.Heroes.Count < 2)
                 return;
 
+            // JustFollowClosely에서도 위치 교환 할 수 있는데 굳이 필요 없을 것 같아서
             if (_heroLeaderChaseMode == EHeroLeaderChaseMode.JustFollowClosely)
                 return;
 
@@ -99,22 +102,17 @@ namespace STELLAREST_F1
             return Managers.Map.WorldToCell(new Vector3(x, y, 0));
         }
 
-        // public Vector3Int RequestChaseCellPos(Hero heroMember) // Prev Ver
-        // {
-        //     if (heroMember.IsValid() == false)
-        //         return Managers.Map.WorldToCell(_leader.transform.position);
+        private IEnumerator CoRequestPatrolCellPos()
+        {
+            yield return null;
+        }
 
-        //     float distance = DevManager.Instance.TestLeaderChaseDistance;
-        //     int index = Managers.Object.Heroes.IndexOf(heroMember);
-        //     int count = Managers.Object.Heroes.Count - 1;
+        public Vector3Int RequestPatrolCellPos(Hero heroMember)
+        {
+            Vector3Int currentCellPos = heroMember.CellPos;
 
-        //     float angle = 360f * index / count;
-        //     angle = Mathf.Deg2Rad * angle;
-
-        //     float x = Leader.transform.position.x + Mathf.Cos(angle) * distance;
-        //     float y = Leader.transform.position.y + Mathf.Sin(angle) * distance;
-        //     return Managers.Map.WorldToCell(new Vector3(x, y, 0));
-        // }
+            return Vector3Int.zero;
+        }
 
         private Hero _leader = null;
         public Hero Leader
@@ -377,3 +375,23 @@ namespace STELLAREST_F1
         }
     }
 }
+
+/*
+    [Prev Note]
+    // public Vector3Int RequestChaseCellPos(Hero heroMember) // Prev Ver
+    // {
+    //     if (heroMember.IsValid() == false)
+    //         return Managers.Map.WorldToCell(_leader.transform.position);
+
+    //     float distance = DevManager.Instance.TestLeaderChaseDistance;
+    //     int index = Managers.Object.Heroes.IndexOf(heroMember);
+    //     int count = Managers.Object.Heroes.Count - 1;
+
+    //     float angle = 360f * index / count;
+    //     angle = Mathf.Deg2Rad * angle;
+
+    //     float x = Leader.transform.position.x + Mathf.Cos(angle) * distance;
+    //     float y = Leader.transform.position.y + Mathf.Sin(angle) * distance;
+    //     return Managers.Map.WorldToCell(new Vector3(x, y, 0));
+    // }
+*/

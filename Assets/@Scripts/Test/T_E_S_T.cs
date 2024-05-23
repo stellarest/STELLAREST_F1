@@ -8,9 +8,12 @@ using Unity.VisualScripting;
 
 /*
 [ TODO TODAY LIST ]
+// 24. 5. 23
 >>> 리더가 바뀌었을 때, Replace Again (완료)
 >>> 멤버 뺑글뺑글 돌리면서 위치 교환 (완료)
 >>> CoLerpToCellPos Log함수로 변경하기. (완료)
+>>> Leader와 멀어지면 강제 이동.
+>>> Freedom 구현? 괜찮을 것 같은데..
 >>> Chicken vs Paladin, Archer 전투 테스트
 >>> Env 테스트
 

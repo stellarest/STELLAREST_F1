@@ -42,6 +42,16 @@ namespace STELLAREST_F1
             if (Input.GetKeyDown(KeyCode.P))
                 ShowCellPosText();
 
+            if (Input.GetKeyDown("0"))
+            {
+                Debug.Log("===== Key Value Pair =====");
+                foreach (var pair in Managers.Map.Cells)
+                {
+                    if (pair.Value != null)
+                        Debug.Log($"({pair.Key}, {pair.Value}");
+                }
+            }
+
             if (Input.GetKeyDown("1"))
                 ChangeRandomHeroLeader();
 
@@ -55,6 +65,9 @@ namespace STELLAREST_F1
                 Managers.Object.HeroLeaderController.SetWideFormation();
 
             if (Input.GetKeyDown("5"))
+                Managers.Object.HeroLeaderController.SetPatrolFree();
+
+            if (Input.GetKeyDown("6"))
                 Managers.Object.HeroLeaderController.ShuffleMembersPosition();
         }
 

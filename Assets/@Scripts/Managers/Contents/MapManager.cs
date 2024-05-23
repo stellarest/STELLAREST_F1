@@ -44,14 +44,14 @@ namespace STELLAREST_F1
             CellGrid = map.GetComponent<Grid>();
 
             ParseCollisionData(map, mapName);
-            SpawnObjectsByData(map, mapName);
+            //SpawnObjectsByData(map, mapName);
         }
 
         private void ParseCollisionData(GameObject map, string mapName, string tileMap = "Tilemap_Collision")
         {
-            GameObject collision = Util.FindChild(map, tileMap, true);
-            if (collision != null)
-                collision.SetActive(false);
+            // GameObject collision = Util.FindChild(map, tileMap, true);
+            // if (collision != null)
+            //     collision.SetActive(false);
 
             TextAsset txt = Managers.Resource.Load<TextAsset>($"{mapName}_Collision");
             StringReader stringReader = new StringReader(txt.text); // StringReader, 파일 입출력(System.IO)
@@ -135,6 +135,31 @@ namespace STELLAREST_F1
             AddObject(creature, cellPos);
             creature.SetCellPos(cellPos, stopLerpToCell, forceMove);
             return true;
+        }
+
+        public void WarpTo(Creature creature, Vector3Int destCellPos, Action warpEndCallback = null)
+        {
+            if (CanMove(destCellPos) == false)
+            {
+                List<Vector3Int> path = FindPath(creature.CellPos, destCellPos: destCellPos, ReadOnly.Numeric.CreatureWarpMoveDepth);
+                path.Reverse();
+                for (int i = 0; i < path.Count; ++i)
+                {
+                    if (CanMove(path[i]) == false)
+                        continue;
+
+                    // 일단, Depth가 50이라 완벽한 방어책은 아니긴함. 근데 거의 다 되긴 할것임. 
+                    // 거기다가 이 함수는 매번 실행하는것이 아니기 때문에 이정도는 상관없음. 
+                    // 히어로의 경우, 정말로 막혔을 때, 리더 주변으로 반드시 오게 해야 한다는 보장이 필요함.
+                    destCellPos = path[i];
+                    break;
+                }
+            }
+
+            RemoveObject(creature);
+            AddObject(creature, destCellPos);
+            creature.SetCellPos(destCellPos, stopLerpToCell: true, forceMove: true);
+            warpEndCallback?.Invoke(); // 나중에 이펙트추가되면 여기다가 설정하면 됨.
         }
 
         public void MoveLeader(Hero leader, Vector3 targetPosition)
@@ -342,6 +367,7 @@ namespace STELLAREST_F1
             }
 
             // RetracePath(startNode, targetNode);
+            // 여기일것같음
             if (parent.ContainsKey(dest) == false)
                 return TraceCellPath(parent, closestCellPos);
 

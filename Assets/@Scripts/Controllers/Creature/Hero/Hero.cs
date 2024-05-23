@@ -167,8 +167,10 @@ namespace STELLAREST_F1
         {
             LookAtDir = ELookAtDirection.Right;
             CreatureState = ECreatureState.Move;
+
             base.EnterInGame(dataID);
-            
+            StartCoroutine(CoCheckFarFromLeader());
+
             // 나오고 나서 조이스틱 등록
             Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
             Managers.Game.OnJoystickStateChangedHandler += OnJoystickStateChanged;
@@ -193,6 +195,27 @@ namespace STELLAREST_F1
             // NeedArrange = true; // TEMP
         }
 
+        private IEnumerator CoCheckFarFromLeader()
+        {
+            while (true)
+            {
+                if (Managers.Object.HeroLeaderController.Leader == null)
+                {
+                    yield return null;
+                    continue;
+                }
+
+                if ((Managers.Object.HeroLeaderController.Leader.CellPos - CellPos).sqrMagnitude > 100f)
+                {
+                    Vector3 leaderWorldPos = Managers.Object.HeroLeaderController.Leader.transform.position;
+                    Managers.Map.WarpTo(this, Managers.Map.WorldToCell(leaderWorldPos));
+                    Debug.Log($"{gameObject.name} Warped !!");
+                }
+
+                yield return new WaitForSeconds(2f);
+            }
+        }
+
         // 요행은 없다.
         public Vector3Int ChaseCellPos
         {
@@ -202,13 +225,14 @@ namespace STELLAREST_F1
                 switch (heroLeaderController.HeroLeaderChaseMode)
                 {
                     case EHeroLeaderChaseMode.JustFollowClosely:
-                        return Managers.Map.WorldToCell(heroLeaderController.Leader.transform.position);;
+                        return Managers.Map.WorldToCell(heroLeaderController.Leader.transform.position);
 
                     case EHeroLeaderChaseMode.NarrowFormation:
                     case EHeroLeaderChaseMode.WideFormation:
-                        return Managers.Object.HeroLeaderController.RequestChaseCellPos(this); ;
+                        return Managers.Object.HeroLeaderController.RequestChaseCellPos(this);
 
-                    case EHeroLeaderChaseMode.Freedom:
+                    case EHeroLeaderChaseMode.PatrolFree:
+                        return Managers.Object.HeroLeaderController.RequestPatrolCellPos(this);
                     default:
                         return Vector3Int.zero;
                 }
@@ -279,7 +303,7 @@ namespace STELLAREST_F1
                 return;
 
             EFindPathResult result = FindPathAndMoveToCellPos(destPos: ChaseCellPos,
-                maxDepth: ReadOnly.Numeric.HeroDefaultMoveDepth);
+                maxDepth: 5);
 
             // ForceMove 상태일때는 계속 움직임
             if (CreatureMoveState == ECreatureMoveState.None)

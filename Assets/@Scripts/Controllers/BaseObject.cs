@@ -286,7 +286,7 @@ namespace STELLAREST_F1
         #region Map
         [field: SerializeField] public bool LerpToCellPosCompleted { get; protected set; } = false;
 
-        [SerializeField] private Vector3Int _cellPos = Vector3Int.zero;
+        // [SerializeField] private Vector3Int _cellPos = Vector3Int.zero;
         // public Vector3Int CellPos // ### CORE
         // {
         //     get => _cellPos;
@@ -297,7 +297,7 @@ namespace STELLAREST_F1
         //     }
         // }
 
-        public Vector3Int CellPos { get; protected set; } = Vector3Int.zero;
+        [field: SerializeField] public Vector3Int CellPos { get; protected set; } = Vector3Int.zero;
 
         public void SetCellPos(Vector3 position, bool forceMove = false)
             => SetCellPos(Managers.Map.WorldToCell(position), forceMove);
