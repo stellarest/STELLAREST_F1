@@ -623,14 +623,20 @@ namespace STELLAREST_F1
                 public static readonly int RockElementsCount = 3;
                 public static readonly int MaxActiveSkillsCount = 2;
                 public static readonly int HeroDefaultMoveDepth = 10; // default: 5 -> 10
-                public static readonly int CreatureWarpMoveDepth = 50;
                 public static readonly int HeroMaxMoveDepth = 100;
-                public static readonly int MonsterDefaultMoveDepth = 3;       
+                public static readonly int CreatureWarpMoveDepth = 50;
+                public static readonly int MonsterDefaultMoveDepth = 5; // default: 3 -> 5       
 
-                // [ FLOATING ]
-                public static readonly float CheckFarFromHeroesLeaderTick = 2f;
-                public static readonly float MinSecPatrolPingPong = 1f;
-                public static readonly float MaxSecPatrolPingPong = 2f;
+                // --- [ FLOATING ]
+                // -- [ HERO ]
+                public static readonly float CheckFarFromHeroesLeaderTick = 2.0F;
+                public static readonly float MinSecPatrolPingPong = 1.0F;
+                public static readonly float MaxSecPatrolPingPong = 2.0F;
+
+                // -- [ MONSTER ]
+
+                // -- [ MISC ]
+                public static readonly float SearchFindTargetTick = 0.1F;
 
                 public static readonly float CamOrthoSize = 12.0F; 
                 public static readonly float JoystickFocusMinDist = -0.18F;
@@ -640,7 +646,8 @@ namespace STELLAREST_F1
                 public static readonly float MonsterSize_Medium = 0.8F;
                 public static readonly float MonsterSize_Large = 1.2F;
 
-                public static readonly float CreatureDefaultScanRange = 12.0F;
+                public static readonly float HeroDefaultScanRange = 12.0F;
+                public static readonly float MonsterDefaultScanRange = 8.0F; // 상하좌우 한칸 기준, 대각선X
                 public static readonly float Temp_StopDistance = 1.25F;
                 
                 // Dead Fade Out Time

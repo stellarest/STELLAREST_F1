@@ -133,7 +133,7 @@ namespace STELLAREST_F1
         }
         #endregion
 
-        public BaseObject Target { get; set; } = null;
+        [field: SerializeField] public BaseObject Target { get; set; } = null;
 
         public override bool Init()
         {
@@ -196,9 +196,9 @@ namespace STELLAREST_F1
             MovementSpeed = statData.MovementSpeed;
         }
 
-        public void LookAtTarget(BaseObject target) // TEMP
+        public void LookAtTarget() // TEMP
         {
-            if (Target.IsValid() == false)
+            if (Target.IsValid() == false) // 방어
                 return;
 
             Vector3 toTargetDir = Target.transform.position - transform.position;
@@ -302,6 +302,7 @@ namespace STELLAREST_F1
         public void SetCellPos(Vector3 position, bool forceMove = false)
             => SetCellPos(Managers.Map.WorldToCell(position), forceMove);
 
+        // 이건 애초에 Add를 안함.
         public void SetCellPos(Vector3Int cellPos, bool stopLerpToCell = false, bool forceMove = false)
         {
             CellPos = cellPos;

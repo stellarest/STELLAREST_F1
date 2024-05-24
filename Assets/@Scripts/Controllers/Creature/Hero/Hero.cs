@@ -171,6 +171,13 @@ namespace STELLAREST_F1
             base.EnterInGame(dataID);
             StartCoroutine(CoCheckFarFromLeader());
 
+            // First: Monsters, Second: Envs
+            CoStartSearchTarget<BaseObject>(scanRange: ReadOnly.Numeric.HeroDefaultScanRange,
+                            firstTargets: Managers.Object.Monsters,
+                            secondTargets: Managers.Object.Envs,
+                            func: IsValid);
+
+
             // 나오고 나서 조이스틱 등록
             Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
             Managers.Game.OnJoystickStateChangedHandler += OnJoystickStateChanged;
@@ -199,7 +206,6 @@ namespace STELLAREST_F1
             }
         }
 
-        // 요행은 없다.
         public Vector3Int ChaseCellPos
         {
             get
@@ -228,23 +234,36 @@ namespace STELLAREST_F1
             if (IsLeader)
                 return;
 
-            // Idle to Move
+            // Idle to Move --- "FORCE"
             if (CreatureMoveState == ECreatureMoveState.ForceMove)
             {
                 CreatureState = ECreatureState.Move;
                 return;
             }
 
-            // if (CreatureMoveState == ECreatureMoveState.ForceMove || CreatureMoveState == ECreatureMoveState.Replace)
+            // if (Target.IsValid())
             // {
-            //     CreatureState = ECreatureState.Move;
-            //     return;
-            // }
+            //     LookAtTarget();
 
-            // if (CreatureMoveState == ECreatureMoveState.ForceMove || CreatureMoveState == ECreatureMoveState.Replace)
-            // {
-            //     CreatureState = ECreatureState.Move;
-            //     return;
+            //     // ... CHECK SKILL COOL TIME ...
+            //     if (CreatureSkill.IsRemainingCoolTime((int)ESkillType.Skill_Attack))
+            //         return;
+
+            //     // ... 무조건 몬스터부터 ...
+            //     if (Target.ObjectType == EObjectType.Monster)
+            //     {
+            //         CreatureMoveState = ECreatureMoveState.TargetToEnemy;
+            //         CreatureState = ECreatureState.Move;
+            //         return;
+            //     }
+                
+            //     // ... ENV TARGET ...
+            //     if (Target.ObjectType == EObjectType.Env)
+            //     {
+            //         CreatureMoveState = ECreatureMoveState.CollectEnv;
+            //         CreatureState = ECreatureState.Move;
+            //         return;
+            //     }
             // }
 
             // if (Target.IsValid())
@@ -286,7 +305,7 @@ namespace STELLAREST_F1
                 return;
 
             EFindPathResult result = FindPathAndMoveToCellPos(destPos: ChaseCellPos,
-                maxDepth: 5);
+                maxDepth: ReadOnly.Numeric.HeroDefaultMoveDepth);
 
             // ForceMove 상태일때는 계속 움직임
             if (CreatureMoveState == ECreatureMoveState.None)
@@ -520,7 +539,7 @@ namespace STELLAREST_F1
                 return;
             }
             else if (Target.IsValid())
-                LookAtTarget(Target);
+                LookAtTarget();
             else if (Target.IsValid() == false)
             {
                 CreatureState = ECreatureState.Move;
@@ -539,7 +558,7 @@ namespace STELLAREST_F1
             else if (Target.IsValid())
             {
                 // Research Enemies
-                Creature creature = FindClosestInRange(ReadOnly.Numeric.CreatureDefaultScanRange, Managers.Object.Monsters, func: IsValid) as Creature;
+                Creature creature = FindClosestInRange(ReadOnly.Numeric.HeroDefaultScanRange, Managers.Object.Monsters, func: IsValid) as Creature;
                 if (creature != null)
                 {
                     CollectEnv = false;
@@ -549,7 +568,7 @@ namespace STELLAREST_F1
                     return;
                 }
 
-                LookAtTarget(Target);
+                //LookAtTarget(Target);
             }
         }
 

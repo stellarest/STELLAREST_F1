@@ -46,6 +46,8 @@ namespace STELLAREST_F1
                 return false;
             }
 
+            SortingGroup.sortingOrder = 100; // TEMP
+
             EnvAnim = BaseAnim as EnvAnimation;
             EnvAnim.SetInfo(dataID, this);
             Managers.Sprite.SetInfo(dataID, this);

@@ -249,21 +249,23 @@ namespace STELLAREST_F1
         #endregion State Machine Events 
 
         #region Helper
-        protected BaseObject FindClosestInRange(float range, IEnumerable<BaseObject> objs, Func<BaseObject, bool> func = null)
+        protected BaseObject FindClosestInRange(float scaneRange, IEnumerable<BaseObject> objs, Func<BaseObject, bool> func = null)
         {
             BaseObject target = null;
-            float bestDistanceSQR = float.MaxValue;
-            float searchDistanceSQR = range * range;
+            float bestDistSQR = float.MaxValue;
+            float scanRangeSQR = scaneRange * scaneRange;
 
             foreach (BaseObject obj in objs)
             {
-                Vector3 dir = obj.transform.position - transform.position;
-                float distToTargetSqr = dir.sqrMagnitude;
+                //Vector3 dir = obj.transform.position - transform.position;
+                // 5칸인지 테스트
+                Vector3Int dir = obj.CellPos - CellPos;
+                float distToTargetSQR = dir.sqrMagnitude;
 
-                if (searchDistanceSQR < distToTargetSqr)
+                if (scanRangeSQR < distToTargetSQR)
                     continue;
 
-                if (bestDistanceSQR < distToTargetSqr)
+                if (bestDistSQR < distToTargetSQR)
                     continue;
 
                 // 추가 조건 (ex)객체가 살아있는가? 람다 기반으로 넘겨줄수도 있으니까 뭐, 편함 이런게 있으면.
@@ -271,7 +273,7 @@ namespace STELLAREST_F1
                 if (func?.Invoke(obj) == false)
                     continue;
 
-                bestDistanceSQR = distToTargetSqr;
+                bestDistSQR = distToTargetSQR;
                 target = obj;
             }
 
@@ -298,6 +300,7 @@ namespace STELLAREST_F1
         public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
         {
             CreatureState = ECreatureState.Dead;
+            CoStopSearchTarget();
             base.OnDead(attacker, skillFromAttacker);
         }
         #endregion Battle
@@ -429,17 +432,101 @@ namespace STELLAREST_F1
                         value: Managers.Object.HeroLeaderController.Leader.MovementSpeed,
                         maxValue: Managers.Object.HeroLeaderController.Leader.MovementSpeed * 2f,
                         distanceToTargetSQR: (CellPos - Managers.Object.HeroLeaderController.Leader.CellPos).sqrMagnitude,
-                        maxDistanceSQR: ReadOnly.Numeric.CreatureDefaultScanRange * ReadOnly.Numeric.CreatureDefaultScanRange
+                        maxDistanceSQR: ReadOnly.Numeric.HeroDefaultScanRange * ReadOnly.Numeric.HeroDefaultScanRange
                     );
 
                     LerpToCellPos(movementSpeed);
                 }
-                else
+                else // Monster
                     LerpToCellPos(MovementSpeed);
 
                 yield return null;
             }
         }
+
+        private T SearchClosestInRange<T>(float scanRange, IEnumerable<T> firstTargets, IEnumerable<T> secondTargets = null, 
+                                        Func<T, bool> func = null) where T : BaseObject
+        {
+            T target = null;
+            float bestDistSQR = float.MaxValue;
+            float scanRangeSQR = scanRange * scanRange;
+
+            foreach (T obj in firstTargets)
+            {
+                Vector3Int dir = obj.CellPos - CellPos;
+                float distToTargetSQR = dir.sqrMagnitude;
+                if (scanRangeSQR < distToTargetSQR)
+                    continue;
+
+                if (bestDistSQR < distToTargetSQR)
+                    continue;
+
+                if (func?.Invoke(obj) == false)
+                    continue;
+
+                bestDistSQR = distToTargetSQR;
+                target = obj;
+            }
+
+            if (target != null) // First Target
+                return target;
+            else if (target == null && secondTargets != null) // Second Targets
+            {
+                foreach (T obj in secondTargets)
+                {
+                    Vector3Int dir = obj.CellPos - CellPos;
+                    float distToTargetSQR = dir.sqrMagnitude;
+                    if (scanRangeSQR < distToTargetSQR)
+                        continue;
+
+                    if (bestDistSQR < distToTargetSQR)
+                        continue;
+
+                    if (func?.Invoke(obj) == false)
+                        continue;
+
+                    bestDistSQR = distToTargetSQR;
+                    target = obj;
+                }
+            }
+
+            return target;
+        }
+
+        private Coroutine _coSearchTarget = null;
+        private IEnumerator CoSearchTarget<T>(float scanRange, IEnumerable<T> firstTargets, IEnumerable<T> secondTargets = null, Func<T, bool> func = null) where T : BaseObject
+        {
+            float tick = ReadOnly.Numeric.SearchFindTargetTick;
+            while (true)
+            {
+                if (this.IsValid() == false) // 방어
+                    yield break;
+
+                yield return new WaitForSeconds(tick);
+                if (CreatureMoveState == ECreatureMoveState.ForceMove)
+                    Target = null;
+                else
+                    Target = SearchClosestInRange(scanRange, firstTargets: firstTargets, secondTargets: secondTargets, func: func);
+            }
+        }
+
+        protected void CoStartSearchTarget<T>(float scanRange, IEnumerable<T> firstTargets, IEnumerable<T> secondTargets = null, Func<T, bool> func = null) where T : BaseObject
+        {
+            if (_coSearchTarget != null)
+                return;
+
+            _coSearchTarget = StartCoroutine(CoSearchTarget<T>(scanRange, firstTargets: firstTargets, secondTargets: secondTargets, func: func));
+        }
+
+        protected void CoStopSearchTarget()
+        {
+            if (_coSearchTarget != null)
+            {
+                StopCoroutine(_coSearchTarget);
+                _coSearchTarget = null;
+            }
+        }
+
         #endregion Map
         #endregion Helper
     }

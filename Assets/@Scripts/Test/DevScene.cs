@@ -95,9 +95,8 @@ namespace STELLAREST_F1
                 // Env env = Managers.Object.Spawn<Env>(EObjectType.Env, ReadOnly.Numeric.DataID_Env_AshTree);
                 // env.transform.position = Vector3.zero;
                 // 최대 맵 배치 동료 개수 : 7명 - (리더1, 팔로워6), 또는 9명(리더1, 팔로워8)
-                // Slowly...
                 int memberCount = 0;
-                int memberMaxCount = 6;
+                int memberMaxCount = 0;
                 while (memberCount < memberMaxCount)
                 {
                     randPos = new Vector3Int(Random.Range(-4, 4), Random.Range(-4, 4), 0);
@@ -115,6 +114,11 @@ namespace STELLAREST_F1
                 leaderController.Leader = firstHero;
                 leaderController.MembersTemp = Managers.Object.Heroes;
             }
+
+            int maxX = Managers.Object.Monsters[0].CellPos.x;
+            int maxY = Managers.Object.Monsters[0].CellPos.y;
+            Env env = Managers.Object.Spawn<Env>(EObjectType.Env, ReadOnly.Numeric.DataID_Env_AshTree);
+            env.SetCellPos(new Vector3Int(Random.Range(maxX - 2, maxX + 2), Random.Range(maxY - 2, maxY + 2)), stopLerpToCell: true, forceMove: true);
 
             if (Managers.Object.HeroLeaderController == null)
             {

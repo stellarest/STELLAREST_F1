@@ -44,7 +44,7 @@ namespace STELLAREST_F1
 
             if (Input.GetKeyDown("0"))
             {
-                Debug.Log("===== Key Value Pair =====");
+                Debug.Log("===== Cells Pair =====");
                 foreach (var pair in Managers.Map.Cells)
                 {
                     if (pair.Value != null)

@@ -39,7 +39,6 @@ namespace STELLAREST_F1
                     // ##### TODO #####
                     case EObjectType.Projectile:
                         return bo != null && bo.gameObject.activeSelf;
-                    
                 }
             }
 

@@ -44,7 +44,7 @@ namespace STELLAREST_F1
             CellGrid = map.GetComponent<Grid>();
 
             ParseCollisionData(map, mapName);
-            //SpawnObjectsByData(map, mapName);
+            SpawnObjectsByData(map, mapName);
         }
 
         private void ParseCollisionData(GameObject map, string mapName, string tileMap = "Tilemap_Collision")
@@ -117,14 +117,15 @@ namespace STELLAREST_F1
                         // 지금은 이렇게 했지만, Respawn Spawn Data를 만들어서 해야할것같음
                         Vector3 worldPos = CenteredCellToWorld(cellPos);
                         Monster monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, tile.DataID);
-                        monster.SetCellPos(cellPos, true);
+                        //monster.SetCellPos(cellPos, stopLerpToCell: false, forceMove: true);
+                        MoveTo(monster, cellPos, stopLerpToCell: true, forceMove: true);
                     }
                 }
             }
         }
 
-        public bool MoveTo(Creature creature, Vector3 position, bool forceMove = false)
-            => MoveTo(creature, Managers.Map.WorldToCell(position), forceMove);
+        public bool MoveTo(Creature creature, Vector3 position, bool stopLerpToCell = false, bool forceMove = false)
+            => MoveTo(creature: creature, cellPos: Managers.Map.WorldToCell(position), stopLerpToCell: stopLerpToCell, forceMove: forceMove);
 
         public bool MoveTo(Creature creature, Vector3Int cellPos, bool stopLerpToCell = false, bool forceMove = false)
         {
