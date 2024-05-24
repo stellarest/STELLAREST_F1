@@ -12,8 +12,11 @@ using UnityEngine;
 >>> 멤버 뺑글뺑글 돌리면서 위치 교환 (완료)
 >>> CoLerpToCellPos Log함수로 변경하기. (완료)
 >>> Leader와 멀어지면 강제 이동. (완료)
+>>> Heroes Attack -> Monster (+ Monster Dead)
+>>> Monster Default Body Attack
 >>> Chicken vs Paladin, Archer 전투 테스트
 >>> Env 테스트
+>>> Env까지 테스트 완료 후 RigidBody 제거, Camp 제거
 
 
 [ MEMO LIST ]

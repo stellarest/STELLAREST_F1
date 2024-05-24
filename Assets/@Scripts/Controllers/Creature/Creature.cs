@@ -41,6 +41,19 @@ namespace STELLAREST_F1
             protected set => _collectEnv = value;
         }
 
+        public virtual Vector3Int ChaseCellPos
+        {
+            get
+            {
+                if (Target.IsValid())
+                {
+                    return Target.CellPos;
+                }
+                else
+                    return CellPos;
+            }
+        }
+
         [SerializeField] protected EFindPathResult _findPathResult = EFindPathResult.None;
         public override bool Init()
         {
@@ -304,8 +317,30 @@ namespace STELLAREST_F1
             base.OnDead(attacker, skillFromAttacker);
         }
         #endregion Battle
+        private bool IsInAttackRange()
+        {
+            int dx = Mathf.Abs(Target.CellPos.x - CellPos.x);
+            int dy = Mathf.Abs(Target.CellPos.y - CellPos.y);
 
-        protected void ChaseOrAttackTarget(float chaseRange, float atkRange)
+            if (dx <= AtkRange && dy <= AtkRange)
+                return true;
+
+            return false;
+        }
+
+        protected bool CanAttackOrChase()
+        {
+            if (Target.IsValid() == false) // 방어
+                return false;
+
+            if (IsInAttackRange())
+                return true;
+
+            return false;
+        }
+
+
+        protected void ChaseOrAttackTarget_Prev_Temp(float chaseRange, float atkRange)
         {
             //Vector3 toTargetDir = Target.transform.position - transform.position;
             if (DistanceToTargetSQR <= atkRange * atkRange)
@@ -502,11 +537,14 @@ namespace STELLAREST_F1
                 if (this.IsValid() == false) // 방어
                     yield break;
 
-                yield return new WaitForSeconds(tick);
                 if (CreatureMoveState == ECreatureMoveState.ForceMove)
-                    Target = null;
-                else
-                    Target = SearchClosestInRange(scanRange, firstTargets: firstTargets, secondTargets: secondTargets, func: func);
+                {
+                    yield return null;
+                    continue;
+                }
+
+                yield return new WaitForSeconds(tick);
+                Target = SearchClosestInRange(scanRange, firstTargets: firstTargets, secondTargets: secondTargets, func: func);
             }
         }
 

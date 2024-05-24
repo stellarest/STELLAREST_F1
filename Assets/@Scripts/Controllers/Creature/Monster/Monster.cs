@@ -82,16 +82,15 @@ namespace STELLAREST_F1
             LookAtTarget();
 
             // ...Check CoolTime... //
-
-            if (Target.IsValid())
-            {
-                CreatureMoveState = ECreatureMoveState.TargetToEnemy;
-                CreatureState = ECreatureState.Move;
-            }
-            else
-            {
-                  // ... Random Patrol ...
-            }
+            // if (Target.IsValid())
+            // {
+            //     CreatureMoveState = ECreatureMoveState.TargetToEnemy;
+            //     CreatureState = ECreatureState.Move;
+            // }
+            // else
+            // {
+            //       // ... Random Patrol ...
+            // }
 
 
             // 나중에 Hero 뿐만이 아니라, Pet등이 될 수도 있으므로 Creature로 받기. 뒤에 인자는 일단 임의로  Managers.Object.Heroes.
@@ -143,23 +142,24 @@ namespace STELLAREST_F1
         protected override void UpdateMove()
         {
             // Research Target, 혹시 모르니까 더 가까운 녀석이 있을 경우 그녀석으로 타겟 변경. 한번 더 탐색. 근데 이거 코루틴으로 해도 될듯? 무거울 것 같아서.
-            if (Target.IsValid())
-            {
-                int dx = Mathf.Abs(Target.CellPos.x - CellPos.x);
-                int dy = Mathf.Abs(Target.CellPos.y - CellPos.y);
+            // if (Target.IsValid())
+            // {
+            //     int dx = Mathf.Abs(Target.CellPos.x - CellPos.x);
+            //     int dy = Mathf.Abs(Target.CellPos.y - CellPos.y);
 
-                if (dx <= AtkRange && dy <= AtkRange)
-                {
-                    // Attack Skill
-                }
-                else
-                {
-                    // Move to Target
-                    EFindPathResult result = FindPathAndMoveToCellPos(destPos: Target.CellPos,
-                        maxDepth: ReadOnly.Numeric.MonsterDefaultMoveDepth);
-                }
-            }
+            //     if (dx <= AtkRange && dy <= AtkRange)
+            //     {
+            //         // Attack Skill
+            //     }
+            //     else
+            //     {
+            //         // Move to Target
+            //         EFindPathResult result = FindPathAndMoveToCellPos(destPos: Target.CellPos,
+            //             maxDepth: ReadOnly.Numeric.MonsterDefaultMoveDepth);
+            //     }
+            // }
 
+            // =========================================================================================================
             // if (Target.IsValid() == false)
             // {
             //     Creature creature = FindClosestInRange(ReadOnly.Numeric.CreatureDefaultScanRange, Managers.Object.Heroes, func: IsValid) as Creature;

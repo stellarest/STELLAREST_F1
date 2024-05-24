@@ -636,7 +636,7 @@ namespace STELLAREST_F1
                 // -- [ MONSTER ]
 
                 // -- [ MISC ]
-                public static readonly float SearchFindTargetTick = 0.1F;
+                public static readonly float SearchFindTargetTick = 0.25F;
 
                 public static readonly float CamOrthoSize = 12.0F; 
                 public static readonly float JoystickFocusMinDist = -0.18F;
@@ -646,7 +646,7 @@ namespace STELLAREST_F1
                 public static readonly float MonsterSize_Medium = 0.8F;
                 public static readonly float MonsterSize_Large = 1.2F;
 
-                public static readonly float HeroDefaultScanRange = 12.0F;
+                public static readonly float HeroDefaultScanRange = 8.0F; // 일단 8칸
                 public static readonly float MonsterDefaultScanRange = 8.0F; // 상하좌우 한칸 기준, 대각선X
                 public static readonly float Temp_StopDistance = 1.25F;
                 

@@ -140,6 +140,9 @@ namespace STELLAREST_F1
 
         public void WarpTo(Creature creature, Vector3Int destCellPos, Action warpEndCallback = null)
         {
+            if (creature.Target.IsValid())
+                return;
+
             if (CanMove(destCellPos) == false)
             {
                 List<Vector3Int> path = FindPath(creature.CellPos, destCellPos: destCellPos, ReadOnly.Numeric.CreatureWarpMoveDepth);
@@ -157,6 +160,7 @@ namespace STELLAREST_F1
                 }
             }
 
+            creature.Target = null;
             RemoveObject(creature);
             AddObject(creature, destCellPos);
             creature.SetCellPos(destCellPos, stopLerpToCell: true, forceMove: true);

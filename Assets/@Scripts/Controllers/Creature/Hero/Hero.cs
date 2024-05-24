@@ -196,7 +196,8 @@ namespace STELLAREST_F1
                     continue;
                 }
 
-                if ((Managers.Object.HeroLeaderController.Leader.CellPos - CellPos).sqrMagnitude > 100f)
+                // 20칸 이상일 때, 어차피 로그 함수 이동속도 때문에 금방 따라옴. 정말 막힌 상태에서 멀어졌을 때
+                if ((Managers.Object.HeroLeaderController.Leader.CellPos - CellPos).sqrMagnitude > 200f)
                 {
                     Vector3 leaderWorldPos = Managers.Object.HeroLeaderController.Leader.transform.position;
                     Managers.Map.WarpTo(this, Managers.Map.WorldToCell(leaderWorldPos), warpEndCallback: null);
@@ -206,10 +207,23 @@ namespace STELLAREST_F1
             }
         }
 
-        public Vector3Int ChaseCellPos
+        public override Vector3Int ChaseCellPos
         {
             get
             {
+                if (CreatureMoveState != ECreatureMoveState.ForceMove && Target.IsValid())
+                {
+                    if (CanAttackOrChase())
+                    {
+                        if (Target.ObjectType == EObjectType.Env)
+                            CreatureState = ECreatureState.CollectEnv;
+                        else
+                            CreatureSkill?.CurrentSkill.DoSkill();
+                    }
+
+                    return Target.CellPos;
+                }
+
                 HeroLeaderController heroLeaderController = Managers.Object.HeroLeaderController;
                 switch (heroLeaderController.HeroLeaderChaseMode)
                 {
@@ -239,6 +253,25 @@ namespace STELLAREST_F1
             {
                 CreatureState = ECreatureState.Move;
                 return;
+            }
+
+            if (Target.IsValid())
+            {
+                LookAtTarget();
+                
+                if (Target.ObjectType == EObjectType.Monster)
+                {
+                    CreatureMoveState = ECreatureMoveState.TargetToEnemy;
+                    CreatureState = ECreatureState.Move;
+                    return;
+                }
+
+                if (Target.ObjectType == EObjectType.Env)
+                {
+                    CreatureMoveState = ECreatureMoveState.CollectEnv; // 필요없을지도?
+                    CreatureState = ECreatureState.Move;
+                    return;
+                }
             }
 
             // if (Target.IsValid())
@@ -645,6 +678,7 @@ namespace STELLAREST_F1
 
                 case EJoystickState.Drag:
                     CreatureMoveState = ECreatureMoveState.ForceMove;
+                    Target = null;
                     break;
 
                 default:
