@@ -15,8 +15,6 @@ namespace STELLAREST_F1
         private Transform _pointer = null;
         private Transform _leaderMark = null;
         [SerializeField] private Vector3 _nMovementDir = Vector3.zero;
-        //[SerializeField] private EReplaceMode _replaceMode = EReplaceMode.FollowLeader;
-
         [SerializeField] private EHeroLeaderChaseMode _heroLeaderChaseMode = EHeroLeaderChaseMode.JustFollowClosely;
         public EHeroLeaderChaseMode HeroLeaderChaseMode
         {
@@ -25,6 +23,20 @@ namespace STELLAREST_F1
             {
                 if (_heroLeaderChaseMode != value)
                 {
+                    if (value != EHeroLeaderChaseMode.RandomFormation)
+                    {
+                        if (_coRandomFormation != null)
+                        {
+                            StopCoroutine(_coRandomFormation);
+                            _coRandomFormation = null;
+                        }
+                    }
+                    else
+                    {
+                        if (_coRandomFormation == null)
+                            _coRandomFormation = StartCoroutine(CoRandomFormation());
+                    }
+
                     _heroLeaderChaseMode = value;
                     MoveStartMembersToTheirChasePos();
                 }
@@ -47,26 +59,27 @@ namespace STELLAREST_F1
                 heroes[i].CreatureState = ECreatureState.Move;
         }
 
+        // TEMP
         public void SetJustFollowClosely()
             => HeroLeaderChaseMode = EHeroLeaderChaseMode.JustFollowClosely;
-
+        
+        // TEMP
         public void SetNarrowFormation()
             => HeroLeaderChaseMode = EHeroLeaderChaseMode.NarrowFormation;
 
+        // TEMP
         public void SetWideFormation() 
             => HeroLeaderChaseMode = EHeroLeaderChaseMode.WideFormation;
 
+        // TEMP
         public void SetPatrolFree()
-            => HeroLeaderChaseMode = EHeroLeaderChaseMode.PatrolFree;
+            => HeroLeaderChaseMode = EHeroLeaderChaseMode.RandomFormation;
 
+        // TEMP
         public List<Hero> MembersTemp = new List<Hero>();
         public void ShuffleMembersPosition()
         {
             if (Managers.Object.Heroes.Count < 2)
-                return;
-
-            // JustFollowClosely에서도 위치 교환 할 수 있는데 굳이 필요 없을 것 같아서
-            if (_heroLeaderChaseMode == EHeroLeaderChaseMode.JustFollowClosely)
                 return;
 
             List<Hero> shuffleHeroes = Managers.Object.Heroes.Skip(1).ToList();
@@ -102,16 +115,56 @@ namespace STELLAREST_F1
             return Managers.Map.WorldToCell(new Vector3(x, y, 0));
         }
 
-        private IEnumerator CoRequestPatrolCellPos()
+        public Vector3Int RequestChaseCellPos(Hero heroMember, float distance)
         {
-            yield return null;
+            if (heroMember.IsValid() == false) // 방어
+                return Managers.Map.WorldToCell(_leader.transform.position);
+
+            List<Hero> heroes = Managers.Object.Heroes;
+            int index = heroes.IndexOf(heroMember);
+
+            // Leader는 0번 인덱스에 있으므로, 다른 Hero들의 index를 1부터 시작하도록 조정
+            int count = heroes.Count - 1;
+            float angle = 360f * (index - 1) / count; // / 1부터 시작하도록 -1
+
+            if (index == 0) // 방어
+                return Managers.Map.WorldToCell(_leader.transform.position);
+
+            angle = Mathf.Deg2Rad * angle;
+            float x = _leader.transform.position.x + Mathf.Cos(angle) * distance;
+            float y = _leader.transform.position.y + Mathf.Sin(angle) * distance;
+            return Managers.Map.WorldToCell(new Vector3(x, y, 0));
         }
 
-        public Vector3Int RequestPatrolCellPos(Hero heroMember)
+        private Coroutine _coRandomFormation = null;
+        private bool _randomPingPongFlag = false;
+        private float _randomPingPongDistance = 0f;
+        private IEnumerator CoRandomFormation()
         {
-            Vector3Int currentCellPos = heroMember.CellPos;
+            float min = ReadOnly.Numeric.MinSecPatrolPingPong;
+            float max = ReadOnly.Numeric.MaxSecPatrolPingPong;
+            while (true)
+            {
+                yield return new WaitForSeconds(Random.Range(min, max));
+                _randomPingPongFlag = !_randomPingPongFlag;
+                if (_randomPingPongFlag) // Wide Formation
+                    _randomPingPongDistance = Random.Range(min, max);
+                else // Narrow Formation
+                    _randomPingPongDistance = Random.Range(0, min);
 
-            return Vector3Int.zero;
+                ShuffleMembersPosition();
+                MoveStartMembersToTheirChasePos();
+            }
+        }
+
+        public Vector3Int RequestRandomChaseCellPos(Hero heroMember)
+        {
+            // 겹치는거 막기, FollowClosely에서도 겹치는거 막기. 단, Leader 위치 Add는 하지 않기.
+            // 어쩌다가 겹치는것은 괜찮음. 그러나 자주 겹치면 안됨. 테스트 필요.
+            if (_randomPingPongFlag == false)
+                return RequestChaseCellPos(heroMember, (float)EHeroLeaderChaseMode.NarrowFormation + _randomPingPongDistance);
+            else
+                return RequestChaseCellPos(heroMember, (float)EHeroLeaderChaseMode.WideFormation + _randomPingPongDistance);
         }
 
         private Hero _leader = null;
@@ -264,8 +317,12 @@ namespace STELLAREST_F1
             heroes.Insert(0, newLeader);
 
             // Leader 제외 인덱스
-            for (int i = 1; i < heroes.Count; ++i)
-                heroes[i].CreatureState = ECreatureState.Move;
+            // 이미 따닥 따닥 붙어있을 때는 Move상태로 만들지 않는다. 겹치는건 어쩔 수 없긴 한데 너무 겹쳐버림.
+            if (_heroLeaderChaseMode != EHeroLeaderChaseMode.JustFollowClosely)
+            {
+                for (int i = 1; i < heroes.Count; ++i)
+                    heroes[i].CreatureState = ECreatureState.Move;
+            }
 
             Managers.Map.RemoveObject(newLeader); // Set New Leader, Cell 위치는 무조건 동료들 것
             Managers.Object.CameraController.Target = newLeader;
@@ -355,6 +412,9 @@ namespace STELLAREST_F1
                 return;
 
             if (_heroLeaderChaseMode == EHeroLeaderChaseMode.JustFollowClosely)
+                return;
+
+            if (_heroLeaderChaseMode == EHeroLeaderChaseMode.RandomFormation)
                 return;
 
             float distance = (float)_heroLeaderChaseMode;

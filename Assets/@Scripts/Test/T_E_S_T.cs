@@ -4,7 +4,6 @@ using System.Diagnostics.CodeAnalysis;
 using STELLAREST_F1;
 using static STELLAREST_F1.Define;
 using UnityEngine;
-using Unity.VisualScripting;
 
 /*
 [ TODO TODAY LIST ]
@@ -12,12 +11,13 @@ using Unity.VisualScripting;
 >>> 리더가 바뀌었을 때, Replace Again (완료)
 >>> 멤버 뺑글뺑글 돌리면서 위치 교환 (완료)
 >>> CoLerpToCellPos Log함수로 변경하기. (완료)
->>> Leader와 멀어지면 강제 이동.
->>> Freedom 구현? 괜찮을 것 같은데..
+>>> Leader와 멀어지면 강제 이동. (완료)
 >>> Chicken vs Paladin, Archer 전투 테스트
 >>> Env 테스트
 
-[ TODO LIST ]
+
+[ MEMO LIST ]
+>> 히어로 최소 이동속도는 6부터
 >> 캐쥬얼하게 만들기.
 >> Parabola 모션 개선 필요 (타겟 거리에 따라 HeightArc 조정)
 >> Wizard Attack Anim 완성.
@@ -34,8 +34,6 @@ using Unity.VisualScripting;
 >>>>> 나무쪽 타일맵 랜더러 Sorting Group 추가하지 말고 그냥 Sorting Layer만 BaseObject로
 >>>>> Mode를 Individual로 바꾸고, 나무1 스프라이트의 피벗을 0.5, 0.1로 바꾸면 자동정렬 완성
 >>>>> AnimationCurveManager -> 제거 예정
->>>>> CAMP == LEADER 동일하게 위치 설정해서 A* 수정
->>>>> 리더 교체시 다시 Replace 되도록.
 */
 
 public class Test1 : IEnumerator

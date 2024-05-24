@@ -68,7 +68,14 @@ namespace STELLAREST_F1
                 Managers.Object.HeroLeaderController.SetPatrolFree();
 
             if (Input.GetKeyDown("6"))
-                Managers.Object.HeroLeaderController.ShuffleMembersPosition();
+            {
+                HeroLeaderController heroLeaderController = Managers.Object.HeroLeaderController;
+                if (heroLeaderController.HeroLeaderChaseMode == EHeroLeaderChaseMode.JustFollowClosely || 
+                    heroLeaderController.HeroLeaderChaseMode == EHeroLeaderChaseMode.RandomFormation)
+                    return;
+                 else
+                    heroLeaderController.ShuffleMembersPosition();
+            }
         }
 
         private void ShowCellPosText()

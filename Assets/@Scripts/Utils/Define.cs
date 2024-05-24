@@ -373,7 +373,7 @@ namespace STELLAREST_F1
             JustFollowClosely,
             NarrowFormation = 3,
             WideFormation = 5,
-            PatrolFree,
+            RandomFormation,
         }
 
         // 이거 한번 더 누르면 뱅글 뱅글 돌면서 재배치하는 기능 있으면 좋을 것 같음.
@@ -622,12 +622,16 @@ namespace STELLAREST_F1
                 // MISC
                 public static readonly int RockElementsCount = 3;
                 public static readonly int MaxActiveSkillsCount = 2;
-                public static readonly int HeroDefaultMoveDepth = 10; // default: 5
+                public static readonly int HeroDefaultMoveDepth = 10; // default: 5 -> 10
                 public static readonly int CreatureWarpMoveDepth = 50;
                 public static readonly int HeroMaxMoveDepth = 100;
                 public static readonly int MonsterDefaultMoveDepth = 3;       
 
                 // [ FLOATING ]
+                public static readonly float CheckFarFromHeroesLeaderTick = 2f;
+                public static readonly float MinSecPatrolPingPong = 1f;
+                public static readonly float MaxSecPatrolPingPong = 2f;
+
                 public static readonly float CamOrthoSize = 12.0F; 
                 public static readonly float JoystickFocusMinDist = -0.18F;
                 public static readonly float JoystickFocusMaxDist = 0.18F;

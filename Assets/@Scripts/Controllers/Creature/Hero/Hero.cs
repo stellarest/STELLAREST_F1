@@ -177,22 +177,6 @@ namespace STELLAREST_F1
 
             // _onLerpToCellPosEndHandler -= OnLerpToCellPosEnd;
             // _onLerpToCellPosEndHandler += OnLerpToCellPosEnd;
-
-            // TEST
-            // _onFindPathEndHandler += (delegate ()
-            // {
-            //     // 기본적으로는 무지성으로 쫓아오고
-            //     // 리더가 멈추면 Repoistion하게 해도 되고. (쫙 펼쳐지는 느낌으로)
-            //     if (CreatureMoveState != ECreatureMoveState.ForceMove)
-            //     {
-            //         Debug.Log("INVOKE.");
-            //         CreatureMoveState = ECreatureMoveState.None;
-            //         CreatureState = ECreatureState.Idle;
-            //     }
-            // });
-
-            // A* Test
-            // NeedArrange = true; // TEMP
         }
 
         private IEnumerator CoCheckFarFromLeader()
@@ -208,11 +192,10 @@ namespace STELLAREST_F1
                 if ((Managers.Object.HeroLeaderController.Leader.CellPos - CellPos).sqrMagnitude > 100f)
                 {
                     Vector3 leaderWorldPos = Managers.Object.HeroLeaderController.Leader.transform.position;
-                    Managers.Map.WarpTo(this, Managers.Map.WorldToCell(leaderWorldPos));
-                    Debug.Log($"{gameObject.name} Warped !!");
+                    Managers.Map.WarpTo(this, Managers.Map.WorldToCell(leaderWorldPos), warpEndCallback: null);
                 }
 
-                yield return new WaitForSeconds(2f);
+                yield return new WaitForSeconds(ReadOnly.Numeric.CheckFarFromHeroesLeaderTick);
             }
         }
 
@@ -231,8 +214,8 @@ namespace STELLAREST_F1
                     case EHeroLeaderChaseMode.WideFormation:
                         return Managers.Object.HeroLeaderController.RequestChaseCellPos(this);
 
-                    case EHeroLeaderChaseMode.PatrolFree:
-                        return Managers.Object.HeroLeaderController.RequestPatrolCellPos(this);
+                    case EHeroLeaderChaseMode.RandomFormation:
+                        return Managers.Object.HeroLeaderController.RequestRandomChaseCellPos(this);
                     default:
                         return Vector3Int.zero;
                 }
