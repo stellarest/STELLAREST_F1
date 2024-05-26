@@ -15,7 +15,7 @@ namespace STELLAREST_F1
     */
     public class HeroAnimation : CreatureAnimation
     {
-        private Hero _owner = null;
+        private Hero _heroOwner = null;
 
         public override bool Init()
         {
@@ -33,76 +33,117 @@ namespace STELLAREST_F1
             if (string.IsNullOrEmpty(animatorTextID) == false && animController != null)
                 this.Animator.runtimeAnimatorController = animController;
 
-            _owner = owner as Hero;
+            _heroOwner = owner as Hero;
         }
 
         public override void UpdateAnimation()
         {
-            if (_owner == null)
+            if (_heroOwner == null)
                 return;
 
-            switch (_owner.CreatureState)
+            switch (_heroOwner.CreatureState)
             {
                 case ECreatureState.Idle:
-                    {
-                        _owner.HeroBody.SetEmoji(EHeroEmoji.Idle);
-                        Idle();
-                    }
+                    _heroOwner.HeroBody.SetEmoji(EHeroEmoji.Idle);
                     break;
 
                 case ECreatureState.Move:
-                    {
-                        _owner.HeroBody.SetEmoji(EHeroEmoji.Move);
-                        Move();
-                    }
+                    _heroOwner.HeroBody.SetEmoji(EHeroEmoji.Move);
                     break;
 
                 case ECreatureState.Skill_Attack:
-                    {
-                        _owner.HeroBody.SetEmoji(EHeroEmoji.Skill_Attack);
-                        Skill_Attack();
-                    }
+                    _heroOwner.HeroBody.SetEmoji(EHeroEmoji.Skill_Attack);
                     break;
 
                 case ECreatureState.Skill_A:
-                    {
-                        _owner.HeroBody.SetEmoji(EHeroEmoji.Skill_Attack);
-                        Skill_A();
-                    }
+                    _heroOwner.HeroBody.SetEmoji(EHeroEmoji.Skill_Attack);
                     break;
 
                 case ECreatureState.Skill_B:
-                    {
-                        _owner.HeroBody.SetEmoji(EHeroEmoji.Skill_Attack);
-                        Skill_B();
-                    }
+                    _heroOwner.HeroBody.SetEmoji(EHeroEmoji.Skill_Attack);
                     break;
 
                 case ECreatureState.CollectEnv:
-                    {
-                        _owner.HeroBody.SetEmoji(EHeroEmoji.Idle);
-                        CollectEnv();
-                    }
+                    _heroOwner.HeroBody.SetEmoji(EHeroEmoji.Idle);
                     break;
 
                 case ECreatureState.Dead:
-                    {
-                        _owner.HeroBody.SetEmoji(EHeroEmoji.Dead);
-                        Dead();
-                    }
+                    _heroOwner.HeroBody.SetEmoji(EHeroEmoji.Dead);
                     break;
             }
+
+            PlayCreatureAnimation(_heroOwner.CreatureState);
         }
 
         public override void Flip(ELookAtDirection lookAtDir)
         {
             // Hero LookAtDir Default Sprite : Right
-            Vector3 localScale = _owner.transform.localScale;
+            Vector3 localScale = _heroOwner.transform.localScale;
             int sign = (lookAtDir == ELookAtDirection.Left) ?
                                              -1 : (localScale.x < 0) ? -1 : 1;
             localScale.x = localScale.x * sign;
-            _owner.transform.localScale = localScale;
+            _heroOwner.transform.localScale = localScale;
         }
     }
 }
 
+/*
+    [PREV CODE]
+// public override void UpdateAnimation(ECreatureState creatureState)
+//         {
+//             if (_owner == null)
+//                 return;
+
+//             switch (_owner.CreatureState)
+//             {
+//                 case ECreatureState.Idle:
+//                     {
+//                         _owner.HeroBody.SetEmoji(EHeroEmoji.Idle);
+//                         Idle();
+//                     }
+//                     break;
+
+//                 case ECreatureState.Move:
+//                     {
+//                         _owner.HeroBody.SetEmoji(EHeroEmoji.Move);
+//                         Move();
+//                     }
+//                     break;
+
+//                 case ECreatureState.Skill_Attack:
+//                     {
+//                         _owner.HeroBody.SetEmoji(EHeroEmoji.Skill_Attack);
+//                         Skill_Attack();
+//                     }
+//                     break;
+
+//                 case ECreatureState.Skill_A:
+//                     {
+//                         _owner.HeroBody.SetEmoji(EHeroEmoji.Skill_Attack);
+//                         Skill_A();
+//                     }
+//                     break;
+
+//                 case ECreatureState.Skill_B:
+//                     {
+//                         _owner.HeroBody.SetEmoji(EHeroEmoji.Skill_Attack);
+//                         Skill_B();
+//                     }
+//                     break;
+
+//                 case ECreatureState.CollectEnv:
+//                     {
+//                         _owner.HeroBody.SetEmoji(EHeroEmoji.Idle);
+//                         CollectEnv();
+//                     }
+//                     break;
+
+//                 case ECreatureState.Dead:
+//                     {
+//                         _owner.HeroBody.SetEmoji(EHeroEmoji.Dead);
+//                         Dead();
+//                     }
+//                     break;
+//             }
+//         }
+*/

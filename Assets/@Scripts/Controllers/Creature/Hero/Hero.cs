@@ -1,15 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Runtime.CompilerServices;
 using STELLAREST_F1.Data;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.Diagnostics;
-using UnityEngine.Lumin;
-using UnityEngine.PlayerLoop;
-using UnityEngine.Tilemaps;
+using UnityEngine.SocialPlatforms.Impl;
 using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
@@ -35,7 +30,7 @@ namespace STELLAREST_F1
         public override ECreatureMoveState CreatureMoveState
         {
             get => base.CreatureMoveState;
-            protected set
+            set
             {
                 base.CreatureMoveState = value;
                 switch (value)
@@ -53,19 +48,6 @@ namespace STELLAREST_F1
                 }
             }
         }
-
-        // private Transform CampDestination
-        // {
-        //     get
-        //     {
-        //         HeroCamp camp = Managers.Object.Camp;
-        //         // ***** Leader Test *****
-        //         // if (CreatureMoveState == ECreatureMoveState.ReturnToBase)
-        //         //     return camp.Pivot;
-
-        //         return camp.Pointer;
-        //     }
-        // }
 
         public override bool CollectEnv
         {
@@ -102,26 +84,6 @@ namespace STELLAREST_F1
                     TickLerpToCellPos();
             }
         }
-
-        #region ##### TEST AREA #####   
-        // ########################################
-        private void Update()
-        {
-            // Managers.Map.CanMove(transform.position, ignoreObjects: false, ignoreSemiWall: true);
-            // Managers.Map.CheckOnTile(transform.position);
-            // Managers.Map.CheckOnTile(this);
-            // if (Input.GetKeyDown(KeyCode.T))
-            // {
-            // }
-
-            if (Input.GetKeyDown(KeyCode.S))
-            {
-                //Managers.Game.ReplaceHeroes();
-            }
-
-        }
-        // ########################################
-        #endregion
 
         public override bool Init()
         {
@@ -170,34 +132,45 @@ namespace STELLAREST_F1
 
             base.EnterInGame(dataID);
             StartCoroutine(CoCheckFarFromLeader());
+            // StartCoroutine(CoIsLeaaderAtSameAtPosition()); // *** TEMP *** 개선 필요
 
-            // First: Monsters, Second: Envs
+            // --- First Targets: Monsters, Second Targets: Envs
             CoStartSearchTarget<BaseObject>(scanRange: ReadOnly.Numeric.HeroDefaultScanRange,
                             firstTargets: Managers.Object.Monsters,
                             secondTargets: Managers.Object.Envs,
                             func: IsValid);
 
-
-            // 나오고 나서 조이스틱 등록
             Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
             Managers.Game.OnJoystickStateChangedHandler += OnJoystickStateChanged;
-
-            // _onLerpToCellPosEndHandler -= OnLerpToCellPosEnd;
-            // _onLerpToCellPosEndHandler += OnLerpToCellPosEnd;
         }
 
+        [SerializeField] private bool _isFarFromLeader = false;
         private IEnumerator CoCheckFarFromLeader()
         {
+            float isFarDistSQR = ReadOnly.Numeric.HeroDefaultScanRange * ReadOnly.Numeric.HeroDefaultScanRange + 0.5f;
+            float canWarpDistSQR = ReadOnly.Numeric.CheckFarFromHeroesLeaderDistanceForWarp * ReadOnly.Numeric.CheckFarFromHeroesLeaderDistanceForWarp;
             while (true)
             {
-                if (Managers.Object.HeroLeaderController.Leader == null)
+                Hero leader = Managers.Object.HeroLeaderController.Leader;
+                if (leader.IsValid() == false)
                 {
                     yield return null;
                     continue;
                 }
 
-                // 20칸 이상일 때, 어차피 로그 함수 이동속도 때문에 금방 따라옴. 정말 막힌 상태에서 멀어졌을 때
-                if ((Managers.Object.HeroLeaderController.Leader.CellPos - CellPos).sqrMagnitude > 200f)
+                if (Managers.Object.HeroLeaderController.HeroMemberBattleMode == EHeroMemberBattleMode.FollowLeader)
+                    _isFarFromLeader = false;
+                else
+                {
+                    if ((leader.CellPos - CellPos).sqrMagnitude > isFarDistSQR)
+                        _isFarFromLeader = true;
+                    else
+                        _isFarFromLeader = false;
+                }
+
+                // FORCE WARP
+                // 15칸(225) 이상일 때, 어차피 로그 함수 이동속도로 금방 따라오긴하지만 알수 없는 이유로 히어로가 막혀있을 때
+                if ((leader.CellPos - CellPos).sqrMagnitude > canWarpDistSQR)
                 {
                     Vector3 leaderWorldPos = Managers.Object.HeroLeaderController.Leader.transform.position;
                     Managers.Map.WarpTo(this, Managers.Map.WorldToCell(leaderWorldPos), warpEndCallback: null);
@@ -218,7 +191,12 @@ namespace STELLAREST_F1
                         if (Target.ObjectType == EObjectType.Env)
                             CreatureState = ECreatureState.CollectEnv;
                         else
-                            CreatureSkill?.CurrentSkill.DoSkill();
+                        {
+                            if (_canHandleAttack)
+                            {
+                                CreatureSkill?.CurrentSkill.DoSkill();
+                            }
+                        }
                     }
 
                     return Target.CellPos;
@@ -245,10 +223,19 @@ namespace STELLAREST_F1
         #region ##### AI #####
         protected override void UpdateIdle()
         {
+            if (CreatureSkill.IsRemainingCoolTime((int)ESkillType.Skill_Attack))
+                return;
+
             if (IsLeader)
                 return;
 
-            // Idle to Move --- "FORCE"
+            if (_isFarFromLeader)
+            {
+                _pauseSearchTarget = true;
+                CreatureState = ECreatureState.Move;
+                return;
+            }
+
             if (CreatureMoveState == ECreatureMoveState.ForceMove)
             {
                 CreatureState = ECreatureState.Move;
@@ -258,22 +245,24 @@ namespace STELLAREST_F1
             if (Target.IsValid())
             {
                 LookAtTarget();
-                
-                if (Target.ObjectType == EObjectType.Monster)
-                {
-                    CreatureMoveState = ECreatureMoveState.TargetToEnemy;
-                    CreatureState = ECreatureState.Move;
-                    return;
-                }
+                _canHandleAttack = false;
+                CreatureState = ECreatureState.Move;
 
-                if (Target.ObjectType == EObjectType.Env)
-                {
-                    CreatureMoveState = ECreatureMoveState.CollectEnv; // 필요없을지도?
-                    CreatureState = ECreatureState.Move;
-                    return;
-                }
+                // if (Target.ObjectType == EObjectType.Monster)
+                // {
+                //     CreatureMoveState = ECreatureMoveState.TargetToEnemy;
+                //     return;
+                // }
+
+                // if (Target.ObjectType == EObjectType.Env)
+                // {
+                //     CreatureMoveState = ECreatureMoveState.CollectEnv; // 필요없을지도?
+                //     CreatureState = ECreatureState.Move;
+                //     return;
+                // }
             }
 
+            #region PREV IDLE
             // if (Target.IsValid())
             // {
             //     LookAtTarget();
@@ -289,7 +278,7 @@ namespace STELLAREST_F1
             //         CreatureState = ECreatureState.Move;
             //         return;
             //     }
-                
+
             //     // ... ENV TARGET ...
             //     if (Target.ObjectType == EObjectType.Env)
             //     {
@@ -330,8 +319,10 @@ namespace STELLAREST_F1
             //     CreatureMoveState = ECreatureMoveState.ReturnToBase;
             //     return;
             // }
+            #endregion
         }
 
+        [SerializeField] private bool _canHandleAttack = false;
         protected override void UpdateMove()
         {
             if (IsLeader)
@@ -340,43 +331,67 @@ namespace STELLAREST_F1
             EFindPathResult result = FindPathAndMoveToCellPos(destPos: ChaseCellPos,
                 maxDepth: ReadOnly.Numeric.HeroDefaultMoveDepth);
 
-            // ForceMove 상태일때는 계속 움직임
             if (CreatureMoveState == ECreatureMoveState.None)
             {
-                // 여기 때문에 실시간으로 안따라가는 거긴한데...
                 if (result == EFindPathResult.Fail_NoPath)
                 {
-                    CreatureMoveState = ECreatureMoveState.None;
+                    _pauseSearchTarget = false;
                     CreatureState = ECreatureState.Idle;
                     return;
                 }
             }
+            else if (CreatureMoveState == ECreatureMoveState.TargetToEnemy)
+            {
+                List<Vector3Int> path = Managers.Map.FindPath(CellPos, ChaseCellPos, 2);
+                if (path.Count > 0)
+                {
+                    Vector3Int last = path[path.Count - 1];
+                    if (Managers.Map.WorldToCell(transform.position) == last)
+                    {
+                        // 이렇게하면 되긴하는데... 몬스터 큰 녀석으로 할 경우에는 어떻게될지 모르겠다.
+                        float dist = (CenterPosition - Target.CenterPosition).magnitude;
+                        if (dist <= 1.5f)
+                            _canHandleAttack = true;
+                    }
+                }
+            }
+        }
 
-            // if (CreatureState == ECreatureState.Move)
-            // {
-            //     if (CreatureMoveState == ECreatureMoveState.Replace)
-            //     {
-            //         EFindPathResult result = FindPathAndMoveToCellPos(destPos: _replaceDestPos, 
-            //             maxDepth: ReadOnly.Numeric.HeroMaxMoveDepth);
-            //         if (result == EFindPathResult.Fail_NoPath)
-            //         {
-            //             Debug.Log($"Replace NoPath: {gameObject.name}");
-            //             CreatureMoveState = ECreatureMoveState.None;
-            //             CreatureState = ECreatureState.Idle;
-            //         }
-            //     }
-            //     else if (CreatureMoveState == ECreatureMoveState.ForceMove)
-            //     {
-            //         EFindPathResult result = FindPathAndMoveToCellPos(destPos: ChaseCellPos, 
-            //             maxDepth: ReadOnly.Numeric.HeroDefaultMoveDepth);
-            //         if (result == EFindPathResult.Fail_NoPath)
-            //         {
-            //             CreatureMoveState = ECreatureMoveState.None;
-            //             CreatureState = ECreatureState.Idle;
-            //         }
-            //     }
-            //     return;
-            // }
+        protected override void UpdateSkill()
+        {
+            if (IsLeader)
+                return;
+
+            if (CreatureMoveState == ECreatureMoveState.ForceMove)
+            {
+                // 방어
+                CreatureMoveState = ECreatureMoveState.None;
+            }
+        }
+
+        protected override void UpdateCollectEnv()
+        {
+            // SetRigidBodyVelocity(Vector2.zero); - DELETED
+            if (CreatureMoveState == ECreatureMoveState.ForceMove || Target.IsValid() == false)
+            {
+                CollectEnv = false;
+                CreatureState = ECreatureState.Move;
+            }
+            else if (Target.IsValid())
+            {
+                // Research Enemies
+                Creature creature = FindClosestInRange(ReadOnly.Numeric.HeroDefaultScanRange, Managers.Object.Monsters, func: IsValid) as Creature;
+                if (creature != null)
+                {
+                    CollectEnv = false;
+                    Target = creature;
+                    CreatureMoveState = ECreatureMoveState.TargetToEnemy;
+                    CreatureState = ECreatureState.Move;
+                    return;
+                }
+
+                //LookAtTarget(Target);
+            }
         }
 
         // Prev Origin
@@ -525,7 +540,7 @@ namespace STELLAREST_F1
             //     return false;
 
             // CreatureMoveState = ECreatureMoveState.ForcePath;
-            
+
             // _forcePath.Clear();
             // foreach (var p in path)
             // {
@@ -559,49 +574,6 @@ namespace STELLAREST_F1
             {
                 CreatureMoveState = ECreatureMoveState.None;
                 return;
-            }
-        }
-
-        protected override void UpdateSkill()
-        {
-            base.UpdateSkill();
-            // SetRigidBodyVelocity(Vector2.zero); - DELETED
-            if (CreatureMoveState == ECreatureMoveState.ForceMove)
-            {
-                CreatureState = ECreatureState.Move;
-                return;
-            }
-            else if (Target.IsValid())
-                LookAtTarget();
-            else if (Target.IsValid() == false)
-            {
-                CreatureState = ECreatureState.Move;
-                return;
-            }
-        }
-
-        protected override void UpdateCollectEnv()
-        {
-            // SetRigidBodyVelocity(Vector2.zero); - DELETED
-            if (CreatureMoveState == ECreatureMoveState.ForceMove || Target.IsValid() == false)
-            {
-                CollectEnv = false;
-                CreatureState = ECreatureState.Move;
-            }
-            else if (Target.IsValid())
-            {
-                // Research Enemies
-                Creature creature = FindClosestInRange(ReadOnly.Numeric.HeroDefaultScanRange, Managers.Object.Monsters, func: IsValid) as Creature;
-                if (creature != null)
-                {
-                    CollectEnv = false;
-                    Target = creature;
-                    CreatureMoveState = ECreatureMoveState.TargetToEnemy;
-                    CreatureState = ECreatureState.Move;
-                    return;
-                }
-
-                //LookAtTarget(Target);
             }
         }
 
@@ -639,7 +611,7 @@ namespace STELLAREST_F1
                 {
                     float current = Mathf.Lerp(0f, 1f, curve.Evaluate(percent));
                     HeroBody.Skin[i].color = new Color(HeroBody.Skin[i].color.r,
-                                                       HeroBody.Skin[i].color.g, 
+                                                       HeroBody.Skin[i].color.g,
                                                        HeroBody.Skin[i].color.b, current);
                 }
 
@@ -670,13 +642,25 @@ namespace STELLAREST_F1
         #region Event
         private void OnJoystickStateChanged(EJoystickState joystickState)
         {
+            if (IsLeader)
+                return;
+
             switch (joystickState)
             {
                 case EJoystickState.PointerUp:
-                    CreatureMoveState = ECreatureMoveState.None;
+                    {
+                        if (CreatureMoveState != ECreatureMoveState.TargetToEnemy)
+                            CreatureMoveState = ECreatureMoveState.None;
+                    }
                     break;
 
                 case EJoystickState.Drag:
+                    if (Managers.Object.HeroLeaderController.HeroMemberBattleMode == EHeroMemberBattleMode.EngageEnemy)
+                    {
+                        if (Target.IsValid() && _isFarFromLeader == false)
+                            return;
+                    }
+
                     CreatureMoveState = ECreatureMoveState.ForceMove;
                     Target = null;
                     break;
@@ -737,43 +721,3 @@ namespace STELLAREST_F1
         // }
     }
 }
-
-/*
-                // Research Enemies
-                // Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_ScanRange, Managers.Object.Monsters, func: IsValid) as Creature;
-                // if (creature != null)
-                // {
-                //     CollectEnv = false;
-                //     Target = creature;
-                //     CreatureMoveState = ECreatureMoveState.TargetToEnemy;
-                //     CreatureState = ECreatureState.Move;
-                //     return;
-                // }
-
-                // Vector3 toDir = CampDestination.position - transform.position;
-                // float stopDistSQR = ReadOnly.Numeric.Temp_StopDistance * ReadOnly.Numeric.Temp_StopDistance;
-                // if (toDir.sqrMagnitude < stopDistSQR)
-                // {
-                //     CreatureMoveState = ECreatureMoveState.None;
-                //     CreatureState = ECreatureState.Idle;
-                //     NeedArrange = false; // -> TryResizeCollider()
-                // }
-                // else
-                // {
-                //     // *** 로그함수로 바꿔보기 ***
-                //     // float ratio = Mathf.Min(1, toDir.magnitude);
-                //     // float moveSpeed = MovementSpeed * (float)Math.Pow(ratio, 3);
-                //     // SetRigidBodyVelocity(toDir.normalized * moveSpeed);
-
-                //     // 캠프로 돌아올 때만 거리에 따라 스피드 조정
-                //     // float movementSpeed = CalculateMovementSpeed(toDir.sqrMagnitude);
-                    
-                //     float movementSpeed = Util.CalculateValueFromDistance(
-                //                                 value: MovementSpeed, 
-                //                                 maxValue: MovementSpeed * 2f,
-                //                                 distanceToTargetSQR: toDir.sqrMagnitude,
-                //                                 maxDistanceSQR: ReadOnly.Numeric.Temp_ScanRange);
-                //     //Debug.Log($"MovementSpeed: {movementSpeed}");
-                //     // SetRigidBodyVelocity(toDir.normalized * movementSpeed); - DELETED
-                // }
-*/

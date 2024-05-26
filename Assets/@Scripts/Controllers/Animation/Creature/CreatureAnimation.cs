@@ -7,6 +7,8 @@ namespace STELLAREST_F1
 {
     public class CreatureAnimation : BaseAnimation
     {
+        private Creature _creatureOwner = null;
+
         public override bool Init()
         {
             if (base.Init() == false)
@@ -15,6 +17,37 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public override void UpdateAnimation() => base.UpdateAnimation();
+        public override void SetInfo(int dataID, BaseObject owner)
+        {
+            base.SetInfo(dataID, owner);
+            _creatureOwner = owner as Creature;
+        }
+
+        public override void UpdateAnimation() 
+            => base.UpdateAnimation();
+
+        public virtual void PlayCreatureAnimation(ECreatureState creatureState)
+        {
+            switch (creatureState)
+            {
+                case ECreatureState.Idle:
+                    Animator.Play(Play_Idle);
+                    break;
+
+                case ECreatureState.Move:
+                    Animator.Play(Play_Move);
+                    break;
+
+                case ECreatureState.Skill_Attack:
+                    Animator.Play(Play_Skill_Attack);
+                    break;
+            }
+        }
+
+        public void ForceExitState()
+        {
+            _creatureOwner.CreatureMoveState = ECreatureMoveState.None;
+            _creatureOwner.CreatureState = ECreatureState.Idle;
+        }
     }
 }

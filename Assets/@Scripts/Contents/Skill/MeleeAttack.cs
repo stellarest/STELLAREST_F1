@@ -47,7 +47,16 @@ namespace STELLAREST_F1
             if (Owner.IsValid() == false)
                 return;
 
-            Owner.CreatureState = ECreatureState.Idle;
+            // *****
+            // 애니메이션 트렌지션을 통해 빠져나오므로, 여기서 Idle로 세팅해주어야한다.
+            // (여전히 CreatuteState는 Skill_Attack이기 떄문이다.)
+            // 그러나 애니메이션 트렌지션이 씹힐때도 있는 것 같다. 그래서 UpdateSkillState 상태에서도 예외를 주어야할듯.
+            if (Owner.CreatureState != ECreatureState.Idle)
+            {
+                Owner.CreatureMoveState = ECreatureMoveState.None;
+                Owner.CreatureState = ECreatureState.Idle;
+            }
+
         }
     }
 }

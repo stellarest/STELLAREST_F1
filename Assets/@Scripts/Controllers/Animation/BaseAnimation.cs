@@ -8,6 +8,14 @@ using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
+    [System.Serializable]
+    public class HashTest
+    {
+        public string Name;
+        public int Hash;
+    }
+
+
     public class BaseAnimation : InitBase
     {
         public BaseObject Owner { get; set; } = null;
@@ -22,6 +30,27 @@ namespace STELLAREST_F1
         protected readonly int Play_Skill_B = Animator.StringToHash(ReadOnly.String.AnimParam_Skill_B);
         protected readonly int Play_CollectEnv = Animator.StringToHash(ReadOnly.String.AnimParam_CollectEnv);
         protected readonly int Play_Dead = Animator.StringToHash(ReadOnly.String.AnimParam_Dead);
+
+#if UNITY_EDITOR
+        public string GetCurrentStateName()
+        {
+            AnimatorStateInfo stateInfo = Animator.GetCurrentAnimatorStateInfo(0);
+            if (stateInfo.shortNameHash == Play_Idle)
+                return "CurrentAnimState: Play_Idle";
+            if (stateInfo.shortNameHash == Play_Move)
+                return "CurrentAnimState: Play_Move";
+            if (stateInfo.shortNameHash == Play_Skill_Attack)
+                return "CurrentAnimState: Play_Skill_Attack";
+
+            return string.Empty;
+        }
+#endif
+        public bool IsCurrentAnimationState(ECreatureState creatureState)
+        {
+            AnimatorStateInfo stateInfo = Animator.GetCurrentAnimatorStateInfo(0);
+            return stateInfo.shortNameHash == GetHash(creatureState);
+        }
+
         public int GetHash(ECreatureState state)
         {
             switch (state)
@@ -60,7 +89,6 @@ namespace STELLAREST_F1
             Animator = GetComponent<Animator>();
             AnimClipCallback = GetComponent<AnimationClipCallback>();
             //_originScaleX = transform.localScale.x;
-
             return true;
         }
 
@@ -76,11 +104,10 @@ namespace STELLAREST_F1
                 return false;
         }
 
-        public virtual void UpdateAnimation() {  }
+        public virtual void UpdateAnimation() { }
 
-        // Animator.StopPlayback(); --> 안해도 됨, 한 프레임안에 애니메이션 갱신에서는 안먹힘
         protected virtual void Idle()
-            => Animator.Play(Play_Idle);
+             => Animator.Play(Play_Idle);
 
         protected virtual void Move()
             => Animator.Play(Play_Move);

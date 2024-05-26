@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Experimental.AI;
+using UnityEngine.ResourceManagement.Util;
 using UnityEngine.Tilemaps;
 using static STELLAREST_F1.Define;
 
@@ -29,6 +31,8 @@ namespace STELLAREST_F1
         public Vector3Int WorldToCell(Vector3 worldPos) => CellGrid.WorldToCell(worldPos);
         // Cell을 다시 World로 바꾸는데 CenterCell 기준의 월드로 바꿈
         public Vector3 CenteredCellToWorld(Vector3Int cellPos) => CellGrid.GetCellCenterWorld(cellPos);
+        public Vector3 CellToWorld(Vector3Int cellPos) => CellGrid.CellToWorld(cellPos);
+
         private ECellCollisionType[,] _cellCollisionType = null;
 
         public void LoadMap(string mapName)
@@ -119,17 +123,27 @@ namespace STELLAREST_F1
                         Monster monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, tile.DataID);
                         //monster.SetCellPos(cellPos, stopLerpToCell: false, forceMove: true);
                         MoveTo(monster, cellPos, stopLerpToCell: true, forceMove: true);
+
+                        // TEST: 9,5
+                        // monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, tile.DataID);
+                        // MoveTo(monster, new Vector3Int(9, 5, 0), stopLerpToCell: true, forceMove: true);
                     }
                 }
             }
         }
 
-        public bool MoveTo(Creature creature, Vector3 position, bool stopLerpToCell = false, bool forceMove = false)
-            => MoveTo(creature: creature, cellPos: Managers.Map.WorldToCell(position), stopLerpToCell: stopLerpToCell, forceMove: forceMove);
-
-        public bool MoveTo(Creature creature, Vector3Int cellPos, bool stopLerpToCell = false, bool forceMove = false)
+        public void UpdateCellPos()
         {
-            if (CanMove(cellPos) == false)
+
+        }
+ 
+
+        public bool MoveTo(Creature creature, Vector3 position, bool stopLerpToCell = false, bool forceMove = false, EObjectType ignoreObjectType = EObjectType.None)
+            => MoveTo(creature: creature, cellPos: Managers.Map.WorldToCell(position), stopLerpToCell: stopLerpToCell, forceMove: forceMove, ignoreObjectType);
+
+        public bool MoveTo(Creature creature, Vector3Int cellPos, bool stopLerpToCell = false, bool forceMove = false, EObjectType ignoreObjectType = EObjectType.None)
+        {
+            if (CanMove(cellPos, ignoreObjectType) == false)
                 return false;
 
             RemoveObject(creature);
@@ -208,22 +222,43 @@ namespace STELLAREST_F1
         public bool AddObject(BaseObject obj, Vector3Int cellPos)
         {
             if (CanMove(cellPos) == false)
-            {
-                Debug.LogWarning($"AddObject Failed: {nameof(CanMove)}");
                 return false;
-            }
 
             BaseObject prev = GetObject(cellPos);
-            if (prev != null) // TEMP
-            {
-                Debug.LogWarning($"AddObject Failed: {nameof(GetObject)}");
+            if (prev != null)
                 return false;
-            }
 
             _cells[cellPos] = obj;
             return true;
         }
 
+        // 이걸로 전부 교체 예정
+        public bool CanMove(Vector3Int cellPos, EObjectType ignoreObjectType)
+        {
+            int x = cellPos.x - MinX;
+            int y = MaxY - cellPos.y - 1;
+            if (x < 0 || x >= _cellCollisionType.GetLength(1) || y < 0 || y >= _cellCollisionType.GetLength(0))
+                return false;
+
+            if (_cellCollisionType[y, x] == ECellCollisionType.SemiBlock)
+                return false;
+
+            BaseObject obj = GetObject(cellPos);
+            if (ignoreObjectType == EObjectType.None)
+            {
+                if (obj != null)
+                    return false;
+            }
+            else if (obj != null && obj.ObjectType != ignoreObjectType)
+                return false;
+
+            if (_cellCollisionType[y, x] == ECellCollisionType.CanMove)
+                return true;
+
+            return false;
+        }
+
+        // 이거 제거 예정
         public bool CanMove(Vector3 worldPos, bool ignoreObjects = false, bool ignoreSemiWall = false)
             => CanMove(WorldToCell(worldPos), ignoreObjects, ignoreSemiWall);
 
@@ -300,7 +335,7 @@ namespace STELLAREST_F1
         // 그리고 몬스터는 maxDepth를 크게 줄 이유가 없긴함.
         // 또한, 현재 캐릭터가 무조건 8방향으로만 움직이기 때문에 지금처럼 CampDest가 중간에 끼면 와리가리할 수 있는 문제가 발생할 수 있음.
         // 하지만 이제 길찾기를 완성하게 됨으로써 알아서 둘러싸게 됨.
-        public List<Vector3Int> FindPath(Vector3Int startCellPos, Vector3Int destCellPos, int maxDepth = 10)
+        public List<Vector3Int> FindPath(Vector3Int startCellPos, Vector3Int destCellPos, int maxDepth = 10, EObjectType ignoreObjectType = EObjectType.None)
         {
             Dictionary<Vector3Int, int> best = new Dictionary<Vector3Int, int>(); // key: pos = value: huristic
 
@@ -341,7 +376,10 @@ namespace STELLAREST_F1
                 foreach (Vector3Int delta in DeltaPos)
                 {
                     Vector3Int next = pos + delta;
-                    if (CanMove(next) == false) // 갈 수 없는 곳이면 오픈셋에 넣지 않는다.
+                    // if (CanMove(next, ignoreObjects: ignoreObjects) == false) // 갈 수 없는 곳이면 오픈셋에 넣지 않는다.
+                    //     continue;
+
+                    if (CanMove(next, ignoreObjectType) == false) // 갈 수 없는 곳이면 오픈셋에 넣지 않는다.
                         continue;
 
                     int h = (dest - next).sqrMagnitude; // 인접노드에서 도착점에 대한 Heuristic 계산

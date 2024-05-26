@@ -9,11 +9,17 @@ using System.Linq;
 
 namespace STELLAREST_F1
 {
+    // --- [MEMO]
+    // -- 리더는 공격 도중(쿨타임시) 조작 불가능.
+    // -- 옵션 플래그 하나 줘서, Scan Range에 들어오면 자동으로 추적하느냐, 안하느냐 넣을것.
+    // - 리더 - 추적 or No. 멤버는 무조건 추적해야지.
+
     public class HeroLeaderController : InitBase
     {
         private Transform _pointerPivot = null;
         private Transform _pointer = null;
         private Transform _leaderMark = null;
+
         [SerializeField] private Vector3 _nMovementDir = Vector3.zero;
         [SerializeField] private EHeroLeaderChaseMode _heroLeaderChaseMode = EHeroLeaderChaseMode.JustFollowClosely;
         public EHeroLeaderChaseMode HeroLeaderChaseMode
@@ -45,19 +51,25 @@ namespace STELLAREST_F1
 
         private void MoveStartMembersToTheirChasePos()
         {
-            List<Hero> heroes = new List<Hero>();
+            List<Hero> heroMembers = new List<Hero>();
             for (int i = 0; i < Managers.Object.Heroes.Count; ++i)
             {
                 Hero hero = Managers.Object.Heroes[i];
                 if (hero.IsValid() == false)
                     continue;
 
-                heroes.Add(hero);
+                if (hero.IsLeader)
+                    continue;
+
+                heroMembers.Add(hero);
             }
 
-            for (int i = 0; i < heroes.Count; ++i)
-                heroes[i].CreatureState = ECreatureState.Move;
+            for (int i = 0; i < heroMembers.Count; ++i)
+                heroMembers[i].CreatureState = ECreatureState.Move;
         }
+
+        [SerializeField] private EHeroMemberBattleMode _heroMemberBattleMode = EHeroMemberBattleMode.FollowLeader;
+        public EHeroMemberBattleMode HeroMemberBattleMode => _heroMemberBattleMode;
 
         // TEMP
         public void SetJustFollowClosely()
@@ -75,8 +87,6 @@ namespace STELLAREST_F1
         public void SetPatrolFree()
             => HeroLeaderChaseMode = EHeroLeaderChaseMode.RandomFormation;
 
-        // TEMP
-        public List<Hero> MembersTemp = new List<Hero>();
         public void ShuffleMembersPosition()
         {
             if (Managers.Object.Heroes.Count < 2)
@@ -199,7 +209,8 @@ namespace STELLAREST_F1
             return true;
         }
 
-        // Leader가 걸을 때, 동료들의 위치를 업데이트해주면 될듯...??? 실시간이 아니라..
+        public Vector3 LeaderDestPos
+             => _leader.Target.IsValid() ? _leader.Target.transform.position : _pointer.position;
 
         public bool _waitFindPath = true;
         private Vector3 TargetPos => _leader.transform.position + (_nMovementDir * _leader.MovementSpeed * Time.deltaTime);
@@ -209,7 +220,7 @@ namespace STELLAREST_F1
                 return;
 
             transform.position = _leader.CenterPosition;
-            if (_waitFindPath && Managers.Map.CanMove(TargetPos, ignoreObjects: true))
+            if (_leader.Target.IsValid() == false && _waitFindPath && Managers.Map.CanMove(TargetPos, ignoreObjects: true))
             {
                 Move();
             }
@@ -217,16 +228,31 @@ namespace STELLAREST_F1
             {
                 _waitFindPath = false;
                 Vector3Int currentCellPos = Managers.Map.WorldToCell(_leader.transform.position);
-                Vector3Int pointerCellPos = Managers.Map.WorldToCell(_pointer.position);
-                AddLeaderPath(currentCellPos, pointerCellPos);
+                Vector3Int DestCellPos = Managers.Map.WorldToCell(LeaderDestPos);
+                AddLeaderPath(currentCellPos, DestCellPos);
                 _coLeaderFindPath = StartCoroutine(CoLeaderFindPath());
             }
         }
 
+        private void LateUpdate()
+        {
+            if (_leader == null)
+            {
+                Debug.LogError("Failed to Leader Update Cell Pos. Please check leader character.");
+                return;
+            }
+
+            _leader.UpdateCellPos();
+        }
+        
         private Queue<Vector3Int> _leaderPath = new Queue<Vector3Int>();
         private void AddLeaderPath(Vector3Int startCellPos, Vector3Int targetCellPos)
         {
-            List<Vector3Int> path = Managers.Map.FindPath(startCellPos, targetCellPos, maxDepth: ReadOnly.Numeric.HeroMaxMoveDepth);
+            // Leader는 다른 Hero들 패스 가능!
+            List<Vector3Int> path = Managers.Map.FindPath(startCellPos: startCellPos, 
+                                                        destCellPos: targetCellPos, 
+                                                        maxDepth: ReadOnly.Numeric.HeroMaxMoveDepth,
+                                                        ignoreObjectType: EObjectType.Hero);
             _leaderPath.Clear();
             for (int i = 0; i < path.Count; ++i)
                 _leaderPath.Enqueue(path[i]);
@@ -251,7 +277,6 @@ namespace STELLAREST_F1
                 {
                     _leader.transform.position = destPos;
                     _leaderPath.Dequeue();
-
                     // Path Finding 도중에 중간에 움직일 수 있는 곳이 발견되었을 경우 중지
                     if (Managers.Map.CanMove(TargetPos, ignoreObjects: true))
                         break;
@@ -272,8 +297,9 @@ namespace STELLAREST_F1
         {
             if (_nMovementDir == Vector3.zero)
             {
-                if (_leader.CreatureState == ECreatureState.Move)
-                    _leader.CreatureState = ECreatureState.Idle;
+                // 임시 주석. 안해도 될 것 같아서.
+                // if (_leader.CreatureState == ECreatureState.Move)
+                //     _leader.CreatureState = ECreatureState.Idle;
                 return;
             }
 
@@ -282,8 +308,7 @@ namespace STELLAREST_F1
             else
                 Leader.LookAtDir = ELookAtDirection.Right;
 
-            Vector3Int targetCellPos = Managers.Map.WorldToCell(TargetPos);
-            _leader.SetCellPos(cellPos: targetCellPos, stopLerpToCell: true, forceMove: false);
+            // 일반적인 이동은 무조건 부드럽게
             _leader.transform.position = TargetPos;
         }
 
@@ -300,12 +325,8 @@ namespace STELLAREST_F1
                 _leader.IsLeader = true;
             }
             else if (_leader != newLeader)
-            {
-                // Release Prev Leader
-                _leader.IsLeader = false;
-                // --> 아마 MoveTo로 바꿔야할수도 있음.
-                //Managers.Map.AddObject(obj: _leader, cellPos: Managers.Map.WorldToCell(_leader.transform.position));
-
+            {                
+                _leader.IsLeader = false; // Release Prev Leader
                 _leader = newLeader;
                 _leader.IsLeader = true;
             }
@@ -316,17 +337,17 @@ namespace STELLAREST_F1
                 heroes.Remove(newLeader);
             heroes.Insert(0, newLeader);
 
-            // Leader 제외 인덱스
-            // 이미 따닥 따닥 붙어있을 때는 Move상태로 만들지 않는다. 겹치는건 어쩔 수 없긴 한데 너무 겹쳐버림.
+            // Leader 제외 인덱스. 이미 따닥 따닥 붙어있을 때, 리더 변경시 멤버들을 Move상태로 만들지 않는다. 
             if (_heroLeaderChaseMode != EHeroLeaderChaseMode.JustFollowClosely)
             {
                 for (int i = 1; i < heroes.Count; ++i)
                     heroes[i].CreatureState = ECreatureState.Move;
             }
 
-            Managers.Map.RemoveObject(newLeader); // Set New Leader, Cell 위치는 무조건 동료들 것
+            // 개발 중독...허허..
+            newLeader.CreatureMoveState = ECreatureMoveState.None;
+            newLeader.CreatureState = ECreatureState.Idle;
             Managers.Object.CameraController.Target = newLeader;
-            //DevManager.Instance.Leader = newLeader; // --> TEMP
         }
 
         private IEnumerator CoReadyToReplaceMembers()
@@ -354,8 +375,6 @@ namespace STELLAREST_F1
             }
 
             yield return null;
-            // Managers.Game.ReplaceHeroes();
-            // StartCoroutine(DevManager.Instance.CoUpdateReplacePosition()); --> 고민, 만들지 말지.
         }
 
         public void EnablePointer(bool enable)
@@ -378,11 +397,17 @@ namespace STELLAREST_F1
             {
                 case EJoystickState.Drag:
                     {
-                        if (_leader.CreatureState != ECreatureState.Move)
+                        if (_coLeaderFindPath != null)
                         {
-                            EnablePointer(true);
-                            _leader.CreatureState = ECreatureState.Move;
+                            StopCoroutine(_coLeaderFindPath);
+                            _coLeaderFindPath = null;
+                            _waitFindPath = true;
                         }
+
+                        _leader.CreatureMoveState = ECreatureMoveState.ForceMove;
+                        _leader.CreatureState = ECreatureState.Move;
+                        _leader.Target = null;
+                        EnablePointer(true);
                     }
                     break;
 
@@ -397,6 +422,7 @@ namespace STELLAREST_F1
                             _waitFindPath = true;
                         }
 
+                        _leader.CreatureMoveState = ECreatureMoveState.None;
                         _leader.CreatureState = ECreatureState.Idle;
                         // if (_replaceMode != EReplaceMode.FollowLeader)
                         //     StartCoroutine(CoReadyToReplaceMembers());

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using Unity.VisualScripting;
 using UnityEngine;
 using static STELLAREST_F1.Define;
@@ -13,7 +14,7 @@ namespace STELLAREST_F1
         public CreatureBody CreatureBody { get; protected set; } = null;
         public CreatureAnimation CreatureAnim { get; private set; } = null;
 
-        [SerializeField] private ECreatureState _creatureState = ECreatureState.None;
+        [SerializeField] private ECreatureState _creatureState =  ECreatureState.Idle;
         public virtual ECreatureState CreatureState
         {
             get => _creatureState;
@@ -25,13 +26,34 @@ namespace STELLAREST_F1
                     UpdateAnimation();
                 }
             }
+            
+            // => UpdateAnimation(value);
+            // {
+            //     if (_creatureState != value)
+            //     {
+            //         // [ DO SOMETHING ]
+            //         UpdateAnimation(value); // 일단 한 번 업데이트 애니메이션을 해주고 // 그래도 다르다면 ??
+            //         //Debug.Log(CreatureAnim.IsCurrentAnimationState(value));
+
+            //         // 여기서 애니메이션이 완전히 업데이트가 되는 것을 확인하고
+            //         // 그때부터 State를 바꿔준다.
+            //         // if (CreatureAnim.IsCurrentAnimationState(value))
+            //         // {
+            //         //     _creatureState = value;
+            //         //     UpdateAnimation();
+            //         // }
+            //     }
+            // }
         }
+
+        public void SetCreatureState(ECreatureState creatureState)
+            => _creatureState = creatureState;
 
         [SerializeField] private ECreatureMoveState _creatureMoveState = ECreatureMoveState.None;
         public virtual ECreatureMoveState CreatureMoveState
         {
             get => _creatureMoveState;
-            protected set => _creatureMoveState = value;
+            set => _creatureMoveState = value;
         }
 
         private bool _collectEnv = false;
@@ -60,6 +82,8 @@ namespace STELLAREST_F1
             if (base.Init() == false)
                 return false;
 
+            // 최초 Animator Entry State는 Idle이기 때문에 최초에는 이와 동기화 시켜준다.
+            // _creatureState = ECreatureState.Idle;
             return true;
         }
 
@@ -321,7 +345,7 @@ namespace STELLAREST_F1
         {
             int dx = Mathf.Abs(Target.CellPos.x - CellPos.x);
             int dy = Mathf.Abs(Target.CellPos.y - CellPos.y);
-
+            
             if (dx <= AtkRange && dy <= AtkRange)
                 return true;
 
@@ -387,46 +411,38 @@ namespace STELLAREST_F1
         #region Map
 
         // maxDepth: Mobile용 성능 조절 Offset 깊이 값
-        public EFindPathResult FindPathAndMoveToCellPos(Vector3 destPos, int maxDepth, bool forceMoveCloser = false)
+        public EFindPathResult FindPathAndMoveToCellPos(Vector3 destPos, int maxDepth, EObjectType ignoreObjectType = EObjectType.None)
         {
             Vector3Int destCellPos = Managers.Map.WorldToCell(destPos);
-            return FindPathAndMoveToCellPos(destCellPos, maxDepth, forceMoveCloser);
+            return FindPathAndMoveToCellPos(destCellPos, maxDepth, ignoreObjectType);
         }
 
-        public EFindPathResult FindPathAndMoveToCellPos(Vector3Int destPos, int maxDepth, bool forceMoveCloser = false)
+        public EFindPathResult FindPathAndMoveToCellPos(Vector3Int destPos, int maxDepth, EObjectType ignoreObjectType = EObjectType.None)
         {
+            // 공격중 대각선 -> 상하좌우 이동 막기
+            // 만약 이게 주석처리 되어있다면 상하좌우로 먼저 이동하려고 할 것임.
+            if (CreatureState == ECreatureState.Skill_Attack)
+                return EFindPathResult.Fail_LerpCell;
+
             // 움직임 진행중
             if (LerpToCellPosCompleted == false)
-            {
                 return EFindPathResult.Fail_LerpCell;
-            }
 
             // A*
-            List<Vector3Int> path = Managers.Map.FindPath(startCellPos: CellPos, destPos, maxDepth);
+            List<Vector3Int> path = Managers.Map.FindPath(startCellPos: CellPos, destPos, maxDepth, ignoreObjectType);
             if (path.Count < 2)
                 return EFindPathResult.Fail_NoPath;
-
-            #region TEST
-            // 다른 오브젝트가 길막해서 와리가리할수있다는데, 그럴때 diff1, diff2의 점수 계산을 해서 안가게끔 막는 것이라고 함.
-            // 근데 아주 예외적인 케이스라고함.
-            // if (forceMoveCloser)
-            // {
-            //     Vector3Int diff1 = CellPos - destPos;
-            //     Vector3Int diff2 = path[1] - destPos;
-            //     if (diff1.sqrMagnitude <= diff2.sqrMagnitude)
-            //         return EFindPathResult.Fail_NoPath;
-            // }
-            #endregion
 
             Vector3Int dirCellPos = path[1] - CellPos;
             Vector3Int nextPos = CellPos + dirCellPos;
 
-            if (Managers.Map.MoveTo(creature: this, nextPos) == false)
+            if (Managers.Map.MoveTo(creature: this, nextPos, ignoreObjectType: ignoreObjectType) == false)
                 return EFindPathResult.Fail_MoveTo;
 
             return EFindPathResult.Success;
         }
 
+        // 제거예정
         public bool MoveToCellPos(Vector3Int destCellPos, int maxDepth, bool forceMoveCloser = false)
         {
             if (LerpToCellPosCompleted == false)
@@ -486,6 +502,10 @@ namespace STELLAREST_F1
             float bestDistSQR = float.MaxValue;
             float scanRangeSQR = scanRange * scanRange;
 
+            Hero hero = this as Hero;
+            if (hero.IsValid() && hero.IsLeader)
+                scanRangeSQR *= 0.5f;
+
             foreach (T obj in firstTargets)
             {
                 Vector3Int dir = obj.CellPos - CellPos;
@@ -528,6 +548,7 @@ namespace STELLAREST_F1
             return target;
         }
 
+        protected bool _pauseSearchTarget = false;
         private Coroutine _coSearchTarget = null;
         private IEnumerator CoSearchTarget<T>(float scanRange, IEnumerable<T> firstTargets, IEnumerable<T> secondTargets = null, Func<T, bool> func = null) where T : BaseObject
         {
@@ -537,14 +558,20 @@ namespace STELLAREST_F1
                 if (this.IsValid() == false) // 방어
                     yield break;
 
-                if (CreatureMoveState == ECreatureMoveState.ForceMove)
+                yield return new WaitForSeconds(tick);
+                if (_pauseSearchTarget)
                 {
+                    Target = null;
                     yield return null;
                     continue;
                 }
 
-                yield return new WaitForSeconds(tick);
-                Target = SearchClosestInRange(scanRange, firstTargets: firstTargets, secondTargets: secondTargets, func: func);
+                if (CreatureMoveState != ECreatureMoveState.ForceMove)
+                {
+                    Target = SearchClosestInRange(scanRange, firstTargets: firstTargets, secondTargets: secondTargets, func: func);
+                    if (Target.IsValid())
+                        CreatureMoveState = ECreatureMoveState.TargetToEnemy;
+                }
             }
         }
 
@@ -558,6 +585,7 @@ namespace STELLAREST_F1
 
         protected void CoStopSearchTarget()
         {
+            Target = null;
             if (_coSearchTarget != null)
             {
                 StopCoroutine(_coSearchTarget);
@@ -571,8 +599,8 @@ namespace STELLAREST_F1
 }
 
 /*
-##### Prev #####
-protected IEnumerator CoLerpToCellPos()
+        [ PREV CODEs ]
+        protected IEnumerator CoLerpToCellPos()
         {
             while (true)
             {
@@ -600,5 +628,39 @@ protected IEnumerator CoLerpToCellPos()
 
                 yield return null;
             }
+        }
+
+        public EFindPathResult FindPathAndMoveToCellPos(Vector3Int destPos, int maxDepth, bool forceMoveCloser = false)
+        {
+            // 움직임 진행중
+            if (LerpToCellPosCompleted == false)
+            {
+                return EFindPathResult.Fail_LerpCell;
+            }
+
+            // A*
+            List<Vector3Int> path = Managers.Map.FindPath(startCellPos: CellPos, destPos, maxDepth);
+            if (path.Count < 2)
+                return EFindPathResult.Fail_NoPath;
+
+            #region TEST
+            // 다른 오브젝트가 길막해서 와리가리할수있다는데, 그럴때 diff1, diff2의 점수 계산을 해서 안가게끔 막는 것이라고 함.
+            // 근데 아주 예외적인 케이스라고함.
+            // if (forceMoveCloser)
+            // {
+            //     Vector3Int diff1 = CellPos - destPos;
+            //     Vector3Int diff2 = path[1] - destPos;
+            //     if (diff1.sqrMagnitude <= diff2.sqrMagnitude)
+            //         return EFindPathResult.Fail_NoPath;
+            // }
+            #endregion
+
+            Vector3Int dirCellPos = path[1] - CellPos;
+            Vector3Int nextPos = CellPos + dirCellPos;
+
+            if (Managers.Map.MoveTo(creature: this, nextPos) == false)
+                return EFindPathResult.Fail_MoveTo;
+
+            return EFindPathResult.Success;
         }
 */

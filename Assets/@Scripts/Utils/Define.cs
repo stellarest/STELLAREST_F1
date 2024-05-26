@@ -376,6 +376,12 @@ namespace STELLAREST_F1
             RandomFormation,
         }
 
+        public enum EHeroMemberBattleMode
+        {
+            FollowLeader,
+            EngageEnemy
+        }
+
         // 이거 한번 더 누르면 뱅글 뱅글 돌면서 재배치하는 기능 있으면 좋을 것 같음.
         // public enum EReplaceHeroMode
         // {
@@ -629,7 +635,10 @@ namespace STELLAREST_F1
 
                 // --- [ FLOATING ]
                 // -- [ HERO ]
-                public static readonly float CheckFarFromHeroesLeaderTick = 2.0F;
+                public static readonly float CheckFarFromHeroesLeaderTick = 1.0F;
+                public static readonly float CheckFarFromHereosLeaderDistance = 4.0F; // 4칸(상하좌우 기준)
+                public static readonly float CheckFarFromHeroesLeaderDistanceForWarp = 15.0F; // 15칸(상하좌우 기준)
+
                 public static readonly float MinSecPatrolPingPong = 1.0F;
                 public static readonly float MaxSecPatrolPingPong = 2.0F;
 
@@ -646,7 +655,7 @@ namespace STELLAREST_F1
                 public static readonly float MonsterSize_Medium = 0.8F;
                 public static readonly float MonsterSize_Large = 1.2F;
 
-                public static readonly float HeroDefaultScanRange = 8.0F; // 일단 8칸
+                public static readonly float HeroDefaultScanRange = 6.0F; // 일단 6칸
                 public static readonly float MonsterDefaultScanRange = 8.0F; // 상하좌우 한칸 기준, 대각선X
                 public static readonly float Temp_StopDistance = 1.25F;
                 

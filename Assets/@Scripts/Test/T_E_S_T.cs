@@ -12,14 +12,26 @@ using UnityEngine;
 >>> 멤버 뺑글뺑글 돌리면서 위치 교환 (완료)
 >>> CoLerpToCellPos Log함수로 변경하기. (완료)
 >>> Leader와 멀어지면 강제 이동. (완료)
+>>> 스키타는거 막기
 >>> Heroes Attack -> Monster (+ Monster Dead)
 >>> Monster Default Body Attack
 >>> Chicken vs Paladin, Archer 전투 테스트
 >>> Env 테스트
 >>> Env까지 테스트 완료 후 RigidBody 제거, Camp 제거
+>>> 리더가 죽었을 때, 죽는 모션이 나오고 다른 히어로 멤버로 자동으로 설정되도록
+>>> CanMove Ignore Object Type 개선사항
+>>> 리더 -> 히어로는 Ignore 가능.
+>>> 히어로 -> 리더는 Ignore가 안됨. (이거부터 잡아볼까.)
+>>> 근데 문제는 이거 잡으려고하면 길찾기 예외를 좀 많이 줘야할 것 같은데.
+
 
 
 [ MEMO LIST ]
+>> 부대1(7명), 부대2(7명), 부대3(7명): 최대 히어로 개수 21개
+>> --- 히어로 등급
+>> -- Normal -> Ultimate: 진화형 히어로
+>> -- Epic: 진화 불가 단일 개체, Normal보다 강하고 Ultimate보다 약함
+>> -- Special: 진화 불가 단일 개체, Epic보다 강하고 Ultimate와 비동, 또는 다소 약함
 >> 히어로 최소 이동속도는 6부터
 >> 캐쥬얼하게 만들기.
 >> Parabola 모션 개선 필요 (타겟 거리에 따라 HeightArc 조정)

@@ -7,7 +7,7 @@ namespace STELLAREST_F1
 {
     public class MonsterAnimation : CreatureAnimation
     {
-        private Monster _owner = null;
+        private Monster _monsterOwner = null;
 
         public override bool Init()
         {
@@ -32,40 +32,40 @@ namespace STELLAREST_F1
                 // Animator.runtimeAnimatorController = cloned;
             }
 
-            _owner = owner as Monster;
+            _monsterOwner = owner as Monster;
         }
 
         public override void UpdateAnimation()
         {
-            if (_owner == null)
+            if (_monsterOwner == null)
                 return;
 
-            switch (_owner.CreatureState)
+            switch (_monsterOwner.CreatureState)
             {
                 case ECreatureState.Idle:
                     {
-                        _owner.MonsterBody.SetEmoji(EMonsterEmoji.Default);
+                        _monsterOwner.MonsterBody.SetEmoji(EMonsterEmoji.Default);
                         Idle();
                     }
                     break;
 
                 case ECreatureState.Move:
                     {
-                        _owner.MonsterBody.SetEmoji(EMonsterEmoji.Default);
+                        _monsterOwner.MonsterBody.SetEmoji(EMonsterEmoji.Default);
                         Move();
                     }
                     break;
 
                 case ECreatureState.Skill_Attack:
                     {
-                        _owner.MonsterBody.SetEmoji(EMonsterEmoji.Angry);
+                        _monsterOwner.MonsterBody.SetEmoji(EMonsterEmoji.Angry);
                         Skill_Attack();
                     }
                     break;
 
                 case ECreatureState.Dead:
                     {
-                        _owner.MonsterBody.SetEmoji(EMonsterEmoji.Dead);
+                        _monsterOwner.MonsterBody.SetEmoji(EMonsterEmoji.Dead);
                         Dead();
                     }
                     break;
@@ -75,10 +75,10 @@ namespace STELLAREST_F1
         public override void Flip(ELookAtDirection lookAtDir)
         {
             // Monster LookAtDir Default Sprite : Left
-            Vector3 localScale = _owner.transform.localScale;
+            Vector3 localScale = _monsterOwner.transform.localScale;
             int sign = (lookAtDir == ELookAtDirection.Left) ? (localScale.x > 0 ? 1 : -1) : -1;
             localScale.x = localScale.x * sign;
-            _owner.transform.localScale = localScale;
+            _monsterOwner.transform.localScale = localScale;
         }
     }
 }

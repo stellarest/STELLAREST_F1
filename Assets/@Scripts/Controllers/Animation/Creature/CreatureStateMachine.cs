@@ -24,6 +24,13 @@ namespace STELLAREST_F1
                 _owner = _creatureAnim.GetOwner<Creature>();
             }
 
+            // CreatureState, Animation State 동기화
+            if (stateInfo.shortNameHash != _creatureAnim?.GetHash(_owner.CreatureState))
+            {
+                _creatureAnim.UpdateAnimation();
+                return;
+            }
+
             if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureState.Skill_Attack))
             {
                 _canSkillAttackFlag = true;
@@ -38,14 +45,6 @@ namespace STELLAREST_F1
 
         public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            // Refresh Animation (한 프레임 내에 CreatureState가 변경될 때 애니메이션 갱신이 안될수도 있음)
-            // --> ex) 한 프레임 내에 Animator.Play(Move) -> Animator.Play(Idle) 전환이 안되는 경우도 있어서 체크
-            if (stateInfo.shortNameHash != _creatureAnim?.GetHash(_owner.CreatureState))
-            {
-                _creatureAnim.UpdateAnimation();
-                return;
-            }
-
             float currentPercentage = stateInfo.normalizedTime % 1.0f;
             if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureState.Skill_Attack) && _canSkillAttackFlag)
             {
@@ -55,8 +54,19 @@ namespace STELLAREST_F1
                     OnStateUpdateHandler?.Invoke(ECreatureState.Skill_Attack);
                     _canSkillAttackFlag = false;
                 }
-
                 return;
+            }
+            
+            // 가독성은 이게 더 좋긴함.
+            if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureState.Skill_Attack))
+            {
+                // Transition duration에서 뺀 값: 0.90f
+                if (currentPercentage >= 0.90f)
+                {
+                    // 강제로 빠져나오기
+                    _creatureAnim.ForceExitState();
+                    return;
+                }
             }
 
             if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureState.CollectEnv))
@@ -69,7 +79,7 @@ namespace STELLAREST_F1
                 }
                 else if (currentPercentage < endThresholdPercentage && _canCollectEnvFlag)
                     _canCollectEnvFlag = false;
-                
+
                 return;
             }
         }
@@ -83,10 +93,14 @@ namespace STELLAREST_F1
             {
                 OnStateEndHandler?.Invoke(ECreatureState.Skill_Attack);
                 _canSkillAttackFlag = false;
+                return;
             }
 
             if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureState.CollectEnv))
+            {
                 _canCollectEnvFlag = false;
+                return;
+            }
         }
     }
 }

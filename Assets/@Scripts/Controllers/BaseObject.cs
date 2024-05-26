@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using JetBrains.Annotations;
 using Unity.VisualScripting;
 using Unity.VisualScripting.ReorderableList.Element_Adder_Menu;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
 using static STELLAREST_F1.Define;
@@ -302,7 +303,15 @@ namespace STELLAREST_F1
         public void SetCellPos(Vector3 position, bool forceMove = false)
             => SetCellPos(Managers.Map.WorldToCell(position), forceMove);
 
-        // 이건 애초에 Add를 안함.
+        public void UpdateCellPos()
+        {
+            Vector3Int currentCellPos = Managers.Map.WorldToCell(transform.position);
+            Managers.Map.RemoveObject(this);
+            Managers.Map.AddObject(this, currentCellPos);
+            CellPos = currentCellPos;
+        }
+
+        // 이건 애초에 Add를 안함. 제거 예정?
         public void SetCellPos(Vector3Int cellPos, bool stopLerpToCell = false, bool forceMove = false)
         {
             CellPos = cellPos;
