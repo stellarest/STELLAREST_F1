@@ -638,6 +638,7 @@ namespace STELLAREST_F1
                 public static readonly float CheckFarFromHeroesLeaderTick = 1.0F;
                 public static readonly float CheckFarFromHereosLeaderDistance = 4.0F; // 4칸(상하좌우 기준)
                 public static readonly float CheckFarFromHeroesLeaderDistanceForWarp = 15.0F; // 15칸(상하좌우 기준)
+                public static readonly float WaitMovementDistanceSQRFromLeader = 2.4F;
 
                 public static readonly float MinSecPatrolPingPong = 1.0F;
                 public static readonly float MaxSecPatrolPingPong = 2.0F;

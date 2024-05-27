@@ -20,9 +20,9 @@ using UnityEngine;
 >>> 리더 -> 히어로는 Ignore 가능.
 >>> 히어로 -> 리더는 Ignore가 안됨. (이거부터 잡아볼까.)
 
-
-
 [ MEMO LIST ]
+>> --- 출시 계획
+>> -- IOS, IPAD, MAC OS
 >> 부대1(7명), 부대2(7명), 부대3(7명): 최대 히어로 개수 21개
 >> --- 히어로 등급
 >> -- Normal -> Ultimate: 진화형 히어로

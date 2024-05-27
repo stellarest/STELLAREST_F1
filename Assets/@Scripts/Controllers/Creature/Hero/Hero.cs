@@ -96,6 +96,7 @@ namespace STELLAREST_F1
             return true;
         }
 
+        private float _waitMovementDistanceSQRFromLeader = 0f;
         public override bool SetInfo(int dataID)
         {
             if (base.SetInfo(dataID) == false)
@@ -120,6 +121,7 @@ namespace STELLAREST_F1
 
             CreatureSkill = gameObject.GetOrAddComponent<SkillComponent>();
             CreatureSkill.SetInfo(owner: this, skillDataIDs: Managers.Data.HeroDataDict[dataID].SkillIDs);
+            _waitMovementDistanceSQRFromLeader = ReadOnly.Numeric.WaitMovementDistanceSQRFromLeader;
 
             EnterInGame(dataID);
             return true;
@@ -132,7 +134,6 @@ namespace STELLAREST_F1
 
             base.EnterInGame(dataID);
             StartCoroutine(CoCheckFarFromLeader());
-            // StartCoroutine(CoIsLeaaderAtSameAtPosition()); // *** TEMP *** 개선 필요
 
             // --- First Targets: Monsters, Second Targets: Envs
             CoStartSearchTarget<BaseObject>(scanRange: ReadOnly.Numeric.HeroDefaultScanRange,
@@ -231,7 +232,26 @@ namespace STELLAREST_F1
 
             if (CreatureMoveState == ECreatureMoveState.ForceMove)
             {
-                CreatureState = ECreatureState.Move;
+                Hero leader = Managers.Object.HeroLeaderController.Leader;
+                if ((transform.position - leader.transform.position).sqrMagnitude < _waitMovementDistanceSQRFromLeader)
+                    return;
+
+                List<Vector3Int> idlePathFind = Managers.Map.FindPath(startCellPos: CellPos, destCellPos: ChaseCellPos, maxDepth: 2);
+                if (idlePathFind.Count > 1)
+                {
+                    Debug.Log("====================");
+                    for (int i = 0; i < idlePathFind.Count; ++i)
+                    {
+                        Debug.Log($"IdlePath[{i}]: {idlePathFind[i]}");
+                    }
+
+                    // 대각선은 제대로 되는데 좌우가 살짝 어색한 이유는 바로 리더를 따라가서 그런 것 같음.
+                    if (Managers.Map.CanMove(idlePathFind[1]))
+                    {
+                        CreatureState = ECreatureState.Move;
+                        return;
+                    }
+                }
                 return;
             }
 
@@ -354,7 +374,7 @@ namespace STELLAREST_F1
 
             if (CreatureMoveState == ECreatureMoveState.ForceMove)
             {
-                // 방어
+                // -- DEFENSE
                 CreatureMoveState = ECreatureMoveState.None;
             }
         }
