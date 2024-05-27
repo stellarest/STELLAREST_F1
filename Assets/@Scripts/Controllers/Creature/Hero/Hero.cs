@@ -158,15 +158,10 @@ namespace STELLAREST_F1
                     continue;
                 }
 
-                if (Managers.Object.HeroLeaderController.HeroMemberBattleMode == EHeroMemberBattleMode.FollowLeader)
-                    _isFarFromLeader = false;
+                if ((leader.CellPos - CellPos).sqrMagnitude > isFarDistSQR)
+                    _isFarFromLeader = true;
                 else
-                {
-                    if ((leader.CellPos - CellPos).sqrMagnitude > isFarDistSQR)
-                        _isFarFromLeader = true;
-                    else
-                        _isFarFromLeader = false;
-                }
+                    _isFarFromLeader = false;
 
                 // FORCE WARP
                 // 15칸(225) 이상일 때, 어차피 로그 함수 이동속도로 금방 따라오긴하지만 알수 없는 이유로 히어로가 막혀있을 때
@@ -192,10 +187,8 @@ namespace STELLAREST_F1
                             CreatureState = ECreatureState.CollectEnv;
                         else
                         {
-                            if (_canHandleAttack)
-                            {
+                            if (_canHandleSkill)
                                 CreatureSkill?.CurrentSkill.DoSkill();
-                            }
                         }
                     }
 
@@ -245,7 +238,6 @@ namespace STELLAREST_F1
             if (Target.IsValid())
             {
                 LookAtTarget();
-                _canHandleAttack = false;
                 CreatureState = ECreatureState.Move;
 
                 // if (Target.ObjectType == EObjectType.Monster)
@@ -322,7 +314,7 @@ namespace STELLAREST_F1
             #endregion
         }
 
-        [SerializeField] private bool _canHandleAttack = false;
+        private bool _canHandleSkill = false;
         protected override void UpdateMove()
         {
             if (IsLeader)
@@ -342,16 +334,14 @@ namespace STELLAREST_F1
             }
             else if (CreatureMoveState == ECreatureMoveState.TargetToEnemy)
             {
+                _canHandleSkill = false;
                 List<Vector3Int> path = Managers.Map.FindPath(CellPos, ChaseCellPos, 2);
                 if (path.Count > 0)
                 {
-                    Vector3Int last = path[path.Count - 1];
-                    if (Managers.Map.WorldToCell(transform.position) == last)
+                    Vector3 centeredPos = Managers.Map.CenteredCellToWorld(path[path.Count - 1]);
+                    if ((transform.position - centeredPos).sqrMagnitude < 0.01f)
                     {
-                        // 이렇게하면 되긴하는데... 몬스터 큰 녀석으로 할 경우에는 어떻게될지 모르겠다.
-                        float dist = (CenterPosition - Target.CenterPosition).magnitude;
-                        if (dist <= 1.5f)
-                            _canHandleAttack = true;
+                        _canHandleSkill = true;
                     }
                 }
             }
@@ -639,6 +629,9 @@ namespace STELLAREST_F1
             callback?.Invoke();
         }
 
+        #region MISC
+        #endregion
+
         #region Event
         private void OnJoystickStateChanged(EJoystickState joystickState)
         {
@@ -654,6 +647,7 @@ namespace STELLAREST_F1
                     }
                     break;
 
+                // FollowLeader 모드일 때 리더와 멀어지면 무조건 리더에게 가야함. 무조건.
                 case EJoystickState.Drag:
                     if (Managers.Object.HeroLeaderController.HeroMemberBattleMode == EHeroMemberBattleMode.EngageEnemy)
                     {

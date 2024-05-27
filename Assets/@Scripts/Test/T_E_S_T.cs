@@ -7,14 +7,11 @@ using UnityEngine;
 
 /*
 [ TODO TODAY LIST ]
-// 24. 5. 23
->>> 리더가 바뀌었을 때, Replace Again (완료)
->>> 멤버 뺑글뺑글 돌리면서 위치 교환 (완료)
->>> CoLerpToCellPos Log함수로 변경하기. (완료)
->>> Leader와 멀어지면 강제 이동. (완료)
->>> 스키타는거 막기
+// 24. 5. 27
+>>> 히어로 리더가 움직이기 시작할 떄, 멤버가 이동할 수 있는 칸이 있을때만 Move 애니메이션? - 딱히 중요하진 않지만
 >>> Heroes Attack -> Monster (+ Monster Dead)
 >>> Monster Default Body Attack
+
 >>> Chicken vs Paladin, Archer 전투 테스트
 >>> Env 테스트
 >>> Env까지 테스트 완료 후 RigidBody 제거, Camp 제거
@@ -22,7 +19,6 @@ using UnityEngine;
 >>> CanMove Ignore Object Type 개선사항
 >>> 리더 -> 히어로는 Ignore 가능.
 >>> 히어로 -> 리더는 Ignore가 안됨. (이거부터 잡아볼까.)
->>> 근데 문제는 이거 잡으려고하면 길찾기 예외를 좀 많이 줘야할 것 같은데.
 
 
 
