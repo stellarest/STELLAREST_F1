@@ -214,26 +214,44 @@ namespace STELLAREST_F1
 
         public bool _waitFindPath = true;
         private Vector3 TargetPos => _leader.transform.position + (_nMovementDir * _leader.MovementSpeed * Time.deltaTime);
-        private void Update() 
+        private void Update()
         {
             if (_leader == null)
                 return;
 
             transform.position = _leader.CenterPosition;
+            // --- ForceExitState() 때문에 CreatureMoveState가 None으로 변할것임. 
+            // --- 근데 이미 Target을 서칭 중이라 다시 CreatureMoveState가 TargetToEnemy로 변함.
+            // Cell과 Cell가운데 위치에 있으면 가만히 멍때리고 있음 (고장남, 중간에 있으면 같은 위치라서 _leaderPath = 0이라 멍때리고 멈춰있는 것임)
+            // _lockFindPath 부분 확인해볼것.
+            if (_leader.CreatureMoveState != ECreatureMoveState.ForceMove)
+            {
+                if (_leader.CreatureSkill.IsRemainingCoolTime((int)ESkillType.Skill_Attack))
+                    return;
+            }
+
             if (_leader.Target.IsValid() == false && _waitFindPath && Managers.Map.CanMove(TargetPos, ignoreObjects: true))
             {
                 Move();
             }
-            else if (_waitFindPath)
+            else if (_waitFindPath && _lockFindPath == false)
             {
                 _waitFindPath = false;
                 Vector3Int currentCellPos = Managers.Map.WorldToCell(_leader.transform.position);
                 Vector3Int DestCellPos = Managers.Map.WorldToCell(LeaderDestPos);
                 AddLeaderPath(currentCellPos, DestCellPos);
+                // --- AddLeaderPath에서 _leaderPath.Dequeue()로 인해 시작점에 그대로 있을때는 현재 서있는 위치에서 그대로 스킬 실행.
+                if (_leaderPath.Count == 0 && _leader.CreatureMoveState == ECreatureMoveState.TargetToEnemy)
+                {
+                    _lockFindPath = true;
+                    _waitFindPath = true;
+                    return;
+                }
                 _coLeaderFindPath = StartCoroutine(CoLeaderFindPath());
             }
         }
 
+        [SerializeField] private bool _lockFindPath = false;
         private void LateUpdate()
         {
             if (_leader == null)
@@ -243,12 +261,52 @@ namespace STELLAREST_F1
             }
 
             _leader.UpdateCellPos();
+            if (_leader.CreatureState == ECreatureState.Move)
+            {
+                if (_leader.CreatureMoveState == ECreatureMoveState.TargetToEnemy)
+                {
+                    if (_leader.CanAttackOrChase())
+                    {
+                        if (_leaderPath.Count > 0)
+                        {
+                            // 위치 확인,,
+                            Vector3 centeredPos = Managers.Map.CenteredCellToWorld(_leaderPath.Peek());
+                            // DO NOT SKI MOVE
+                            if ((_leader.transform.position - centeredPos).sqrMagnitude < 0.01f)
+                            {
+                                // 최초 공격
+                                _lockFindPath = true; // 대각선에서 스킬 공격을 시작했으면 상하좌우로 이동하지 않기.
+                                _leader.CreatureSkill?.CurrentSkill.DoSkill();
+                            }
+                        }
+                    }
+                    else if (_leader.Target.IsValid() == false) // --- DEFENSE
+                    {
+                        _leader.CreatureState = ECreatureState.Idle;
+                        _lockFindPath = false;
+                    }
+                }
+            }
+            // 최초 이후 공격
+            else if (_lockFindPath && _leader.CreatureMoveState == ECreatureMoveState.TargetToEnemy)
+            {
+                if (_leader.CreatureSkill.IsRemainingCoolTime((int)ESkillType.Skill_Attack) == false)
+                {
+                    if (_leader.CanAttackOrChase())
+                    {
+                        // 확인됨.
+                        Debug.Log($"<color=white>Called from this.</color>");
+                        _leader.CreatureSkill?.CurrentSkill.DoSkill();
+                    }
+                    else
+                        _lockFindPath = false;
+                }
+            }
         }
-        
+
         private Queue<Vector3Int> _leaderPath = new Queue<Vector3Int>();
         private void AddLeaderPath(Vector3Int startCellPos, Vector3Int targetCellPos)
         {
-            // Leader는 다른 Hero들 패스 가능!
             List<Vector3Int> path = Managers.Map.FindPath(startCellPos: startCellPos, 
                                                         destCellPos: targetCellPos, 
                                                         maxDepth: ReadOnly.Numeric.HeroMaxMoveDepth,
@@ -262,16 +320,26 @@ namespace STELLAREST_F1
         private Coroutine _coLeaderFindPath = null;
         private IEnumerator CoLeaderFindPath()
         {
-            _leader.CreatureState = ECreatureState.Move;
+            if (_leaderPath.Count > 0)
+                _leader.CreatureState = ECreatureState.Move;
+
             while (_leaderPath.Count != 0)
             {
+                _lockFindPath = true;
                 Vector3Int nextPos = _leaderPath.Peek();
                 Vector3 destPos = Managers.Map.CenteredCellToWorld(nextPos);
                 Vector3 dir = destPos - _leader.transform.position;
-                if (dir.x < 0f)
-                    _leader.LookAtDir = ELookAtDirection.Left;
-                else if (dir.x > 0f)
-                    _leader.LookAtDir = ELookAtDirection.Right;
+
+                // --- OK, But Path Find 조금 어색해진듯..
+                if (_leader.Target.IsValid() == false)
+                {
+                    if (dir.x < 0f)
+                        _leader.LookAtDir = ELookAtDirection.Left;
+                    else if (dir.x > 0f)
+                        _leader.LookAtDir = ELookAtDirection.Right;
+                }
+                else
+                    _leader.LookAtTarget();
 
                 if (dir.sqrMagnitude < 0.001f)
                 {
@@ -279,7 +347,12 @@ namespace STELLAREST_F1
                     _leaderPath.Dequeue();
                     // Path Finding 도중에 중간에 움직일 수 있는 곳이 발견되었을 경우 중지
                     if (Managers.Map.CanMove(TargetPos, ignoreObjects: true))
+                    {
+                        _waitFindPath = true;
+                        _lockFindPath = false;
+                        Debug.Log("<color=cyan>BREAK PATH FINDING.</color>");
                         break;
+                    }
                 }
                 else
                 {
@@ -291,6 +364,10 @@ namespace STELLAREST_F1
             }
 
             _waitFindPath = true;
+            _lockFindPath = false;
+
+            if (_leader.CreatureMoveState == ECreatureMoveState.None)
+                _leader.CreatureState = ECreatureState.Idle;
         }
 
         private void Move()
@@ -344,37 +421,9 @@ namespace STELLAREST_F1
                     heroes[i].CreatureState = ECreatureState.Move;
             }
 
-            // 개발 중독...허허..
             newLeader.CreatureMoveState = ECreatureMoveState.None;
             newLeader.CreatureState = ECreatureState.Idle;
             Managers.Object.CameraController.Target = newLeader;
-        }
-
-        private IEnumerator CoReadyToReplaceMembers()
-        {
-            while (true)
-            {
-                bool isAllStopped = true;
-                for (int i = 0; i < Managers.Object.Heroes.Count; ++i)
-                {
-                    Hero hero = Managers.Object.Heroes[i];
-                    if (hero == _leader)
-                        continue;
-
-                    if (hero.LerpToCellPosCompleted == false || hero.CreatureState == ECreatureState.Move)
-                    {
-                        isAllStopped = false;
-                        break;
-                    }
-                }
-
-                if (isAllStopped)
-                    break;
-
-                yield return null;
-            }
-
-            yield return null;
         }
 
         public void EnablePointer(bool enable)
@@ -397,7 +446,7 @@ namespace STELLAREST_F1
             {
                 case EJoystickState.Drag:
                     {
-                        if (_coLeaderFindPath != null)
+                        if (_coLeaderFindPath != null && _lockFindPath == false)
                         {
                             StopCoroutine(_coLeaderFindPath);
                             _coLeaderFindPath = null;
@@ -415,23 +464,24 @@ namespace STELLAREST_F1
                     {
                         _nMovementDir = Vector3.zero;
                         EnablePointer(false);
-                        if (_coLeaderFindPath != null)
+                        if (_coLeaderFindPath != null && _lockFindPath == false)
                         {
                             StopCoroutine(_coLeaderFindPath);
                             _coLeaderFindPath = null;
                             _waitFindPath = true;
                         }
 
+                        if (_coLeaderFindPath == null)
+                            _leader.CreatureState = ECreatureState.Idle;
+                            
                         _leader.CreatureMoveState = ECreatureMoveState.None;
-                        _leader.CreatureState = ECreatureState.Idle;
-                        // if (_replaceMode != EReplaceMode.FollowLeader)
-                        //     StartCoroutine(CoReadyToReplaceMembers());
                     }
                     break;
             }
         }
         #endregion
 
+#if UNITY_EDITOR
         private void OnDrawGizmos()
         {
             if (_leader == null)
@@ -459,6 +509,36 @@ namespace STELLAREST_F1
                 Gizmos.DrawSphere(worldCenterPos, radius: 0.5f);
             }
         }
+#endif
+
+        #region OBSOLETE TEMPORARY
+        private IEnumerator CoReadyToReplaceMembers()
+        {
+            while (true)
+            {
+                bool isAllStopped = true;
+                for (int i = 0; i < Managers.Object.Heroes.Count; ++i)
+                {
+                    Hero hero = Managers.Object.Heroes[i];
+                    if (hero == _leader)
+                        continue;
+
+                    if (hero.LerpToCellPosCompleted == false || hero.CreatureState == ECreatureState.Move)
+                    {
+                        isAllStopped = false;
+                        break;
+                    }
+                }
+
+                if (isAllStopped)
+                    break;
+
+                yield return null;
+            }
+
+            yield return null;
+        }
+        #endregion
     }
 }
 

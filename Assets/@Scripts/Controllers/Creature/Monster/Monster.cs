@@ -79,7 +79,7 @@ namespace STELLAREST_F1
         #region AI
         protected override void UpdateIdle()
         {
-            LookAtTarget();
+            // LookAtTarget();
 
             // ...Check CoolTime... //
             // if (Target.IsValid())
@@ -211,7 +211,7 @@ namespace STELLAREST_F1
         public override void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
         {
             base.OnDamaged(attacker, skillFromAttacker);
-            Debug.Log($"{gameObject.name} is damaged. ({Hp} / {MaxHp})");
+            // Debug.Log($"{gameObject.name} is damaged. ({Hp} / {MaxHp})");
         }
 
         public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)

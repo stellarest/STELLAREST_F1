@@ -45,12 +45,28 @@ namespace STELLAREST_F1
 
             if (Input.GetKeyDown("0"))
             {
+                // --- Check Current Cells Objects
                 Debug.Log("===== Cells Pair =====");
                 foreach (var pair in Managers.Map.Cells)
                 {
                     if (pair.Value != null)
                         Debug.Log($"({pair.Key}, {pair.Value}");
                 }
+
+                // --- Check Collision Tile Type
+                // int minX = Managers.Map.MinX;
+                // int maxX = Managers.Map.MaxX;
+                // int minY = Managers.Map.MinY;
+                // int maxY = Managers.Map.MaxY;
+                // for (int i = minX; i < maxX; ++i)
+                // {
+                //     for (int j = maxY - 1; j >= minY; --j)
+                //     {
+                //         Vector3Int cellPos = new Vector3Int(i, j);
+                //         Vector3 cellToWorld = Managers.Map.CellToWorld(cellPos);
+                //         Managers.Map.CheckOnTile(cellToWorld);
+                //     }
+                // }
             }
 
             if (Input.GetKeyDown("1"))

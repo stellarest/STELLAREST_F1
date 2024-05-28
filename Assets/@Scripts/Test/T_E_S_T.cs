@@ -8,9 +8,14 @@ using UnityEngine;
 /*
 [ TODO TODAY LIST ]
 // 24. 5. 27
->>> 히어로 리더가 움직이기 시작할 떄, 멤버가 이동할 수 있는 칸이 있을때만 Move 애니메이션? - 딱히 중요하진 않지만
+>>> 히어로 리더가 움직이기 시작할 떄, 멤버가 이동할 수 있는 칸이 있을때만 Move 애니메이션? - 딱히 중요하진 않지만 (완료)
+>>> Leader Monster Attack
 >>> Heroes Attack -> Monster (+ Monster Dead)
 >>> Monster Default Body Attack
+
+>>> Leader 기본 공격
+>>> Chicken Dead
+>>> Chicken Body Attack
 
 >>> Chicken vs Paladin, Archer 전투 테스트
 >>> Env 테스트

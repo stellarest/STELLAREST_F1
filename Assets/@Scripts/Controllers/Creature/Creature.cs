@@ -352,7 +352,7 @@ namespace STELLAREST_F1
             return false;
         }
 
-        protected bool CanAttackOrChase()
+        public bool CanAttackOrChase()
         {
             if (Target.IsValid() == false) // 방어
                 return false;
@@ -406,6 +406,8 @@ namespace STELLAREST_F1
 
         #region Misc
         protected bool IsValid(BaseObject bo) => bo.IsValid();
+        public bool IsSkillState
+            => CreatureState == ECreatureState.Skill_Attack || CreatureState == ECreatureState.Skill_A || CreatureState == ECreatureState.Skill_B; 
         #endregion Misc
 
         #region Map
@@ -420,7 +422,7 @@ namespace STELLAREST_F1
         public EFindPathResult FindPathAndMoveToCellPos(Vector3Int destPos, int maxDepth, EObjectType ignoreObjectType = EObjectType.None)
         {
             // 공격중 대각선 -> 상하좌우 이동 막기
-            // 만약 이게 주석처리 되어있다면 상하좌우로 먼저 이동하려고 할 것임.
+            // 만약 이게 주석처리 되어있다면 상하좌우로 먼저 이동하려고 할 것임. (HERO MEMBERS, MONSTERS, OTHER OBJECTS ONLY)
             if (CreatureState == ECreatureState.Skill_Attack)
                 return EFindPathResult.Fail_LerpCell;
 

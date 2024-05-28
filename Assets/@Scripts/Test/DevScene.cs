@@ -52,7 +52,7 @@ namespace STELLAREST_F1
                 // 부대 최대 3개. 5개까지 하고 싶지만 (35명), 캐릭터 만들 수 있는 컨텐츠 오링날듯..
                 // 리더 포함, 최대 영웅 30명. 영웅 비활성화 기능 넣기? 안되면 부대 2개로 넣어야지 뭐.
                 int memberCount = 0;
-                int memberMaxCount = 1;
+                int memberMaxCount = 6;
                 while (memberCount < memberMaxCount)
                 {
                     randPos = new Vector3Int(Random.Range(-4, 4), Random.Range(-4, 4), 0);

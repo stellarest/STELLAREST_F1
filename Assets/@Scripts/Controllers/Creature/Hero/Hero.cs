@@ -239,13 +239,6 @@ namespace STELLAREST_F1
                 List<Vector3Int> idlePathFind = Managers.Map.FindPath(startCellPos: CellPos, destCellPos: ChaseCellPos, maxDepth: 2);
                 if (idlePathFind.Count > 1)
                 {
-                    Debug.Log("====================");
-                    for (int i = 0; i < idlePathFind.Count; ++i)
-                    {
-                        Debug.Log($"IdlePath[{i}]: {idlePathFind[i]}");
-                    }
-
-                    // 대각선은 제대로 되는데 좌우가 살짝 어색한 이유는 바로 리더를 따라가서 그런 것 같음.
                     if (Managers.Map.CanMove(idlePathFind[1]))
                     {
                         CreatureState = ECreatureState.Move;
@@ -374,7 +367,7 @@ namespace STELLAREST_F1
 
             if (CreatureMoveState == ECreatureMoveState.ForceMove)
             {
-                // -- DEFENSE
+                // --- DEFENSE
                 CreatureMoveState = ECreatureMoveState.None;
             }
         }
