@@ -354,7 +354,7 @@ namespace STELLAREST_F1
 
         public bool CanAttackOrChase()
         {
-            if (Target.IsValid() == false) // 방어
+            if (Target.IsValid() == false) // --- DEFENSE
                 return false;
 
             if (IsInAttackRange())

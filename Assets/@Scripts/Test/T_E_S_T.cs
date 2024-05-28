@@ -7,6 +7,10 @@ using UnityEngine;
 
 /*
 [ TODO TODAY LIST ]
+// 24. 5. 28
+>>> Leader A* PathFind Passing Blocked Cell 수정(완료)
+>> Leader 전투 위치 잡기 수정필요(히어로 동료가 사냥하고 있을 때 비어있는 자리 위주로 찾아가기, 물론 Ignore는 여전히 가능하도록)
+
 // 24. 5. 27
 >>> 히어로 리더가 움직이기 시작할 떄, 멤버가 이동할 수 있는 칸이 있을때만 Move 애니메이션? - 딱히 중요하진 않지만 (완료)
 >>> Leader Monster Attack

@@ -333,6 +333,7 @@ namespace STELLAREST_F1
             if (IsLeader)
                 return;
 
+            // 와리가리해도 길 자체는 찾는 것 같은데
             EFindPathResult result = FindPathAndMoveToCellPos(destPos: ChaseCellPos,
                 maxDepth: ReadOnly.Numeric.HeroDefaultMoveDepth);
 

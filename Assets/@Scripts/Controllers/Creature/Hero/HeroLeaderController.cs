@@ -212,46 +212,44 @@ namespace STELLAREST_F1
         public Vector3 LeaderDestPos
              => _leader.Target.IsValid() ? _leader.Target.transform.position : _pointer.position;
 
-        public bool _waitFindPath = true;
-        private Vector3 TargetPos => _leader.transform.position + (_nMovementDir * _leader.MovementSpeed * Time.deltaTime);
+        private Vector3 JoystickPos => _leader.transform.position + (_nMovementDir * _leader.MovementSpeed * Time.deltaTime);
         private void Update()
         {
             if (_leader == null)
                 return;
 
-            transform.position = _leader.CenterPosition;
             // --- ForceExitState() 때문에 CreatureMoveState가 None으로 변할것임. 
             // --- 근데 이미 Target을 서칭 중이라 다시 CreatureMoveState가 TargetToEnemy로 변함.
-            // Cell과 Cell가운데 위치에 있으면 가만히 멍때리고 있음 (고장남, 중간에 있으면 같은 위치라서 _leaderPath = 0이라 멍때리고 멈춰있는 것임)
-            // _lockFindPath 부분 확인해볼것.
             if (_leader.CreatureMoveState != ECreatureMoveState.ForceMove)
             {
                 if (_leader.CreatureSkill.IsRemainingCoolTime((int)ESkillType.Skill_Attack))
                     return;
             }
 
-            if (_leader.Target.IsValid() == false && _waitFindPath && Managers.Map.CanMove(TargetPos, ignoreObjects: true))
+            if (_leader.Target.IsValid() == false && _lockFindPath == false && Managers.Map.CanMove(JoystickPos, ignoreObjects: true))
             {
                 Move();
             }
-            else if (_waitFindPath && _lockFindPath == false)
+            else if (_lockFindPath == false && _arriveToTarget == false)
             {
-                _waitFindPath = false;
+                _lockFindPath = true;
                 Vector3Int currentCellPos = Managers.Map.WorldToCell(_leader.transform.position);
-                Vector3Int DestCellPos = Managers.Map.WorldToCell(LeaderDestPos);
-                AddLeaderPath(currentCellPos, DestCellPos);
-                // --- AddLeaderPath에서 _leaderPath.Dequeue()로 인해 시작점에 그대로 있을때는 현재 서있는 위치에서 그대로 스킬 실행.
+                Vector3Int destCellPos = Managers.Map.WorldToCell(LeaderDestPos);
+                AddLeaderPath(currentCellPos, destCellPos);
+                // // --- AddLeaderPath에서 _leaderPath.Dequeue()로 인해 시작점에 그대로 있을때는 현재 서있는 위치에서 그대로 스킬 실행.
+                // ECreatureMoveState.TargetToEnemy 상태에서만 실행되므로 문제 없음.
                 if (_leaderPath.Count == 0 && _leader.CreatureMoveState == ECreatureMoveState.TargetToEnemy)
                 {
-                    _lockFindPath = true;
-                    _waitFindPath = true;
+                    // 근처에서 공격하고 있는 경우 No Find Path
                     return;
                 }
+
                 _coLeaderFindPath = StartCoroutine(CoLeaderFindPath());
             }
         }
 
-        [SerializeField] private bool _lockFindPath = false;
+        [SerializeField] private bool _lockFindPath = false; // Lock Find Path 용도 외에 건드리지 말것.
+        [SerializeField] private bool _arriveToTarget = false;
         private void LateUpdate()
         {
             if (_leader == null)
@@ -260,48 +258,49 @@ namespace STELLAREST_F1
                 return;
             }
 
-            _leader.UpdateCellPos();
-            if (_leader.CreatureState == ECreatureState.Move)
+            LateTickLeaderPos();
+            if (_leader.CreatureMoveState == ECreatureMoveState.TargetToEnemy) // 처음엔 이동이겠지만, 그 다음은 Idle이 된다.
             {
-                if (_leader.CreatureMoveState == ECreatureMoveState.TargetToEnemy)
+                if (_leader.CanAttackOrChase() && _arriveToTarget == false) // 2칸 이상일 때, 대각선, 상하좌우포함
                 {
-                    if (_leader.CanAttackOrChase())
+                    // ***** 최초 공격 시도 *****
+                    if (_leaderPath.Count >= 1) // 2 - 대각선, 1 - 상하좌우
                     {
-                        if (_leaderPath.Count > 0)
+                        Vector3 centeredPos = Managers.Map.CenteredCellToWorld(_leaderPath.Peek());
+                        if ((centeredPos - _leader.transform.position).sqrMagnitude < 0.01f)
                         {
-                            // 위치 확인,,
-                            Vector3 centeredPos = Managers.Map.CenteredCellToWorld(_leaderPath.Peek());
-                            // DO NOT SKI MOVE
-                            if ((_leader.transform.position - centeredPos).sqrMagnitude < 0.01f)
+                            if (IsSkillCoolTimeReady(ESkillType.Skill_Attack))
                             {
-                                // 최초 공격
-                                _lockFindPath = true; // 대각선에서 스킬 공격을 시작했으면 상하좌우로 이동하지 않기.
-                                _leader.CreatureSkill?.CurrentSkill.DoSkill();
+                                _arriveToTarget = true;
+                                _leader.CreatureSkill?.CurrentSkill.DoSkill(); // Skill -> Idle
+                                Debug.Log("First attack.");
                             }
                         }
                     }
-                    else if (_leader.Target.IsValid() == false) // --- DEFENSE
+                    // ***** 다만 Pointer Up을 하게 되면 _arriveToTarget가 false가 되는데, 이때 Target의 근처에 있다면 이쪽으로 오게됨 *****
+                    else if (IsSkillCoolTimeReady(ESkillType.Skill_Attack) && _leaderPath.Count == 0)
                     {
-                        _leader.CreatureState = ECreatureState.Idle;
-                        _lockFindPath = false;
+                        _leader.CreatureSkill?.CurrentSkill.DoSkill(); // Skill -> Idle
+                        Debug.Log("Is in close with target.");
                     }
                 }
-            }
-            // 최초 이후 공격
-            else if (_lockFindPath && _leader.CreatureMoveState == ECreatureMoveState.TargetToEnemy)
-            {
-                if (_leader.CreatureSkill.IsRemainingCoolTime((int)ESkillType.Skill_Attack) == false)
+                // ***** 최초 이후의 공격은 이쪽으로 실행하게 됨, 여전히 범위내에 있다면 쿨타임 기다렸다가 공격 *****
+                else if (_arriveToTarget)
                 {
-                    if (_leader.CanAttackOrChase())
+                    if (IsSkillCoolTimeReady(ESkillType.Skill_Attack))
                     {
-                        // 확인됨.
-                        Debug.Log($"<color=white>Called from this.</color>");
-                        _leader.CreatureSkill?.CurrentSkill.DoSkill();
+                        _leader.CreatureSkill?.CurrentSkill.DoSkill(); // Skill -> Idle
+                        Debug.Log("Just stop and attack.");
                     }
-                    else
-                        _lockFindPath = false;
+                }
+                else
+                {
+                    // ***** 여기는 필요 없음 !! *****
+                    // 어떠한 사유로 타겟과 멀어졌다면 _arriveToTarget flag를 false로 돌릴 준비.
+                    // --> PointerUp이 되면 무조건 false로 변경. 움직인 것이므로 의미상 _arriveToTarget이 아니게 됨.
                 }
             }
+
         }
 
         private Queue<Vector3Int> _leaderPath = new Queue<Vector3Int>();
@@ -309,7 +308,7 @@ namespace STELLAREST_F1
         {
             List<Vector3Int> path = Managers.Map.FindPath(startCellPos: startCellPos, 
                                                         destCellPos: targetCellPos, 
-                                                        maxDepth: ReadOnly.Numeric.HeroMaxMoveDepth,
+                                                        maxDepth: 2, // Max to 2 (이게 더 좋은듯)
                                                         ignoreObjectType: EObjectType.Hero);
             _leaderPath.Clear();
             for (int i = 0; i < path.Count; ++i)
@@ -321,16 +320,16 @@ namespace STELLAREST_F1
         private IEnumerator CoLeaderFindPath()
         {
             if (_leaderPath.Count > 0)
+            {
+                //_lockFindPath = true;
                 _leader.CreatureState = ECreatureState.Move;
+            }
 
             while (_leaderPath.Count != 0)
             {
-                _lockFindPath = true;
                 Vector3Int nextPos = _leaderPath.Peek();
                 Vector3 destPos = Managers.Map.CenteredCellToWorld(nextPos);
                 Vector3 dir = destPos - _leader.transform.position;
-
-                // --- OK, But Path Find 조금 어색해진듯..
                 if (_leader.Target.IsValid() == false)
                 {
                     if (dir.x < 0f)
@@ -346,11 +345,9 @@ namespace STELLAREST_F1
                     _leader.transform.position = destPos;
                     _leaderPath.Dequeue();
                     // Path Finding 도중에 중간에 움직일 수 있는 곳이 발견되었을 경우 중지
-                    if (Managers.Map.CanMove(TargetPos, ignoreObjects: true))
+                    if (Managers.Map.CanMove(JoystickPos, ignoreObjects: true))
                     {
-                        _waitFindPath = true;
                         _lockFindPath = false;
-                        Debug.Log("<color=cyan>BREAK PATH FINDING.</color>");
                         break;
                     }
                 }
@@ -363,9 +360,7 @@ namespace STELLAREST_F1
                 yield return null;
             }
 
-            _waitFindPath = true;
             _lockFindPath = false;
-
             if (_leader.CreatureMoveState == ECreatureMoveState.None)
                 _leader.CreatureState = ECreatureState.Idle;
         }
@@ -374,9 +369,8 @@ namespace STELLAREST_F1
         {
             if (_nMovementDir == Vector3.zero)
             {
-                // 임시 주석. 안해도 될 것 같아서.
-                // if (_leader.CreatureState == ECreatureState.Move)
-                //     _leader.CreatureState = ECreatureState.Idle;
+                if (_leader.CreatureState == ECreatureState.Move) // --- DEFENSE
+                    _leader.CreatureState = ECreatureState.Idle;
                 return;
             }
 
@@ -386,7 +380,7 @@ namespace STELLAREST_F1
                 Leader.LookAtDir = ELookAtDirection.Right;
 
             // 일반적인 이동은 무조건 부드럽게
-            _leader.transform.position = TargetPos;
+            _leader.transform.position = JoystickPos;
         }
 
         private void SetLeader(Hero newLeader)
@@ -429,6 +423,22 @@ namespace STELLAREST_F1
         public void EnablePointer(bool enable)
             => _pointer.gameObject.SetActive(enable);
 
+        private void LateTickLeaderPos()
+        {
+            _leader.UpdateCellPos();
+            transform.position = _leader.CenterPosition;
+        }
+
+        #region Leader State
+        private bool IsSkillCoolTimeReady(ESkillType skillType)
+        {
+            if (_leader.IsValid() == false) // --- DEFENSE
+                return false;
+
+            return _leader.CreatureSkill.IsRemainingCoolTime(skillType) == false;
+        }
+        #endregion
+
         #region Event
         private void OnMoveDirChanged(Vector2 nDir)
         {
@@ -446,11 +456,11 @@ namespace STELLAREST_F1
             {
                 case EJoystickState.Drag:
                     {
+                        // 이미 진행중인 PathFinding은 멈추지 않는다.
                         if (_coLeaderFindPath != null && _lockFindPath == false)
                         {
                             StopCoroutine(_coLeaderFindPath);
                             _coLeaderFindPath = null;
-                            _waitFindPath = true;
                         }
 
                         _leader.CreatureMoveState = ECreatureMoveState.ForceMove;
@@ -464,11 +474,11 @@ namespace STELLAREST_F1
                     {
                         _nMovementDir = Vector3.zero;
                         EnablePointer(false);
-                        if (_coLeaderFindPath != null && _lockFindPath == false)
+                        _arriveToTarget = false; // 이동했다가 마우스를 놓으면 어쨋든 false로 돌려 놓는다.
+                        if (_coLeaderFindPath != null && _lockFindPath == false) // 이미 진행중인 PathFinding은 멈추지 않는다.
                         {
                             StopCoroutine(_coLeaderFindPath);
                             _coLeaderFindPath = null;
-                            _waitFindPath = true;
                         }
 
                         if (_coLeaderFindPath == null)
