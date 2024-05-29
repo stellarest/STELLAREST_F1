@@ -148,18 +148,19 @@ namespace STELLAREST_F1
         [SerializeField] private bool _isFarFromLeader = false;
         private IEnumerator CoCheckFarFromLeader()
         {
-            float isFarDistSQR = ReadOnly.Numeric.HeroDefaultScanRange * ReadOnly.Numeric.HeroDefaultScanRange + 0.5f;
+            // Scan Range 보다 50%이상 멀어졌을 때
+            float farFromLeaderDistSQR = ReadOnly.Numeric.HeroDefaultScanRange * ReadOnly.Numeric.HeroDefaultScanRange + (ReadOnly.Numeric.HeroDefaultScanRange * ReadOnly.Numeric.HeroDefaultScanRange * 0.5f);
             float canWarpDistSQR = ReadOnly.Numeric.CheckFarFromHeroesLeaderDistanceForWarp * ReadOnly.Numeric.CheckFarFromHeroesLeaderDistanceForWarp;
             while (true)
             {
                 Hero leader = Managers.Object.HeroLeaderController.Leader;
-                if (leader.IsValid() == false)
+                if (leader.IsValid() == false) // --- DEFENSE
                 {
                     yield return null;
                     continue;
                 }
 
-                if ((leader.CellPos - CellPos).sqrMagnitude > isFarDistSQR)
+                if ((leader.CellPos - CellPos).sqrMagnitude > farFromLeaderDistSQR)
                     _isFarFromLeader = true;
                 else
                     _isFarFromLeader = false;
@@ -333,9 +334,14 @@ namespace STELLAREST_F1
             if (IsLeader)
                 return;
 
-            // 와리가리해도 길 자체는 찾는 것 같은데
             EFindPathResult result = FindPathAndMoveToCellPos(destPos: ChaseCellPos,
                 maxDepth: ReadOnly.Numeric.HeroDefaultMoveDepth);
+
+            if (result == EFindPathResult.Fail_ForceMovePingPongObject)
+            {
+                // 확인됨
+                return;
+            }
 
             if (CreatureMoveState == ECreatureMoveState.None)
             {
@@ -349,12 +355,33 @@ namespace STELLAREST_F1
             else if (CreatureMoveState == ECreatureMoveState.TargetToEnemy)
             {
                 _canHandleSkill = false;
+                
                 List<Vector3Int> path = Managers.Map.FindPath(CellPos, ChaseCellPos, 2);
                 if (path.Count > 0)
                 {
+                    // DO NOT SKI MOVEMENT
                     Vector3 centeredPos = Managers.Map.CenteredCellToWorld(path[path.Count - 1]);
                     if ((transform.position - centeredPos).sqrMagnitude < 0.01f)
                     {
+                        if (IsPingPongAndCantMoveToDest(CellPos))
+                        {
+                            if (_currentPingPongCantMoveCount >= 20 && IsForceMovingPingPongObject == false)
+                            {
+                                Debug.Log("<color=white>START FORCE LERP TO CELL COMPLETED !!</color>");
+                                CoStartForceMovePingPongObject(CellPos, ChaseCellPos, delegate ()
+                                {
+                                    _currentPingPongCantMoveCount = 0;
+                                    CoStopForceMovePingPongObject();
+                                    CreatureMoveState = ECreatureMoveState.None;
+                                    CreatureState = ECreatureState.Idle;
+                                });
+                            }
+                            else if (IsForceMovingPingPongObject == false)
+                            {
+                                Debug.LogWarning($"{gameObject.name} Ping Pong Count: {++_currentPingPongCantMoveCount}");
+                            }
+                        }
+
                         _canHandleSkill = true;
                     }
                 }

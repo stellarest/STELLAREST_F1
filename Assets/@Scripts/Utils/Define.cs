@@ -359,6 +359,7 @@ namespace STELLAREST_F1
             Fail_LerpCell,
             Fail_NoPath,
             Fail_MoveTo,
+            Fail_ForceMovePingPongObject,
             Success
         }
 
@@ -380,6 +381,7 @@ namespace STELLAREST_F1
         {
             EngageEnemy,
             FollowLeader
+            // + 나중에 히어로 체력이 떨어졌을 때 무조건 리더 근처에 짱박혀 있는 모드 추가해야함
         }
 
         // 이거 한번 더 누르면 뱅글 뱅글 돌면서 재배치하는 기능 있으면 좋을 것 같음.

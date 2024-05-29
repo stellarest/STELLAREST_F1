@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Unity.VisualScripting;
 using UnityEngine;
 using static STELLAREST_F1.Define;
 
@@ -76,6 +74,7 @@ namespace STELLAREST_F1
             }
         }
 
+        // DEPRECIATE
         [SerializeField] protected EFindPathResult _findPathResult = EFindPathResult.None;
         public override bool Init()
         {
@@ -421,14 +420,22 @@ namespace STELLAREST_F1
 
         public EFindPathResult FindPathAndMoveToCellPos(Vector3Int destPos, int maxDepth, EObjectType ignoreObjectType = EObjectType.None)
         {
-            // 공격중 대각선 -> 상하좌우 이동 막기
-            // 만약 이게 주석처리 되어있다면 상하좌우로 먼저 이동하려고 할 것임. (HERO MEMBERS, MONSTERS, OTHER OBJECTS ONLY)
+            if (IsForceMovingPingPongObject)
+            {
+                return EFindPathResult.Fail_ForceMovePingPongObject; // TEMP
+            }
+
+            // ***** 이미 스킬(공격)중이면 길찾기 금지 *****
             if (CreatureState == ECreatureState.Skill_Attack)
+            {
                 return EFindPathResult.Fail_LerpCell;
+            }
 
             // 움직임 진행중
             if (LerpToCellPosCompleted == false)
+            {
                 return EFindPathResult.Fail_LerpCell;
+            }
 
             // A*
             List<Vector3Int> path = Managers.Map.FindPath(startCellPos: CellPos, destPos, maxDepth, ignoreObjectType);
@@ -475,6 +482,12 @@ namespace STELLAREST_F1
         {
             while (true)
             {
+                if (IsForceMovingPingPongObject)
+                {
+                    yield return null;
+                    continue;
+                }
+
                 Hero hero = this as Hero;
                 if (hero.IsValid())
                 {
@@ -504,6 +517,7 @@ namespace STELLAREST_F1
             float bestDistSQR = float.MaxValue;
             float scanRangeSQR = scanRange * scanRange;
 
+            // ***** Hero Leader Scan Range *****
             Hero hero = this as Hero;
             if (hero.IsValid() && hero.IsLeader)
                 scanRangeSQR *= 0.5f;
@@ -596,6 +610,120 @@ namespace STELLAREST_F1
         }
 
         #endregion Map
+        /*
+            1 - 큐에 A 추가: [A]
+            2 - 큐에 B 추가: [A, B]
+            3 - 큐에 A 추가: [A, B, A]
+            4 - 큐에 B 추가: [A, B, A, B]
+            5 - 1 (검사)
+            5 - 2 Dequeue: [B, A, B]
+            5 - 3 큐에 A 추가: [B, A, B, A]
+            6 - 1 (검사)
+            6 - 2 Dequeue: [A, B, A]
+            6 - 3 큐에 B 추가: [A, B, A, B]
+            7 - 1 (검사)
+            ...
+
+            이게 정상이긴한데 위치가 정확하게 입력되지 않음.
+            그래서 큐의 4개의 요소 안에 A가 2개, B가 2개가 있는지만 확인.
+        */
+        // 나중에 몬스터에서도 필요하면 Creature로 옮겨주면 됨
+        private Queue<Vector3Int> _cantMoveCheckQueue = new Queue<Vector3Int>();
+        [SerializeField] protected int _currentPingPongCantMoveCount = 0;
+        private int maxCantMoveCheckCount = 4; // 2칸에 대해 왔다 갔다만 조사하는 것이라 4로 설정
+        protected bool IsPingPongAndCantMoveToDest(Vector3Int cellPos)
+        {
+            if (_cantMoveCheckQueue.Count >= maxCantMoveCheckCount)
+                _cantMoveCheckQueue.Dequeue();
+
+            _cantMoveCheckQueue.Enqueue(cellPos);
+            if (_cantMoveCheckQueue.Count == maxCantMoveCheckCount)
+            {
+                Vector3Int[] cellArr = _cantMoveCheckQueue.ToArray();
+                HashSet<Vector3Int> uniqueCellPos = new HashSet<Vector3Int>(cellArr);
+                if (uniqueCellPos.Count == 2)
+                {
+                    Dictionary<Vector3Int, int> checkCellPosCountDict = new Dictionary<Vector3Int, int>();
+                    foreach (var pos in _cantMoveCheckQueue)
+                    {
+                        if (checkCellPosCountDict.ContainsKey(pos))
+                            checkCellPosCountDict[pos]++;
+                        else
+                            checkCellPosCountDict[pos] = 1;
+                    }
+
+                    foreach (var count in checkCellPosCountDict.Values)
+                    {
+                        if (count != 2)
+                            return false;
+                    }
+
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        // ***** Force Move Ping Pong Object Coroutine *****
+        private Coroutine _coForceMovePingPongObject = null;
+        protected bool IsForceMovingPingPongObject => _coForceMovePingPongObject != null;
+        private IEnumerator CoForceMovePingPongObject(Vector3Int currentCellPos, Vector3Int destCellPos, Action endCallback = null)
+        {
+            List<Vector3Int> path = Managers.Map.FindPath(currentCellPos, destCellPos);
+
+            Queue<Vector3Int> pathQueue = new Queue<Vector3Int>();
+            for (int i = 0; i < path.Count; ++i)
+                pathQueue.Enqueue(path[i]);
+            pathQueue.Dequeue();
+
+            Vector3Int nextPos = pathQueue.Dequeue();
+            Vector3 currentWorldPos = Managers.Map.CellToWorld(currentCellPos);
+            while (pathQueue.Count != 0)
+            {
+                Vector3 destPos = Managers.Map.CenteredCellToWorld(nextPos);
+                Vector3 dir = destPos - transform.position;
+                if (dir.x < 0f)
+                    LookAtDir = ELookAtDirection.Left;
+                else if (dir.x > 0f)
+                    LookAtDir = ELookAtDirection.Right;
+                
+                if (dir.sqrMagnitude < 0.01f)
+                {
+                    transform.position = destPos;
+                    currentWorldPos = transform.position;
+                    nextPos = pathQueue.Dequeue();
+                }
+                else
+                {
+                    float moveDist = Mathf.Min(dir.magnitude, MovementSpeed * Time.deltaTime);
+                    transform.position += dir.normalized * moveDist; // Movement per frame.
+                }
+
+                yield return null;
+            }
+
+            endCallback?.Invoke();
+            UpdateCellPos();
+        }
+
+        protected void CoStartForceMovePingPongObject(Vector3Int currentCellPos, Vector3Int destCellPos, Action endCallback = null)
+        {
+            if (_coForceMovePingPongObject != null)
+                return;
+
+            _coForceMovePingPongObject = StartCoroutine(CoForceMovePingPongObject(currentCellPos, destCellPos, endCallback));
+        }
+
+        protected void CoStopForceMovePingPongObject()
+        {
+            if (_coForceMovePingPongObject != null)
+            {
+                StopCoroutine(_coForceMovePingPongObject);
+                _coForceMovePingPongObject = null;
+            }
+        }
+
         #endregion Helper
     }
 }

@@ -6,6 +6,7 @@ using Unity.VisualScripting;
 using Unity.VisualScripting.ReorderableList.Element_Adder_Menu;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.Rendering;
 using static STELLAREST_F1.Define;
 
@@ -287,6 +288,7 @@ namespace STELLAREST_F1
         #region Map
         [field: SerializeField] public bool LerpToCellPosCompleted { get; protected set; } = false;
 
+
         // [SerializeField] private Vector3Int _cellPos = Vector3Int.zero;
         // public Vector3Int CellPos // ### CORE
         // {
@@ -316,7 +318,7 @@ namespace STELLAREST_F1
         {
             CellPos = cellPos;
 
-            if (stopLerpToCell == false)
+            if (stopLerpToCell == false) // 이녀석 때문임 !!!
                 LerpToCellPosCompleted = false;
 
             if (forceMove)
@@ -344,7 +346,7 @@ namespace STELLAREST_F1
             if (dir.sqrMagnitude < 0.001f)
             {
                 transform.position = destPos;
-                LerpToCellPosCompleted = true; 
+                LerpToCellPosCompleted = true;
                 return;
             }
 
