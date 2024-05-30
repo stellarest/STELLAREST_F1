@@ -65,7 +65,7 @@ namespace STELLAREST_F1
             LookAtDir = ELookAtDirection.Left;
             CreatureState = ECreatureState.Idle;
 
-            CoStartSearchTarget<Creature>(scanRange: ReadOnly.Numeric.MonsterDefaultScanRange,
+            StartCoSearchTarget<Creature>(scanRange: ReadOnly.Numeric.MonsterDefaultScanRange,
                                          firstTargets: Managers.Object.Heroes,
                                          secondTargets: null,
                                          func: IsValid);
@@ -79,18 +79,18 @@ namespace STELLAREST_F1
         #region AI
         protected override void UpdateIdle()
         {
-            // LookAtTarget();
+            LookAtValidTarget();
 
             // ...Check CoolTime... //
-            // if (Target.IsValid())
-            // {
-            //     CreatureMoveState = ECreatureMoveState.TargetToEnemy;
-            //     CreatureState = ECreatureState.Move;
-            // }
-            // else
-            // {
-            //       // ... Random Patrol ...
-            // }
+            if (Target.IsValid())
+            {
+                CreatureMoveState = ECreatureMoveState.TargetToEnemy;
+                CreatureState = ECreatureState.Move;
+            }
+            else
+            {
+                  // ... Random Patrol ...
+            }
 
 
             // 나중에 Hero 뿐만이 아니라, Pet등이 될 수도 있으므로 Creature로 받기. 뒤에 인자는 일단 임의로  Managers.Object.Heroes.
@@ -211,7 +211,7 @@ namespace STELLAREST_F1
         public override void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
         {
             base.OnDamaged(attacker, skillFromAttacker);
-            // Debug.Log($"{gameObject.name} is damaged. ({Hp} / {MaxHp})");
+            Debug.Log($"{gameObject.name} is damaged. ({Hp} / {MaxHp})");
         }
 
         public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)

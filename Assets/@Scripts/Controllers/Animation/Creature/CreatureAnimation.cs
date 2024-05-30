@@ -44,10 +44,17 @@ namespace STELLAREST_F1
             }
         }
 
-        public void ForceExitState()
+        public void AnimationEnd(ECreatureState endAnimationState)
         {
-            _creatureOwner.CreatureMoveState = ECreatureMoveState.None;
-            _creatureOwner.CreatureState = ECreatureState.Idle;
+            switch (endAnimationState)
+            {
+                case ECreatureState.Skill_Attack:
+                    {
+                        _creatureOwner.CreatureMoveState = ECreatureMoveState.TargetToEnemy;
+                        _creatureOwner.CreatureState = ECreatureState.Idle;
+                    }
+                    break;
+            }
         }
     }
 }

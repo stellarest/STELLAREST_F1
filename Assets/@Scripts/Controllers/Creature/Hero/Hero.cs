@@ -1,17 +1,15 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using STELLAREST_F1.Data;
 using UnityEngine;
-using UnityEngine.SocialPlatforms.Impl;
 using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
     public class Hero : Creature
     {
-        public Data.HeroData HeroData { get; private set; } = null;
+        public HeroData HeroData { get; private set; } = null;
 
         private HeroBody _heroBody = null;
         public HeroBody HeroBody
@@ -27,27 +25,6 @@ namespace STELLAREST_F1
 
         public Transform WeaponLSocket { get; private set; } = null;
         public Transform WeaponRFireSocket { get; private set; } = null;
-        public override ECreatureMoveState CreatureMoveState
-        {
-            get => base.CreatureMoveState;
-            set
-            {
-                base.CreatureMoveState = value;
-                switch (value)
-                {
-                    case ECreatureMoveState.TargetToEnemy:
-                    case ECreatureMoveState.CollectEnv:
-                        NeedArrange = true;
-                        break;
-
-                    case ECreatureMoveState.ForceMove:
-                        NeedArrange = true;
-                        CancelWait();
-                        Target = null;
-                        break;
-                }
-            }
-        }
 
         public override bool CollectEnv
         {
@@ -66,7 +43,6 @@ namespace STELLAREST_F1
         }
 
         public HeroAnimation HeroAnim { get; private set; } = null;
-        [field: SerializeField] public bool NeedArrange { get; set; } = false;
 
         [SerializeField] private bool _isLeader = false;
         public bool IsLeader
@@ -135,8 +111,11 @@ namespace STELLAREST_F1
             base.EnterInGame(dataID);
             StartCoroutine(CoCheckFarFromLeader());
 
-            // --- First Targets: Monsters, Second Targets: Envs
-            CoStartSearchTarget<BaseObject>(scanRange: ReadOnly.Numeric.HeroDefaultScanRange,
+            /*
+                --- NOTE
+                - First Targets: Monsters, Second Targets: Envs
+            */
+            StartCoSearchTarget<BaseObject>(scanRange: ReadOnly.Numeric.HeroDefaultScanRange,
                             firstTargets: Managers.Object.Monsters,
                             secondTargets: Managers.Object.Envs,
                             func: IsValid);
@@ -215,13 +194,15 @@ namespace STELLAREST_F1
             }
         }
 
-        #region ##### AI #####
+        #region AI
         protected override void UpdateIdle()
         {
-            if (CreatureSkill.IsRemainingCoolTime((int)ESkillType.Skill_Attack))
+            if (IsLeader)
                 return;
 
-            if (IsLeader)
+            LookAtValidTarget();
+
+            if (CreatureSkill.IsRemainingCoolTime((int)ESkillType.Skill_Attack))
                 return;
 
             if (_isFarFromLeader)
@@ -234,6 +215,7 @@ namespace STELLAREST_F1
             if (CreatureMoveState == ECreatureMoveState.ForceMove)
             {
                 Hero leader = Managers.Object.HeroLeaderController.Leader;
+                // --- 리더가 이동한다고해서 바로 움직이지 않는다.
                 if ((transform.position - leader.transform.position).sqrMagnitude < _waitMovementDistanceSQRFromLeader)
                     return;
 
@@ -249,83 +231,18 @@ namespace STELLAREST_F1
                 return;
             }
 
-            if (Target.IsValid())
-            {
-                LookAtTarget();
+            // 타겟이 존재하거나, 타겟이 죽었을 경우, Move 상태로 전환
+            if (CreatureMoveState == ECreatureMoveState.TargetToEnemy)
                 CreatureState = ECreatureState.Move;
 
-                // if (Target.ObjectType == EObjectType.Monster)
-                // {
-                //     CreatureMoveState = ECreatureMoveState.TargetToEnemy;
-                //     return;
-                // }
-
-                // if (Target.ObjectType == EObjectType.Env)
-                // {
-                //     CreatureMoveState = ECreatureMoveState.CollectEnv; // 필요없을지도?
-                //     CreatureState = ECreatureState.Move;
-                //     return;
-                // }
-            }
-
-            #region PREV IDLE
             // if (Target.IsValid())
             // {
-            //     LookAtTarget();
-
-            //     // ... CHECK SKILL COOL TIME ...
-            //     if (CreatureSkill.IsRemainingCoolTime((int)ESkillType.Skill_Attack))
-            //         return;
-
-            //     // ... 무조건 몬스터부터 ...
-            //     if (Target.ObjectType == EObjectType.Monster)
-            //     {
-            //         CreatureMoveState = ECreatureMoveState.TargetToEnemy;
-            //         CreatureState = ECreatureState.Move;
-            //         return;
-            //     }
-
-            //     // ... ENV TARGET ...
-            //     if (Target.ObjectType == EObjectType.Env)
-            //     {
-            //         CreatureMoveState = ECreatureMoveState.CollectEnv;
-            //         CreatureState = ECreatureState.Move;
-            //         return;
-            //     }
             // }
-
-            // if (Target.IsValid())
-            //     LookAtTarget(Target);
-
-            // // 조금 극단적인 방법. 쳐다보면서 가만히 짱박혀있어라.
-            // if (CreatureSkill.IsRemainingCoolTime((int)ESkillType.Skill_Attack))
-            //     return;
-
-            // Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_ScanRange, Managers.Object.Monsters, func: IsValid) as Creature;
-            // if (creature.IsValid())
+            // // 타겟이 죽었을 경우
+            // else if (Target.IsValid() == false && CreatureMoveState == ECreatureMoveState.TargetToEnemy)
             // {
-            //     Target = creature;
-            //     CreatureState = ECreatureState.Move;
-            //     CreatureMoveState = ECreatureMoveState.TargetToEnemy;
-            //     return;
+            //     Debug.Log("OH, HEY");
             // }
-
-            // Env env = FindClosestInRange(ReadOnly.Numeric.Temp_ScanRange, Managers.Object.Envs, func: IsValid) as Env;
-            // if (env.IsValid())
-            // {
-            //     Target = env;
-            //     CreatureState = ECreatureState.Move;
-            //     CreatureMoveState = ECreatureMoveState.CollectEnv;
-            //     return;
-            // }
-
-            // if (NeedArrange)
-            // {
-            //     CreatureState = ECreatureState.Move;
-            //     CreatureMoveState = ECreatureMoveState.ReturnToBase;
-            //     return;
-            // }
-            #endregion
         }
 
         private bool _canHandleSkill = false;
@@ -359,15 +276,26 @@ namespace STELLAREST_F1
                 List<Vector3Int> path = Managers.Map.FindPath(CellPos, ChaseCellPos, 2);
                 if (path.Count > 0)
                 {
-                    // DO NOT SKI MOVEMENT
+                    /*
+                        --- NOTE
+                        - DO NOT SKI MOVEMENT
+                    */
                     Vector3 centeredPos = Managers.Map.CenteredCellToWorld(path[path.Count - 1]);
                     if ((transform.position - centeredPos).sqrMagnitude < 0.01f)
                     {
+                        // 타겟을 잡고 돌아오는 길이었다면..
+                        if (Target.IsValid() == false && CreatureMoveState == ECreatureMoveState.TargetToEnemy)
+                        {
+                            Debug.Log($"{gameObject.name}: OH HEY");
+                            CreatureMoveState = ECreatureMoveState.None;
+                            CreatureState = ECreatureState.Idle;
+                            return;
+                        }
+
                         if (IsPingPongAndCantMoveToDest(CellPos))
                         {
                             if (_currentPingPongCantMoveCount >= 20 && IsForceMovingPingPongObject == false)
                             {
-                                Debug.Log("<color=white>START FORCE LERP TO CELL COMPLETED !!</color>");
                                 CoStartForceMovePingPongObject(CellPos, ChaseCellPos, delegate ()
                                 {
                                     _currentPingPongCantMoveCount = 0;
@@ -378,7 +306,7 @@ namespace STELLAREST_F1
                             }
                             else if (IsForceMovingPingPongObject == false)
                             {
-                                Debug.LogWarning($"{gameObject.name} Ping Pong Count: {++_currentPingPongCantMoveCount}");
+                                Debug.Log($"<color=white>{gameObject.name}, PingPong Count: {++_currentPingPongCantMoveCount}</color>");
                             }
                         }
 
@@ -402,7 +330,6 @@ namespace STELLAREST_F1
 
         protected override void UpdateCollectEnv()
         {
-            // SetRigidBodyVelocity(Vector2.zero); - DELETED
             if (CreatureMoveState == ECreatureMoveState.ForceMove || Target.IsValid() == false)
             {
                 CollectEnv = false;
@@ -728,31 +655,79 @@ namespace STELLAREST_F1
             Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
         }
         #endregion
-
-        // TEST
-        // private void OnLerpToCellPosEnd()
-        // {
-        //     if (CreatureState == ECreatureState.Move)
-        //     {
-        //         if (CreatureMoveState == ECreatureMoveState.Replace)
-        //         {
-        //             // 이걸로 체크해서 막힌 곳에 갔을 때 Idle 상태로 전환못함.
-        //             // CellPos == _replaceDestPos -> (CellPos - _replaceDestPos).magnitude <= 1f : 1칸 이하일 때
-        //             if (CellPos == _replaceDestPos)
-        //             {
-        //                 CreatureMoveState = ECreatureMoveState.None;
-        //                 CreatureState = ECreatureState.Idle;
-        //                 return;
-        //             }
-        //         }
-        //         // 계속 ForceMove State일 때는... 중간에 Idle로 만들어주면 안된다!!
-        //         else if (CreatureMoveState != ECreatureMoveState.ForceMove)
-        //         {
-        //             CreatureMoveState = ECreatureMoveState.None;
-        //             CreatureState = ECreatureState.Idle;
-        //             return;
-        //         }
-        //     }
-        // }
     }
 }
+
+            // if (Target.IsValid())
+            // {
+
+            //     // if (Target.ObjectType == EObjectType.Monster)
+            //     // {
+            //     //     CreatureMoveState = ECreatureMoveState.TargetToEnemy;
+            //     //     return;
+            //     // }
+
+            //     // if (Target.ObjectType == EObjectType.Env)
+            //     // {
+            //     //     CreatureMoveState = ECreatureMoveState.CollectEnv; // 필요없을지도?
+            //     //     CreatureState = ECreatureState.Move;
+            //     //     return;
+            //     // }
+            // }      
+
+            // if (Target.IsValid())
+            // {
+            //     LookAtTarget();
+
+            //     // ... CHECK SKILL COOL TIME ...
+            //     if (CreatureSkill.IsRemainingCoolTime((int)ESkillType.Skill_Attack))
+            //         return;
+
+            //     // ... 무조건 몬스터부터 ...
+            //     if (Target.ObjectType == EObjectType.Monster)
+            //     {
+            //         CreatureMoveState = ECreatureMoveState.TargetToEnemy;
+            //         CreatureState = ECreatureState.Move;
+            //         return;
+            //     }
+
+            //     // ... ENV TARGET ...
+            //     if (Target.ObjectType == EObjectType.Env)
+            //     {
+            //         CreatureMoveState = ECreatureMoveState.CollectEnv;
+            //         CreatureState = ECreatureState.Move;
+            //         return;
+            //     }
+            // }
+
+            // if (Target.IsValid())
+            //     LookAtTarget(Target);
+
+            // // 조금 극단적인 방법. 쳐다보면서 가만히 짱박혀있어라.
+            // if (CreatureSkill.IsRemainingCoolTime((int)ESkillType.Skill_Attack))
+            //     return;
+
+            // Creature creature = FindClosestInRange(ReadOnly.Numeric.Temp_ScanRange, Managers.Object.Monsters, func: IsValid) as Creature;
+            // if (creature.IsValid())
+            // {
+            //     Target = creature;
+            //     CreatureState = ECreatureState.Move;
+            //     CreatureMoveState = ECreatureMoveState.TargetToEnemy;
+            //     return;
+            // }
+
+            // Env env = FindClosestInRange(ReadOnly.Numeric.Temp_ScanRange, Managers.Object.Envs, func: IsValid) as Env;
+            // if (env.IsValid())
+            // {
+            //     Target = env;
+            //     CreatureState = ECreatureState.Move;
+            //     CreatureMoveState = ECreatureMoveState.CollectEnv;
+            //     return;
+            // }
+
+            // if (NeedArrange)
+            // {
+            //     CreatureState = ECreatureState.Move;
+            //     CreatureMoveState = ECreatureMoveState.ReturnToBase;
+            //     return;
+            // }

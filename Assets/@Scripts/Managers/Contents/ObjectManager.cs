@@ -247,10 +247,12 @@ namespace STELLAREST_F1
             {
                 case EObjectType.Hero:
                     Heroes.Remove(obj as Hero);
+                    Managers.Map.RemoveObject(obj as Hero);
                     break;
 
                 case EObjectType.Monster:
                     Monsters.Remove(obj as Monster);
+                    Managers.Map.RemoveObject(obj as Monster);
                     break;
 
                 case EObjectType.Env:

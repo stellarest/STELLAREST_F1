@@ -127,6 +127,13 @@ namespace STELLAREST_F1
                         // TEST: 9,5
                         // monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, tile.DataID);
                         // MoveTo(monster, new Vector3Int(9, 5, 0), stopLerpToCell: true, forceMove: true);
+
+                        Vector3Int monPos2 = monster.CellPos;
+                        monPos2 += new Vector3Int(3, 3, 0);
+
+                        // TEST2
+                        monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, tile.DataID);
+                        MoveTo(monster, monPos2, stopLerpToCell: true, forceMove: true);
                     }
                 }
             }

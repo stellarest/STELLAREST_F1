@@ -7,8 +7,15 @@ using UnityEngine;
 
 /*
 [ TODO TODAY LIST ]
+// 24. 5. 30
+>>> 닭 잡기
+>>> 닭 바디 어택
+>>> 플레이어 데드
+>>> 리더 데드
+>>> 전투 테스트 완료
+
 // 24. 5. 29
->>> 와리가리거리는거 함 잡아보기
+>>> 와리가리거리는거 함 잡아보기 (완료)
 
 // 24. 5. 28
 >>> Leader A* PathFind Passing Blocked Cell 수정(완료)

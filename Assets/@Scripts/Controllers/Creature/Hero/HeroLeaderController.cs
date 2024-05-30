@@ -9,10 +9,6 @@ using System.Linq;
 
 namespace STELLAREST_F1
 {
-    // --- [MEMO]
-    // -- 리더는 공격 도중(쿨타임시) 조작 불가능.
-    // -- 옵션 플래그 하나 줘서, Scan Range에 들어오면 자동으로 추적하느냐, 안하느냐 넣을것.
-    // - 리더 - 추적 or No. 멤버는 무조건 추적해야지.
     public class HeroLeaderController : InitBase
     {
         private Transform _pointerPivot = null;
@@ -338,7 +334,7 @@ namespace STELLAREST_F1
                         _leader.LookAtDir = ELookAtDirection.Right;
                 }
                 else
-                    _leader.LookAtTarget();
+                    _leader.LookAtValidTarget();
 
                 if (dir.sqrMagnitude < 0.001f)
                 {

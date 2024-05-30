@@ -198,7 +198,7 @@ namespace STELLAREST_F1
             MovementSpeed = statData.MovementSpeed;
         }
 
-        public void LookAtTarget() // TEMP
+        public void LookAtValidTarget() // TEMP
         {
             if (Target.IsValid() == false) // 방어
                 return;
@@ -223,7 +223,7 @@ namespace STELLAREST_F1
             StartCoroutine(CoDeadFadeOut(() => Managers.Object.Despawn(this, DataTemplateID)));
         }
 
-        protected virtual IEnumerator CoDeadFadeOut(System.Action callback = null)
+        protected virtual IEnumerator CoDeadFadeOut(System.Action endFadeOutCallback = null)
         {
             if (this.isActiveAndEnabled == false)
                 yield break;
@@ -247,7 +247,7 @@ namespace STELLAREST_F1
             }
 
             Debug.Log($"{gameObject.name} is dead.");
-            callback?.Invoke();
+            endFadeOutCallback?.Invoke();
         }
         #endregion
 

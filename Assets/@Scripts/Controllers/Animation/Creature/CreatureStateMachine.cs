@@ -64,7 +64,7 @@ namespace STELLAREST_F1
                 if (currentPercentage >= 0.90f)
                 {
                     // 강제로 빠져나오기
-                    _creatureAnim.ForceExitState();
+                    _creatureAnim.AnimationEnd(ECreatureState.Skill_Attack);
                     return;
                 }
             }

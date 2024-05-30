@@ -325,7 +325,6 @@ namespace STELLAREST_F1
 
             float finalDamage = creature.Atk;
             Hp = UnityEngine.Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
-
             if (Hp <= 0f)
             {
                 Hp = 0f;
@@ -336,9 +335,10 @@ namespace STELLAREST_F1
         public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
         {
             CreatureState = ECreatureState.Dead;
-            CoStopSearchTarget();
+            StopCoSearchTarget(); // 크리처에서 돌고있는 모든 코루틴을 Dictionary로 관리하면 어떨까.
             base.OnDead(attacker, skillFromAttacker);
         }
+
         #endregion Battle
         private bool IsInAttackRange()
         {
@@ -591,7 +591,7 @@ namespace STELLAREST_F1
             }
         }
 
-        protected void CoStartSearchTarget<T>(float scanRange, IEnumerable<T> firstTargets, IEnumerable<T> secondTargets = null, Func<T, bool> func = null) where T : BaseObject
+        protected void StartCoSearchTarget<T>(float scanRange, IEnumerable<T> firstTargets, IEnumerable<T> secondTargets = null, Func<T, bool> func = null) where T : BaseObject
         {
             if (_coSearchTarget != null)
                 return;
@@ -599,7 +599,7 @@ namespace STELLAREST_F1
             _coSearchTarget = StartCoroutine(CoSearchTarget<T>(scanRange, firstTargets: firstTargets, secondTargets: secondTargets, func: func));
         }
 
-        protected void CoStopSearchTarget()
+        protected void StopCoSearchTarget()
         {
             Target = null;
             if (_coSearchTarget != null)
@@ -626,8 +626,8 @@ namespace STELLAREST_F1
 
             이게 정상이긴한데 위치가 정확하게 입력되지 않음.
             그래서 큐의 4개의 요소 안에 A가 2개, B가 2개가 있는지만 확인.
+            나중에 몬스터에서도 필요하면 Creature로 옮겨주면 됨
         */
-        // 나중에 몬스터에서도 필요하면 Creature로 옮겨주면 됨
         private Queue<Vector3Int> _cantMoveCheckQueue = new Queue<Vector3Int>();
         [SerializeField] protected int _currentPingPongCantMoveCount = 0;
         private int maxCantMoveCheckCount = 4; // 2칸에 대해 왔다 갔다만 조사하는 것이라 4로 설정
@@ -682,7 +682,7 @@ namespace STELLAREST_F1
             while (pathQueue.Count != 0)
             {
                 Vector3 destPos = Managers.Map.CenteredCellToWorld(nextPos);
-                Vector3 dir = destPos - transform.position;
+                Vector3 dir = destPos - transform.position; // 왜 이걸로하면 안되지
                 if (dir.x < 0f)
                     LookAtDir = ELookAtDirection.Left;
                 else if (dir.x > 0f)

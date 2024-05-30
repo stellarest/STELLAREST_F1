@@ -36,7 +36,7 @@ namespace STELLAREST_F1
         { 
             if (Owner.Target.IsValid())
             {
-                Owner.LookAtTarget();
+                Owner.LookAtValidTarget();
             }
         }
 
@@ -53,14 +53,15 @@ namespace STELLAREST_F1
             if (Owner.IsValid() == false)
                 return;
 
-            // *****
-            // 애니메이션 트렌지션을 통해 빠져나오므로, 여기서 Idle로 세팅해주어야한다.
-            // (여전히 CreatuteState는 Skill_Attack이기 떄문이다.)
-            // 그러나 애니메이션 트렌지션이 씹힐때도 있는 것 같다. 그래서 UpdateSkillState 상태에서도 예외를 주어야할듯.
-            // --- DEFENSE (CreatureAnimation::ForceExitState)
-            if (Owner.CreatureState != ECreatureState.Idle)
+            /*
+                - 공격 애니메이션은 Idle Transition으로 연결되어 있어서 크리처 상태 업데이트도 해줘야함.
+                - 그러나 CreatureStateMachine에서 ForceExitState로 인해 이미 None, Idle로 처리하는 것으로 변경.
+                - 그래서, 만약 알 수 없는 이유로 인해 ForceExitState를 호출하지 못했을 때 여기서 수행.
+                - DEFENSE CODE
+            */
+            if (Owner.CreatureState != ECreatureState.Idle) // --- DEFENSE
             {
-                Owner.CreatureMoveState = ECreatureMoveState.None;
+                Owner.CreatureMoveState = ECreatureMoveState.TargetToEnemy;
                 Owner.CreatureState = ECreatureState.Idle;
             }
         }
