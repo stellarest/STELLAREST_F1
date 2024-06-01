@@ -110,7 +110,7 @@ namespace STELLAREST_F1
             TargetToEnemy,
             CollectEnv, // 이것도 필요 없을 것 같긴한데
             //ReturnToBase,
-            Patrol,
+            Patrol, // 필요 없을듯
             ForceMove,
             ForcePath,
 
@@ -654,6 +654,10 @@ namespace STELLAREST_F1
                 public static readonly float MaxSecPatrolPingPong = 2.0F;
 
                 public static readonly float WaitHeroesForceStopWarpSeconds = 30.0F;
+
+                // -- [ HERO LEADER CONTROLLER ]
+                public static readonly float DesiredCanChangeLeaderTime = 3F;
+
                 // -- [ MONSTER ]
 
                 // -- [ MISC ]
@@ -668,6 +672,7 @@ namespace STELLAREST_F1
                 public static readonly float MonsterSize_Large = 1.2F;
 
                 public static readonly float HeroDefaultScanRange = 6.0F; // 일단 6칸
+                public static readonly float RangedHeroScanRange = 12.0F; // TEMP
                 public static readonly float MonsterDefaultScanRange = 4.0F; // 상하좌우 한칸 기준, 대각선X
                 public static readonly float Temp_StopDistance = 1.25F;
                 

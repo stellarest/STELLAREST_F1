@@ -568,6 +568,41 @@ namespace STELLAREST_F1
             }
         }
 
+        public Coroutine _coCanChangeLeader { get; private set; } = null;
+        // 나중에 UI CoolTime을 표기하기 위한 Percentage
+        public float CanChangeLeaderCurrentPercentage { get; private set; } = 0f;
+        private IEnumerator CoCanChangeLeader()
+        {
+            float delta = 0f;
+            while (true)
+            {
+                delta += Time.deltaTime;
+                CanChangeLeaderCurrentPercentage = delta / ReadOnly.Numeric.DesiredCanChangeLeaderTime;
+                if (CanChangeLeaderCurrentPercentage >= 1f)
+                    break;
+
+                yield return null;
+            }
+
+            StopCoCanChangeLeader();
+        }
+
+        public void StartCoCanChangeLeader()
+        {
+            if (_coCanChangeLeader == null)
+                _coCanChangeLeader = StartCoroutine(CoCanChangeLeader());
+        }
+
+        public void StopCoCanChangeLeader()
+        {
+            if (_coCanChangeLeader != null)
+            {
+                StopCoroutine(_coCanChangeLeader);
+                _coCanChangeLeader = null;
+                CanChangeLeaderCurrentPercentage = 0f;
+            }
+        }
+
         private Coroutine _coChangeRandomHeroLeader = null;
         private IEnumerator CoChangeRandomHeroLeader()
         {

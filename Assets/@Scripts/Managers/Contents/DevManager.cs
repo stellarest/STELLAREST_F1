@@ -73,7 +73,7 @@ namespace STELLAREST_F1
             if (Input.GetKeyDown("1"))
             {
                 //ChangeRandomHeroLeader();
-                Managers.Game.ChangeHeroLeader();
+                Managers.Game.ChangeHeroLeader(isFromDead: false);
                 Debug.Log("<color=cyan>ChangeHeroLeader</color>");
             }
 

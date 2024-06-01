@@ -117,9 +117,6 @@ namespace STELLAREST_F1
             // *** Events ***
             Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
             Managers.Game.OnJoystickStateChangedHandler += OnJoystickStateChanged;
-
-            // OnDeadFadeOutEndHandler -= this.OnDeadFadeOutEnded;
-            // OnDeadFadeOutEndHandler += this.OnDeadFadeOutEnded;
         }
 
         public override Vector3Int ChaseCellPos
@@ -387,8 +384,9 @@ namespace STELLAREST_F1
 
         protected override void OnDeadFadeOutEnded()
         {
+            Debug.Log("<color=magenta>Hero Func !!!!!</color>");
             if (IsLeader)
-                Managers.Game.ChangeHeroLeader();
+                Managers.Game.ChangeHeroLeader(isFromDead: true);
 
             Debug.Log("Hero::OnDeadFadeOutEnded");
             base.OnDeadFadeOutEnded();

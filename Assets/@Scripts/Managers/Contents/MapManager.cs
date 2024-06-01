@@ -48,7 +48,7 @@ namespace STELLAREST_F1
             CellGrid = map.GetComponent<Grid>();
 
             ParseCollisionData(map, mapName);
-            //SpawnObjectsByData(map, mapName);
+            SpawnObjectsByData(map, mapName);
         }
 
         private void ParseCollisionData(GameObject map, string mapName, string tileMap = "Tilemap_Collision")
@@ -124,10 +124,27 @@ namespace STELLAREST_F1
                         MoveTo(monster, cellPos, stopLerpToCell: true, forceMove: true);
                         monster.InitialSpawnedCellPos = cellPos;
 
+                        // int currentMonsterCount = 0;
+                        // int maxMonsterCount = 30;
+                        // while (currentMonsterCount < maxMonsterCount)
+                        // {
+                        //     Vector3Int randPos = new Vector3Int
+                        //         (UnityEngine.Random.Range(monster.CellPos.x - 10, monster.CellPos.x + 10), 
+                        //         UnityEngine.Random.Range(monster.CellPos.x - 10, monster.CellPos.x + 10), 0);
+
+                        //     if (Managers.Map.CanMove(randPos) == false)
+                        //         continue;
+
+                        //     currentMonsterCount++;
+                        //     monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, tile.DataID);
+                        //     MoveTo(monster, randPos, stopLerpToCell: true, forceMove: true);
+                        //     monster.InitialSpawnedCellPos = randPos;
+                        // }
+
                         // TEST: 9,5
-                        monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, tile.DataID);
-                        MoveTo(monster, new Vector3Int(9, 5, 0), stopLerpToCell: true, forceMove: true);
-                        monster.InitialSpawnedCellPos = cellPos;
+                        // monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, tile.DataID);
+                        // MoveTo(monster, new Vector3Int(9, 5, 0), stopLerpToCell: true, forceMove: true);
+                        // monster.InitialSpawnedCellPos = cellPos;
 
                         // TEST2
                         // Vector3Int monPos2 = monster.CellPos;
