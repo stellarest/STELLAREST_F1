@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
+using System.Runtime.InteropServices.WindowsRuntime;
 using Unity.Profiling;
 using UnityEditor;
 using UnityEngine;
@@ -65,6 +66,7 @@ namespace STELLAREST_F1
             return HeroLeaderController;
         }
 
+        // VER2
         public T Spawn<T>(EObjectType objectType, int dataID = -1, BaseObject presetOwner = null) where T : BaseObject
         {
             GameObject go = null;
@@ -148,6 +150,7 @@ namespace STELLAREST_F1
             }
         }
 
+        // VER1
         public T Spawn<T>(Vector3 position, EObjectType spawnObjectType, int dataID = -1, BaseObject owner = null) where T : BaseObject
         {
             GameObject go = null;

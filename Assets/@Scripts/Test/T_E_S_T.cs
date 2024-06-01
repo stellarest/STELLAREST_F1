@@ -7,22 +7,32 @@ using UnityEngine;
 
 /*
 [ TODO TODAY LIST ]
-// 24. 5. 30
+// 24. 06. 01
+>>> 히어로 멤버들 중지 명령을 해보자. 아니면 랜덤 포메이션을 제자리 패트롤로 바꾸는게 좋을 것 같은데.
+>>> FORCE MOVE 해제하면 쫓아오도록
+>>> FORCE MOVE로 중간에 변경하면 Drag 안먹힘. Idle로 전환.
+>>> 근데 Random Formation으로 움직이고 있었을떄는? 가던곳까지 가고 멈추게해야할까
+
+// 24. 05. 30
+>>> 히어로 멤버 체력 없을 때 Run하는거 추가해야함. 표정 스테이트도 넣어야하나. 고민.
+>>> --- 퍼스트퀸4처럼 리더 근처에서 체력회복 애니메이션 넣는게 좋을 것 같음. CreatureState = ECreatureState.Recovery
+>>> ForceMove 상태에서도 Engage Enemy 모드라면 Target을 찾게 되었을 때, Force Move 무시
+>>> 리더 죽었을 때 Off Pointer, Leader Mark, Change Leader -- 이거부터 하는게 나을듯 (완료)
 >>> 닭 잡기
 >>> 닭 바디 어택
 >>> 플레이어 데드
 >>> 리더 데드
 >>> 전투 테스트 완료
 
-// 24. 5. 29
+// 24. 05. 29
 >>> 와리가리거리는거 함 잡아보기 (완료)
 
-// 24. 5. 28
+// 24. 05. 28
 >>> Leader A* PathFind Passing Blocked Cell 수정(완료)
 >>> Leader Skill Attack 수정 완료
 >>> 히어로 멤버 배틀 모드 Engage Enemy 확인해 볼것. FarFromLeader 체크 범위가 너무 가까워서 그런지 바로 붙는것처럼 보임.
 
-// 24. 5. 27
+// 24. 05. 27
 >>> 히어로 리더가 움직이기 시작할 떄, 멤버가 이동할 수 있는 칸이 있을때만 Move 애니메이션? - 딱히 중요하진 않지만 (완료)
 >>> Leader Monster Attack
 >>> Heroes Attack -> Monster (+ Monster Dead)

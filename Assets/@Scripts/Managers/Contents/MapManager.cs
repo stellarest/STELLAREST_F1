@@ -48,7 +48,7 @@ namespace STELLAREST_F1
             CellGrid = map.GetComponent<Grid>();
 
             ParseCollisionData(map, mapName);
-            SpawnObjectsByData(map, mapName);
+            //SpawnObjectsByData(map, mapName);
         }
 
         private void ParseCollisionData(GameObject map, string mapName, string tileMap = "Tilemap_Collision")
@@ -119,21 +119,21 @@ namespace STELLAREST_F1
                     else if (tile.ObjectType == EObjectType.Monster)
                     {
                         // 지금은 이렇게 했지만, Respawn Spawn Data를 만들어서 해야할것같음
-                        Vector3 worldPos = CenteredCellToWorld(cellPos);
                         Monster monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, tile.DataID);
                         //monster.SetCellPos(cellPos, stopLerpToCell: false, forceMove: true);
                         MoveTo(monster, cellPos, stopLerpToCell: true, forceMove: true);
+                        monster.InitialSpawnedCellPos = cellPos;
 
                         // TEST: 9,5
-                        // monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, tile.DataID);
-                        // MoveTo(monster, new Vector3Int(9, 5, 0), stopLerpToCell: true, forceMove: true);
-
-                        Vector3Int monPos2 = monster.CellPos;
-                        monPos2 += new Vector3Int(3, 3, 0);
+                        monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, tile.DataID);
+                        MoveTo(monster, new Vector3Int(9, 5, 0), stopLerpToCell: true, forceMove: true);
+                        monster.InitialSpawnedCellPos = cellPos;
 
                         // TEST2
-                        monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, tile.DataID);
-                        MoveTo(monster, monPos2, stopLerpToCell: true, forceMove: true);
+                        // Vector3Int monPos2 = monster.CellPos;
+                        // monPos2 += new Vector3Int(3, 3, 0);
+                        // monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, tile.DataID);
+                        // MoveTo(monster, monPos2, stopLerpToCell: true, forceMove: true);
                     }
                 }
             }
@@ -172,10 +172,7 @@ namespace STELLAREST_F1
                     if (CanMove(path[i]) == false)
                         continue;
 
-                    // 일단, Depth가 50이라 완벽한 방어책은 아니긴함. 근데 거의 다 되긴 할것임. 
-                    // 거기다가 이 함수는 매번 실행하는것이 아니기 때문에 이정도는 상관없음. 
-                    // 히어로의 경우, 정말로 막혔을 때, 리더 주변으로 반드시 오게 해야 한다는 보장이 필요함.
-                    destCellPos = path[i];
+                    destCellPos = path[i]; // Leader 근처에 가장 가까운 위치를 찾는다.
                     break;
                 }
             }

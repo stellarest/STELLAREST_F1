@@ -38,6 +38,7 @@ namespace STELLAREST_F1
         //     TestObject.transform.position = Managers.Map.CenteredCellToWorld(Vector3Int.zero);
         // }
 
+        public bool StopMembersMovement = false;
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.P))
@@ -70,28 +71,62 @@ namespace STELLAREST_F1
             }
 
             if (Input.GetKeyDown("1"))
-                ChangeRandomHeroLeader();
+            {
+                //ChangeRandomHeroLeader();
+                Managers.Game.ChangeHeroLeader();
+                Debug.Log("<color=cyan>ChangeHeroLeader</color>");
+            }
 
             if (Input.GetKeyDown("2"))
+            {
                 Managers.Object.HeroLeaderController.SetJustFollowClosely();
+                Debug.Log("<color=cyan>SetJustFollowClosely</color>");
+            }
 
             if (Input.GetKeyDown("3"))
+            {
                 Managers.Object.HeroLeaderController.SetNarrowFormation();
+                Debug.Log("<color=cyan>SetNarrowFormation</color>");
+            }
 
             if (Input.GetKeyDown("4"))
+            {
                 Managers.Object.HeroLeaderController.SetWideFormation();
+                Debug.Log("<color=cyan>SetWideFormation</color>");
+            }
 
             if (Input.GetKeyDown("5"))
-                Managers.Object.HeroLeaderController.SetPatrolFree();
+            {
+                Managers.Object.HeroLeaderController.SetRandomFormation();
+                Debug.Log("<color=cyan>SetRandomFormation</color>");
+            }
 
             if (Input.GetKeyDown("6"))
             {
+                Managers.Object.HeroLeaderController.SetForceStop();
+                Debug.Log("<color=cyan>SetForceStop</color>");
+            }
+
+            if (Input.GetKeyDown("8"))
+            {
                 HeroLeaderController heroLeaderController = Managers.Object.HeroLeaderController;
-                if (heroLeaderController.HeroLeaderChaseMode == EHeroLeaderChaseMode.JustFollowClosely || 
-                    heroLeaderController.HeroLeaderChaseMode == EHeroLeaderChaseMode.RandomFormation)
+
+                if (heroLeaderController.HeroLeaderChaseMode == EHeroLeaderChaseMode.JustFollowClosely ||
+                    heroLeaderController.HeroLeaderChaseMode == EHeroLeaderChaseMode.RandomFormation || 
+                    heroLeaderController.HeroLeaderChaseMode == EHeroLeaderChaseMode.ForceStop)
                     return;
-                 else
+                else
+                {
                     heroLeaderController.ShuffleMembersPosition();
+                Debug.Log("<color=cyan>ShuffleMembersPosition</color>");
+                }
+            }
+
+
+
+            if (Input.GetKeyDown("9"))
+            {
+                Debug.Log($"GameOver: {Managers.Game.IsGameOver}");
             }
         }
 
@@ -133,19 +168,22 @@ namespace STELLAREST_F1
 
         public void ChangeRandomHeroLeader()
         {
-            if (Managers.Object.Heroes.Count == 1)
-                return;
+            // if (Managers.Object.Heroes.Count == 1)
+            //     return;
 
-            int randIdx = UnityEngine.Random.Range(0, Managers.Object.Heroes.Count);
-            Hero newHeroLeader = Managers.Object.Heroes[randIdx];
-            Hero currentLeader = Managers.Object.HeroLeaderController.Leader;
-            while (newHeroLeader == currentLeader)
-            {
-                randIdx = UnityEngine.Random.Range(0, Managers.Object.Heroes.Count);
-                newHeroLeader = Managers.Object.Heroes[randIdx];
-            }
+            // int randIdx = UnityEngine.Random.Range(0, Managers.Object.Heroes.Count);
+            // Hero newHeroLeader = Managers.Object.Heroes[randIdx];
+            // Hero currentLeader = Managers.Object.HeroLeaderController.Leader;
+            // while (newHeroLeader == currentLeader || newHeroLeader.CreatureState == ECreatureState.Dead)
+            // {
+            //     if (Managers.Object.Heroes.Count == 0)
+            //         return;
 
-            Managers.Object.HeroLeaderController.Leader = newHeroLeader;
+            //     randIdx = UnityEngine.Random.Range(0, Managers.Object.Heroes.Count);
+            //     newHeroLeader = Managers.Object.Heroes[randIdx];
+            // }
+
+            // Managers.Object.HeroLeaderController.Leader = newHeroLeader;
         }
 
         // public Hero Leader { get; set; } = null; // TMEP

@@ -41,6 +41,10 @@ namespace STELLAREST_F1
                 case ECreatureState.Skill_Attack:
                     Animator.Play(Play_Skill_Attack);
                     break;
+
+                case ECreatureState.Dead:
+                    Animator.Play(Play_Dead);
+                    break;
             }
         }
 
@@ -50,6 +54,7 @@ namespace STELLAREST_F1
             {
                 case ECreatureState.Skill_Attack:
                     {
+                        Debug.Log($"AnimationEnd: {_creatureOwner.gameObject.name}");
                         _creatureOwner.CreatureMoveState = ECreatureMoveState.TargetToEnemy;
                         _creatureOwner.CreatureState = ECreatureState.Idle;
                     }

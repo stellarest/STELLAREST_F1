@@ -47,12 +47,13 @@ namespace STELLAREST_F1
                 Managers.Object.CameraController = cam;
                 Hero firstHero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
                 Managers.Map.MoveTo(firstHero, Vector3.zero, stopLerpToCell: true, forceMove: true);
+                firstHero.InitialSpawnedCellPos = Vector3Int.zero;
 
                 // 최대 맵 배치 동료 개수 : 7명 - (리더1, 팔로워6), 또는 9명(리더1, 팔로워8)
                 // 부대 최대 3개. 5개까지 하고 싶지만 (35명), 캐릭터 만들 수 있는 컨텐츠 오링날듯..
                 // 리더 포함, 최대 영웅 30명. 영웅 비활성화 기능 넣기? 안되면 부대 2개로 넣어야지 뭐.
                 int memberCount = 0;
-                int memberMaxCount = 1;
+                int memberMaxCount = 6;
                 while (memberCount < memberMaxCount)
                 {
                     randPos = new Vector3Int(Random.Range(-4, 4), Random.Range(-4, 4), 0);
@@ -63,6 +64,7 @@ namespace STELLAREST_F1
                     Hero hero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
                     hero.gameObject.name += $"___{memberCount.ToString()}";
                     Managers.Map.MoveTo(hero, randPos, stopLerpToCell: true, forceMove: true);
+                    hero.InitialSpawnedCellPos = randPos;
                     // A* Test
                     // Managers.Map.MoveTo(hero, new Vector3Int(-1, -1, 0), forceMove: true);
                 }

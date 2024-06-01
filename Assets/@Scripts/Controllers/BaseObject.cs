@@ -22,11 +22,8 @@ namespace STELLAREST_F1
         public Rigidbody2D RigidBody { get; private set; } = null;
         public SortingGroup SortingGroup { get; private set; } = null;
         public float ColliderRadius { get => Collider != null ? Collider.radius : 0.0f; }
-        // Creature 및 다른 오브젝트의 경우, 발바닥 부분이 피벗임
-        
-        public Vector3 CenterPosition { get => transform.position + Vector3.up * ColliderRadius; }
+        public Vector3 CenterPosition { get => transform.position + Vector3.up * ColliderRadius; } // Creature 및 다른 오브젝트의 경우, 발바닥 부분이 피벗임
         public Vector3 CenterLocalPosition => Vector3.up * ColliderRadius;
-
         [SerializeField] private ELookAtDirection _lookAtDir = ELookAtDirection.Right;
         public ELookAtDirection LookAtDir
         {
@@ -40,6 +37,7 @@ namespace STELLAREST_F1
                 }
             }
         }
+        protected event System.Action OnDeadFadeOutEndHandler = null;
 
         protected float DistanceToTargetSQR
         {
@@ -94,7 +92,7 @@ namespace STELLAREST_F1
         protected void LevelUp() => Level++;
 
         public float Hp { get; set; } = 0f;
-        protected Stat _maxHp = null; 
+        protected Stat _maxHp = null;
         public float MaxHp
         {
             get => _maxHp.BaseValue;
@@ -103,7 +101,7 @@ namespace STELLAREST_F1
                 _maxHp = _maxHp == null ? new Stat(value) : _maxHp;
             }
         }
-        
+
         protected Stat _atk = null;
         public float Atk
         {
@@ -165,6 +163,10 @@ namespace STELLAREST_F1
             ObjectRarity = EObjectRarity.Common; // TEMP
             RigidBody.drag = 0f; // TEMP
             SetStat(dataID);
+
+            OnDeadFadeOutEndHandler -= this.OnDeadFadeOutEnded;
+            OnDeadFadeOutEndHandler += this.OnDeadFadeOutEnded;
+
             return true;
         }
 
@@ -215,17 +217,25 @@ namespace STELLAREST_F1
             => BaseAnim.UpdateAnimation();
         #endregion
 
+        #region Events
+        protected virtual void OnDeadFadeOutEnded()
+        {
+            Managers.Object.Despawn(this, DataTemplateID);
+            _initialSpawnedCellPos = null;
+        }
+        #endregion
+
         #region Battle
         public virtual void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker) { }
         public virtual void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
         {
-            RigidBody.simulated = false;
-            StartCoroutine(CoDeadFadeOut(() => Managers.Object.Despawn(this, DataTemplateID)));
+            RigidBody.simulated = false; // RigidBody 제거 예정
+            StartCoroutine(CoDeadFadeOut(this.OnDeadFadeOutEndHandler));
         }
 
-        protected virtual IEnumerator CoDeadFadeOut(System.Action endFadeOutCallback = null)
+        protected virtual IEnumerator CoDeadFadeOut(Action endFadeOutCallback = null)
         {
-            if (this.isActiveAndEnabled == false)
+            if (isActiveAndEnabled == false)
                 yield break;
 
             yield return new WaitForSeconds(ReadOnly.Numeric.StartDeadFadeOutTime);
@@ -235,6 +245,7 @@ namespace STELLAREST_F1
             AnimationCurve curve = Managers.Animation.Curve(EAnimationCurveType.Ease_In);
             while (percent > 0f)
             {
+                Debug.Log($"{gameObject.name}, {percent}");
                 delta += Time.deltaTime;
                 percent = 1f - (delta / ReadOnly.Numeric.DesiredDeadFadeOutEndTime);
                 foreach (SpriteRenderer spr in GetComponentsInChildren<SpriteRenderer>())
@@ -248,6 +259,9 @@ namespace STELLAREST_F1
 
             Debug.Log($"{gameObject.name} is dead.");
             endFadeOutCallback?.Invoke();
+
+            Managers.Object.Despawn(this, DataTemplateID);
+            _initialSpawnedCellPos = null;
         }
         #endregion
 
@@ -302,6 +316,23 @@ namespace STELLAREST_F1
 
         [field: SerializeField] public Vector3Int CellPos { get; protected set; } = Vector3Int.zero;
 
+        private Vector3Int? _initialSpawnedCellPos = null;
+        public Vector3Int? InitialSpawnedCellPos
+        {
+            get => _initialSpawnedCellPos.HasValue ? _initialSpawnedCellPos.Value : null;
+            set
+            {
+                if (_initialSpawnedCellPos.HasValue == false)
+                {
+                    _initialSpawnedCellPos = value;
+                }
+                else
+                {
+                    Debug.LogWarning($"Already it has initial spawned cell pos: {_initialSpawnedCellPos.Value}");
+                }
+            }
+        }
+
         public void SetCellPos(Vector3 position, bool forceMove = false)
             => SetCellPos(Managers.Map.WorldToCell(position), forceMove);
 
@@ -337,7 +368,7 @@ namespace STELLAREST_F1
 
             Vector3 destPos = Managers.Map.CenteredCellToWorld(CellPos); // 이동은 가운데로.
             Vector3 dir = destPos - transform.position;
-    
+
             if (dir.x < 0f)
                 LookAtDir = ELookAtDirection.Left;
             else if (dir.x > 0f)
@@ -353,6 +384,9 @@ namespace STELLAREST_F1
             float moveDist = Mathf.Min(dir.magnitude, movementSpeed * Time.deltaTime);
             transform.position += dir.normalized * moveDist;
         }
+        #endregion
+
+        #region MISC
         #endregion
     }
 }

@@ -11,8 +11,10 @@ namespace STELLAREST_F1
     {
         public enum EObjectRarity
         {
-            Common = 0,
-            Elite = 9,
+            Common,     // Common -> Ultimate
+            Elite,      // 단일 등급
+            Special,    // 단일 등급
+            Ultimate    // Common -> Ultimate
         }
 
         public enum ECollectEnvRarity
@@ -106,13 +108,13 @@ namespace STELLAREST_F1
         {
             None,
             TargetToEnemy,
-            CollectEnv,
-            ReturnToBase,
+            CollectEnv, // 이것도 필요 없을 것 같긴한데
+            //ReturnToBase,
+            Patrol,
             ForceMove,
             ForcePath,
 
-            FollowLeader,
-            Replace,
+            //FollowLeader,
         }
 
         public enum ELookAtDirection
@@ -375,13 +377,18 @@ namespace STELLAREST_F1
             NarrowFormation = 3,
             WideFormation = 5,
             RandomFormation,
+            ForceStop
         }
 
         public enum EHeroMemberBattleMode
         {
-            EngageEnemy,
-            FollowLeader
+            // 기존의 EngageEnemy: 마우스에서 때면 그때서야 적을 탐지하고 공격한다. FollowAndBattle
+            EngageEnemy, // ForceMove 상태에서도 적군이 탐지되면 무조건 적에게 들이댄다. 리더와 멀어지지 않는 이상 죽을때까지 싸운다.
+            FollowLeader // 리더가 ForceMove 상태라면 무조건 리더만 따라온다.
             // + 나중에 히어로 체력이 떨어졌을 때 무조건 리더 근처에 짱박혀 있는 모드 추가해야함
+            // Keep Stop Formation // 리더가 있던 자리에 계속 멈춰 있는다
+            // >> 그러니까 만약 RandomFormation이라고 할 지라도, 최초로 있던 리더의 자리를 더미로 인식하고
+            // 리더가 ForceMove로 움직여도 움직이지 않는다.
         }
 
         // 이거 한번 더 누르면 뱅글 뱅글 돌면서 재배치하는 기능 있으면 좋을 것 같음.
@@ -634,6 +641,7 @@ namespace STELLAREST_F1
                 public static readonly int HeroMaxMoveDepth = 100;
                 public static readonly int CreatureWarpMoveDepth = 50;
                 public static readonly int MonsterDefaultMoveDepth = 5; // default: 3 -> 5       
+                public static readonly int MaxCanPingPongConditionCount = 10;
 
                 // --- [ FLOATING ]
                 // -- [ HERO ]
@@ -645,6 +653,7 @@ namespace STELLAREST_F1
                 public static readonly float MinSecPatrolPingPong = 1.0F;
                 public static readonly float MaxSecPatrolPingPong = 2.0F;
 
+                public static readonly float WaitHeroesForceStopWarpSeconds = 30.0F;
                 // -- [ MONSTER ]
 
                 // -- [ MISC ]
@@ -659,7 +668,7 @@ namespace STELLAREST_F1
                 public static readonly float MonsterSize_Large = 1.2F;
 
                 public static readonly float HeroDefaultScanRange = 6.0F; // 일단 6칸
-                public static readonly float MonsterDefaultScanRange = 8.0F; // 상하좌우 한칸 기준, 대각선X
+                public static readonly float MonsterDefaultScanRange = 4.0F; // 상하좌우 한칸 기준, 대각선X
                 public static readonly float Temp_StopDistance = 1.25F;
                 
                 // Dead Fade Out Time

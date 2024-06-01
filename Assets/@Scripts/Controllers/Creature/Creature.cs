@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,57 +23,33 @@ namespace STELLAREST_F1
                     UpdateAnimation();
                 }
             }
-            
-            // => UpdateAnimation(value);
-            // {
-            //     if (_creatureState != value)
-            //     {
-            //         // [ DO SOMETHING ]
-            //         UpdateAnimation(value); // 일단 한 번 업데이트 애니메이션을 해주고 // 그래도 다르다면 ??
-            //         //Debug.Log(CreatureAnim.IsCurrentAnimationState(value));
-
-            //         // 여기서 애니메이션이 완전히 업데이트가 되는 것을 확인하고
-            //         // 그때부터 State를 바꿔준다.
-            //         // if (CreatureAnim.IsCurrentAnimationState(value))
-            //         // {
-            //         //     _creatureState = value;
-            //         //     UpdateAnimation();
-            //         // }
-            //     }
-            // }
         }
-
         public void SetCreatureState(ECreatureState creatureState)
             => _creatureState = creatureState;
-
         [SerializeField] private ECreatureMoveState _creatureMoveState = ECreatureMoveState.None;
         public virtual ECreatureMoveState CreatureMoveState
         {
             get => _creatureMoveState;
             set => _creatureMoveState = value;
         }
-
         private bool _collectEnv = false;
         public virtual bool CollectEnv
         {
             get => _collectEnv;
             protected set => _collectEnv = value;
         }
-
-        public virtual Vector3Int ChaseCellPos
+        public virtual Vector3Int ChaseCellPos // *** NO SETTER !! ***
         {
             get
             {
                 if (Target.IsValid())
-                {
                     return Target.CellPos;
-                }
                 else
                     return CellPos;
             }
         }
+        
 
-        // DEPRECIATE
         [SerializeField] protected EFindPathResult _findPathResult = EFindPathResult.None;
         public override bool Init()
         {
@@ -86,6 +61,8 @@ namespace STELLAREST_F1
             return true;
         }
 
+
+        // VER1
         public override bool SetInfo(int dataID)
         {
             if (base.SetInfo(dataID) == false)
@@ -114,7 +91,7 @@ namespace STELLAREST_F1
                           //CreatureState = ECreatureState.Idle; --> 각 클래스에서 관리
                           CreatureMoveState = ECreatureMoveState.None;
                           StartCoroutine(CoUpdateAI()); // --> Leader도 AI 돌고 있어야함.
-                          TickLerpToCellPos();
+                          StartCoLerpToCellPos();
                           // StartCoroutine(CoLerpToCellPos()); // Map
                       });
 
@@ -211,12 +188,12 @@ namespace STELLAREST_F1
             _coWait = null;
         }
 
-        protected void StartWait(Func<bool> waitCondition, Action callbackWaitCompleted = null)
+        protected void StartWait(System.Func<bool> waitCondition, System.Action callbackWaitCompleted = null)
         {
             CancelWait();
             _coWait = StartCoroutine(CoWait(waitCondition, callbackWaitCompleted));
         }
-        private IEnumerator CoWait(Func<bool> waitCondition, Action waitCompleted = null)
+        private IEnumerator CoWait(System.Func<bool> waitCondition, System.Action waitCompleted = null)
         {
             yield return new WaitUntil(waitCondition);
             _coWait = null;
@@ -231,7 +208,7 @@ namespace STELLAREST_F1
         }
         #endregion Coroutines
 
-        #region State Machine Events 
+        #region Events
         protected void OnStateEnter(ECreatureState enterState)
         {
             switch (enterState)
@@ -284,8 +261,7 @@ namespace STELLAREST_F1
         }
         #endregion State Machine Events 
 
-        #region Helper
-        protected BaseObject FindClosestInRange(float scaneRange, IEnumerable<BaseObject> objs, Func<BaseObject, bool> func = null)
+        protected BaseObject FindClosestInRange(float scaneRange, IEnumerable<BaseObject> objs, System.Func<BaseObject, bool> func = null)
         {
             BaseObject target = null;
             float bestDistSQR = float.MaxValue;
@@ -334,8 +310,10 @@ namespace STELLAREST_F1
 
         public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
         {
-            CreatureState = ECreatureState.Dead;
+            StopCoLerpToCellPos(); // 길찾기 움직임 중이었다면 멈춘다.
             StopCoSearchTarget(); // 크리처에서 돌고있는 모든 코루틴을 Dictionary로 관리하면 어떨까.
+            CreatureMoveState = ECreatureMoveState.None;
+            CreatureState = ECreatureState.Dead;
             base.OnDead(attacker, skillFromAttacker);
         }
 
@@ -363,27 +341,27 @@ namespace STELLAREST_F1
         }
 
 
-        protected void ChaseOrAttackTarget_Prev_Temp(float chaseRange, float atkRange)
-        {
-            //Vector3 toTargetDir = Target.transform.position - transform.position;
-            if (DistanceToTargetSQR <= atkRange * atkRange)
-            {
-                if (Target.IsValid() && Target.ObjectType == EObjectType.Env)
-                    CreatureState = ECreatureState.CollectEnv;
-                else
-                    CreatureSkill?.CurrentSkill.DoSkill();
-            }
-            else
-            {
-                _findPathResult = FindPathAndMoveToCellPos(Target.transform.position, ReadOnly.Numeric.HeroMaxMoveDepth);
-                float searchDistSQR = chaseRange * chaseRange;
-                if (DistanceToTargetSQR > searchDistSQR)
-                {
-                    Target = null;
-                    CreatureState = ECreatureState.Move;
-                }
-            }
-        }
+        // protected void ChaseOrAttackTarget_Prev_Temp(float chaseRange, float atkRange)
+        // {
+        //     //Vector3 toTargetDir = Target.transform.position - transform.position;
+        //     if (DistanceToTargetSQR <= atkRange * atkRange)
+        //     {
+        //         if (Target.IsValid() && Target.ObjectType == EObjectType.Env)
+        //             CreatureState = ECreatureState.CollectEnv;
+        //         else
+        //             CreatureSkill?.CurrentSkill.DoSkill();
+        //     }
+        //     else
+        //     {
+        //         _findPathResult = FindPathAndMoveToCellPos(Target.transform.position, ReadOnly.Numeric.HeroMaxMoveDepth);
+        //         float searchDistSQR = chaseRange * chaseRange;
+        //         if (DistanceToTargetSQR > searchDistSQR)
+        //         {
+        //             Target = null;
+        //             CreatureState = ECreatureState.Move;
+        //         }
+        //     }
+        // }
 
         // Util로 빼야할듯
         protected float CalculateMovementSpeed(float distanceToTargetSQR)
@@ -406,12 +384,9 @@ namespace STELLAREST_F1
         #region Misc
         protected bool IsValid(BaseObject bo) => bo.IsValid();
         public bool IsSkillState
-            => CreatureState == ECreatureState.Skill_Attack || CreatureState == ECreatureState.Skill_A || CreatureState == ECreatureState.Skill_B; 
+            => CreatureState == ECreatureState.Skill_Attack || CreatureState == ECreatureState.Skill_A || CreatureState == ECreatureState.Skill_B;
         #endregion Misc
 
-        #region Map
-
-        // maxDepth: Mobile용 성능 조절 Offset 깊이 값
         public EFindPathResult FindPathAndMoveToCellPos(Vector3 destPos, int maxDepth, EObjectType ignoreObjectType = EObjectType.None)
         {
             Vector3Int destCellPos = Managers.Map.WorldToCell(destPos);
@@ -421,15 +396,11 @@ namespace STELLAREST_F1
         public EFindPathResult FindPathAndMoveToCellPos(Vector3Int destPos, int maxDepth, EObjectType ignoreObjectType = EObjectType.None)
         {
             if (IsForceMovingPingPongObject)
-            {
-                return EFindPathResult.Fail_ForceMovePingPongObject; // TEMP
-            }
+                return EFindPathResult.Fail_ForceMovePingPongObject;
 
             // ***** 이미 스킬(공격)중이면 길찾기 금지 *****
             if (CreatureState == ECreatureState.Skill_Attack)
-            {
                 return EFindPathResult.Fail_LerpCell;
-            }
 
             // 움직임 진행중
             if (LerpToCellPosCompleted == false)
@@ -461,13 +432,13 @@ namespace STELLAREST_F1
         }
 
 
-        protected void TickLerpToCellPos()
+        protected void StartCoLerpToCellPos()
         {
-            StopLerpToCellPos();
+            StopCoLerpToCellPos();
             _coLerpToCellPos = StartCoroutine(CoLerpToCellPos());
         }
 
-        protected void StopLerpToCellPos()
+        protected void StopCoLerpToCellPos()
         {
             if (_coLerpToCellPos != null)
             {
@@ -511,7 +482,7 @@ namespace STELLAREST_F1
         }
 
         private T SearchClosestInRange<T>(float scanRange, IEnumerable<T> firstTargets, IEnumerable<T> secondTargets = null, 
-                                        Func<T, bool> func = null) where T : BaseObject
+                                        System.Func<T, bool> func = null) where T : BaseObject
         {
             T target = null;
             float bestDistSQR = float.MaxValue;
@@ -566,7 +537,7 @@ namespace STELLAREST_F1
 
         protected bool _pauseSearchTarget = false;
         private Coroutine _coSearchTarget = null;
-        private IEnumerator CoSearchTarget<T>(float scanRange, IEnumerable<T> firstTargets, IEnumerable<T> secondTargets = null, Func<T, bool> func = null) where T : BaseObject
+        private IEnumerator CoSearchTarget<T>(float scanRange, IEnumerable<T> firstTargets, IEnumerable<T> secondTargets = null, System.Func<T, bool> func = null) where T : BaseObject
         {
             float tick = ReadOnly.Numeric.SearchFindTargetTick;
             while (true)
@@ -591,7 +562,7 @@ namespace STELLAREST_F1
             }
         }
 
-        protected void StartCoSearchTarget<T>(float scanRange, IEnumerable<T> firstTargets, IEnumerable<T> secondTargets = null, Func<T, bool> func = null) where T : BaseObject
+        protected void StartCoSearchTarget<T>(float scanRange, IEnumerable<T> firstTargets, IEnumerable<T> secondTargets = null, System.Func<T, bool> func = null) where T : BaseObject
         {
             if (_coSearchTarget != null)
                 return;
@@ -609,7 +580,6 @@ namespace STELLAREST_F1
             }
         }
 
-        #endregion Map
         /*
             1 - 큐에 A 추가: [A]
             2 - 큐에 B 추가: [A, B]
@@ -668,7 +638,7 @@ namespace STELLAREST_F1
         // ***** Force Move Ping Pong Object Coroutine *****
         private Coroutine _coForceMovePingPongObject = null;
         protected bool IsForceMovingPingPongObject => _coForceMovePingPongObject != null;
-        private IEnumerator CoForceMovePingPongObject(Vector3Int currentCellPos, Vector3Int destCellPos, Action endCallback = null)
+        private IEnumerator CoForceMovePingPongObject(Vector3Int currentCellPos, Vector3Int destCellPos, System.Action endCallback = null)
         {
             List<Vector3Int> path = Managers.Map.FindPath(currentCellPos, destCellPos);
 
@@ -707,7 +677,7 @@ namespace STELLAREST_F1
             UpdateCellPos();
         }
 
-        protected void CoStartForceMovePingPongObject(Vector3Int currentCellPos, Vector3Int destCellPos, Action endCallback = null)
+        protected void CoStartForceMovePingPongObject(Vector3Int currentCellPos, Vector3Int destCellPos, System.Action endCallback = null)
         {
             if (_coForceMovePingPongObject != null)
                 return;
@@ -723,8 +693,6 @@ namespace STELLAREST_F1
                 _coForceMovePingPongObject = null;
             }
         }
-
-        #endregion Helper
     }
 }
 

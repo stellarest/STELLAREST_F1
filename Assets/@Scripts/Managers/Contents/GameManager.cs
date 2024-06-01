@@ -31,6 +31,16 @@ namespace STELLAREST_F1
             }
         }
         public event Action<EJoystickState> OnJoystickStateChangedHandler = null;
+        public bool IsGameOver => Managers.Object.Heroes.Count == 0 ? true : false;
+
+        public void ChangeHeroLeader()
+        {
+            HeroLeaderController leaderController = Managers.Object.HeroLeaderController;
+            if (leaderController == null)
+                return;
+
+            leaderController.StartCoChangeRandomHeroLeader();
+        }
     }
 }
 

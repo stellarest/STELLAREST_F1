@@ -17,6 +17,9 @@ namespace STELLAREST_F1
 
         [SerializeField] private Vector3 _nMovementDir = Vector3.zero;
         [SerializeField] private EHeroLeaderChaseMode _heroLeaderChaseMode = EHeroLeaderChaseMode.JustFollowClosely;
+
+        public float ForceStopWarpSeconds = 0f;
+
         public EHeroLeaderChaseMode HeroLeaderChaseMode
         {
             get => _heroLeaderChaseMode;
@@ -24,22 +27,41 @@ namespace STELLAREST_F1
             {
                 if (_heroLeaderChaseMode != value)
                 {
+                    // 이전의 _heroLeaderChaseMode가 ForceStop이었다면...
+                    if (_heroLeaderChaseMode == EHeroLeaderChaseMode.ForceStop)
+                    {
+                        List<Hero> heroes = Managers.Object.Heroes;
+                        for (int i = 0; i < heroes.Count; ++i)
+                        {
+                            if (heroes[i].IsValid() == false)
+                                continue;
+
+                            if (heroes[i].IsLeader)
+                                continue;
+
+                            heroes[i].StartCoWaitForceStopWarp(ReadOnly.Numeric.WaitHeroesForceStopWarpSeconds);
+                        }
+                    }
+
                     if (value != EHeroLeaderChaseMode.RandomFormation)
                     {
-                        if (_coRandomFormation != null)
-                        {
-                            StopCoroutine(_coRandomFormation);
-                            _coRandomFormation = null;
-                        }
+                        StopCoRandomFormation();
+                        // if (_coRandomFormation != null)
+                        // {
+                        //     StopCoroutine(_coRandomFormation);
+                        //     _coRandomFormation = null;
+                        // }
                     }
                     else
                     {
-                        if (_coRandomFormation == null)
-                            _coRandomFormation = StartCoroutine(CoRandomFormation());
+                        StartCoRandomFormation();
+                        // if (_coRandomFormation == null)
+                        //     _coRandomFormation = StartCoroutine(CoRandomFormation());
                     }
 
                     _heroLeaderChaseMode = value;
-                    MoveStartMembersToTheirChasePos();
+                    if (value != EHeroLeaderChaseMode.ForceStop)
+                        MoveStartMembersToTheirChasePos();
                 }
             }
         }
@@ -79,8 +101,25 @@ namespace STELLAREST_F1
             => HeroLeaderChaseMode = EHeroLeaderChaseMode.WideFormation;
 
         // TEMP
-        public void SetPatrolFree()
+        public void SetRandomFormation()
             => HeroLeaderChaseMode = EHeroLeaderChaseMode.RandomFormation;
+
+        public void SetForceStop()
+        {
+            List<Hero> heroes = Managers.Object.Heroes;
+            for (int i = 0; i < heroes.Count; ++i)
+            {
+                if (heroes[i].IsValid() == false)
+                    continue;
+
+                if (heroes[i].IsLeader)
+                    continue;
+
+               heroes[i].PrevCellPosForForceStop = heroes[i].CellPos;
+            }
+
+            HeroLeaderChaseMode = EHeroLeaderChaseMode.ForceStop;
+        }
 
         public void ShuffleMembersPosition()
         {
@@ -139,27 +178,6 @@ namespace STELLAREST_F1
             float x = _leader.transform.position.x + Mathf.Cos(angle) * distance;
             float y = _leader.transform.position.y + Mathf.Sin(angle) * distance;
             return Managers.Map.WorldToCell(new Vector3(x, y, 0));
-        }
-
-        private Coroutine _coRandomFormation = null;
-        private bool _randomPingPongFlag = false;
-        private float _randomPingPongDistance = 0f;
-        private IEnumerator CoRandomFormation()
-        {
-            float min = ReadOnly.Numeric.MinSecPatrolPingPong;
-            float max = ReadOnly.Numeric.MaxSecPatrolPingPong;
-            while (true)
-            {
-                yield return new WaitForSeconds(Random.Range(min, max));
-                _randomPingPongFlag = !_randomPingPongFlag;
-                if (_randomPingPongFlag) // Wide Formation
-                    _randomPingPongDistance = Random.Range(min, max);
-                else // Narrow Formation
-                    _randomPingPongDistance = Random.Range(0, min);
-
-                ShuffleMembersPosition();
-                MoveStartMembersToTheirChasePos();
-            }
         }
 
         public Vector3Int RequestRandomChaseCellPos(Hero heroMember)
@@ -363,20 +381,27 @@ namespace STELLAREST_F1
 
         private void Move()
         {
-            if (_nMovementDir == Vector3.zero)
+            if (_leader.IsValid() == false)
             {
-                if (_leader.CreatureState == ECreatureState.Move) // --- DEFENSE
-                    _leader.CreatureState = ECreatureState.Idle;
-                return;
+                _nMovementDir = Vector2.zero;
             }
-
-            if (_nMovementDir.x < 0f)
-                Leader.LookAtDir = ELookAtDirection.Left;
             else
-                Leader.LookAtDir = ELookAtDirection.Right;
+            {
+                if (_nMovementDir == Vector3.zero)
+                {
+                    if (_leader.CreatureState == ECreatureState.Move) // --- DEFENSE
+                        _leader.CreatureState = ECreatureState.Idle;
+                    return;
+                }
 
-            // 일반적인 이동은 무조건 부드럽게
-            _leader.transform.position = JoystickPos;
+                if (_nMovementDir.x < 0f)
+                    Leader.LookAtDir = ELookAtDirection.Left;
+                else
+                    Leader.LookAtDir = ELookAtDirection.Right;
+
+                // 일반적인 이동은 무조건 부드럽게
+                _leader.transform.position = JoystickPos;
+            }
         }
 
         private void SetLeader(Hero newLeader)
@@ -386,7 +411,7 @@ namespace STELLAREST_F1
                 Debug.Log($"Maybe Same Leader, Current: {_leader.name}, new: {newLeader.name}");
                 return;
             }
-            else if (_leader == null)
+            else if (_leader.IsValid() == false)
             {
                 _leader = newLeader;
                 _leader.IsLeader = true;
@@ -414,7 +439,11 @@ namespace STELLAREST_F1
             newLeader.CreatureMoveState = ECreatureMoveState.None;
             newLeader.CreatureState = ECreatureState.Idle;
             Managers.Object.CameraController.Target = newLeader;
+            EnableLeaderMark(true);
         }
+
+        public void EnableLeaderMark(bool enable) 
+            => _leaderMark.gameObject.SetActive(enable);
 
         public void EnablePointer(bool enable)
             => _pointer.gameObject.SetActive(enable);
@@ -438,6 +467,15 @@ namespace STELLAREST_F1
         #region Event
         private void OnMoveDirChanged(Vector2 nDir)
         {
+            if (_leader.IsValid() == false) // --- DEFENSE
+                return;
+
+            if (_leader.CreatureState == ECreatureState.Dead)
+            {
+                _nMovementDir = Vector3.zero;
+                return;
+            }
+
             _nMovementDir = nDir;
             if (nDir != Vector2.zero)
             {
@@ -448,6 +486,12 @@ namespace STELLAREST_F1
 
         private void OnJoystickStateChanged(EJoystickState joystickState)
         {
+            if (_leader.IsValid() == false) // --- DEFENSE
+                return;
+
+            if (_leader.CreatureState == ECreatureState.Dead)
+                return;
+
             switch (joystickState)
             {
                 case EJoystickState.Drag:
@@ -487,7 +531,132 @@ namespace STELLAREST_F1
         }
         #endregion
 
-#if UNITY_EDITOR
+        #region Coroutines
+        private Coroutine _coRandomFormation = null;
+        private bool _randomPingPongFlag = false;
+        private float _randomPingPongDistance = 0f;
+        private IEnumerator CoRandomFormation()
+        {
+            float min = ReadOnly.Numeric.MinSecPatrolPingPong;
+            float max = ReadOnly.Numeric.MaxSecPatrolPingPong;
+            while (true)
+            {
+                yield return new WaitForSeconds(Random.Range(min, max));
+                _randomPingPongFlag = !_randomPingPongFlag;
+                if (_randomPingPongFlag) // Wide Formation
+                    _randomPingPongDistance = Random.Range(min, max);
+                else // Narrow Formation
+                    _randomPingPongDistance = Random.Range(0, min);
+
+                ShuffleMembersPosition();
+                MoveStartMembersToTheirChasePos();
+            }
+        }
+
+        public void StartCoRandomFormation()
+        {
+            if (_coRandomFormation == null)
+                _coRandomFormation = StartCoroutine(CoRandomFormation());
+        }
+
+        public void StopCoRandomFormation()
+        {
+            if (_coRandomFormation != null)
+            {
+                StopCoroutine(_coRandomFormation);
+                _coRandomFormation = null;
+            }
+        }
+
+        private Coroutine _coChangeRandomHeroLeader = null;
+        private IEnumerator CoChangeRandomHeroLeader()
+        {
+            if (Managers.Object.Heroes.Count == 1)
+                yield break;
+
+            int randIdx = UnityEngine.Random.Range(0, Managers.Object.Heroes.Count);
+            Hero newHeroLeader = Managers.Object.Heroes[randIdx];
+            Hero currentLeader = Managers.Object.HeroLeaderController.Leader;
+            while (newHeroLeader == currentLeader || newHeroLeader.CreatureState == ECreatureState.Dead)
+            {
+                if (Managers.Object.Heroes.Count == 0)
+                    StopCoChangeRandomHeroLeader(); // yield break 안해도됨. 알아서 코루틴이 종료가 바로 되버리고 또한 오히려 이렇게 관리하는게 더 좋은게
+                // _coChangeRandomHeroLeader의 null여부를 통해서 코루틴 중복 여부를 체크할 수 있음.
+
+                randIdx = UnityEngine.Random.Range(0, Managers.Object.Heroes.Count);
+                newHeroLeader = Managers.Object.Heroes[randIdx];
+                yield return null; // 무한루프 방지
+            }
+
+            if (Managers.Object.Heroes.Count > 0)
+                Managers.Object.HeroLeaderController.Leader = newHeroLeader;
+
+            StopCoChangeRandomHeroLeader();
+        }
+
+        public void StartCoChangeRandomHeroLeader()
+        {
+            if (_coChangeRandomHeroLeader == null)
+                _coChangeRandomHeroLeader = StartCoroutine(CoChangeRandomHeroLeader());
+        }
+
+        public void StopCoChangeRandomHeroLeader()
+        {
+            if (_coChangeRandomHeroLeader != null)
+            {
+                StopCoroutine(_coChangeRandomHeroLeader);
+                _coChangeRandomHeroLeader = null;
+            }
+        }
+
+        private Coroutine _coAllMembersStopped = null;
+        private IEnumerator CoAllMembersStopped(System.Action endCallback = null)
+        {
+            while (true)
+            {
+                bool isAllStopped = true;
+                for (int i = 0; i < Managers.Object.Heroes.Count; ++i)
+                {
+                    Hero hero = Managers.Object.Heroes[i];
+                    if (hero == _leader)
+                        continue;
+
+                    if (hero.LerpToCellPosCompleted == false || hero.CreatureState == ECreatureState.Move)
+                    {
+                        isAllStopped = false;
+                        break;
+                    }
+                }
+
+                if (isAllStopped)
+                    break;
+
+                yield return null;
+            }
+
+            yield return null; // 한프레임 쉬고
+            endCallback?.Invoke();
+            StopCoAllMembersStopped();
+        }
+
+        public void StartCoAllMembersStopped(System.Action endCallback = null)
+        {
+            if (_coAllMembersStopped == null)
+                _coAllMembersStopped = StartCoroutine(CoAllMembersStopped(endCallback));
+        }
+
+        public void StopCoAllMembersStopped()
+        {
+            if (_coAllMembersStopped != null)
+            {
+                StopCoroutine(_coAllMembersStopped);
+                _coAllMembersStopped = null;
+            }
+        }
+        #endregion
+
+    #region Debug
+    #if UNITY_EDITOR
         private void OnDrawGizmos()
         {
             if (_leader == null)
@@ -497,6 +666,9 @@ namespace STELLAREST_F1
                 return;
 
             if (_heroLeaderChaseMode == EHeroLeaderChaseMode.RandomFormation)
+                return;
+
+            if (_heroLeaderChaseMode == EHeroLeaderChaseMode.ForceStop)
                 return;
 
             float distance = (float)_heroLeaderChaseMode;
@@ -515,7 +687,8 @@ namespace STELLAREST_F1
                 Gizmos.DrawSphere(worldCenterPos, radius: 0.5f);
             }
         }
-#endif
+    #endif
+    #endregion
 
         #region OBSOLETE TEMPORARY
         private IEnumerator CoReadyToReplaceMembers()
