@@ -72,7 +72,7 @@ namespace STELLAREST_F1
             }
         }
 
-        public static System.Type GetTypeFromClassName(string className)
+        public static System.Type GetTypeFromName(string className)
         {
             EClassName eClassName = GetEnumFromString<EClassName>(className);
             switch (eClassName)
@@ -94,7 +94,7 @@ namespace STELLAREST_F1
 
                 default:
                     //Debug.LogError($"{nameof(Util)}, {nameof(GetTypeFromClassName)}, Input : \"{className}, Please check Define.EClassName\"");
-                    LogError($"{nameof(Util)}, {nameof(GetTypeFromClassName)}, Input : \"{className}, Please check Define.EClassName\"");
+                    LogError($"{nameof(Util)}, {nameof(GetTypeFromName)}, Input : \"{className}, Please check Define.EClassName\"");
                     return null;
             }
         }

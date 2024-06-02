@@ -50,10 +50,10 @@ namespace STELLAREST_F1
                 firstHero.InitialSpawnedCellPos = Vector3Int.zero;
 
                 // 최대 맵 배치 동료 개수 : 7명 - (리더1, 팔로워6), 또는 9명(리더1, 팔로워8)
-                // 부대 최대 3개. 5개까지 하고 싶지만 (35명), 캐릭터 만들 수 있는 컨텐츠 오링날듯..
+                // 부대 최대 3개. 5개까지 하고 싶지만 (전체 목표 캐릭터 30명), 캐릭터 만들 수 있는 컨텐츠 오링날듯..
                 // 리더 포함, 최대 영웅 30명. 영웅 비활성화 기능 넣기? 안되면 부대 2개로 넣어야지 뭐.
                 int memberCount = 0;
-                int memberMaxCount = 6;
+                int memberMaxCount = 7;
                 while (memberCount < memberMaxCount)
                 {
                     randPos = new Vector3Int(Random.Range(-4, 4), Random.Range(-4, 4), 0);

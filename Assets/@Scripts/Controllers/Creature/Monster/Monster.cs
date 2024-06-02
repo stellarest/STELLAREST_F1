@@ -81,10 +81,10 @@ namespace STELLAREST_F1
             CreatureState = ECreatureState.Idle;
             _desiredNextPingPongPatrolDelta = Random.Range(5f, 6f);
 
-            StartCoSearchTarget<Creature>(scanRange: ReadOnly.Numeric.MonsterDefaultScanRange,
-                                         firstTargets: Managers.Object.Heroes,
-                                         secondTargets: null,
-                                         func: IsValid);
+            // StartCoSearchTarget<Creature>(scanRange: ReadOnly.Numeric.MonsterDefaultScanRange,
+            //                              firstTargets: Managers.Object.Heroes,
+            //                              secondTargets: null,
+            //                              func: IsValid);
 
             base.EnterInGame(dataID);
         }
@@ -105,23 +105,23 @@ namespace STELLAREST_F1
                 return;
 
             // ...Check CoolTime... //
-            if (Target.IsValid())
-            {
-                StopCoPingPongPatrol(); // ---> 패트롤은 아이들에서만 실행하기 때문에 여기서만 체크해주면 됨.
-                CreatureMoveState = ECreatureMoveState.TargetToEnemy;
-                CreatureState = ECreatureState.Move;
-                return;
-            }
-            else if (_coPingPongPatrol == null)
-            {
-                _waitPingPongPatrolDelta += Time.deltaTime;
-                if (_waitPingPongPatrolDelta >= _desiredNextPingPongPatrolDelta)
-                {
-                    _waitPingPongPatrolDelta = 0f;
-                    _desiredNextPingPongPatrolDelta = SetDesiredNextPingPongPatrolDelta(2f, 4f);
-                    StartCoPingPongPatrol(-5f, 5f);
-                }
-            }
+            // if (Target.IsValid())
+            // {
+            //     StopCoPingPongPatrol(); // ---> 패트롤은 아이들에서만 실행하기 때문에 여기서만 체크해주면 됨.
+            //     CreatureMoveState = ECreatureMoveState.TargetToEnemy;
+            //     CreatureState = ECreatureState.Move;
+            //     return;
+            // }
+            // else if (_coPingPongPatrol == null)
+            // {
+            //     _waitPingPongPatrolDelta += Time.deltaTime;
+            //     if (_waitPingPongPatrolDelta >= _desiredNextPingPongPatrolDelta)
+            //     {
+            //         _waitPingPongPatrolDelta = 0f;
+            //         _desiredNextPingPongPatrolDelta = SetDesiredNextPingPongPatrolDelta(2f, 4f);
+            //         StartCoPingPongPatrol(-5f, 5f);
+            //     }
+            // }
 
             // 나중에 Hero 뿐만이 아니라, Pet등이 될 수도 있으므로 Creature로 받기. 뒤에 인자는 일단 임의로  Managers.Object.Heroes.
             // Creature creature = FindClosestInRange(ReadOnly.Numeric.CreatureDefaultScanRange, Managers.Object.Heroes, func: IsValid) as Creature;
@@ -262,7 +262,7 @@ namespace STELLAREST_F1
         public override void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
         {
             base.OnDamaged(attacker, skillFromAttacker);
-            //Debug.Log($"{gameObject.name} is damaged. ({Hp} / {MaxHp})");
+            Debug.Log($"{gameObject.name} is damaged. ({Hp} / {MaxHp})");
         }
 
         public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)

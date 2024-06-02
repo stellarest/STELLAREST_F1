@@ -124,6 +124,7 @@ namespace STELLAREST_F1
                         MoveTo(monster, cellPos, stopLerpToCell: true, forceMove: true);
                         monster.InitialSpawnedCellPos = cellPos;
 
+                        // TEST MULTIPLE
                         // int currentMonsterCount = 0;
                         // int maxMonsterCount = 30;
                         // while (currentMonsterCount < maxMonsterCount)
@@ -139,6 +140,36 @@ namespace STELLAREST_F1
                         //     monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, tile.DataID);
                         //     MoveTo(monster, randPos, stopLerpToCell: true, forceMove: true);
                         //     monster.InitialSpawnedCellPos = randPos;
+                        // }
+
+                        // // TEST: NEAR1
+                        // cellPos = new Vector3Int(UnityEngine.Random.Range(cellPos.x + 3, cellPos.x + 5),
+                        //                         UnityEngine.Random.Range(cellPos.y + 3, cellPos.y + 5), 0);
+                        // if (Managers.Map.CanMove(cellPos))
+                        // {
+                        //     monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, tile.DataID);
+                        //     MoveTo(monster, cellPos, stopLerpToCell: true, forceMove: true);
+                        //     monster.InitialSpawnedCellPos = cellPos;
+                        // }
+
+                        // // TEST: NEAR2
+                        // cellPos = new Vector3Int(UnityEngine.Random.Range(cellPos.x - 3, cellPos.x - 5),
+                        //                         UnityEngine.Random.Range(cellPos.y + 3, cellPos.y + 5), 0);
+                        // if (Managers.Map.CanMove(cellPos))
+                        // {
+                        //     monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, tile.DataID);
+                        //     MoveTo(monster, cellPos, stopLerpToCell: true, forceMove: true);
+                        //     monster.InitialSpawnedCellPos = cellPos;
+                        // }
+
+                        // // TEST: NEAR3
+                        // cellPos = new Vector3Int(UnityEngine.Random.Range(cellPos.x + 3, cellPos.x + 5),
+                        //                         UnityEngine.Random.Range(cellPos.y + 3, cellPos.y + 5), 0);
+                        // if (Managers.Map.CanMove(cellPos))
+                        // {
+                        //     monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, tile.DataID);
+                        //     MoveTo(monster, cellPos, stopLerpToCell: true, forceMove: true);
+                        //     monster.InitialSpawnedCellPos = cellPos;
                         // }
 
                         // TEST: 9,5

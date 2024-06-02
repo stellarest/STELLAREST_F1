@@ -58,8 +58,7 @@ namespace STELLAREST_F1
 
         public virtual void DoSkill()
         {
-            //Owner.LookAtTarget(Owner.Target);
-            //Owner.LookAtTarget();
+            Owner.LookAtValidTarget();
 
             if (Owner.CreatureSkill != null)
                 Owner.CreatureSkill.ActiveSkills.Remove(this);

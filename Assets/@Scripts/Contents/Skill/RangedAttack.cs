@@ -43,6 +43,8 @@ namespace STELLAREST_F1
         {
             if (Owner.IsValid() == false)
                 return;
+            if (Owner.Target.IsValid() == false)
+                return;
 
             GenerateProjectile(Owner, GetSpawnPos());
         }

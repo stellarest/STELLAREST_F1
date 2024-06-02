@@ -671,7 +671,7 @@ namespace STELLAREST_F1
                 public static readonly float MonsterSize_Medium = 0.8F;
                 public static readonly float MonsterSize_Large = 1.2F;
 
-                public static readonly float HeroDefaultScanRange = 6.0F; // 일단 6칸
+                public static readonly float HeroDefaultScanRange = 8.0F; // 오리지날 6F, 일단 6칸
                 public static readonly float RangedHeroScanRange = 12.0F; // TEMP
                 public static readonly float MonsterDefaultScanRange = 4.0F; // 상하좌우 한칸 기준, 대각선X
                 public static readonly float Temp_StopDistance = 1.25F;

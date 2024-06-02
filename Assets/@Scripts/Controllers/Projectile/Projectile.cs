@@ -60,7 +60,7 @@ namespace STELLAREST_F1
 
             Collider.excludeLayers = excludeLayerMask;
 
-            Type classType = Util.GetTypeFromClassName(projectileData.Type);
+            Type classType = Util.GetTypeFromName(projectileData.Type);
             ProjectileMotion = gameObject.AddComponent(classType) as ProjectileMotionBase;
             if (ProjectileMotion == null)
             {

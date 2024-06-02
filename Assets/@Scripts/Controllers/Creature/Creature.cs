@@ -318,8 +318,11 @@ namespace STELLAREST_F1
         }
 
         #endregion Battle
-        private bool IsInAttackRange()
+        protected bool IsInAttackRange()
         {
+            if (Target.IsValid() == false)
+                return false;
+
             int dx = Mathf.Abs(Target.CellPos.x - CellPos.x);
             int dy = Mathf.Abs(Target.CellPos.y - CellPos.y);
             

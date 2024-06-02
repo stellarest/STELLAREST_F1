@@ -460,6 +460,9 @@ namespace STELLAREST_F1
             if (_leader.IsValid() == false) // --- DEFENSE
                 return false;
 
+            if (_leader.Target.IsValid() == false)
+                return false;
+
             return _leader.CreatureSkill.IsRemainingCoolTime(skillType) == false;
         }
         #endregion

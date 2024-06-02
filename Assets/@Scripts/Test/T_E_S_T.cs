@@ -7,10 +7,18 @@ using UnityEngine;
 
 /*
 [ TODO TODAY LIST ]
+// 24. 06. 02
+>>> 히어로 핑퐁 잡기
+>>> ENV
+>>> 치킨 바디 어택
+>>> 위자드 가볍게 전투 테스트
+>>> Normal Mode, Engage Enemy, Follow Leader
+
 // 24. 06. 01
 >>> 리더 죽었을 때, 리더 체인지 막아야함.
 >>> FORCE SOTP MODE (완료)
 >>> 아처 기본 공격(전투), 위자드 기본 공격(전투)부터 해결.
+>>> 리더 변경 쿨타임 추가 완료
 
 >>> 다음 챕터로 넘어가기 전에...
 >>>>> 닭 바디 어택 확인 (기본으로 바꿀지 고민)
@@ -225,11 +233,11 @@ private void Update()
 }
 
 캐릭터 해금의 재미를 줘야할듯
-1. Paladin
-2. Archer
-3. Wizard
-4. Warrior
-5. Assassin
+1. Paladin - Common > Ultimate
+2. Archer - Common > Ultimate
+3. Wizard - Common > Ultimate
+4. Warrior - Common > Ultimate
+5. Assassin - Elite
 6. Druid (Forest Guardian)
 7. Mutant
 8. Skeleton King

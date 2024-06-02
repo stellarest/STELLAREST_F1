@@ -245,7 +245,7 @@ namespace STELLAREST_F1
             AnimationCurve curve = Managers.Animation.Curve(EAnimationCurveType.Ease_In);
             while (percent > 0f)
             {
-                Debug.Log($"{gameObject.name}, {percent}");
+                // Debug.Log($"{gameObject.name}, {percent}");
                 delta += Time.deltaTime;
                 percent = 1f - (delta / ReadOnly.Numeric.DesiredDeadFadeOutEndTime);
                 foreach (SpriteRenderer spr in GetComponentsInChildren<SpriteRenderer>())

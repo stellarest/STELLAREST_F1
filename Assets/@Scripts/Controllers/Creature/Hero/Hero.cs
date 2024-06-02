@@ -240,26 +240,30 @@ namespace STELLAREST_F1
                 List<Vector3Int> path = Managers.Map.FindPath(CellPos, ChaseCellPos, 2);
                 if (path.Count > 0)
                 {
-                    /*
-                        --- NOTE
-                        - DO NOT SKI MOVEMENT
-                    */
-                    Vector3 centeredPos = Managers.Map.CenteredCellToWorld(path[path.Count - 1]);
-                    if ((transform.position - centeredPos).sqrMagnitude < 0.01f)
+                    for (int i = 0; i < path.Count; ++i)
                     {
-                        // 타겟을 잡고(타겟이 히어로에게 죽고) 돌아오는 길이었다면..
-                        if (Target.IsValid() == false && CreatureMoveState == ECreatureMoveState.TargetToEnemy)
+                        // 일단 무조건 Cell의 중앙에 와야함. (스키타는 움직임 방지)
+                        Vector3 centeredPathPos = Managers.Map.CenteredCellToWorld(path[i]);
+                        if ((transform.position - centeredPathPos).sqrMagnitude > 0.01f)
+                            continue;
+
+                        // Cell 중앙에 위치 후, 공격 범위에 들어오면 공격 시작.
+                        if (IsInAttackRange())
                         {
-                            CreatureMoveState = ECreatureMoveState.None;
-                            CreatureState = ECreatureState.Idle;
+                            _canHandleSkill = true;
                             return;
                         }
+                    }
 
+                    Vector3 centeredLastPathPos = Managers.Map.CenteredCellToWorld(path[path.Count - 1]);
+                    if (Target.IsValid() && (transform.position - centeredLastPathPos).sqrMagnitude < 0.01f)
+                    {
                         if (IsPingPongAndCantMoveToDest(CellPos))
                         {
                             if (_currentPingPongCantMoveCount >= ReadOnly.Numeric.MaxCanPingPongConditionCount && IsForceMovingPingPongObject == false)
                             {
-                                CoStartForceMovePingPongObject(CellPos, ChaseCellPos, delegate ()
+                                Debug.Log($"<color=cyan>{gameObject.name}, Start moving for PingPong Object.");
+                                CoStartForceMovePingPongObject(CellPos, ChaseCellPos, endCallback: delegate ()
                                 {
                                     _currentPingPongCantMoveCount = 0;
                                     CoStopForceMovePingPongObject();
@@ -267,13 +271,23 @@ namespace STELLAREST_F1
                                     CreatureState = ECreatureState.Idle;
                                 });
                             }
-                            else if (IsForceMovingPingPongObject == false)
-                            {
-                                Debug.Log($"<color=white>{gameObject.name}, PingPong Count: {++_currentPingPongCantMoveCount}</color>");
-                            }
-                        }
+                             else if (IsForceMovingPingPongObject == false)
+                                ++_currentPingPongCantMoveCount;
 
-                        _canHandleSkill = true;
+                            return;
+                        }
+                    }
+
+                    // 타겟이 죽었다면.. return to leader
+                    if (Target.IsValid() == false && CreatureMoveState == ECreatureMoveState.TargetToEnemy)
+                    {
+                        if ((transform.position - centeredLastPathPos).sqrMagnitude < 0.01f)
+                        {
+                            CreatureMoveState = ECreatureMoveState.None;
+                            CreatureState = ECreatureState.Idle;
+                            Debug.Log($"<color=cyan>{gameObject.name}, return to leader</color>");
+                            return;
+                        }
                     }
                 }
             }
@@ -802,5 +816,39 @@ namespace STELLAREST_F1
         //         }
         //         // NeedArrange = false; // --> 이거 주면 해결 되긴하는데, 캠프까지 쫓아가질 않음
         //     }
+        // }
+
+        // #################### PREV ####################
+        // --- DO NOT SKI MOVEMENT
+        // Vector3 centeredPos = Managers.Map.CenteredCellToWorld(path[path.Count - 1]);
+        // if ((transform.position - centeredPos).sqrMagnitude < 0.01f)
+        // {
+        //     // 타겟을 잡고(타겟이 히어로에게 죽고) 돌아오는 길이었다면..
+        //     if (Target.IsValid() == false && CreatureMoveState == ECreatureMoveState.TargetToEnemy)
+        //     {
+        //         CreatureMoveState = ECreatureMoveState.None;
+        //         CreatureState = ECreatureState.Idle;
+        //         return;
+        //     }
+
+        //     if (IsPingPongAndCantMoveToDest(CellPos))
+        //     {
+        //         if (_currentPingPongCantMoveCount >= ReadOnly.Numeric.MaxCanPingPongConditionCount && IsForceMovingPingPongObject == false)
+        //         {
+        //             CoStartForceMovePingPongObject(CellPos, ChaseCellPos, delegate ()
+        //             {
+        //                 _currentPingPongCantMoveCount = 0;
+        //                 CoStopForceMovePingPongObject();
+        //                 CreatureMoveState = ECreatureMoveState.None;
+        //                 CreatureState = ECreatureState.Idle;
+        //             });
+        //         }
+        //         else if (IsForceMovingPingPongObject == false)
+        //         {
+        //             Debug.Log($"<color=white>{gameObject.name}, PingPong Count: {++_currentPingPongCantMoveCount}</color>");
+        //         }
+        //     }
+
+        //     _canHandleSkill = true;
         // }
 */

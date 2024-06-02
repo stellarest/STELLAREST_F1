@@ -76,7 +76,7 @@ namespace STELLAREST_F1
                 return;
             }
 
-            Type skillClassType = Util.GetTypeFromClassName(skillData.ClassName);
+            System.Type skillClassType = Util.GetTypeFromName(skillData.ClassName);
             SkillBase skill = gameObject.AddComponent(skillClassType) as SkillBase;
             if (skill == null)
                 return;
