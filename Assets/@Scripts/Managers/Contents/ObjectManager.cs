@@ -260,6 +260,7 @@ namespace STELLAREST_F1
 
                 case EObjectType.Env:
                     Envs.Remove(obj as Env);
+                    Managers.Map.RemoveObject(obj as Env);
                     break;
 
                 case EObjectType.Projectile:

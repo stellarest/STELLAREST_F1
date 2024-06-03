@@ -23,10 +23,10 @@ namespace STELLAREST_F1
             float baseX = Mathf.Lerp(StartPosition.x, TargetPosition.x, firstTick);
             float baseY = Mathf.Lerp(StartPosition.y, TargetPosition.y, firstTick);
 
-            Debug.Log($"<color=cyan>Need to adjust Parabola Motion.</color>");
+            //Debug.Log($"<color=cyan>Need to adjust Parabola Motion.</color>");
             HeightArc = Mathf.Lerp(MinHeight, MaxHeight, Util.Distance(StartPosition, TargetPosition, isSQR: true)/ MaxDistanceSQR);
-            Debug.Log($"Distance: {Util.Distance(StartPosition, TargetPosition, isSQR: true)}");
-            Debug.Log($"Result - HeightArc: {HeightArc}");
+            // Debug.Log($"Distance: {Util.Distance(StartPosition, TargetPosition, isSQR: true)}");
+            // Debug.Log($"Result - HeightArc: {HeightArc}");
             float arc = HeightArc * Mathf.Sin(firstTick * Mathf.PI);
             float arcY = baseY + arc;
 
@@ -38,7 +38,7 @@ namespace STELLAREST_F1
 
         protected override IEnumerator CoLaunchProjectile()
         {
-            Debug.Log($"### Launch::ParabolaMotion ###");
+            //Debug.Log($"### Launch::ParabolaMotion ###");
             float startTime = Time.time;
             float journeyLength = Vector2.Distance(StartPosition, TargetPosition);
             float totalTime = journeyLength / _movementSpeed;

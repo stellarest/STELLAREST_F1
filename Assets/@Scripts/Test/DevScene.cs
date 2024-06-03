@@ -28,7 +28,7 @@ namespace STELLAREST_F1
             Managers.Map.LoadMap("SummerForestField_Test2");
             Managers.Map.Map.transform.position = Vector3.zero;
 
-            {
+            {   // --- HEROES TEST
                 // RandPos Test
                 int attemptCount = 0;
                 Vector3Int randPos = new Vector3Int(Random.Range(-3, 3), Random.Range(-3, 3), 0);
@@ -49,34 +49,85 @@ namespace STELLAREST_F1
                 Managers.Map.MoveTo(firstHero, Vector3.zero, stopLerpToCell: true, forceMove: true);
                 firstHero.InitialSpawnedCellPos = Vector3Int.zero;
 
-                // 최대 맵 배치 동료 개수 : 7명 - (리더1, 팔로워6), 또는 9명(리더1, 팔로워8)
-                // 부대 최대 3개. 5개까지 하고 싶지만 (전체 목표 캐릭터 30명), 캐릭터 만들 수 있는 컨텐츠 오링날듯..
-                // 리더 포함, 최대 영웅 30명. 영웅 비활성화 기능 넣기? 안되면 부대 2개로 넣어야지 뭐.
+                // Leader:1, Maximum Members:6
                 int memberCount = 0;
-                int memberMaxCount = 7;
+                int memberMaxCount = 6;
+                bool heroTypeFlag = false;
+                int dataID = -1;
                 while (memberCount < memberMaxCount)
                 {
                     randPos = new Vector3Int(Random.Range(-4, 4), Random.Range(-4, 4), 0);
                     if (Managers.Map.CanMove(randPos) == false)
                         continue;
+
+                    // if (heroTypeFlag)
+                    //     dataID = ReadOnly.Numeric.DataID_Hero_Paladin;
+                    // else
+                        dataID = ReadOnly.Numeric.DataID_Hero_Archer;
+                    heroTypeFlag = !heroTypeFlag;
                         
                     memberCount++;
-                    Hero hero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
+                    //Hero hero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
+                    Hero hero = Managers.Object.Spawn<Hero>(EObjectType.Hero, dataID);
+
                     hero.gameObject.name += $"___{memberCount.ToString()}";
                     Managers.Map.MoveTo(hero, randPos, stopLerpToCell: true, forceMove: true);
                     hero.InitialSpawnedCellPos = randPos;
-                    // A* Test
-                    // Managers.Map.MoveTo(hero, new Vector3Int(-1, -1, 0), forceMove: true);
                 }
-
                 leaderController.Leader = firstHero;
             }
 
-            // Temp - Spawn Env (스폰 데이터 시트로 빼야함)
-            // int maxX = Managers.Object.Monsters[0].CellPos.x;
-            // int maxY = Managers.Object.Monsters[0].CellPos.y;
-            // Env env = Managers.Object.Spawn<Env>(EObjectType.Env, ReadOnly.Numeric.DataID_Env_AshTree);
-            // env.SetCellPos(new Vector3Int(Random.Range(maxX - 2, maxX + 2), Random.Range(maxY - 2, maxY + 2)), stopLerpToCell: true, forceMove: true);
+            {   // --- ENV SINGLE TEST
+                // Temp - Spawn Env (스폰 데이터 시트로 빼야함)
+                Env env = Managers.Object.Spawn<Env>(EObjectType.Env, ReadOnly.Numeric.DataID_Env_AshTree);
+                // int x = Managers.Object.Monsters[0].CellPos.x;
+                // int y = Managers.Object.Monsters[0].CellPos.y;
+                //Vector3Int randPos = new Vector3Int(Random.Range(x + 3, x + 5), Random.Range(y + 3, y + 5));
+                Vector3Int randPos = new Vector3Int(-6, 11, 0);
+                env.SetCellPos(cellPos: randPos, stopLerpToCell: true, forceMove: true);
+                env.InitialSpawnedCellPos = randPos;
+                env.UpdateCellPos();
+            }
+
+            {
+                // --- ENV SPREAD
+                int envCount = 0;
+                int envMaxCount = 15;
+                int minX = Managers.Map.MinX;
+                int maxX = Managers.Map.MaxX;
+                int minY = Managers.Map.MinY;
+                int maxY = Managers.Map.MaxY;
+                int attempCount = 0;
+                Vector3Int cellPos = new Vector3Int(Random.Range(minX, maxX), Random.Range(minY, maxY));
+                while (envCount < envMaxCount)
+                {
+                    if (attempCount++ > 100)
+                        break;
+
+                    if (Managers.Map.CanMove(cellPos) == false)
+                    {
+                        cellPos = new Vector3Int(Random.Range(minX, maxX), Random.Range(minY, maxY));
+                        continue;
+                    }
+
+                    bool envTree = true;
+                     if (Random.Range(0, 100) > 50)
+                        envTree = false;
+
+                    int spawnDataID = -1;
+                    if (envTree)
+                        spawnDataID = GetRandEnvTree;
+                    else
+                        spawnDataID = GetRandEnvRock;
+
+                    Env env = Managers.Object.Spawn<Env>(EObjectType.Env, spawnDataID);
+                    env.SetCellPos(cellPos: cellPos, stopLerpToCell: true, forceMove: true);
+                    env.InitialSpawnedCellPos = cellPos;
+                    env.UpdateCellPos();
+                    ++envCount;
+                }
+            }
+
             if (Managers.Object.HeroLeaderController == null)
             {
                 Debug.LogError("This game absolutely requires at least one Hero Leader Controller.");

@@ -26,7 +26,7 @@ namespace STELLAREST_F1
         public override bool CollectEnv
         {
             get => base.CollectEnv;
-            protected set
+            set
             {
                 base.CollectEnv = value;
                 if (value && Target.IsValid())
@@ -105,10 +105,7 @@ namespace STELLAREST_F1
             base.EnterInGame(dataID);
             StartCoIsFarFromLeaderTick();
 
-            /*
-                --- NOTE
-                - First Targets: Monsters, Second Targets: Envs
-            */
+            // --- First Targets: Monsters, Second Targets: Envs
             StartCoSearchTarget<BaseObject>(scanRange: ReadOnly.Numeric.HeroDefaultScanRange,
                             firstTargets: Managers.Object.Monsters,
                             secondTargets: Managers.Object.Envs,
@@ -127,12 +124,17 @@ namespace STELLAREST_F1
                 {
                     if (CanAttackOrChase())
                     {
-                        if (Target.ObjectType == EObjectType.Env)
-                            CreatureState = ECreatureState.CollectEnv;
-                        else
+                        if (_canHandleSkill)
                         {
-                            if (_canHandleSkill)
-                                CreatureSkill?.CurrentSkill.DoSkill();
+                            if (Target.ObjectType == EObjectType.Env)
+                                CreatureState = ECreatureState.CollectEnv;
+                            else if (Target.ObjectType == EObjectType.Monster)
+                            {
+                                if (CreatureSkill.IsRemainingCoolTime((int)ESkillType.Skill_Attack) == false)
+                                    CreatureSkill?.CurrentSkill.DoSkill();
+                                else
+                                    CreatureState = ECreatureState.Idle;
+                            }
                         }
                     }
 
@@ -175,6 +177,14 @@ namespace STELLAREST_F1
             if (IsLeader)
                 return;
 
+            // 여기서 체크하면 됨. 상태이상같은거 걸리지 않은 이상 FollowLeader 모드일 때, ForceMove라면 바로 이동
+            // ***** WHY DOUBLE ATTACK PALADIN ??? *****
+            if (IsCorrectHeroMemberBattleMode(EHeroMemberBattleMode.FollowLeader) && CreatureMoveState == ECreatureMoveState.ForceMove)
+            {
+                CreatureState = ECreatureState.Move;
+                return;
+            }
+
             LookAtValidTarget();
             if (CreatureSkill.IsRemainingCoolTime((int)ESkillType.Skill_Attack))
                 return;
@@ -209,7 +219,7 @@ namespace STELLAREST_F1
             }
 
             // --- 타겟이 존재하거나, 타겟이 죽었을 경우, Move 상태로 전환
-            if (CreatureMoveState == ECreatureMoveState.TargetToEnemy)
+            if (CreatureMoveState == ECreatureMoveState.MoveToTarget)
                 CreatureState = ECreatureState.Move;
         }
 
@@ -234,7 +244,7 @@ namespace STELLAREST_F1
                     return;
                 }
             }
-            else if (CreatureMoveState == ECreatureMoveState.TargetToEnemy)
+            else if (CreatureMoveState == ECreatureMoveState.MoveToTarget)
             {
                 _canHandleSkill = false;
                 List<Vector3Int> path = Managers.Map.FindPath(CellPos, ChaseCellPos, 2);
@@ -255,6 +265,7 @@ namespace STELLAREST_F1
                         }
                     }
 
+                    // 와리가리 핑퐁 오브젝트 체크
                     Vector3 centeredLastPathPos = Managers.Map.CenteredCellToWorld(path[path.Count - 1]);
                     if (Target.IsValid() && (transform.position - centeredLastPathPos).sqrMagnitude < 0.01f)
                     {
@@ -262,7 +273,7 @@ namespace STELLAREST_F1
                         {
                             if (_currentPingPongCantMoveCount >= ReadOnly.Numeric.MaxCanPingPongConditionCount && IsForceMovingPingPongObject == false)
                             {
-                                Debug.Log($"<color=cyan>{gameObject.name}, Start moving for PingPong Object.");
+                                Debug.Log($"<color=cyan>[!]{gameObject.name}, Start force moving for PingPong Object.</color>");
                                 CoStartForceMovePingPongObject(CellPos, ChaseCellPos, endCallback: delegate ()
                                 {
                                     _currentPingPongCantMoveCount = 0;
@@ -279,7 +290,7 @@ namespace STELLAREST_F1
                     }
 
                     // 타겟이 죽었다면.. return to leader
-                    if (Target.IsValid() == false && CreatureMoveState == ECreatureMoveState.TargetToEnemy)
+                    if (Target.IsValid() == false && CreatureMoveState == ECreatureMoveState.MoveToTarget)
                     {
                         if ((transform.position - centeredLastPathPos).sqrMagnitude < 0.01f)
                         {
@@ -298,38 +309,57 @@ namespace STELLAREST_F1
             if (IsLeader)
                 return;
 
-            if (CreatureMoveState == ECreatureMoveState.ForceMove)
+            //LookAtValidTarget();
+            HeroLeaderController leaderController = Managers.Object.HeroLeaderController;
+            if (leaderController == null)
+                return;
+
+            EHeroMemberBattleMode battleMode = leaderController.HeroMemberBattleMode;
+            if (battleMode == EHeroMemberBattleMode.FollowLeader)
             {
-                // --- DEFENSE
-                CreatureMoveState = ECreatureMoveState.None;
+                // --- CreatureMoveState == ECreatureMoveState.ForceMove: 어차피 OnJoystickStateChanged에서 EngageEnemy 모드에서는 ForceMove를 받을 수 없긴함.
+                if (CreatureMoveState == ECreatureMoveState.ForceMove || Target.IsValid() == false)
+                    CreatureState = ECreatureState.Move;
+            }
+            else if (battleMode == EHeroMemberBattleMode.EngageEnemy)
+            {
+                if (Target.IsValid() == false)
+                {
+                    CollectEnv = false;
+                    CreatureState = ECreatureState.Move;
+                }
             }
         }
 
         protected override void UpdateCollectEnv()
         {
-            if (CreatureMoveState == ECreatureMoveState.ForceMove || Target.IsValid() == false)
-            {
-                CollectEnv = false;
+            if (IsLeader)
+                return;
+
+            // Retarget Monster
+            if (Target.IsValid() && Target.ObjectType == EObjectType.Monster)
                 CreatureState = ECreatureState.Move;
-            }
-            else if (Target.IsValid())
+
+            if (IsCorrectHeroMemberBattleMode(EHeroMemberBattleMode.FollowLeader))
             {
-                // Research Enemies
-                Creature creature = FindClosestInRange(ReadOnly.Numeric.HeroDefaultScanRange, Managers.Object.Monsters, func: IsValid) as Creature;
-                if (creature != null)
+                // --- CreatureMoveState == ECreatureMoveState.ForceMove: 어차피 OnJoystickStateChanged에서 EngageEnemy 모드에서는 ForceMove를 받을 수 없긴함.
+                if (CreatureMoveState == ECreatureMoveState.ForceMove || Target.IsValid() == false)
                 {
                     CollectEnv = false;
-                    Target = creature;
-                    CreatureMoveState = ECreatureMoveState.TargetToEnemy;
                     CreatureState = ECreatureState.Move;
-                    return;
                 }
-
-                //LookAtTarget(Target);
+            }
+            else if (IsCorrectHeroMemberBattleMode(EHeroMemberBattleMode.EngageEnemy))
+            {
+                if (Target.IsValid() == false)
+                {
+                    CollectEnv = false;
+                    CreatureState = ECreatureState.Move;
+                }
             }
         }
 
-        protected override void UpdateDead() // --> 없어도 될듯? 보스몹같은거 아니면. ㄴㄴ 보스몹에서도 없어도 될듯
+        protected override void UpdateDead()
         {
             base.UpdateDead();
         }
@@ -343,7 +373,7 @@ namespace STELLAREST_F1
             Target.OnDamaged(this, null);
         }
 
-        #region MISC
+        #region Misc
         public Vector3Int PrevCellPosForForceStop { get; set; } = Vector3Int.zero;
         private bool IsForceStopMode()
         {
@@ -353,6 +383,19 @@ namespace STELLAREST_F1
                 return false;
 
             return leaderController.HeroLeaderChaseMode == EHeroLeaderChaseMode.ForceStop;
+        }
+
+        private bool IsCorrectHeroMemberBattleMode(EHeroMemberBattleMode battleMode)
+        {
+            HeroLeaderController leaderController = Managers.Object.HeroLeaderController;
+            if (leaderController == null)
+                return false;
+
+            EHeroMemberBattleMode heroMemberBattleMode = leaderController.HeroMemberBattleMode;
+            if (heroMemberBattleMode == battleMode)
+                return true;
+            else
+                return false;
         }
         #endregion
 
@@ -369,7 +412,7 @@ namespace STELLAREST_F1
             {
                 case EJoystickState.PointerUp:
                     {
-                        if (CreatureMoveState != ECreatureMoveState.TargetToEnemy)
+                        if (CreatureMoveState != ECreatureMoveState.MoveToTarget)
                             CreatureMoveState = ECreatureMoveState.None;
                     }
                     break;
@@ -379,7 +422,7 @@ namespace STELLAREST_F1
                     {
                         if (Target.IsValid() && _isFarFromLeader == false)
                         {
-                            CreatureMoveState = ECreatureMoveState.TargetToEnemy;
+                            CreatureMoveState = ECreatureMoveState.MoveToTarget;
                             return;
                         }
                     }

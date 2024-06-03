@@ -80,7 +80,7 @@ namespace STELLAREST_F1
 
             // TODO : Show UI
             Hp = UnityEngine.Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
-            Debug.Log($"{gameObject.name} is damaged. ({Hp} / {MaxHp})");
+            //Debug.Log($"{gameObject.name} is damaged. ({Hp} / {MaxHp})");
             if (Hp <= 0f)
             {
                 Hp = 0f;

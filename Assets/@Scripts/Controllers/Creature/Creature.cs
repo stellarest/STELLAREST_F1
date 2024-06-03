@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using static STELLAREST_F1.Define;
 
@@ -32,11 +33,11 @@ namespace STELLAREST_F1
             get => _creatureMoveState;
             set => _creatureMoveState = value;
         }
-        private bool _collectEnv = false;
+        [SerializeField] private bool _collectEnv = false;
         public virtual bool CollectEnv
         {
             get => _collectEnv;
-            protected set => _collectEnv = value;
+            set => _collectEnv = value;
         }
         public virtual Vector3Int ChaseCellPos // *** NO SETTER !! ***
         {
@@ -80,6 +81,8 @@ namespace STELLAREST_F1
         {
             base.EnterInGame(dataID);
             RigidBody.simulated = false;
+            CollectEnv = false;
+
             ShowBody(false);
             StartWait(waitCondition: () => BaseAnim.IsPlay() == false,
                       callbackWaitCompleted: () => {
@@ -325,9 +328,17 @@ namespace STELLAREST_F1
 
             int dx = Mathf.Abs(Target.CellPos.x - CellPos.x);
             int dy = Mathf.Abs(Target.CellPos.y - CellPos.y);
-            
-            if (dx <= AtkRange && dy <= AtkRange)
-                return true;
+
+            if (Target.ObjectType == EObjectType.Monster)
+            {
+                if (dx <= AtkRange && dy <= AtkRange)
+                    return true;
+            }
+            else if (Target.ObjectType == EObjectType.Env)
+            {
+                if (dx <= 1 && dy <= 1)
+                    return true;
+            }
 
             return false;
         }
@@ -491,7 +502,7 @@ namespace STELLAREST_F1
             float bestDistSQR = float.MaxValue;
             float scanRangeSQR = scanRange * scanRange;
 
-            // ***** Hero Leader Scan Range *****
+            // --- Set Hero Leader Scan Range (half)
             Hero hero = this as Hero;
             if (hero.IsValid() && hero.IsLeader)
                 scanRangeSQR *= 0.5f;
@@ -558,9 +569,15 @@ namespace STELLAREST_F1
 
                 if (CreatureMoveState != ECreatureMoveState.ForceMove)
                 {
+                    if (_coWaitSearchTarget != null) // search tick이후, 이미 Wait이 진행중이었다면.. 
+                    {
+                        yield return null;
+                        continue;
+                    }
+
                     Target = SearchClosestInRange(scanRange, firstTargets: firstTargets, secondTargets: secondTargets, func: func);
                     if (Target.IsValid())
-                        CreatureMoveState = ECreatureMoveState.TargetToEnemy;
+                        CreatureMoveState = ECreatureMoveState.MoveToTarget;
                 }
             }
         }
@@ -581,6 +598,36 @@ namespace STELLAREST_F1
                 StopCoroutine(_coSearchTarget);
                 _coSearchTarget = null;
             }
+        }
+
+        protected Coroutine _coWaitSearchTarget = null;
+        private IEnumerator CoWaitSearchTarget(float waitSeconds)
+        {
+            Debug.Log("<color=green>START WAIT</color>");
+            yield return new WaitForSeconds(waitSeconds);
+            StopCoWaitSearchTarget();
+        }
+
+        protected void StartCoWaitSearchTarget(float waitSeconds)
+        {
+            if (_coWaitSearchTarget != null)
+            {
+                Debug.LogWarning("Already process - CoWaitSearchTarget");
+                return;
+            }
+
+            _coWaitSearchTarget = StartCoroutine(CoWaitSearchTarget(waitSeconds));
+        }
+
+        private void StopCoWaitSearchTarget() // PRIVATE
+        {
+            if (_coWaitSearchTarget != null)
+            {
+                StopCoroutine(_coWaitSearchTarget);
+                _coWaitSearchTarget = null;
+            }
+
+            Debug.Log("<color=green>RELEASE WAIT</color>");
         }
 
         /*

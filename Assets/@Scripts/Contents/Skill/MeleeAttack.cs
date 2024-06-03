@@ -61,7 +61,7 @@ namespace STELLAREST_F1
             */
             if (Owner.CreatureState != ECreatureState.Idle) // --- DEFENSE
             {
-                Owner.CreatureMoveState = ECreatureMoveState.TargetToEnemy;
+                Owner.CreatureMoveState = ECreatureMoveState.MoveToTarget;
                 Owner.CreatureState = ECreatureState.Idle;
             }
         }

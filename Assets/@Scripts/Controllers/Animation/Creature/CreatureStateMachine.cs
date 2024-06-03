@@ -79,7 +79,10 @@ namespace STELLAREST_F1
                 }
                 else if (currentPercentage < endThresholdPercentage && _canCollectEnvFlag)
                     _canCollectEnvFlag = false;
-
+                // else if (currentPercentage >= 0.90f)
+                // {
+                //     _creatureAnim.AnimationEnd(ECreatureState.CollectEnv);
+                // }
                 return;
             }
         }

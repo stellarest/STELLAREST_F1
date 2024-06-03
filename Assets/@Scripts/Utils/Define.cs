@@ -9,7 +9,7 @@ namespace STELLAREST_F1
 {
     public static class Define
     {
-        public enum EObjectRarity
+        public enum EObjectRarity // TEMP
         {
             Common,     // Common -> Ultimate
             Elite,      // 단일 등급
@@ -107,14 +107,9 @@ namespace STELLAREST_F1
         public enum ECreatureMoveState
         {
             None,
-            TargetToEnemy,
-            CollectEnv, // 이것도 필요 없을 것 같긴한데
-            //ReturnToBase,
-            Patrol, // 필요 없을듯
+            MoveToTarget,
             ForceMove,
             ForcePath,
-
-            //FollowLeader,
         }
 
         public enum ELookAtDirection
@@ -363,12 +358,6 @@ namespace STELLAREST_F1
             Fail_MoveTo,
             Fail_ForceMovePingPongObject,
             Success
-        }
-
-        public enum EReplaceMode
-        {
-            FollowLeader = 1,
-            FocusingLeader
         }
 
         public enum EHeroLeaderChaseMode
@@ -659,6 +648,8 @@ namespace STELLAREST_F1
                 public static readonly float DesiredCanChangeLeaderTime = 3F;
 
                 // -- [ MONSTER ]
+                public static readonly float MinSecWaitSearchTargetForSettingAggroFromRange = 2.0F;
+                public static readonly float MaxSecWaitSearchTargetForSettingAggroFromRange = 4.0F;
 
                 // -- [ MISC ]
                 public static readonly float SearchFindTargetTick = 0.25F;
@@ -671,8 +662,7 @@ namespace STELLAREST_F1
                 public static readonly float MonsterSize_Medium = 0.8F;
                 public static readonly float MonsterSize_Large = 1.2F;
 
-                public static readonly float HeroDefaultScanRange = 8.0F; // 오리지날 6F, 일단 6칸
-                public static readonly float RangedHeroScanRange = 12.0F; // TEMP
+                public static readonly float HeroDefaultScanRange = 6.0F; // 오리지날 6F, 일단 6칸
                 public static readonly float MonsterDefaultScanRange = 4.0F; // 상하좌우 한칸 기준, 대각선X
                 public static readonly float Temp_StopDistance = 1.25F;
                 
