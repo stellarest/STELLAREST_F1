@@ -47,6 +47,19 @@ namespace STELLAREST_F1
             Skill = Owner.CreatureSkill.FindSkill(dataID);
             Managers.Sprite.SetInfo(dataID, target: this);
 
+            // Set Size
+            EProjectileSize size = Util.GetEnumFromString<EProjectileSize>(projectileData.Size);
+            switch (size)
+            {
+                case EProjectileSize.Small:
+                    transform.localScale *= 0.5f;
+                    break;
+
+                case EProjectileSize.Medium:
+                case EProjectileSize.Large:
+                    break;
+            }
+
             LayerMask excludeLayerMask = 0;
             excludeLayerMask.AddLayer(ELayer.Default);
             excludeLayerMask.AddLayer(ELayer.Projectile);

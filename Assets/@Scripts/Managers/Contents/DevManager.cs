@@ -111,14 +111,17 @@ namespace STELLAREST_F1
             {
                 HeroLeaderController heroLeaderController = Managers.Object.HeroLeaderController;
 
-                if (heroLeaderController.HeroLeaderChaseMode == EHeroLeaderChaseMode.JustFollowClosely ||
-                    heroLeaderController.HeroLeaderChaseMode == EHeroLeaderChaseMode.RandomFormation || 
-                    heroLeaderController.HeroLeaderChaseMode == EHeroLeaderChaseMode.ForceStop)
+                if (heroLeaderController.HeroMemberFormationMode == EHeroMemberFormationMode.FollowLeaderClosely ||
+                    heroLeaderController.HeroMemberFormationMode == EHeroMemberFormationMode.RandomFormation ||
+                    heroLeaderController.HeroMemberFormationMode == EHeroMemberFormationMode.ForceStop)
+                {
+                    Debug.LogWarning("You have to set \"Narrow\", or \"Wide\" formation before.");
                     return;
+                }
                 else
                 {
                     heroLeaderController.ShuffleMembersPosition();
-                Debug.Log("<color=cyan>ShuffleMembersPosition</color>");
+                    Debug.Log("<color=cyan>ShuffleMembersPosition</color>");
                 }
             }
 

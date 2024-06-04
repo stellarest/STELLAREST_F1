@@ -133,7 +133,12 @@ namespace STELLAREST_F1
         }
         #endregion
 
-        [field: SerializeField] public BaseObject Target { get; set; } = null;
+        [field: SerializeField] private BaseObject _target = null;
+         public virtual BaseObject Target 
+         { 
+            get => _target;
+            set => _target = value;
+        }
 
         public override bool Init()
         {

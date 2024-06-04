@@ -45,6 +45,9 @@ namespace STELLAREST_F1
                 return;
             if (Owner.Target.IsValid() == false)
                 return;
+            // 아까 파이어볼이 Env로 향해 날라감
+            if (Owner.Target.ObjectType == EObjectType.Env)
+                return;
 
             GenerateProjectile(Owner, GetSpawnPos());
         }

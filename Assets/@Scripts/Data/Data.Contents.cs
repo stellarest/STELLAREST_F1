@@ -470,6 +470,7 @@ namespace STELLAREST_F1.Data
         public string Body;
         public string BodyColor;
 		public string ClassName;
+        public string Size;
         public bool RotateToTarget;
         public float Range;
         public float MovementSpeed;

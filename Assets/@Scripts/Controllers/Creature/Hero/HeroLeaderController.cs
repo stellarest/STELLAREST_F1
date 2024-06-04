@@ -14,21 +14,17 @@ namespace STELLAREST_F1
         private Transform _pointerPivot = null;
         private Transform _pointer = null;
         private Transform _leaderMark = null;
-
         [SerializeField] private Vector3 _nMovementDir = Vector3.zero;
-        [SerializeField] private EHeroLeaderChaseMode _heroLeaderChaseMode = EHeroLeaderChaseMode.JustFollowClosely;
-
-        public float ForceStopWarpSeconds = 0f;
-
-        public EHeroLeaderChaseMode HeroLeaderChaseMode
+        [SerializeField] private EHeroMemberFormationMode _heroMemberFormationMode = EHeroMemberFormationMode.FollowLeaderClosely;
+        public EHeroMemberFormationMode HeroMemberFormationMode
         {
-            get => _heroLeaderChaseMode;
+            get => _heroMemberFormationMode;
             set
             {
-                if (_heroLeaderChaseMode != value)
+                if (_heroMemberFormationMode != value)
                 {
-                    // 이전의 _heroLeaderChaseMode가 ForceStop이었다면...
-                    if (_heroLeaderChaseMode == EHeroLeaderChaseMode.ForceStop)
+                    // --- 이전의 _heroLeaderChaseMode가 ForceStop이었다면...
+                    if (_heroMemberFormationMode == EHeroMemberFormationMode.ForceStop)
                     {
                         List<Hero> heroes = Managers.Object.Heroes;
                         for (int i = 0; i < heroes.Count; ++i)
@@ -39,28 +35,18 @@ namespace STELLAREST_F1
                             if (heroes[i].IsLeader)
                                 continue;
 
+                            // --- ForceStop이후 Leader에게 Warp하지 않고, 달려가서 쫓아가도록한다.
                             heroes[i].StartCoWaitForceStopWarp(ReadOnly.Numeric.WaitHeroesForceStopWarpSeconds);
                         }
                     }
 
-                    if (value != EHeroLeaderChaseMode.RandomFormation)
-                    {
+                    if (value != EHeroMemberFormationMode.RandomFormation)
                         StopCoRandomFormation();
-                        // if (_coRandomFormation != null)
-                        // {
-                        //     StopCoroutine(_coRandomFormation);
-                        //     _coRandomFormation = null;
-                        // }
-                    }
                     else
-                    {
                         StartCoRandomFormation();
-                        // if (_coRandomFormation == null)
-                        //     _coRandomFormation = StartCoroutine(CoRandomFormation());
-                    }
 
-                    _heroLeaderChaseMode = value;
-                    if (value != EHeroLeaderChaseMode.ForceStop)
+                    _heroMemberFormationMode = value;
+                    if (value != EHeroMemberFormationMode.ForceStop || value != EHeroMemberFormationMode.RandomFormation)
                         MoveStartMembersToTheirChasePos();
                 }
             }
@@ -85,24 +71,24 @@ namespace STELLAREST_F1
                 heroMembers[i].CreatureState = ECreatureState.Move;
         }
 
-        [SerializeField] private EHeroMemberBattleMode _heroMemberBattleMode = EHeroMemberBattleMode.EngageEnemy;
-        public EHeroMemberBattleMode HeroMemberBattleMode => _heroMemberBattleMode;
+        [SerializeField] private EHeroMemberChaseMode _heroMemberChaseMode = EHeroMemberChaseMode.EngageEnemy;
+        public EHeroMemberChaseMode HeroMemberChaseMode => _heroMemberChaseMode;
 
         // TEMP
         public void SetJustFollowClosely()
-            => HeroLeaderChaseMode = EHeroLeaderChaseMode.JustFollowClosely;
+            => HeroMemberFormationMode = EHeroMemberFormationMode.FollowLeaderClosely;
 
         // TEMP
         public void SetNarrowFormation()
-            => HeroLeaderChaseMode = EHeroLeaderChaseMode.NarrowFormation;
+            => HeroMemberFormationMode = EHeroMemberFormationMode.NarrowFormation;
 
         // TEMP
         public void SetWideFormation()
-            => HeroLeaderChaseMode = EHeroLeaderChaseMode.WideFormation;
+            => HeroMemberFormationMode = EHeroMemberFormationMode.WideFormation;
 
         // TEMP
         public void SetRandomFormation()
-            => HeroLeaderChaseMode = EHeroLeaderChaseMode.RandomFormation;
+            => HeroMemberFormationMode = EHeroMemberFormationMode.RandomFormation;
 
         public void SetForceStop()
         {
@@ -118,7 +104,7 @@ namespace STELLAREST_F1
                 heroes[i].PrevCellPosForForceStop = heroes[i].CellPos;
             }
 
-            HeroLeaderChaseMode = EHeroLeaderChaseMode.ForceStop;
+            HeroMemberFormationMode = EHeroMemberFormationMode.ForceStop;
         }
 
         public void ShuffleMembersPosition()
@@ -137,12 +123,12 @@ namespace STELLAREST_F1
             }
         }
 
-        public Vector3Int RequestChaseCellPos(Hero heroMember)
+        public Vector3Int RequestFormationCellPos(Hero heroMember)
         {
             if (heroMember.IsValid() == false) // 방어
                 return Managers.Map.WorldToCell(_leader.transform.position);
 
-            float distance = (float)_heroLeaderChaseMode;
+            float distance = (float)_heroMemberFormationMode;
             List<Hero> heroes = Managers.Object.Heroes;
             int index = heroes.IndexOf(heroMember);
 
@@ -159,7 +145,7 @@ namespace STELLAREST_F1
             return Managers.Map.WorldToCell(new Vector3(x, y, 0));
         }
 
-        public Vector3Int RequestChaseCellPos(Hero heroMember, float distance)
+        public Vector3Int RequestFormationCellPos(Hero heroMember, float distance)
         {
             if (heroMember.IsValid() == false) // 방어
                 return Managers.Map.WorldToCell(_leader.transform.position);
@@ -180,14 +166,12 @@ namespace STELLAREST_F1
             return Managers.Map.WorldToCell(new Vector3(x, y, 0));
         }
 
-        public Vector3Int RequestRandomChaseCellPos(Hero heroMember)
+        public Vector3Int RequestRandomFormationCellPos(Hero heroMember)
         {
-            // 겹치는거 막기, FollowClosely에서도 겹치는거 막기. 단, Leader 위치 Add는 하지 않기.
-            // 어쩌다가 겹치는것은 괜찮음. 그러나 자주 겹치면 안됨. 테스트 필요.
             if (_randomPingPongFlag == false)
-                return RequestChaseCellPos(heroMember, (float)EHeroLeaderChaseMode.NarrowFormation + _randomPingPongDistance);
+                return RequestFormationCellPos(heroMember, (float)EHeroMemberFormationMode.NarrowFormation + _randomPingPongDistance);
             else
-                return RequestChaseCellPos(heroMember, (float)EHeroLeaderChaseMode.WideFormation + _randomPingPongDistance);
+                return RequestFormationCellPos(heroMember, (float)EHeroMemberFormationMode.WideFormation + _randomPingPongDistance);
         }
 
         private Hero _leader = null;
@@ -206,7 +190,7 @@ namespace STELLAREST_F1
             _pointer = Util.FindChild<Transform>(_pointerPivot.gameObject, "Pointer");
             _leaderMark = Util.FindChild<Transform>(gameObject, "LeaderMark");
 
-            // 한 번만 설정해놓으면 됨, 히어로 자식으로 두면, Sorting Group 때문에 벽에 가려짐.
+            // --- 한 번만 설정해놓으면 됨(히어로 자식으로 두면, Sorting Group 때문에 벽에 가려짐)
             _pointer.localPosition = Vector3.up * 3f;
             _leaderMark.localPosition = Vector2.up * 2f;
 
@@ -216,9 +200,8 @@ namespace STELLAREST_F1
             Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
             Managers.Game.OnJoystickStateChangedHandler += OnJoystickStateChanged;
 
-            //_replaceMode = EReplaceMode.FocusingLeader;
-            HeroLeaderChaseMode = EHeroLeaderChaseMode.JustFollowClosely;
-            _heroMemberBattleMode = EHeroMemberBattleMode.EngageEnemy;
+            HeroMemberFormationMode = EHeroMemberFormationMode.FollowLeaderClosely;
+            _heroMemberChaseMode = EHeroMemberChaseMode.EngageEnemy;
             EnablePointer(false);
             return true;
         }
@@ -417,7 +400,7 @@ namespace STELLAREST_F1
             heroes.Insert(0, newLeader);
 
             // Leader 제외 인덱스. 이미 따닥 따닥 붙어있을 때, 리더 변경시 멤버들을 Move상태로 만들지 않는다. 
-            if (_heroLeaderChaseMode != EHeroLeaderChaseMode.JustFollowClosely)
+            if (_heroMemberFormationMode != EHeroMemberFormationMode.FollowLeaderClosely)
             {
                 for (int i = 1; i < heroes.Count; ++i)
                     heroes[i].CreatureState = ECreatureState.Move;
@@ -438,6 +421,21 @@ namespace STELLAREST_F1
         private void LateTickLeaderPos()
         {
             _leader.UpdateCellPos();
+            
+            {
+                // --- Sorting for leader in same cellpos
+                BaseObject obj = Managers.Map.GetObject(_leader.CellPos);
+                if (obj.IsValid() && obj.ObjectType == EObjectType.Hero)
+                {
+                    if (obj != _leader)
+                    {
+                        float distSQR = (obj.transform.position - _leader.transform.position).sqrMagnitude;
+                        if (distSQR <= 0.2f * 0.2f)
+                            obj.transform.position += Vector3.up * 0.01f;
+                    }
+                }
+            }
+
             transform.position = _leader.CenterPosition;
         }
 
@@ -682,16 +680,20 @@ namespace STELLAREST_F1
             }
         }
 
-        private Coroutine _coAllMembersStopped = null;
-        private IEnumerator CoAllMembersStopped(System.Action endCallback = null)
+        private Coroutine _coIsAllHeroMembersStopped = null;
+        private IEnumerator CoIsAllHeroMembersStopped(System.Action endCallback = null)
         {
+            List<Hero> heroes = Managers.Object.Heroes;
             while (true)
             {
                 bool isAllStopped = true;
-                for (int i = 0; i < Managers.Object.Heroes.Count; ++i)
+                for (int i = 0; i < heroes.Count; ++i)
                 {
-                    Hero hero = Managers.Object.Heroes[i];
-                    if (hero == _leader)
+                    Hero hero = heroes[i];
+                    if (hero.IsLeader)
+                        continue;
+
+                    if (hero.IsValid() == false) // --- DEFENSE
                         continue;
 
                     if (hero.LerpToCellPosCompleted == false || hero.CreatureState == ECreatureState.Move)
@@ -707,28 +709,25 @@ namespace STELLAREST_F1
                 yield return null;
             }
 
-            yield return null; // 한프레임 쉬고
+            yield return null; // --- DEFENSE
             endCallback?.Invoke();
-            StopCoAllMembersStopped();
+            StopCoIsAllHeroMembersStopped();
         }
 
-        public void StartCoAllMembersStopped(System.Action endCallback = null)
+        public void StartCoIsAllHeroMembersStopped(System.Action endCallback = null)
         {
-            if (_coAllMembersStopped == null)
-                _coAllMembersStopped = StartCoroutine(CoAllMembersStopped(endCallback));
+            if (_coIsAllHeroMembersStopped == null)
+                _coIsAllHeroMembersStopped = StartCoroutine(CoIsAllHeroMembersStopped(endCallback));
         }
 
-        public void StopCoAllMembersStopped()
+        private void StopCoIsAllHeroMembersStopped()
         {
-            if (_coAllMembersStopped != null)
+            if (_coIsAllHeroMembersStopped != null)
             {
-                StopCoroutine(_coAllMembersStopped);
-                _coAllMembersStopped = null;
+                StopCoroutine(_coIsAllHeroMembersStopped);
+                _coIsAllHeroMembersStopped = null;
             }
         }
-        #endregion
-
-        #region Misc
         #endregion
 
         #region Debug
@@ -738,16 +737,16 @@ namespace STELLAREST_F1
             if (_leader == null)
                 return;
 
-            if (_heroLeaderChaseMode == EHeroLeaderChaseMode.JustFollowClosely)
+            if (_heroMemberFormationMode == EHeroMemberFormationMode.FollowLeaderClosely)
                 return;
 
-            if (_heroLeaderChaseMode == EHeroLeaderChaseMode.RandomFormation)
+            if (_heroMemberFormationMode == EHeroMemberFormationMode.RandomFormation)
                 return;
 
-            if (_heroLeaderChaseMode == EHeroLeaderChaseMode.ForceStop)
+            if (_heroMemberFormationMode == EHeroMemberFormationMode.ForceStop)
                 return;
 
-            float distance = (float)_heroLeaderChaseMode;
+            float distance = (float)_heroMemberFormationMode;
             int memberCount = Managers.Object.Heroes.Count - 1;
             for (int i = 0; i < memberCount; ++i)
             {
@@ -765,54 +764,5 @@ namespace STELLAREST_F1
         }
 #endif
         #endregion
-
-        #region OBSOLETE TEMPORARY
-        private IEnumerator CoReadyToReplaceMembers()
-        {
-            while (true)
-            {
-                bool isAllStopped = true;
-                for (int i = 0; i < Managers.Object.Heroes.Count; ++i)
-                {
-                    Hero hero = Managers.Object.Heroes[i];
-                    if (hero == _leader)
-                        continue;
-
-                    if (hero.LerpToCellPosCompleted == false || hero.CreatureState == ECreatureState.Move)
-                    {
-                        isAllStopped = false;
-                        break;
-                    }
-                }
-
-                if (isAllStopped)
-                    break;
-
-                yield return null;
-            }
-
-            yield return null;
-        }
-        #endregion
     }
 }
-
-/*
-    [Prev Note]
-    // public Vector3Int RequestChaseCellPos(Hero heroMember) // Prev Ver
-    // {
-    //     if (heroMember.IsValid() == false)
-    //         return Managers.Map.WorldToCell(_leader.transform.position);
-
-    //     float distance = DevManager.Instance.TestLeaderChaseDistance;
-    //     int index = Managers.Object.Heroes.IndexOf(heroMember);
-    //     int count = Managers.Object.Heroes.Count - 1;
-
-    //     float angle = 360f * index / count;
-    //     angle = Mathf.Deg2Rad * angle;
-
-    //     float x = Leader.transform.position.x + Mathf.Cos(angle) * distance;
-    //     float y = Leader.transform.position.y + Mathf.Sin(angle) * distance;
-    //     return Managers.Map.WorldToCell(new Vector3(x, y, 0));
-    // }
-*/

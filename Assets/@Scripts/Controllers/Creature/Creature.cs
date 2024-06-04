@@ -505,7 +505,7 @@ namespace STELLAREST_F1
             // --- Set Hero Leader Scan Range (half)
             Hero hero = this as Hero;
             if (hero.IsValid() && hero.IsLeader)
-                scanRangeSQR *= 0.5f;
+                scanRangeSQR *= 0.8f;
 
             foreach (T obj in firstTargets)
             {

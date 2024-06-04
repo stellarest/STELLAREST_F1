@@ -14,7 +14,7 @@ namespace STELLAREST_F1
         
         protected override IEnumerator CoLaunchProjectile()
         {
-            Debug.Log($"### Launch::StraightMotion ###");
+            // Debug.Log($"### Launch::StraightMotion ###");
             // ########## TEST ##########
             // StartPosition = Owner.WeaponLWorldPosition + ((TargetPosition - Owner.WeaponLWorldPosition).normalized * 2.25f);
             // ##############################

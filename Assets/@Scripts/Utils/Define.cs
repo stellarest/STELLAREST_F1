@@ -360,34 +360,27 @@ namespace STELLAREST_F1
             Success
         }
 
-        public enum EHeroLeaderChaseMode
+        public enum EHeroMemberFormationMode
         {
-            JustFollowClosely,
+            FollowLeaderClosely,
             NarrowFormation = 3,
             WideFormation = 5,
             RandomFormation,
             ForceStop
         }
 
-        public enum EHeroMemberBattleMode
+        public enum EHeroMemberChaseMode
         {
-            // 기존의 EngageEnemy: 마우스에서 때면 그때서야 적을 탐지하고 공격한다. FollowAndBattle
-            EngageEnemy, // ForceMove 상태에서도 적군이 탐지되면 무조건 적에게 들이댄다. 리더와 멀어지지 않는 이상 죽을때까지 싸운다.
-            FollowLeader // 리더가 ForceMove 상태라면 무조건 리더만 따라온다.
-            // + 나중에 히어로 체력이 떨어졌을 때 무조건 리더 근처에 짱박혀 있는 모드 추가해야함
-            // Keep Stop Formation // 리더가 있던 자리에 계속 멈춰 있는다
-            // >> 그러니까 만약 RandomFormation이라고 할 지라도, 최초로 있던 리더의 자리를 더미로 인식하고
-            // 리더가 ForceMove로 움직여도 움직이지 않는다.
+            FollowLeader, // --- Default, Skill_A,B 제외 Drag시 리더 추적
+            EngageEnemy, // --- 리더가 이동하지 않고 있을 때 타겟 우선 
         }
 
-        // 이거 한번 더 누르면 뱅글 뱅글 돌면서 재배치하는 기능 있으면 좋을 것 같음.
-        // public enum EReplaceHeroMode
-        // {
-        //     FollowBaseCamp = -1, // Default, 
-        //     FocusingOnLeader = 3,
-        //     WideFocusingOnLeader = 15,
-        // }
-
+        public enum EProjectileSize
+        {
+            Small,
+            Medium,
+            Large
+        }
         // ####################################################
 
         public static class ReadOnly
@@ -648,8 +641,8 @@ namespace STELLAREST_F1
                 public static readonly float DesiredCanChangeLeaderTime = 3F;
 
                 // -- [ MONSTER ]
-                public static readonly float MinSecWaitSearchTargetForSettingAggroFromRange = 2.0F;
-                public static readonly float MaxSecWaitSearchTargetForSettingAggroFromRange = 4.0F;
+                public static readonly float MinSecWaitSearchTargetForSettingAggroFromRange = 1.0F;
+                public static readonly float MaxSecWaitSearchTargetForSettingAggroFromRange = 2.0F;
 
                 // -- [ MISC ]
                 public static readonly float SearchFindTargetTick = 0.25F;
@@ -681,7 +674,6 @@ namespace STELLAREST_F1
 
                 // ##############################
                 public static readonly float ProjectileLifeTime = 10.0F;
-                
             }
         }
     }

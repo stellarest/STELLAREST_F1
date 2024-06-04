@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using STELLAREST_F1.Data;
 using UnityEngine;
 using static STELLAREST_F1.Define;
@@ -52,6 +53,23 @@ namespace STELLAREST_F1
                     StopCoLerpToCellPos();
                 else
                     StartCoLerpToCellPos();
+            }
+        }
+
+        public override BaseObject Target
+        {
+            get => base.Target;
+            set
+            {
+                base.Target = value;
+                if (Target.IsValid())
+                {
+                    if (Target.ObjectType == EObjectType.Monster)
+                    {
+                        if (CollectEnv)
+                            CollectEnv = false;
+                    }
+                }
             }
         }
 
@@ -142,25 +160,25 @@ namespace STELLAREST_F1
                 }
 
                 HeroLeaderController heroLeaderController = Managers.Object.HeroLeaderController;
-                switch (heroLeaderController.HeroLeaderChaseMode)
+                switch (heroLeaderController.HeroMemberFormationMode)
                 {
-                    case EHeroLeaderChaseMode.JustFollowClosely:
+                    case EHeroMemberFormationMode.FollowLeaderClosely:
                     {
                         return Managers.Map.WorldToCell(heroLeaderController.Leader.transform.position);
                     }
 
-                    case EHeroLeaderChaseMode.NarrowFormation:
-                    case EHeroLeaderChaseMode.WideFormation:
+                    case EHeroMemberFormationMode.NarrowFormation:
+                    case EHeroMemberFormationMode.WideFormation:
                     {
-                        return Managers.Object.HeroLeaderController.RequestChaseCellPos(this);
+                        return Managers.Object.HeroLeaderController.RequestFormationCellPos(this);
                     }
 
-                    case EHeroLeaderChaseMode.RandomFormation:
+                    case EHeroMemberFormationMode.RandomFormation:
                     {
-                        return Managers.Object.HeroLeaderController.RequestRandomChaseCellPos(this);
+                        return Managers.Object.HeroLeaderController.RequestRandomFormationCellPos(this);
                     }
 
-                    case EHeroLeaderChaseMode.ForceStop:
+                    case EHeroMemberFormationMode.ForceStop:
                     {
                         return PrevCellPosForForceStop;
                     }
@@ -177,11 +195,10 @@ namespace STELLAREST_F1
             if (IsLeader)
                 return;
 
-            // 여기서 체크하면 됨. 상태이상같은거 걸리지 않은 이상 FollowLeader 모드일 때, ForceMove라면 바로 이동
-            // ***** WHY DOUBLE ATTACK PALADIN ??? *****
-            if (IsCorrectHeroMemberBattleMode(EHeroMemberBattleMode.FollowLeader) && CreatureMoveState == ECreatureMoveState.ForceMove)
+            // --- Follow Leader
+            if (CanForceMoveInFollowLeaderMode() && IsForceStopMode() == false)
             {
-                CreatureState = ECreatureState.Move;
+                MoveFromLeader();
                 return;
             }
 
@@ -189,38 +206,15 @@ namespace STELLAREST_F1
             if (CreatureSkill.IsRemainingCoolTime((int)ESkillType.Skill_Attack))
                 return;
 
+            // --- 타겟이 존재하거나, 타겟이 죽었을 경우, Move 상태로 전환
+            if (CreatureMoveState == ECreatureMoveState.MoveToTarget && IsForceStopMode() == false)
+                CreatureState = ECreatureState.Move;
+
             if (IsForceStopMode() == false)
             {
-                if (_isFarFromLeader)
-                {
-                    _pauseSearchTarget = true;
-                    CreatureState = ECreatureState.Move;
-                    return;
-                }
-
-                if (CreatureMoveState == ECreatureMoveState.ForceMove)
-                {
-                    Hero leader = Managers.Object.HeroLeaderController.Leader;
-                    // --- 리더가 이동한다고해서 바로 움직이지 않는다.
-                    if ((transform.position - leader.transform.position).sqrMagnitude < _waitMovementDistanceSQRFromLeader)
-                        return;
-
-                    List<Vector3Int> idlePathFind = Managers.Map.FindPath(startCellPos: CellPos, destCellPos: ChaseCellPos, maxDepth: 2);
-                    if (idlePathFind.Count > 1)
-                    {
-                        if (Managers.Map.CanMove(idlePathFind[1]))
-                        {
-                            CreatureState = ECreatureState.Move;
-                            return;
-                        }
-                    }
-                    return;
-                }
+                MoveFromLeader();
+                return;
             }
-
-            // --- 타겟이 존재하거나, 타겟이 죽었을 경우, Move 상태로 전환
-            if (CreatureMoveState == ECreatureMoveState.MoveToTarget)
-                CreatureState = ECreatureState.Move;
         }
 
         private bool _canHandleSkill = false;
@@ -309,26 +303,8 @@ namespace STELLAREST_F1
             if (IsLeader)
                 return;
 
-            //LookAtValidTarget();
-            HeroLeaderController leaderController = Managers.Object.HeroLeaderController;
-            if (leaderController == null)
-                return;
-
-            EHeroMemberBattleMode battleMode = leaderController.HeroMemberBattleMode;
-            if (battleMode == EHeroMemberBattleMode.FollowLeader)
-            {
-                // --- CreatureMoveState == ECreatureMoveState.ForceMove: 어차피 OnJoystickStateChanged에서 EngageEnemy 모드에서는 ForceMove를 받을 수 없긴함.
-                if (CreatureMoveState == ECreatureMoveState.ForceMove || Target.IsValid() == false)
-                    CreatureState = ECreatureState.Move;
-            }
-            else if (battleMode == EHeroMemberBattleMode.EngageEnemy)
-            {
-                if (Target.IsValid() == false)
-                {
-                    CollectEnv = false;
-                    CreatureState = ECreatureState.Move;
-                }
-            }
+            if (CanForceMoveInFollowLeaderMode())
+                MoveFromLeader();
         }
 
         protected override void UpdateCollectEnv()
@@ -336,27 +312,16 @@ namespace STELLAREST_F1
             if (IsLeader)
                 return;
 
-            // Retarget Monster
-            if (Target.IsValid() && Target.ObjectType == EObjectType.Monster)
+            LookAtValidTarget();
+            // Retarget Monster or Env is dead
+            if ((Target.IsValid() && Target.ObjectType == EObjectType.Monster) || Target.IsValid() == false)
+            {
+                CollectEnv = false;
                 CreatureState = ECreatureState.Move;
+            }
 
-            if (IsCorrectHeroMemberBattleMode(EHeroMemberBattleMode.FollowLeader))
-            {
-                // --- CreatureMoveState == ECreatureMoveState.ForceMove: 어차피 OnJoystickStateChanged에서 EngageEnemy 모드에서는 ForceMove를 받을 수 없긴함.
-                if (CreatureMoveState == ECreatureMoveState.ForceMove || Target.IsValid() == false)
-                {
-                    CollectEnv = false;
-                    CreatureState = ECreatureState.Move;
-                }
-            }
-            else if (IsCorrectHeroMemberBattleMode(EHeroMemberBattleMode.EngageEnemy))
-            {
-                if (Target.IsValid() == false)
-                {
-                    CollectEnv = false;
-                    CreatureState = ECreatureState.Move;
-                }
-            }
+            if (CanForceMoveInFollowLeaderMode())
+                MoveFromLeader();
         }
 
         protected override void UpdateDead()
@@ -382,20 +347,68 @@ namespace STELLAREST_F1
             if (leaderController == null)
                 return false;
 
-            return leaderController.HeroLeaderChaseMode == EHeroLeaderChaseMode.ForceStop;
+            return leaderController.HeroMemberFormationMode == EHeroMemberFormationMode.ForceStop;
         }
 
-        private bool IsCorrectHeroMemberBattleMode(EHeroMemberBattleMode battleMode)
+        private bool IsCorrectHeroMemberChaseMode(EHeroMemberChaseMode chaseMode)
         {
             HeroLeaderController leaderController = Managers.Object.HeroLeaderController;
             if (leaderController == null)
                 return false;
 
-            EHeroMemberBattleMode heroMemberBattleMode = leaderController.HeroMemberBattleMode;
-            if (heroMemberBattleMode == battleMode)
+            EHeroMemberChaseMode heroMemberChaseMode = leaderController.HeroMemberChaseMode;
+            if (heroMemberChaseMode == chaseMode)
                 return true;
             else
                 return false;
+        }
+
+        private bool CanForceMoveInFollowLeaderMode()
+        {
+            if (this.IsValid() == false)
+                return false;
+
+            HeroLeaderController leaderController = Managers.Object.HeroLeaderController;
+            if (leaderController == null)
+                return false;
+
+            EHeroMemberChaseMode heroMemberChaseMode = leaderController.HeroMemberChaseMode;
+            if (heroMemberChaseMode == EHeroMemberChaseMode.EngageEnemy)
+                return false;
+
+            if (CreatureMoveState == ECreatureMoveState.ForceMove)
+                return true;
+            else
+                return false;
+        }
+
+        private void MoveFromLeader()
+        {
+            if (_isFarFromLeader)
+            {
+                _pauseSearchTarget = true;
+                CreatureState = ECreatureState.Move;
+                return;
+            }
+
+            if (CreatureMoveState == ECreatureMoveState.ForceMove)
+            {
+                Hero leader = Managers.Object.HeroLeaderController.Leader;
+                // --- 리더가 이동한다고해서 바로 움직이지 않는다.
+                if ((transform.position - leader.transform.position).sqrMagnitude < _waitMovementDistanceSQRFromLeader)
+                    return;
+
+                List<Vector3Int> idlePathFind = Managers.Map.FindPath(startCellPos: CellPos, destCellPos: ChaseCellPos, maxDepth: 2);
+                if (idlePathFind.Count > 1)
+                {
+                    if (Managers.Map.CanMove(idlePathFind[1]))
+                    {
+                        CreatureState = ECreatureState.Move;
+                        return;
+                    }
+                }
+                return;
+            }
         }
         #endregion
 
@@ -418,7 +431,7 @@ namespace STELLAREST_F1
                     break;
 
                 case EJoystickState.Drag:
-                    if (Managers.Object.HeroLeaderController.HeroMemberBattleMode == EHeroMemberBattleMode.EngageEnemy)
+                    if (Managers.Object.HeroLeaderController.HeroMemberChaseMode == EHeroMemberChaseMode.EngageEnemy)
                     {
                         if (Target.IsValid() && _isFarFromLeader == false)
                         {
@@ -550,8 +563,6 @@ namespace STELLAREST_F1
                 else
                     _isFarFromLeader = false;
 
-                // FORCE WARP
-                // 워프를 없앨까. 이쁘지가 않은데. 아니면 코루틴을 따로 둬야할지.
                 // 15칸(225) 이상일 때, 어차피 로그 함수 이동속도로 금방 따라오긴하지만 알수 없는 이유로 히어로가 막혀있을 때
                 if ((leader.CellPos - CellPos).sqrMagnitude > canWarpDistSQR && _coWaitForceStopWarp == null && IsForceStopMode() == false)
                 {
@@ -605,6 +616,38 @@ namespace STELLAREST_F1
 
 /*
     [PREV CODE]
+    // if (_isFarFromLeader)
+                // {
+                //     _pauseSearchTarget = true;
+                //     CreatureState = ECreatureState.Move;
+                //     return;
+                // }
+
+                // if (CreatureMoveState == ECreatureMoveState.ForceMove)
+                // {
+                //     Hero leader = Managers.Object.HeroLeaderController.Leader;
+                //     // --- 리더가 이동한다고해서 바로 움직이지 않는다.
+                //     if ((transform.position - leader.transform.position).sqrMagnitude < _waitMovementDistanceSQRFromLeader)
+                //         return;
+
+                //     List<Vector3Int> idlePathFind = Managers.Map.FindPath(startCellPos: CellPos, destCellPos: ChaseCellPos, maxDepth: 2);
+                //     if (idlePathFind.Count > 1)
+                //     {
+                //         if (Managers.Map.CanMove(idlePathFind[1]))
+                //         {
+                //             CreatureState = ECreatureState.Move;
+                //             return;
+                //         }
+                //     }
+                //     return;
+                // }
+
+                // if (IsCorrectHeroMemberChaseMode(EHeroMemberChaseMode.FollowLeader) && CreatureMoveState == ECreatureMoveState.ForceMove)
+            // {
+            //     CreatureState = ECreatureState.Move;
+            //     return;
+            // }
+
     // if (Target.IsValid())
             // {
 

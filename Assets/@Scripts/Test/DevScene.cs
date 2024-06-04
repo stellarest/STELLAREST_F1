@@ -60,14 +60,24 @@ namespace STELLAREST_F1
                     if (Managers.Map.CanMove(randPos) == false)
                         continue;
 
-                    // if (heroTypeFlag)
-                    //     dataID = ReadOnly.Numeric.DataID_Hero_Paladin;
-                    // else
-                        dataID = ReadOnly.Numeric.DataID_Hero_Archer;
+                    if (heroTypeFlag)
+                    {
+                        if (Random.Range(0, 100) > 50f)
+                            dataID = ReadOnly.Numeric.DataID_Hero_Paladin;
+                        else
+                            dataID = ReadOnly.Numeric.DataID_Hero_Wizard;
+                    }
+
+                    else
+                    {
+                        if (Random.Range(0, 100) > 50f)
+                            dataID = ReadOnly.Numeric.DataID_Hero_Archer;
+                        else
+                            dataID = ReadOnly.Numeric.DataID_Hero_Wizard;
+                    }
                     heroTypeFlag = !heroTypeFlag;
-                        
+
                     memberCount++;
-                    //Hero hero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
                     Hero hero = Managers.Object.Spawn<Hero>(EObjectType.Hero, dataID);
 
                     hero.gameObject.name += $"___{memberCount.ToString()}";
@@ -92,7 +102,7 @@ namespace STELLAREST_F1
             {
                 // --- ENV SPREAD
                 int envCount = 0;
-                int envMaxCount = 15;
+                int envMaxCount = 10;
                 int minX = Managers.Map.MinX;
                 int maxX = Managers.Map.MaxX;
                 int minY = Managers.Map.MinY;

@@ -90,7 +90,6 @@ namespace STELLAREST_F1
             }   
 
             Managers.Object.Spawn<Projectile>(spawnPos, EObjectType.Projectile, SkillData.ProjectileID, owner);
-
             // Projectile projectile = Managers.Object.Spawn<Projectile>(spawnPos, EObjectType.Projectile, SkillData.ProjectileID);
             // LayerMask excludeLayerMask = 0;
             // excludeLayerMask.AddLayer(ELayer.Default);
