@@ -52,7 +52,13 @@ namespace STELLAREST_F1
                     break;
 
                 case ECreatureState.Skill_Attack:
-                    _heroOwner.HeroBody.SetEmoji(EHeroEmoji.Skill_Attack);
+                    {
+                        // --- 이미 쿨타임은 돌아가고 있는 상태. 타겟은 없더라도 스킬은 실행되었기 때문에 쿨타임만 돌림.
+                        if (_heroOwner.Target.IsValid() == false)
+                            return;
+
+                        _heroOwner.HeroBody.SetEmoji(EHeroEmoji.Skill_Attack);
+                    }
                     break;
 
                 case ECreatureState.Skill_A:
@@ -67,7 +73,8 @@ namespace STELLAREST_F1
                     // if (_heroOwner.DataTemplateID == ReadOnly.Numeric.DataID_Hero_Wizard)
                     //     _heroOwner.HeroBody.SetEmoji(EHeroEmoji.Move);
                     // else
-                        _heroOwner.HeroBody.SetEmoji(EHeroEmoji.Idle);
+                    // 캐릭터마다 Emoji를 어떻게 설정할지 고민해볼것
+                    _heroOwner.HeroBody.SetEmoji(EHeroEmoji.Idle);
                     break;
 
                 case ECreatureState.Dead:

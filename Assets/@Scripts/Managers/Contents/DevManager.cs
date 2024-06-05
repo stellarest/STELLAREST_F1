@@ -44,10 +44,13 @@ namespace STELLAREST_F1
                 Managers.Object.HeroLeaderController.ChangeFormation_Dev();
 
             if (Input.GetKeyDown("3"))
-                Managers.Object.HeroLeaderController.ShuffleMembersPosition();
+                Managers.Object.HeroLeaderController.ChangeChaseMode_Dev();
 
             if (Input.GetKeyDown("4"))
                 OnOffTileCollider();
+
+            if (Input.GetKeyDown("9"))
+                Managers.Object.HeroLeaderController.ShuffleMembersPosition();
         }
 
         private void ShowCellPosText()

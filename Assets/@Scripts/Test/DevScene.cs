@@ -62,7 +62,7 @@ namespace STELLAREST_F1
 
                     if (heroTypeFlag)
                     {
-                        if (Random.Range(0, 100) > 40f)
+                        if (Random.Range(0, 100) > 80f)
                             dataID = ReadOnly.Numeric.DataID_Hero_Paladin;
                         else
                             dataID = ReadOnly.Numeric.DataID_Hero_Wizard;
@@ -89,20 +89,20 @@ namespace STELLAREST_F1
 
             {   // --- ENV SINGLE TEST
                 // Temp - Spawn Env (스폰 데이터 시트로 빼야함)
-                Env env = Managers.Object.Spawn<Env>(EObjectType.Env, ReadOnly.Numeric.DataID_Env_AshTree);
-                // int x = Managers.Object.Monsters[0].CellPos.x;
-                // int y = Managers.Object.Monsters[0].CellPos.y;
-                //Vector3Int randPos = new Vector3Int(Random.Range(x + 3, x + 5), Random.Range(y + 3, y + 5));
-                Vector3Int randPos = new Vector3Int(-6, 11, 0);
-                env.SetCellPos(cellPos: randPos, stopLerpToCell: true, forceMove: true);
-                env.InitialSpawnedCellPos = randPos;
-                env.UpdateCellPos();
+                // Env env = Managers.Object.Spawn<Env>(EObjectType.Env, ReadOnly.Numeric.DataID_Env_AshTree);
+                // // int x = Managers.Object.Monsters[0].CellPos.x;
+                // // int y = Managers.Object.Monsters[0].CellPos.y;
+                // //Vector3Int randPos = new Vector3Int(Random.Range(x + 3, x + 5), Random.Range(y + 3, y + 5));
+                // Vector3Int randPos = new Vector3Int(-6, 11, 0);
+                // env.SetCellPos(cellPos: randPos, stopLerpToCell: true, forceMove: true);
+                // env.InitialSpawnedCellPos = randPos;
+                // env.UpdateCellPos();
             }
 
             {
                 // --- ENV SPREAD
                 int envCount = 0;
-                int envMaxCount = 0;
+                int envMaxCount = 12;
                 int minX = Managers.Map.MinX;
                 int maxX = Managers.Map.MaxX;
                 int minY = Managers.Map.MinY;

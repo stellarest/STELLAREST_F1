@@ -68,10 +68,18 @@ namespace STELLAREST_F1
             }
 
             for (int i = 0; i < heroMembers.Count; ++i)
+            {
+                if (heroMembers[i].IsValid() == false)
+                    continue;
+
+                if (heroMembers[i].Target.IsValid())
+                    continue;
+
                 heroMembers[i].CreatureState = ECreatureState.Move;
+            }
         }
 
-        [SerializeField] private EHeroMemberChaseMode _heroMemberChaseMode = EHeroMemberChaseMode.EngageEnemy;
+        [SerializeField] private EHeroMemberChaseMode _heroMemberChaseMode = EHeroMemberChaseMode.FollowLeader;
         public EHeroMemberChaseMode HeroMemberChaseMode => _heroMemberChaseMode;
 
         private int _changeFormation_Dev = 0;
@@ -122,9 +130,22 @@ namespace STELLAREST_F1
             Debug.Log($"<color=white>{HeroMemberFormationMode}</color>");
         }
 
+        private bool _changeLeaderChaseflag = false;
+
+        public void ChangeChaseMode_Dev()
+        {
+            if (_changeLeaderChaseflag == false)
+                _heroMemberChaseMode = EHeroMemberChaseMode.EngageEnemy;
+            else
+                _heroMemberChaseMode = EHeroMemberChaseMode.FollowLeader;
+
+            _changeLeaderChaseflag = !_changeLeaderChaseflag;
+            Debug.Log($"<color=white>{_heroMemberChaseMode}</color>");
+        }
+
         public void ShuffleMembersPosition()
         {
-            if (Managers.Object.Heroes.Count < 2)
+            if (Managers.Object.Heroes.Count <= 2)
             {
                 Debug.Log($"<color=white>Hero Count: {Managers.Object.Heroes.Count}</color>");
                 return;
@@ -144,6 +165,12 @@ namespace STELLAREST_F1
 
             for (int i = 0; i < shuffleHeroes.Count; ++i)
             {
+                if (shuffleHeroes[i].IsValid() == false)
+                    continue;
+
+                if (shuffleHeroes[i].Target.IsValid())
+                    continue;
+
                 Managers.Object.Heroes[i + 1] = shuffleHeroes[i];
                 Managers.Object.Heroes[i + 1].CreatureState = ECreatureState.Move;
             }
@@ -229,7 +256,7 @@ namespace STELLAREST_F1
             Managers.Game.OnJoystickStateChangedHandler += OnJoystickStateChanged;
 
             HeroMemberFormationMode = EHeroMemberFormationMode.FollowLeaderClosely;
-            _heroMemberChaseMode = EHeroMemberChaseMode.EngageEnemy;
+            _heroMemberChaseMode = EHeroMemberChaseMode.FollowLeader;
             EnablePointer(false);
             return true;
         }

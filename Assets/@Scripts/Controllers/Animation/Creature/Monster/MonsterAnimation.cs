@@ -43,33 +43,29 @@ namespace STELLAREST_F1
             switch (_monsterOwner.CreatureState)
             {
                 case ECreatureState.Idle:
-                    {
-                        _monsterOwner.MonsterBody.SetEmoji(EMonsterEmoji.Default);
-                        Idle();
-                    }
+                    _monsterOwner.MonsterBody.SetEmoji(EMonsterEmoji.Default);
                     break;
 
                 case ECreatureState.Move:
-                    {
-                        _monsterOwner.MonsterBody.SetEmoji(EMonsterEmoji.Default);
-                        Move();
-                    }
+                    _monsterOwner.MonsterBody.SetEmoji(EMonsterEmoji.Default);
                     break;
 
                 case ECreatureState.Skill_Attack:
                     {
+                        // --- 이미 쿨타임은 돌아가고 있는 상태. 타겟은 없더라도 스킬은 실행되었기 때문에 쿨타임만 돌림.
+                        if (_monsterOwner.Target.IsValid() == false)
+                            return;
+
                         _monsterOwner.MonsterBody.SetEmoji(EMonsterEmoji.Angry);
-                        Skill_Attack();
                     }
                     break;
 
                 case ECreatureState.Dead:
-                    {
-                        _monsterOwner.MonsterBody.SetEmoji(EMonsterEmoji.Dead);
-                        Dead();
-                    }
+                    _monsterOwner.MonsterBody.SetEmoji(EMonsterEmoji.Dead);
                     break;
             }
+
+            PlayCreatureAnimation(_monsterOwner.CreatureState);
         }
 
         public override void Flip(ELookAtDirection lookAtDir)

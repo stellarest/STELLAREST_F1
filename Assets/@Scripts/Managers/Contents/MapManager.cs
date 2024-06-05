@@ -120,28 +120,28 @@ namespace STELLAREST_F1
                     {
                         // 지금은 이렇게 했지만, Respawn Spawn Data를 만들어서 해야할것같음
                         // MONSTER IN TILE ORIGIN
-                        // Monster monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, tile.DataID);
-                        // //monster.SetCellPos(cellPos, stopLerpToCell: false, forceMove: true);
-                        // MoveTo(monster, cellPos, stopLerpToCell: true, forceMove: true);
-                        // monster.InitialSpawnedCellPos = cellPos;
+                        Monster monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, tile.DataID);
+                        //monster.SetCellPos(cellPos, stopLerpToCell: false, forceMove: true);
+                        MoveTo(monster, cellPos, stopLerpToCell: true, forceMove: true);
+                        monster.InitialSpawnedCellPos = cellPos;
 
                         // TEST MULTIPLE
-                        // int currentMonsterCount = 0;
-                        // int maxMonsterCount = UnityEngine.Random.Range(20, 26);
-                        // while (currentMonsterCount < maxMonsterCount)
-                        // {
-                        //     Vector3Int randPos = new Vector3Int
-                        //         (UnityEngine.Random.Range(monster.CellPos.x - 10, monster.CellPos.x + 10), 
-                        //         UnityEngine.Random.Range(monster.CellPos.x - 10, monster.CellPos.x + 10), 0);
+                        int currentMonsterCount = 0;
+                        int maxMonsterCount = UnityEngine.Random.Range(20, 26);
+                        while (currentMonsterCount < maxMonsterCount)
+                        {
+                            Vector3Int randPos = new Vector3Int
+                                (UnityEngine.Random.Range(monster.CellPos.x - 10, monster.CellPos.x + 10), 
+                                UnityEngine.Random.Range(monster.CellPos.x - 10, monster.CellPos.x + 10), 0);
 
-                        //     if (Managers.Map.CanMove(randPos) == false)
-                        //         continue;
+                            if (Managers.Map.CanMove(randPos) == false)
+                                continue;
 
-                        //     currentMonsterCount++;
-                        //     monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, tile.DataID);
-                        //     MoveTo(monster, randPos, stopLerpToCell: true, forceMove: true);
-                        //     monster.InitialSpawnedCellPos = randPos;
-                        // }
+                            currentMonsterCount++;
+                            monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, tile.DataID);
+                            MoveTo(monster, randPos, stopLerpToCell: true, forceMove: true);
+                            monster.InitialSpawnedCellPos = randPos;
+                        }
 
                         // // TEST: NEAR1
                         // cellPos = new Vector3Int(UnityEngine.Random.Range(cellPos.x + 3, cellPos.x + 5),

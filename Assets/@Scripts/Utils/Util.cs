@@ -92,6 +92,9 @@ namespace STELLAREST_F1
                 case EClassName.ParabolaMotion:
                     return typeof(ParabolaMotion);
 
+                case EClassName.BodyAttack:
+                    return typeof(BodyAttack);
+
                 default:
                     Debug.LogError($"{nameof(Util)}, {nameof(GetTypeFromName)}, Input : \"{className}, Please check Define.EClassName\"");
                     Debug.Break();

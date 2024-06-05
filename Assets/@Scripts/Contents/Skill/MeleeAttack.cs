@@ -32,6 +32,7 @@ namespace STELLAREST_F1
             base.EnterInGame(owner, dataID);
         }
 
+        #region CreatureStateMachine
         public override void OnSkillStateEnter() 
         { 
             if (Owner.Target.IsValid())
@@ -63,5 +64,6 @@ namespace STELLAREST_F1
                 Owner.CreatureState = ECreatureState.Idle;
             }
         }
+        #endregion
     }
 }
