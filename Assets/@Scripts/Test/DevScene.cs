@@ -62,7 +62,7 @@ namespace STELLAREST_F1
 
                     if (heroTypeFlag)
                     {
-                        if (Random.Range(0, 100) > 50f)
+                        if (Random.Range(0, 100) > 40f)
                             dataID = ReadOnly.Numeric.DataID_Hero_Paladin;
                         else
                             dataID = ReadOnly.Numeric.DataID_Hero_Wizard;
@@ -102,7 +102,7 @@ namespace STELLAREST_F1
             {
                 // --- ENV SPREAD
                 int envCount = 0;
-                int envMaxCount = 10;
+                int envMaxCount = 0;
                 int minX = Managers.Map.MinX;
                 int maxX = Managers.Map.MaxX;
                 int minY = Managers.Map.MinY;

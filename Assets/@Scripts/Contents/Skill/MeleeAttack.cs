@@ -35,9 +35,7 @@ namespace STELLAREST_F1
         public override void OnSkillStateEnter() 
         { 
             if (Owner.Target.IsValid())
-            {
                 Owner.LookAtValidTarget();
-            }
         }
 
         public override void OnSkillStateUpdate()

@@ -120,10 +120,10 @@ namespace STELLAREST_F1
                     {
                         // 지금은 이렇게 했지만, Respawn Spawn Data를 만들어서 해야할것같음
                         // MONSTER IN TILE ORIGIN
-                        Monster monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, tile.DataID);
-                        //monster.SetCellPos(cellPos, stopLerpToCell: false, forceMove: true);
-                        MoveTo(monster, cellPos, stopLerpToCell: true, forceMove: true);
-                        monster.InitialSpawnedCellPos = cellPos;
+                        // Monster monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, tile.DataID);
+                        // //monster.SetCellPos(cellPos, stopLerpToCell: false, forceMove: true);
+                        // MoveTo(monster, cellPos, stopLerpToCell: true, forceMove: true);
+                        // monster.InitialSpawnedCellPos = cellPos;
 
                         // TEST MULTIPLE
                         // int currentMonsterCount = 0;
@@ -533,6 +533,24 @@ namespace STELLAREST_F1
 
             Debug.Log($"CellPos: ({cellPos.x}, {cellPos.y})");
             Debug.Log($"Tile[{x}][{y}]: {_cellCollisionType[y, x]}");
+        }
+
+        public void PrintCollisionTile()
+        {
+            // --- Check Collision Tile Type
+            int minX = MinX;
+            int maxX = MaxX;
+            int minY = MinY;
+            int maxY = MaxY;
+            for (int i = minX; i < maxX; ++i)
+            {
+                for (int j = maxY - 1; j >= minY; --j)
+                {
+                    Vector3Int cellPos = new Vector3Int(i, j);
+                    Vector3 cellToWorld = CellToWorld(cellPos);
+                    Managers.Map.CheckOnTile(cellToWorld);
+                }
+            }
         }
 #endif
     }

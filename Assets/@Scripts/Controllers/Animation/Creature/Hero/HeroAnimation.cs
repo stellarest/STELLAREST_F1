@@ -64,9 +64,9 @@ namespace STELLAREST_F1
                     break;
 
                 case ECreatureState.CollectEnv:
-                    if (_heroOwner.DataTemplateID == ReadOnly.Numeric.DataID_Hero_Wizard)
-                        _heroOwner.HeroBody.SetEmoji(EHeroEmoji.Move);
-                    else
+                    // if (_heroOwner.DataTemplateID == ReadOnly.Numeric.DataID_Hero_Wizard)
+                    //     _heroOwner.HeroBody.SetEmoji(EHeroEmoji.Move);
+                    // else
                         _heroOwner.HeroBody.SetEmoji(EHeroEmoji.Idle);
                     break;
 

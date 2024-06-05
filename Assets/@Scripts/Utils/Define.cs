@@ -317,6 +317,7 @@ namespace STELLAREST_F1
             Projectile,
             StraightMotion,
             ParabolaMotion,
+            BodyAttack,
         }
 
         public enum EProjectileMotionType

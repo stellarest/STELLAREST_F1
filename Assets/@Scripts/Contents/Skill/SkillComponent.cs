@@ -46,11 +46,11 @@ namespace STELLAREST_F1
 
         public override bool SetInfo(BaseObject owner, List<int> skillDataIDs) // TEMP
         {
+            // --- Creature는 최소한 스킬 1개를 무조건 가지고 있어야한다.
             if (skillDataIDs.Count == 0)
             {
-                // SkillComponent를 들고 있다는 것은 크리쳐가 스킬을 최소 1개라도 들고 있다는 의미이므로 SkillCount가 0이면 에러 처리(크리쳐의 경우)
-                //Debug.LogError($"{nameof(SkillComponent)}, {nameof(SetInfo)}, Input : \"{skillDataIDs.Count}, Skills zero count\"");
-                Util.LogError($"{nameof(SkillComponent)}, {nameof(SetInfo)}, Input : \"{skillDataIDs.Count}, Skills zero count\"");
+                Debug.LogError($"{nameof(SkillComponent)}, {nameof(SetInfo)}, Input : \"{skillDataIDs.Count}, Skills zero count\"");
+                Debug.Break();
                 return false;
             }
 
@@ -71,8 +71,8 @@ namespace STELLAREST_F1
 
             if (Managers.Data.SkillDataDict.TryGetValue(skillDataID, out Data.SkillData skillData) == false)
             {
-                //Debug.LogError($"{nameof(SkillComponent)}, {nameof(AddSkill)}, Input : \"{skillDataID}\"");
-                Util.LogError($"{nameof(SkillComponent)}, {nameof(AddSkill)}, Input : \"{skillDataID}\"");
+                Debug.LogError($"{nameof(SkillComponent)}, {nameof(AddSkill)}, Input : \"{skillDataID}\"");
+                Debug.Break();
                 return;
             }
 

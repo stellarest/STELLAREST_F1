@@ -34,24 +34,24 @@ namespace STELLAREST_F1
         public bool IsGameOver => Managers.Object.Heroes.Count == 0 ? true : false;
 
         // Leader Change CoolTime 필요... 1초 정도?
-        public void ChangeHeroLeader(bool isFromDead)
+        public void ChangeHeroLeader(bool autoChangeFromDead)
         {
             HeroLeaderController leaderController = Managers.Object.HeroLeaderController;
             if (leaderController == null)
                 return;
 
             Hero leader = leaderController.Leader;
-            if (isFromDead == false && (leader.IsValid() == false || leader.CreatureState == ECreatureState.Dead))
+            if (autoChangeFromDead == false && (leader.IsValid() == false || leader.CreatureState == ECreatureState.Dead))
             {
                 Debug.LogWarning("What the... hell is going on!");
                 return;
             }
 
-            if (isFromDead == false)
+            if (autoChangeFromDead == false)
             {
                 if (leaderController._coCanChangeLeader != null)
                 {
-                    Debug.Log("<color=white>Wait Change Leader CoolTime..</color>");
+                    Debug.LogWarning("Wait Change Leader CoolTime..");
                     return;
                 }
                 else
@@ -61,6 +61,7 @@ namespace STELLAREST_F1
             }
 
             leaderController.StartCoChangeRandomHeroLeader();
+            Debug.Log($"<color=white>{nameof(ChangeHeroLeader)}</color>");
         }
     }
 }

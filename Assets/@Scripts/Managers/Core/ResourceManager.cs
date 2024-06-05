@@ -24,8 +24,8 @@ namespace STELLAREST_F1
             GameObject prefab = this.Load<GameObject>(key);
             if (prefab == null)
             {
-                //Debug.LogError($"{nameof(ResourceManager)}, {nameof(Instantiate)}, Input : \"{key}\"");
-                Util.LogError("{nameof(ResourceManager)}, {nameof(Instantiate)}, Input : \"{key}\"");
+                Debug.LogError($"{nameof(ResourceManager)}, {nameof(Instantiate)}, Input : \"{key}\"");
+                Debug.Break();
                 return null;
             }
 

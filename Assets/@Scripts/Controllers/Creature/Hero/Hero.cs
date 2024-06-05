@@ -454,9 +454,8 @@ namespace STELLAREST_F1
 
         protected override void OnDeadFadeOutEnded()
         {
-            Debug.Log("<color=magenta>Hero Func !!!!!</color>");
             if (IsLeader)
-                Managers.Game.ChangeHeroLeader(isFromDead: true);
+                Managers.Game.ChangeHeroLeader(autoChangeFromDead: true);
 
             Debug.Log("Hero::OnDeadFadeOutEnded");
             base.OnDeadFadeOutEnded();

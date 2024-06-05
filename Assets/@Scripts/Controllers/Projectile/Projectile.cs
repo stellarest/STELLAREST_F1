@@ -37,7 +37,8 @@ namespace STELLAREST_F1
 
             if (Managers.Data.ProjectileDataDict.TryGetValue(dataID, out Data.ProjectileData projectileData) == false)
             {
-                Util.LogError($"{nameof(Projectile)}, {nameof(SetInfo)}, Input : \"{dataID}\"");
+                Debug.LogError($"{nameof(Projectile)}, {nameof(SetInfo)}, Input : \"{dataID}\"");
+                Debug.Break();
                 return false;
             }
 
@@ -77,7 +78,8 @@ namespace STELLAREST_F1
             ProjectileMotion = gameObject.AddComponent(classType) as ProjectileMotionBase;
             if (ProjectileMotion == null)
             {
-                Util.LogError($"{nameof(Projectile)}, {nameof(SetInfo)}, Input : \"{projectileData.Type}\"");
+                Debug.LogError($"{nameof(Projectile)}, {nameof(SetInfo)}, Input : \"{projectileData.Type}\"");
+                Debug.Break();
                 return false;
             }
 

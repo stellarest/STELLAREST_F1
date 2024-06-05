@@ -4,6 +4,7 @@ using TMPro;
 using Unity.VisualScripting.Antlr3.Runtime.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 using static STELLAREST_F1.Define;
 
@@ -14,31 +15,11 @@ namespace STELLAREST_F1
     {
         public static DevManager Instance = null;
 
-        public Hero _heroA = null;
-        public Hero _heroB = null;
-
-        public GameObject TestObject = null;
-        //public Hero HeroTest = null;
-        //public bool Magnitude = true;
-
         private void Awake()
         {
             Instance = this;
-            // TestObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            // TestObject.name = "@@@@@TestSphere@@@@@";
-            // SortingGroup sg = TestObject.AddComponent<SortingGroup>();
-            // sg.sortingLayerName = "BaseObject";
-            // sg.sortingOrder = 101;
-            // TestObject.transform.localScale *= 0.5f;
         }
 
-        // [ContextMenu("TestSetPos")]
-        // private void TestSetPos()
-        // {
-        //     TestObject.transform.position = Managers.Map.CenteredCellToWorld(Vector3Int.zero);
-        // }
-
-        public bool StopMembersMovement = false;
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.P))
@@ -53,84 +34,20 @@ namespace STELLAREST_F1
                     if (pair.Value != null)
                         Debug.Log($"({pair.Key}, {pair.Value}");
                 }
-
-                // --- Check Collision Tile Type
-                // int minX = Managers.Map.MinX;
-                // int maxX = Managers.Map.MaxX;
-                // int minY = Managers.Map.MinY;
-                // int maxY = Managers.Map.MaxY;
-                // for (int i = minX; i < maxX; ++i)
-                // {
-                //     for (int j = maxY - 1; j >= minY; --j)
-                //     {
-                //         Vector3Int cellPos = new Vector3Int(i, j);
-                //         Vector3 cellToWorld = Managers.Map.CellToWorld(cellPos);
-                //         Managers.Map.CheckOnTile(cellToWorld);
-                //     }
-                // }
+                Debug.Log($"<color=white>Is GameOver: {Managers.Game.IsGameOver}</color>");
             }
 
             if (Input.GetKeyDown("1"))
-            {
-                //ChangeRandomHeroLeader();
-                Managers.Game.ChangeHeroLeader(isFromDead: false);
-                Debug.Log("<color=cyan>ChangeHeroLeader</color>");
-            }
+                Managers.Game.ChangeHeroLeader(autoChangeFromDead: false);
 
             if (Input.GetKeyDown("2"))
-            {
-                Managers.Object.HeroLeaderController.SetJustFollowClosely();
-                Debug.Log("<color=cyan>SetJustFollowClosely</color>");
-            }
+                Managers.Object.HeroLeaderController.ChangeFormation_Dev();
 
             if (Input.GetKeyDown("3"))
-            {
-                Managers.Object.HeroLeaderController.SetNarrowFormation();
-                Debug.Log("<color=cyan>SetNarrowFormation</color>");
-            }
+                Managers.Object.HeroLeaderController.ShuffleMembersPosition();
 
             if (Input.GetKeyDown("4"))
-            {
-                Managers.Object.HeroLeaderController.SetWideFormation();
-                Debug.Log("<color=cyan>SetWideFormation</color>");
-            }
-
-            if (Input.GetKeyDown("5"))
-            {
-                Managers.Object.HeroLeaderController.SetRandomFormation();
-                Debug.Log("<color=cyan>SetRandomFormation</color>");
-            }
-
-            if (Input.GetKeyDown("6"))
-            {
-                Managers.Object.HeroLeaderController.SetForceStop();
-                Debug.Log("<color=cyan>SetForceStop</color>");
-            }
-
-            if (Input.GetKeyDown("8"))
-            {
-                HeroLeaderController heroLeaderController = Managers.Object.HeroLeaderController;
-
-                if (heroLeaderController.HeroMemberFormationMode == EHeroMemberFormationMode.FollowLeaderClosely ||
-                    heroLeaderController.HeroMemberFormationMode == EHeroMemberFormationMode.RandomFormation ||
-                    heroLeaderController.HeroMemberFormationMode == EHeroMemberFormationMode.ForceStop)
-                {
-                    Debug.LogWarning("You have to set \"Narrow\", or \"Wide\" formation before.");
-                    return;
-                }
-                else
-                {
-                    heroLeaderController.ShuffleMembersPosition();
-                    Debug.Log("<color=cyan>ShuffleMembersPosition</color>");
-                }
-            }
-
-
-
-            if (Input.GetKeyDown("9"))
-            {
-                Debug.Log($"GameOver: {Managers.Game.IsGameOver}");
-            }
+                OnOffTileCollider();
         }
 
         private void ShowCellPosText()
@@ -169,81 +86,39 @@ namespace STELLAREST_F1
             }
         }
 
-        public void ChangeRandomHeroLeader()
+        bool OnOffTileColliderFlag = false;
+        private void OnOffTileCollider()
         {
-            // if (Managers.Object.Heroes.Count == 1)
-            //     return;
+            GameObject map = GameObject.Find("@Map_SummerForestField_Test2");
+            if (OnOffTileColliderFlag == false)
+            {
+                GameObject wall = Util.FindChild(map, "Wall", true, true);
+                if (wall != null)
+                {
+                    TilemapRenderer tr = wall.GetComponent<TilemapRenderer>();
+                    tr.sortingOrder = 100;
+                }
 
-            // int randIdx = UnityEngine.Random.Range(0, Managers.Object.Heroes.Count);
-            // Hero newHeroLeader = Managers.Object.Heroes[randIdx];
-            // Hero currentLeader = Managers.Object.HeroLeaderController.Leader;
-            // while (newHeroLeader == currentLeader || newHeroLeader.CreatureState == ECreatureState.Dead)
-            // {
-            //     if (Managers.Object.Heroes.Count == 0)
-            //         return;
+                GameObject tc = Util.FindChild(map, "Tilemap_Collision", true, true);
+                if (tc != null)
+                    tc.SetActive(false);
+            }
+            else
+            {
+                GameObject wall = Util.FindChild(map, "Wall", true, true);
+                if (wall != null)
+                {
+                    TilemapRenderer tr = wall.GetComponent<TilemapRenderer>();
+                    tr.sortingOrder = 20;
+                }
 
-            //     randIdx = UnityEngine.Random.Range(0, Managers.Object.Heroes.Count);
-            //     newHeroLeader = Managers.Object.Heroes[randIdx];
-            // }
+                GameObject tc = Util.FindChild(map, "Tilemap_Collision", true, true);
+                if (tc != null)
+                    tc.SetActive(true);
+            }
 
-            // Managers.Object.HeroLeaderController.Leader = newHeroLeader;
+            OnOffTileColliderFlag = !OnOffTileColliderFlag;
         }
-
-        // public Hero Leader { get; set; } = null; // TMEP
-        // public EHeroLeaderChaseMode LeaderChaseMode = EHeroLeaderChaseMode.JustFollowClosely;
-        // private void OnDrawGizmos()
-        // {
-        //     if (Leader == null)
-        //         return;
-
-        //     if (LeaderChaseMode == EHeroLeaderChaseMode.JustFollowClosely)
-        //         return;
-
-        //     float distance = (float)LeaderChaseMode;
-        //     int memberCount = Managers.Object.Heroes.Count - 1;
-        //     for (int i = 0; i < memberCount; ++i)
-        //     {
-        //         float degree = 360f * i / memberCount;
-        //         degree = Mathf.PI / 180f * degree;
-        //         float x = Leader.transform.position.x + Mathf.Cos(degree) * distance;
-        //         float y = Leader.transform.position.y + Mathf.Sin(degree) * distance;
-
-        //         Vector3Int cellPos = Managers.Map.WorldToCell(new Vector3(x, y, 0));
-        //         //Vector3Int cellPos = new Vector3Int(1, 0, 0); // A* Test
-        //         Vector3 worldCenterPos = Managers.Map.CenteredCellToWorld(cellPos);
-
-        //         Gizmos.color = Color.red;
-        //         Gizmos.DrawSphere(worldCenterPos, radius: 0.5f);
-        //     }
-        // }
-
-        // public IEnumerator CoUpdateReplacePosition()
-        // {
-        //     while (true)
-        //     {
-        //         List<Hero> members = new List<Hero>();
-        //         foreach (var hero in Managers.Object.Heroes)
-        //         {
-        //             if (hero.IsLeader == false)
-        //                 members.Add(hero);
-        //         }
-
-        //         float _replaceHeroesDistance_Test = DevManager.Instance.TestReplaceDistance;
-        //         Hero leader = Managers.Object.HeroLeaderController.Leader;
-        //         for (int i = 0; i < members.Count; ++i)
-        //         {
-        //             float degree = 360f * i / members.Count;
-        //             degree = Mathf.PI / 180f * degree;
-        //             float x = leader.transform.position.x + Mathf.Cos(degree) * _replaceHeroesDistance_Test;
-        //             float y = leader.transform.position.y + Mathf.Sin(degree) * _replaceHeroesDistance_Test;
-
-        //             Vector3Int cellPos = Managers.Map.WorldToCell(new Vector3(x, y, 0));
-        //             //members[i].ReplaceHero(cellPos);
-        //             members[i].CoUpdateReplaceDestPosition(cellPos);
-        //             yield return null;
-        //         }
-        //     }
-        // }
     }
 }
 #endif

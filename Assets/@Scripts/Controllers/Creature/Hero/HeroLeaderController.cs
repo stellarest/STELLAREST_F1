@@ -74,43 +74,69 @@ namespace STELLAREST_F1
         [SerializeField] private EHeroMemberChaseMode _heroMemberChaseMode = EHeroMemberChaseMode.EngageEnemy;
         public EHeroMemberChaseMode HeroMemberChaseMode => _heroMemberChaseMode;
 
-        // TEMP
-        public void SetJustFollowClosely()
-            => HeroMemberFormationMode = EHeroMemberFormationMode.FollowLeaderClosely;
-
-        // TEMP
-        public void SetNarrowFormation()
-            => HeroMemberFormationMode = EHeroMemberFormationMode.NarrowFormation;
-
-        // TEMP
-        public void SetWideFormation()
-            => HeroMemberFormationMode = EHeroMemberFormationMode.WideFormation;
-
-        // TEMP
-        public void SetRandomFormation()
-            => HeroMemberFormationMode = EHeroMemberFormationMode.RandomFormation;
-
-        public void SetForceStop()
+        private int _changeFormation_Dev = 0;
+        public void ChangeFormation_Dev()
         {
-            List<Hero> heroes = Managers.Object.Heroes;
-            for (int i = 0; i < heroes.Count; ++i)
+            switch (_changeFormation_Dev)
             {
-                if (heroes[i].IsValid() == false)
-                    continue;
+                case (int)EHeroMemberFormationMode.FollowLeaderClosely:
+                    HeroMemberFormationMode = EHeroMemberFormationMode.FollowLeaderClosely;
+                    _changeFormation_Dev = (int)EHeroMemberFormationMode.NarrowFormation;
+                    break;
 
-                if (heroes[i].IsLeader)
-                    continue;
+                case (int)EHeroMemberFormationMode.NarrowFormation:
+                    HeroMemberFormationMode = EHeroMemberFormationMode.NarrowFormation;
+                    _changeFormation_Dev = (int)EHeroMemberFormationMode.WideFormation;
+                    break;
 
-                heroes[i].PrevCellPosForForceStop = heroes[i].CellPos;
+                case (int)EHeroMemberFormationMode.WideFormation:
+                    HeroMemberFormationMode = EHeroMemberFormationMode.WideFormation;
+                    _changeFormation_Dev = (int)EHeroMemberFormationMode.RandomFormation;
+                    break;
+
+                case (int)EHeroMemberFormationMode.RandomFormation:
+                    HeroMemberFormationMode = EHeroMemberFormationMode.RandomFormation;
+                    _changeFormation_Dev = (int)EHeroMemberFormationMode.ForceStop;
+                    break;
+
+                case (int)EHeroMemberFormationMode.ForceStop:
+                    {
+                        List<Hero> heroes = Managers.Object.Heroes;
+                        for (int i = 0; i < heroes.Count; ++i)
+                        {
+                            if (heroes[i].IsValid() == false)
+                                continue;
+
+                            if (heroes[i].IsLeader)
+                                continue;
+
+                            heroes[i].PrevCellPosForForceStop = heroes[i].CellPos;
+                        }
+
+                        HeroMemberFormationMode = EHeroMemberFormationMode.ForceStop;
+                        _changeFormation_Dev =  (int)EHeroMemberFormationMode.FollowLeaderClosely;
+                    }
+                    break;
             }
 
-            HeroMemberFormationMode = EHeroMemberFormationMode.ForceStop;
+            Debug.Log($"<color=white>{HeroMemberFormationMode}</color>");
         }
 
         public void ShuffleMembersPosition()
         {
             if (Managers.Object.Heroes.Count < 2)
+            {
+                Debug.Log($"<color=white>Hero Count: {Managers.Object.Heroes.Count}</color>");
                 return;
+            }
+
+            // --- RandomFormation에서 멤버를 섞기 싫다면 추가
+            if (HeroMemberFormationMode == EHeroMemberFormationMode.FollowLeaderClosely ||
+                HeroMemberFormationMode == EHeroMemberFormationMode.ForceStop)
+            {
+                Debug.LogWarning("You have to set \"Narrow\", or \"Wide\" formation before.");
+                return;
+            }
 
             List<Hero> shuffleHeroes = Managers.Object.Heroes.Skip(1).ToList();
             System.Random rnd = new System.Random();
@@ -121,6 +147,8 @@ namespace STELLAREST_F1
                 Managers.Object.Heroes[i + 1] = shuffleHeroes[i];
                 Managers.Object.Heroes[i + 1].CreatureState = ECreatureState.Move;
             }
+
+            Debug.Log($"<color=white>{nameof(ShuffleMembersPosition)}</color>");
         }
 
         public Vector3Int RequestFormationCellPos(Hero heroMember)
