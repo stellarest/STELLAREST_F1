@@ -41,6 +41,8 @@ namespace STELLAREST_F1
 
         private MapManager _map = new MapManager();
         public static MapManager Map => Instance?._map;
+        
+        public static MonoContentsManager Contents => MonoContentsManager.Instance;
 
         private ObjectManager _object = new ObjectManager();
         public static ObjectManager Object => Instance?._object;

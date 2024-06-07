@@ -58,6 +58,12 @@ namespace STELLAREST_F1
             return true;
         }
 
+        protected override void SetStat(int dataID)
+        {
+            base.SetStat(dataID);
+            _maxLevel = dataID;
+        }
+
         protected override void EnterInGame(int dataID)
         {
             base.EnterInGame(dataID);

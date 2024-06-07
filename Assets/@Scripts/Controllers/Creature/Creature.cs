@@ -62,8 +62,6 @@ namespace STELLAREST_F1
             return true;
         }
 
-
-        // VER1
         public override bool SetInfo(int dataID)
         {
             if (base.SetInfo(dataID) == false)
@@ -73,8 +71,20 @@ namespace STELLAREST_F1
             }
 
             CreatureAnim = BaseAnim as CreatureAnimation;
-            //EnterInGame();
+
             return true;
+        }
+
+        protected override void SetStat(int dataID)
+        {
+            base.SetStat(dataID);
+            for (int i = DataTemplateID; i < DataTemplateID + 10;)
+            {
+                if (Managers.Data.StatDataDict.ContainsKey(i) == false)
+                    break;
+
+                _maxLevel = i++;
+            }
         }
 
         protected override void EnterInGame(int dataID)

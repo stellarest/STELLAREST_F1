@@ -7,10 +7,13 @@ using UnityEngine;
 using DG.Tweening;
 
 /*
+// STAGE 100
+
 [ TODO TODAY LIST ]
 // 24. 06. 07
 >>> 데미지 트윈 애니메이션 지속적인 수정 필요(ULTIMATE DMG ASSET 가져오기)
 >>> 리더랑 히어로 멤버 같은 위치에 있을 때 아직 고장나있는거 확인 (AI 지속적으로 개선해야함)
+>>> 프로젝타일부터 고칠까, 근데 이펙트가 있으면 좋긴해.
 
 // 24. 06. 05
 >>> 진도 빼기

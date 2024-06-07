@@ -38,22 +38,6 @@ namespace STELLAREST_F1
             }
         }
 
-        // Hero가 ReturnToLeader로 하고 나서... 바로 앞에 리더가 타겟을 후드려패고 있는데
-        // 멤버는 아무것도 안하고 꿀빠는중
-        public bool InvincibleTest = false; // TEST
-        private void Update() // TEST
-        {
-            if (_coWaitSearchTarget != null)
-            {
-                if (Target.IsValid() == false)
-                {
-                    Debug.Log("aaa");
-                }
-            }
-
-            // Debug.Log($"HP: {Hp} / {MaxHp}");
-        }
-
         public override bool Init()
         {
             if (base.Init() == false)
@@ -174,9 +158,7 @@ namespace STELLAREST_F1
         #region Battle
         public override void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
         {
-            if (InvincibleTest == false)
-                base.OnDamaged(attacker, skillFromAttacker);
-
+            base.OnDamaged(attacker, skillFromAttacker);
 
             if (Target.IsValid() == false && attacker.IsValid())
             {

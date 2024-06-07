@@ -8,12 +8,21 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Rendering;
+using UnityEngine.UIElements;
 using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
     public class BaseObject : InitBase
     {
+        private void Update()
+        {
+            if (Input.GetKeyDown("5"))
+            {
+                LevelUp();
+            }    
+        }
+
         public int DataTemplateID { get; protected set; } = -1;
         public EObjectType ObjectType { get; protected set; } = EObjectType.None;
         public EObjectRarity ObjectRarity { get; protected set; } = EObjectRarity.Common;
@@ -41,71 +50,65 @@ namespace STELLAREST_F1
 
         #region Stat
         public Data.StatData StatData { get; private set; } = null;
-        private int _levelCount = -1;
-        private int _levelValue = -1;
-        private int _maxLevelValue = -1;
-        public int Level
-        {
-            get => (_levelValue % DataTemplateID) + 1;
-            private set
-            {
-                if (_levelValue == _maxLevelValue)
-                    return;
 
-                _levelValue++;
-                _levelValue = UnityEngine.Mathf.Clamp(_levelValue, DataTemplateID, _maxLevelValue);
-                if (_levelValue == _maxLevelValue)
-                {
-                    // TODO : DO SOMETHING WHEN GOT MAX LEVEL STATE (EX)COMMON -> ELITE
-                }
-                else
-                {
-                    // TODO : DO SOMETHING WHEN LEVEL UP (EX)EFFECT 
-                }
+        [SerializeField] private int _level = 0;
+        public int Level => (_level % DataTemplateID) + 1;
+
+        [SerializeField] protected int _maxLevel = 0;
+        public int MaxLevel => (_maxLevel % DataTemplateID) + 1;
+        public bool IsMaxLevel => _level == _maxLevel;
+        protected void LevelUp()
+        {
+            if (_level < _maxLevel)
+            {
+                _level = Mathf.Clamp(_level + 1, DataTemplateID, _maxLevel);
+                if (Managers.Data.StatDataDict.TryGetValue(_level, out Data.StatData statData))
+                    StatData = statData; // Refresh
             }
+
+            // Debug.Log($"===== {gameObject.name} =====");
+            // Debug.Log($"LevelText: {StatData.LevelText}");
+            // Debug.Log($"MaxHp: {StatData.MaxHp}");
+            // Debug.Log($"Atk: {StatData.Atk}");
+            // Debug.Log($"AtkRange: {StatData.AtkRange}");
+            // Debug.Log($"CriticalRate: {StatData.CriticalRate}");
+            // Debug.Log($"DodgeRate: {StatData.DodgeRate}");
+            // Debug.Log($"MovementSpeed: {StatData.MovementSpeed}");
         }
 
-        protected void LevelUp() => Level++;
-
-        public float Hp { get; set; } = 0f;
-        protected Stat _maxHp = null;
-        public float MaxHp
+        private float _hp = 0f;
+        public float Hp
         {
-            get => _maxHp.BaseValue;
-            protected set
-            {
-                _maxHp = _maxHp == null ? new Stat(value) : _maxHp;
-            }
+            get => _hp;
+            protected set => _hp = value;
         }
 
-        protected Stat _atk = null;
-        public float Atk
-        {
-            get => _atk.BaseValue;
-            protected set
-            {
-                _atk = _atk == null ? new Stat(value) : _atk;
-            }
-        }
+        public float MaxHpBase { get; set; } = 0f;
+        public float AtkBase { get; set; } = 0f;
+        public float AtkRangeBase { get; set; } = 0f;
+        public float CriticalRateBase { get; set; } = 0f;
+        public float DodgeRateBase { get; set; } = 0f;
+        public float MovementSpeedBase { get; set; } = 0f;
+        
+        [field: SerializeField] public float MaxHp { get; set; } = 0f;
+        [field: SerializeField] public float Atk { get; set; } = 0f;
+        [field: SerializeField] public float AtkRange { get; set; } = 0f;
+        [field: SerializeField] public float CriticalRate { get; set; } = 0f;
+        [field: SerializeField] public float DodgeRate { get; set; } = 0f;
+        [field: SerializeField] public float MovementSpeed { get; set; } = 0f;
 
-        protected Stat _atkRange = null;
-        public float AtkRange
+        // Modifier를 밖에다가 빼기
+        private bool _statDirtyFlag = false;
+        private void RecalculateStat()
         {
-            get => _atkRange.BaseValue;
-            protected set
-            {
-                _atkRange = _atkRange == null ? new Stat(value) : _atkRange;
-            }
-        }
+            if (_statDirtyFlag == false)
+                return;
 
-        protected Stat _movementSpeed = null;
-        public float MovementSpeed
-        {
-            get => _movementSpeed.BaseValue;
-            protected set
-            {
-                _movementSpeed = _movementSpeed == null ? new Stat(value) : _movementSpeed;
-            }
+            _statDirtyFlag = true;
+            // TODO Recalc
+            // ITEM
+            // BUFFS
+            // ...
         }
         #endregion
 
@@ -132,7 +135,6 @@ namespace STELLAREST_F1
             // RigidbodyType2D - Dynamic: 물리 완전 제어, 높은 비용, 충돌 감지
             // RigidbodyType2D - Kinematic: 물리 회전, 위치를 업데이트 하지 않음, 비교적 낮은 비용, 충돌 감지
             // RigidbodyType2D - Static: 절대적으로 움직이지 않는 상태에서만 충돌 감지.
-
             RigidBody.bodyType = RigidbodyType2D.Kinematic;
             SortingGroup = gameObject.GetOrAddComponent<SortingGroup>();
             SortingGroup.sortingLayerName = ReadOnly.SortingLayers.SLName_BaseObject;
@@ -164,29 +166,26 @@ namespace STELLAREST_F1
             if (ObjectType == EObjectType.Projectile)
                 return;
 
-            // Reset Stat (TEMP)
-            MaxHp = StatData.MaxHp;
-            Hp = MaxHp;
-            Atk = StatData.Atk;
-            AtkRange = StatData.AtkRange;
-            MovementSpeed = StatData.MovementSpeed;
+            // Reset Stat
+            Hp = StatData.MaxHp;
         }
 
-        private void SetStat(int dataID)
+        protected virtual void SetStat(int dataID)
         {
             if (Managers.Data.StatDataDict.TryGetValue(dataID, out Data.StatData statData) == false)
                 return;
 
             StatData = statData;
-            _levelCount = Managers.Data.StatDataDict.Count;
-            _levelValue = dataID;
-            _maxLevelValue = _levelValue + _levelCount - 1;
 
-            Hp = statData.MaxHp;
-            MaxHp = statData.MaxHp;
-            Atk = statData.Atk;
-            AtkRange = statData.AtkRange;
-            MovementSpeed = statData.MovementSpeed;
+            _level = DataTemplateID;
+            Hp = StatData.MaxHp;
+
+            MaxHp = MaxHpBase = StatData.MaxHp;
+            Atk = AtkBase = StatData.Atk;
+            AtkRange = AtkRangeBase = StatData.AtkRange;
+            CriticalRate = CriticalRateBase = StatData.CriticalRate;
+            DodgeRate = DodgeRateBase = StatData.DodgeRate;
+            MovementSpeed = MovementSpeedBase = StatData.MovementSpeed;
         }
 
         public void LookAtValidTarget()
@@ -240,7 +239,7 @@ namespace STELLAREST_F1
 
             float delta = 0f;
             float percent = 1f;
-            //AnimationCurve curve = Managers.Animation.Curve(EAnimationCurveType.Ease_In);
+            AnimationCurve curve = Managers.Contents.Curve(EAnimationCurveType.Ease_In);
             while (percent > 0f)
             {
                 // Debug.Log($"{gameObject.name}, {percent}");
@@ -248,8 +247,7 @@ namespace STELLAREST_F1
                 percent = 1f - (delta / ReadOnly.Numeric.DesiredDeadFadeOutEndTime);
                 foreach (SpriteRenderer spr in GetComponentsInChildren<SpriteRenderer>())
                 {
-                    //float current = Mathf.Lerp(0f, 1f, curve.Evaluate(percent));
-                    float current = Mathf.Lerp(0f, 1f, percent);
+                    float current = Mathf.Lerp(0f, 1f, curve.Evaluate(percent));
                     spr.color = new Color(spr.color.r, spr.color.g, spr.color.b, current);
                 }
 

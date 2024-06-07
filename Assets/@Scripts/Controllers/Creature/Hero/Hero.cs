@@ -515,8 +515,7 @@ namespace STELLAREST_F1
 
             float delta = 0f;
             float percent = 1f;
-            //AnimationCurve curve = Managers.Animation.Curve(EAnimationCurveType.Ease_In);
-
+            AnimationCurve curve = Managers.Contents.Curve(EAnimationCurveType.Ease_In);
             // 1. Fade Out - Skin
             while (percent > 0f)
             {
@@ -524,8 +523,7 @@ namespace STELLAREST_F1
                 percent = 1f - (delta / ReadOnly.Numeric.DesiredDeadFadeOutEndTime);
                 for (int i = 0; i < HeroBody.Skin.Count; ++i)
                 {
-                    //float current = Mathf.Lerp(0f, 1f, curve.Evaluate(percent));
-                    float current = Mathf.Lerp(0f, 1f, percent);
+                    float current = Mathf.Lerp(0f, 1f, curve.Evaluate(percent));
                     HeroBody.Skin[i].color = new Color(HeroBody.Skin[i].color.r,
                                                        HeroBody.Skin[i].color.g,
                                                        HeroBody.Skin[i].color.b, current);
@@ -543,8 +541,7 @@ namespace STELLAREST_F1
                 percent = 1f - (delta / ReadOnly.Numeric.DesiredDeadFadeOutEndTime);
                 for (int i = 0; i < HeroBody.Appearance.Count; ++i)
                 {
-                    //float current = Mathf.Lerp(0f, 1f, curve.Evaluate(percent));
-                    float current = Mathf.Lerp(0f, 1f, percent);
+                    float current = Mathf.Lerp(0f, 1f, curve.Evaluate(percent));
                     HeroBody.Appearance[i].color = new Color(HeroBody.Appearance[i].color.r,
                                                              HeroBody.Appearance[i].color.g,
                                                              HeroBody.Appearance[i].color.b, current);
@@ -637,6 +634,7 @@ namespace STELLAREST_F1
                 if (CreatureState == ECreatureState.Idle && Target.IsValid())
                     spaceOut = true;
 
+                // --- 검토 필요. 전체적인 AI 검토 필요 ---
                 if (spaceOut)
                 {
                     Debug.Log($"<color=yellow>ZoneOut: {gameObject.name}</color>");

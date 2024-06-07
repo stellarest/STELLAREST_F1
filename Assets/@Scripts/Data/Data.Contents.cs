@@ -398,6 +398,8 @@ namespace STELLAREST_F1.Data
         public float MaxHp;
         public float Atk;
         public float AtkRange;
+        public float CriticalRate;
+        public float DodgeRate;
         public float MovementSpeed;
     }
 
