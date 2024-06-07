@@ -34,21 +34,6 @@ namespace STELLAREST_F1
         #region CreatureStateMachine
         public override void OnSkillStateEnter()
         {
-            // // --- DEFENSE
-            // if (Owner.IsValid() == false)
-            //     return;
-
-            // // --- DEFENSE
-            // if (Owner.Target.IsValid() == false)
-            //     return;
-
-            // if (_coBodyAttack != null)
-            // {
-            //     StopCoroutine(_coBodyAttack);
-            //     _coBodyAttack = null;
-            // }
-
-            // _coBodyAttack = StartCoroutine(CoBodyAttack());
         }
 
         public override void OnSkillStateUpdate()

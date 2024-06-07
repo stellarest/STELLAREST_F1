@@ -92,10 +92,7 @@ namespace STELLAREST_F1
                 EnterInGame(dataID);
                 return false;
             }
-
-            // SortingGroup.sortingOrder = 20; // TEST - 일단 Wall이랑 똑같이.
-            SortingGroup.sortingOrder = 100; // TEST - 일단 Wall이랑 똑같이.
-
+            
             HeroBody = new HeroBody(this, dataID);
             HeroAnim = CreatureAnim as HeroAnimation;
             HeroAnim.SetInfo(dataID, this);
@@ -109,7 +106,9 @@ namespace STELLAREST_F1
             Collider.radius = HeroData.ColliderRadius;
 
             CreatureSkill = gameObject.GetOrAddComponent<SkillComponent>();
-            CreatureSkill.SetInfo(owner: this, skillDataIDs: Managers.Data.HeroDataDict[dataID].SkillIDs);
+            //CreatureSkill.SetInfo(owner: this, skillDataIDs: Managers.Data.HeroDataDict[dataID].SkillIDs);
+            CreatureSkill.SetInfo(owner: this, HeroData);
+
             _waitMovementDistanceSQRFromLeader = ReadOnly.Numeric.WaitMovementDistanceSQRFromLeader;
 
             EnterInGame(dataID);
@@ -128,6 +127,8 @@ namespace STELLAREST_F1
                             firstTargets: Managers.Object.Monsters,
                             secondTargets: Managers.Object.Envs,
                             func: IsValid);
+
+            StartCoCheckSpaceOut();
 
             // *** Events ***
             Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
@@ -207,7 +208,7 @@ namespace STELLAREST_F1
                 return;
 
             // --- 타겟이 존재하거나, 타겟이 죽었을 경우, Move 상태로 전환
-            if (CreatureMoveState == ECreatureMoveState.MoveToTarget && IsForceStopMode() == false)
+            if (Target.IsValid() || CreatureMoveState == ECreatureMoveState.MoveToTarget && IsForceStopMode() == false)
                 CreatureState = ECreatureState.Move;
 
             if (IsForceStopMode() == false)
@@ -257,6 +258,16 @@ namespace STELLAREST_F1
                             _canHandleSkill = true;
                             return;
                         }
+                    }
+
+                    // 겹쳐서 계속 MoveState로 허공질하고 있을 때
+                    // --- 여기 고장남
+                    if (CellPos == Managers.Object.HeroLeaderController.Leader.CellPos)
+                    {
+                        Debug.Log($"<color=magenta>!!!!!{gameObject.name}</color>");
+                        CreatureMoveState = ECreatureMoveState.None;
+                        CreatureState = ECreatureState.Idle;
+                        return;
                     }
 
                     // 와리가리 핑퐁 오브젝트 체크
@@ -373,7 +384,7 @@ namespace STELLAREST_F1
                 return false;
 
             EHeroMemberChaseMode heroMemberChaseMode = leaderController.HeroMemberChaseMode;
-            if (heroMemberChaseMode == EHeroMemberChaseMode.EngageEnemy)
+            if (heroMemberChaseMode == EHeroMemberChaseMode.EngageTarget)
                 return false;
 
             if (CreatureMoveState == ECreatureMoveState.ForceMove)
@@ -391,7 +402,7 @@ namespace STELLAREST_F1
                 return;
             }
 
-            if (CreatureMoveState == ECreatureMoveState.ForceMove)
+            if (CreatureMoveState == ECreatureMoveState.ForceMove || CreatureMoveState == ECreatureMoveState.None)
             {
                 Hero leader = Managers.Object.HeroLeaderController.Leader;
                 // --- 리더가 이동한다고해서 바로 움직이지 않는다.
@@ -431,7 +442,7 @@ namespace STELLAREST_F1
                     break;
 
                 case EJoystickState.Drag:
-                    if (Managers.Object.HeroLeaderController.HeroMemberChaseMode == EHeroMemberChaseMode.EngageEnemy)
+                    if (Managers.Object.HeroLeaderController.HeroMemberChaseMode == EHeroMemberChaseMode.EngageTarget)
                     {
                         if (Target.IsValid() && _isFarFromLeader == false)
                         {
@@ -477,12 +488,13 @@ namespace STELLAREST_F1
                 Managers.Object.HeroLeaderController.EnablePointer(false);
             }
 
-            StopCoisFarFromLeaderTick();
+            StopCoIsFarFromLeaderTick();
+            StopCoCheckSpaceOut();
             base.OnDead(attacker, skillFromAttacker);
         }
         protected override void OnDisable()
         {
-            Debug.Log("Hero::OnDisable");
+            //Debug.Log("Hero::OnDisable");
             base.OnDisable();
 
             if (Managers.Game == null)
@@ -579,7 +591,7 @@ namespace STELLAREST_F1
                 _coIsFarFromLeaderTick = StartCoroutine(CoIsFarFromLeaderTick());
         }
 
-        private void StopCoisFarFromLeaderTick()
+        private void StopCoIsFarFromLeaderTick()
         {
             if (_coIsFarFromLeaderTick != null)
             {
@@ -607,6 +619,48 @@ namespace STELLAREST_F1
             {
                 StopCoroutine(_coWaitForceStopWarp);
                 _coWaitForceStopWarp = null;
+            }
+        }
+
+        // -- 가끔 간헐적으로 멍때림을 방지하는 코루틴(임시)
+        private Coroutine _coCheckSpaceOut = null;
+        private IEnumerator CoCheckSpaceOut()
+        {
+            bool spaceOut = false;
+            while (true)
+            {
+                // 아무것도 안하고 있을 때.. 타겟이 있는데 가만히 멍대리고 있는다..
+                // 아까 Idle 상태였는데 
+                if (CreatureState == ECreatureState.Idle && Target.IsValid())
+                    spaceOut = true;
+
+                if (spaceOut)
+                {
+                    Debug.Log($"<color=yellow>ZoneOut: {gameObject.name}</color>");
+                    spaceOut = false;
+                    Target = null;
+                    CreatureMoveState = ECreatureMoveState.None;
+                    CreatureState = ECreatureState.Idle;
+                }
+
+                yield return new WaitForSeconds(3f);
+            }
+        }
+
+        private void StartCoCheckSpaceOut()
+        {
+            if (_coCheckSpaceOut != null)
+                return;
+
+            _coCheckSpaceOut = StartCoroutine(CoCheckSpaceOut());
+        }
+
+        private void StopCoCheckSpaceOut()
+        {
+            if (_coCheckSpaceOut != null)
+            {
+                StopCoroutine(_coCheckSpaceOut);
+                _coCheckSpaceOut = null;
             }
         }
         #endregion

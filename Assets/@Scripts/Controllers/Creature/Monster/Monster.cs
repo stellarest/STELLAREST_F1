@@ -38,6 +38,9 @@ namespace STELLAREST_F1
             }
         }
 
+        // Hero가 ReturnToLeader로 하고 나서... 바로 앞에 리더가 타겟을 후드려패고 있는데
+        // 멤버는 아무것도 안하고 꿀빠는중
+        public bool InvincibleTest = false; // TEST
         private void Update() // TEST
         {
             if (_coWaitSearchTarget != null)
@@ -47,6 +50,8 @@ namespace STELLAREST_F1
                     Debug.Log("aaa");
                 }
             }
+
+            // Debug.Log($"HP: {Hp} / {MaxHp}");
         }
 
         public override bool Init()
@@ -65,8 +70,7 @@ namespace STELLAREST_F1
                 EnterInGame(dataID);
                 return false;
             }
-            SortingGroup.sortingOrder = 100; // TEST
-
+            
             MonsterBody = new MonsterBody(this, dataID);
             MonsterAnim = CreatureAnim as MonsterAnimation;
             MonsterAnim.SetInfo(dataID, this);
@@ -79,7 +83,8 @@ namespace STELLAREST_F1
             Collider.radius = MonsterData.ColliderRadius;
 
             CreatureSkill = gameObject.GetOrAddComponent<SkillComponent>();
-            CreatureSkill.SetInfo(this, Managers.Data.MonsterDataDict[dataID].SkillIDs);
+            //CreatureSkill.SetInfo(this, Managers.Data.MonsterDataDict[dataID].SkillIDs);
+            CreatureSkill.SetInfo(owner: this, MonsterData);
 
             EnterInGame(dataID);
             return true;
@@ -90,7 +95,7 @@ namespace STELLAREST_F1
             _initPos = transform.position;
             LookAtDir = ELookAtDirection.Left;
             CreatureState = ECreatureState.Idle;
-            _desiredNextPingPongPatrolDelta = Random.Range(5f, 6f);
+            _desiredNextPingPongPatrolDelta = Random.Range(10f, 12f);
 
             StartCoSearchTarget<Creature>(scanRange: ReadOnly.Numeric.MonsterDefaultScanRange,
                                          firstTargets: Managers.Object.Heroes,
@@ -169,15 +174,19 @@ namespace STELLAREST_F1
         #region Battle
         public override void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
         {
-            base.OnDamaged(attacker, skillFromAttacker);
+            if (InvincibleTest == false)
+                base.OnDamaged(attacker, skillFromAttacker);
+
+
             if (Target.IsValid() == false && attacker.IsValid())
             {
                 float minSec = ReadOnly.Numeric.MinSecWaitSearchTargetForSettingAggroFromRange;
                 float maxSec = ReadOnly.Numeric.MaxSecWaitSearchTargetForSettingAggroFromRange;
                 StartCoWaitSearchTarget(Random.Range(minSec, maxSec));
                 Target = attacker;
-                //Debug.Log($"<color=red>{attacker.gameObject.name}, set aggrogate</color>");
             }
+            else
+                StopCoWaitSearchTarget();
         }
 
         public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
@@ -187,7 +196,7 @@ namespace STELLAREST_F1
         }
         protected override void OnDisable()
         {
-            Debug.Log("Monster::OnDisable");
+            //Debug.Log("Monster::OnDisable");
             base.OnDisable();
         }
         #endregion
@@ -251,7 +260,7 @@ namespace STELLAREST_F1
         {
             if (CreatureState != ECreatureState.Idle)
             {
-                Debug.LogWarning("Patrol can only run in Idle state.");
+                Debug.LogWarning("Patrol can only run in idle state.");
                 return;
             }
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using STELLAREST_F1.Data;
 using UnityEngine;
 using static STELLAREST_F1.Define;
 
@@ -12,7 +13,6 @@ namespace STELLAREST_F1
         public List<SkillBase> Skills { get; } = new List<SkillBase>();
         public List<SkillBase> ActiveSkills { get; } = new List<SkillBase>();
         public SkillBase FindSkill(int dataID) => Skills.FirstOrDefault(n => n.DataTemplateID == dataID);
-
         public SkillBase[] SkillArray { get; private set; } = new SkillBase[(int)ESkillType.Max]; // Caching
         public SkillBase CurrentSkill
         {
@@ -31,7 +31,8 @@ namespace STELLAREST_F1
             }
         }
 
-        // SKILL_ATTACK을 무조건 AI COOLTIME으로 고정할지는 고민
+        // --- 현재 Skill_Attack이 Creature AI CoolTime으로 고정 사용중.
+        // --- 나중에 가지고 있는 스킬들 루프 돌려서 하나라도 쿨타임이 0f 이상이면 되도록 수정해도 될 듯. 
         public bool IsRemainingCoolTime(ESkillType skillType)
             => SkillArray[(int)skillType]?.RemainCoolTime > 0.0f;
 
@@ -44,24 +45,18 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public override bool SetInfo(BaseObject owner, List<int> skillDataIDs) // TEMP
+        // --- 어차피 Creature를 통해서 들어오기 때문에 한 번만 초기화 됨.
+        public void SetInfo(Creature owner, CreatureData creatureData)
         {
-            // --- Creature는 최소한 스킬 1개를 무조건 가지고 있어야한다.
-            if (skillDataIDs.Count == 0)
-            {
-                Debug.LogError($"{nameof(SkillComponent)}, {nameof(SetInfo)}, Input : \"{skillDataIDs.Count}, Skills zero count\"");
-                Debug.Break();
-                return false;
-            }
+            //return base.SetInfo(owner, creatureData);
+            _owner = owner;
 
-            _owner = owner as Creature;
-            foreach (int skillDataID in skillDataIDs)
-                AddSkill(skillDataID);
+            AddSkill(creatureData.Skill_Attack_ID);
+            AddSkill(creatureData.Skill_A_ID);
+            AddSkill(creatureData.Skill_B_ID);
 
             if (SkillArray == null)
                 SkillArray = new SkillBase[(int)ESkillType.Max];
-
-            return true;
         }
 
         private void AddSkill(int skillDataID)
@@ -69,7 +64,7 @@ namespace STELLAREST_F1
             if (skillDataID == -1)
                 return;
 
-            if (Managers.Data.SkillDataDict.TryGetValue(skillDataID, out Data.SkillData skillData) == false)
+            if (Managers.Data.SkillDataDict.TryGetValue(skillDataID, out SkillData skillData) == false)
             {
                 Debug.LogError($"{nameof(SkillComponent)}, {nameof(AddSkill)}, Input : \"{skillDataID}\"");
                 Debug.Break();
@@ -117,3 +112,27 @@ namespace STELLAREST_F1
                 => SkillArray[(int)onEndState - ReadOnly.Numeric.MaxActiveSkillsCount]?.OnSkillStateEnd();
     }
 }
+
+/*
+    [Prev]
+      // --- PREV
+        // public override bool SetInfo(BaseObject owner, List<int> skillDataIDs) // CreatureData로 받아볼까.
+        // {
+        //     // --- Creature는 최소한 스킬 1개를 무조건 가지고 있어야한다.
+        //     if (skillDataIDs.Count == 0)
+        //     {
+        //         Debug.LogError($"{nameof(SkillComponent)}, {nameof(SetInfo)}, Input : \"{skillDataIDs.Count}, Skills zero count\"");
+        //         Debug.Break();
+        //         return false;
+        //     }
+
+        //     _owner = owner as Creature;
+        //     foreach (int skillDataID in skillDataIDs)
+        //         AddSkill(skillDataID);
+
+        //     if (SkillArray == null)
+        //         SkillArray = new SkillBase[(int)ESkillType.Max];
+
+        //     return true;
+        // }
+*/

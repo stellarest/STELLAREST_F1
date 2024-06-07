@@ -11,10 +11,9 @@ namespace STELLAREST_F1
     {
         public enum EObjectRarity // TEMP
         {
-            Common,     // Common -> Ultimate
-            Elite,      // 단일 등급
-            Special,    // 단일 등급
-            Ultimate    // Common -> Ultimate
+            Common,       // Common -> Elite
+            Elite,        // Common -> Elite
+            Special,      // 단일 등급, Common 보다 상급, Elite와 동급, 하급, 또는 다소 상급(랜덤), 보스는 전부 여기에 해당.
         }
 
         public enum ECollectEnvRarity
@@ -370,10 +369,12 @@ namespace STELLAREST_F1
             ForceStop
         }
 
+        // 제거 예정. FollowLeader 모드만 제대로 만들어놓으면 될듯.
         public enum EHeroMemberChaseMode
         {
-            FollowLeader, // --- Default, Skill_A,B 제외 Drag시 리더 추적
-            EngageEnemy, // --- 리더가 이동하지 않고 있을 때 타겟 우선 
+            FollowLeader, // --- Default, Skill_A,B 제외 Drag시 리더 추적, 리더가 공격하면 리더를 따라서 타겟을 찾고 공격. 리더가 채집하면 채집함. 이렇게?
+            EngageTarget, // --- 리더가 이동하지 않고 있을 때 타겟 우선 (제거할 수도 있음. 필요 없는듯.)
+            // --- 아니면 진짜 극단적으로 리더가 이동해도 타겟만 쫓아가는 방식으로. 이거 고민.
         }
 
         public enum EProjectileSize
@@ -382,10 +383,31 @@ namespace STELLAREST_F1
             Medium,
             Large
         }
-        // ####################################################
 
+        // ####################################################
         public static class ReadOnly
         {
+            public static class DataAndPoolingID
+            {
+                public static readonly int DNPID_DamageFont = 109;
+            }
+
+            public static class Prefabs
+            {
+                public static readonly string PFName_DamageFont = "DamageFont";
+            }
+
+            public static class SortingLayers
+            {
+                public static readonly string SLName_BaseObject = "BaseObject";
+                public static readonly int SLOrder_Terrain = 0;
+                public static readonly int SLOrder_Deco = 10;
+                public static readonly int SLOrder_BaseObject = 20;
+                public static readonly int SLOrder_Projectile = 30;
+                public static readonly int SLOrder_UI = 99;
+                public static readonly int SLOrder_DamageFont = 100;
+            }
+            
             public static class Character
             {
                 public const char Map_Tool_Block_0 = '0';
@@ -421,6 +443,7 @@ namespace STELLAREST_F1
                 public static readonly string MonsterPoolingRootName = "@Pool_Monsters";
                 public static readonly string EnvPoolingRootName = "@Pool_Envs";
                 public static readonly string ProjectilePoolingRootName = "@Pool_Projectiles";
+                public static readonly string DamageFontPoolingRootName = "@Pool_DamageFonts";
                 public static readonly string UI_Joystick = "UI_Joystick";
                 public static readonly string AnimationBody = "AnimationBody";
                 public static readonly string HeroCamp = "HeroCamp";
@@ -568,10 +591,10 @@ namespace STELLAREST_F1
             public static class Numeric
             {
                 // [ INTEGER ]
-                public static readonly int SortingLayer_Base = 0;
-                public static readonly int SortingLayer_Projectile = 10;
-                public static readonly int SortingLayer_VFX = 20;
-                public static readonly int SortingLayer_HeroCamp = 90;
+                // public static readonly int SortingLayer_Base = 0;
+                // public static readonly int SortingLayer_Projectile = 10;
+                // public static readonly int SortingLayer_VFX = 20;
+                // public static readonly int SortingLayer_HeroCamp = 90;
 
                 // public static readonly int SortingOrder_SpellIndicator = 200;
                 // public static readonly int SortingOrder_Creature = 300;
@@ -629,8 +652,7 @@ namespace STELLAREST_F1
                 // --- [ FLOATING ]
                 // -- [ HERO ]
                 public static readonly float CheckFarFromHeroesLeaderTick = 1.0F;
-                public static readonly float CheckFarFromHereosLeaderDistance = 4.0F; // 4칸(상하좌우 기준)
-                public static readonly float CheckFarFromHeroesLeaderDistanceForWarp = 15.0F; // 15칸(상하좌우 기준)
+                public static readonly float CheckFarFromHeroesLeaderDistanceForWarp = 30.0F; // 15F(15칸, 상하좌우 기준) -> 30칸
                 public static readonly float WaitMovementDistanceSQRFromLeader = 2.4F;
 
                 public static readonly float MinSecPatrolPingPong = 1.0F;
@@ -656,7 +678,7 @@ namespace STELLAREST_F1
                 public static readonly float MonsterSize_Medium = 0.8F;
                 public static readonly float MonsterSize_Large = 1.2F;
 
-                public static readonly float HeroDefaultScanRange = 6.0F; // 오리지날 6F, 일단 6칸
+                public static readonly float HeroDefaultScanRange = 8.0F; // 오리지날 6F, 일단 6칸
                 public static readonly float MonsterDefaultScanRange = 4.0F; // 상하좌우 한칸 기준, 대각선X
                 public static readonly float Temp_StopDistance = 1.25F;
                 

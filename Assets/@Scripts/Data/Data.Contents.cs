@@ -13,26 +13,23 @@ namespace STELLAREST_F1.Data
         public string PrefabLabel;
         public string DescriptionTextID;
         public string Type;
+        public string Rarity;
         public string IconImage;
     }
 
     public class CreatureData : BaseData
     {
-        public string Rarity;
         public string AnimatorLabel;
         public float ColliderRadius;
-        public float MaxHp;
-        public float Atk;
-        public float AtkRange;
-        public float MovementSpeed;
-        public List<int> SkillIDs = new List<int>();
+        public int Skill_Attack_ID;
+        public int Skill_A_ID;
+        public int Skill_B_ID;
     }
 
     [Serializable]
     public class HeroData : CreatureData
     {
     }
-
     public class HeroDataLoader : ILoader<int, HeroData>
     {
         public List<HeroData> Heroes = new List<HeroData>();
@@ -417,27 +414,6 @@ namespace STELLAREST_F1.Data
             return dict;
         }
     }
-
-    // [Serializable] TEMP
-    // public class SkillData : BaseData
-    // {
-    // 	public string ClassName;
-    // 	public string ComponentName;
-    // 	public string Description;
-    // 	public int ProjectileId;
-    // 	public float CoolTime;
-    // 	public float DamageMultiplier;
-    // 	public float Duration;
-    // 	public float NumProjectiles;
-    // 	public string CastingSound;
-    // 	public float AngleBetweenProj;
-    // 	public float SkillRange;
-    // 	public float RotateSpeed;
-    // 	public float ScaleMultiplier;
-    // 	public float AngleRange;
-
-    //     public float InvokeRatioOnStateUpdate;
-    // }
 
     [Serializable]
     public class SkillData : BaseData

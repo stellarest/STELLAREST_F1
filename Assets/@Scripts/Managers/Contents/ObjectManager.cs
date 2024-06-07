@@ -52,6 +52,7 @@ namespace STELLAREST_F1
         public Transform MonsterRoot => GetRoot(ReadOnly.String.MonsterPoolingRootName);
         public Transform EnvRoot => GetRoot(ReadOnly.String.EnvPoolingRootName);
         public Transform ProjectileRoot => GetRoot(ReadOnly.String.ProjectilePoolingRootName);
+        public Transform DamageFontRoot => GetRoot(ReadOnly.String.DamageFontPoolingRootName);
         #endregion
 
         public HeroLeaderController SetHeroLeaderController()
@@ -64,6 +65,15 @@ namespace STELLAREST_F1
             }
 
             return HeroLeaderController;
+        }
+
+        public void ShowDamageFont(Vector2 position, float damage, bool isCritical = false)
+        {
+            int poolingID = ReadOnly.DataAndPoolingID.DNPID_DamageFont;
+            string prefabName = ReadOnly.Prefabs.PFName_DamageFont;
+            GameObject go = Managers.Resource.Instantiate(prefabName, parent: DamageFontRoot, poolingID: poolingID); // 풀링 되려나??
+            DamageFont dmgFont = go.GetComponent<DamageFont>();
+            dmgFont.SetInfo(position, damage, isCritical);
         }
 
         // VER2

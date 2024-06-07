@@ -95,29 +95,23 @@ namespace STELLAREST_F1
             GameObject map = GameObject.Find("@Map_SummerForestField_Test2");
             if (OnOffTileColliderFlag == false)
             {
-                GameObject wall = Util.FindChild(map, "Wall", true, true);
-                if (wall != null)
-                {
-                    TilemapRenderer tr = wall.GetComponent<TilemapRenderer>();
-                    tr.sortingOrder = 100;
-                }
-
                 GameObject tc = Util.FindChild(map, "Tilemap_Collision", true, true);
                 if (tc != null)
                     tc.SetActive(false);
+
+                GameObject to = Util.FindChild(map, "Tilemap_Object", true, true);
+                if (to != null)
+                    to.SetActive(false);
             }
             else
             {
-                GameObject wall = Util.FindChild(map, "Wall", true, true);
-                if (wall != null)
-                {
-                    TilemapRenderer tr = wall.GetComponent<TilemapRenderer>();
-                    tr.sortingOrder = 20;
-                }
-
                 GameObject tc = Util.FindChild(map, "Tilemap_Collision", true, true);
                 if (tc != null)
                     tc.SetActive(true);
+
+                GameObject to = Util.FindChild(map, "Tilemap_Object", true, true);
+                if (to != null)
+                    to.SetActive(true);
             }
 
             OnOffTileColliderFlag = !OnOffTileColliderFlag;

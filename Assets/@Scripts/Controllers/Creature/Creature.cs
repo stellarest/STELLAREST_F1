@@ -82,6 +82,7 @@ namespace STELLAREST_F1
             base.EnterInGame(dataID);
             RigidBody.simulated = false;
             CollectEnv = false;
+            Target = null;
 
             ShowBody(false);
             StartWait(waitCondition: () => BaseAnim.IsPlay() == false,
@@ -304,6 +305,9 @@ namespace STELLAREST_F1
 
             float finalDamage = creature.Atk;
             Hp = UnityEngine.Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
+            Managers.Object.ShowDamageFont(position: this.CenterPosition, damage: finalDamage, isCritical: false);
+            //Debug.Log($"<color=white>{gameObject.name}: ({Hp}/{MaxHp})</color>");
+
             if (Hp <= 0f)
             {
                 Hp = 0f;
@@ -389,9 +393,9 @@ namespace STELLAREST_F1
             return movementSpeed;
         }
 
-        protected virtual void OnDisable()
+        protected override void OnDisable()
         {
-            Debug.Log("Creature::OnDisable");
+            //Debug.Log("Creature::OnDisable");
             ReleaseAnimationEvents();
         }
 
@@ -578,6 +582,7 @@ namespace STELLAREST_F1
                     Target = SearchClosestInRange(scanRange, firstTargets: firstTargets, secondTargets: secondTargets, func: func);
                     if (Target.IsValid())
                         CreatureMoveState = ECreatureMoveState.MoveToTarget;
+                    // --- Target이 존재하지 않을 때, MoveToTarget 해제는 Creature AI에서 해결    
                 }
             }
         }
@@ -603,7 +608,8 @@ namespace STELLAREST_F1
         protected Coroutine _coWaitSearchTarget = null;
         private IEnumerator CoWaitSearchTarget(float waitSeconds)
         {
-            Debug.Log("<color=green>START WAIT</color>");
+            // --- 확인됨
+            //Debug.Log($"<color=white>{nameof(CoWaitSearchTarget)}</color>");
             yield return new WaitForSeconds(waitSeconds);
             StopCoWaitSearchTarget();
         }
@@ -611,15 +617,12 @@ namespace STELLAREST_F1
         protected void StartCoWaitSearchTarget(float waitSeconds)
         {
             if (_coWaitSearchTarget != null)
-            {
-                Debug.LogWarning("Already process - CoWaitSearchTarget");
                 return;
-            }
 
             _coWaitSearchTarget = StartCoroutine(CoWaitSearchTarget(waitSeconds));
         }
 
-        private void StopCoWaitSearchTarget() // PRIVATE
+        protected void StopCoWaitSearchTarget() // PRIVATE
         {
             if (_coWaitSearchTarget != null)
             {
@@ -627,7 +630,8 @@ namespace STELLAREST_F1
                 _coWaitSearchTarget = null;
             }
 
-            Debug.Log("<color=green>RELEASE WAIT</color>");
+            // --- 확인됨
+            // Debug.Log($"<color=white>{nameof(StopCoWaitSearchTarget)}</color>");
         }
 
         /*

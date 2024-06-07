@@ -42,7 +42,7 @@ namespace STELLAREST_F1
             if (base.Init() == false)
                 return false;
 
-            Camera.main.orthographicSize = ReadOnly.Numeric.CamOrthoSize;
+            Camera.main.orthographicSize = ReadOnly.Numeric.CamOrthoSize + 3f;
             return true;
         }
 

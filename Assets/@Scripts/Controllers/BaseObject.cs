@@ -150,8 +150,15 @@ namespace STELLAREST_F1
             RigidBody = gameObject.GetOrAddComponent<Rigidbody2D>();
             RigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
             RigidBody.gravityScale = 0f;
+            RigidBody.mass = 0f;
+            RigidBody.drag = 0f;
+            // RigidbodyType2D - Dynamic: 물리 완전 제어, 높은 비용, 충돌 감지
+            // RigidbodyType2D - Kinematic: 물리 회전, 위치를 업데이트 하지 않음, 비교적 낮은 비용, 충돌 감지
+            // RigidbodyType2D - Static: 절대적으로 움직이지 않는 상태에서만 충돌 감지.
+            RigidBody.bodyType = RigidbodyType2D.Kinematic;
             SortingGroup = gameObject.GetOrAddComponent<SortingGroup>();
-            SortingGroup.sortingOrder = ReadOnly.Numeric.SortingLayer_Base;
+            SortingGroup.sortingLayerName = ReadOnly.SortingLayers.SLName_BaseObject;
+            SortingGroup.sortingOrder = ReadOnly.SortingLayers.SLOrder_BaseObject;
 
             return true;
         }
@@ -166,7 +173,6 @@ namespace STELLAREST_F1
 
             DataTemplateID = dataID;
             ObjectRarity = EObjectRarity.Common; // TEMP
-            RigidBody.drag = 0f; // TEMP
             SetStat(dataID);
 
             OnDeadFadeOutEndHandler -= this.OnDeadFadeOutEnded;
@@ -205,9 +211,9 @@ namespace STELLAREST_F1
             MovementSpeed = statData.MovementSpeed;
         }
 
-        public void LookAtValidTarget() // TEMP
+        public void LookAtValidTarget()
         {
-            if (Target.IsValid() == false) // 방어
+            if (Target.IsValid() == false)
                 return;
 
             Vector3 toTargetDir = Target.transform.position - transform.position;
@@ -216,6 +222,9 @@ namespace STELLAREST_F1
             else
                 LookAtDir = ELookAtDirection.Right;
         }
+
+        public static Vector3 GetLookAtRotation(Vector3 dir)
+            => new Vector3(0, 0, Mathf.Atan2(-dir.x, dir.y) * Mathf.Rad2Deg);
 
         #region Animation
         public void UpdateAnimation()
@@ -236,6 +245,12 @@ namespace STELLAREST_F1
         {
             RigidBody.simulated = false; // RigidBody 제거 예정
             StartCoroutine(CoDeadFadeOut(this.OnDeadFadeOutEndHandler));
+        }
+
+        // 오~ 되는구나
+        protected virtual void OnDisable()
+        {
+            // Debug.Log("BaseObject::OnDisable!!");
         }
 
         protected virtual IEnumerator CoDeadFadeOut(Action endFadeOutCallback = null)
@@ -262,7 +277,7 @@ namespace STELLAREST_F1
                 yield return null;
             }
 
-            Debug.Log($"{gameObject.name} is dead.");
+            //Debug.Log($"{gameObject.name} is dead.");
             endFadeOutCallback?.Invoke();
 
             Managers.Object.Despawn(this, DataTemplateID);

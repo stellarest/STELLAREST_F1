@@ -103,6 +103,7 @@ namespace STELLAREST_F1
             // Debug.Log($"xMax: {tm.cellBounds.xMax}");
             // Debug.Log($"yMin: {tm.cellBounds.yMin}");
             // Debug.Log($"yMax: {tm.cellBounds.yMax}");
+            // DBDBD
 
             for (int y = tm.cellBounds.yMax; y >= tm.cellBounds.yMin; --y)
             {
@@ -127,7 +128,7 @@ namespace STELLAREST_F1
 
                         // TEST MULTIPLE
                         int currentMonsterCount = 0;
-                        int maxMonsterCount = UnityEngine.Random.Range(20, 26);
+                        int maxMonsterCount = UnityEngine.Random.Range(20, 31);
                         while (currentMonsterCount < maxMonsterCount)
                         {
                             Vector3Int randPos = new Vector3Int
@@ -176,7 +177,7 @@ namespace STELLAREST_F1
                         // TEST: 9,5
                         // monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, tile.DataID);
                         // MoveTo(monster, new Vector3Int(9, 5, 0), stopLerpToCell: true, forceMove: true);
-                        // monster.InitialSpawnedCellPos = cellPos;
+                        // monster.InitialSpawnedCellPos = new Vector3Int(9, 5, 0);
 
                         // TEST2
                         // Vector3Int monPos2 = monster.CellPos;

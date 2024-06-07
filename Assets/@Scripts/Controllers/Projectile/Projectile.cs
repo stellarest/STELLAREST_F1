@@ -23,7 +23,7 @@ namespace STELLAREST_F1
 
             ObjectType = EObjectType.Projectile;
             Collider.isTrigger = true;
-            SortingGroup.sortingOrder = ReadOnly.Numeric.SortingLayer_Projectile;
+            SortingGroup.sortingOrder = ReadOnly.SortingLayers.SLOrder_Projectile;
             return true;
         }
 

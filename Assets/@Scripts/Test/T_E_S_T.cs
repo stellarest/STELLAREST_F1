@@ -4,18 +4,45 @@ using System.Diagnostics.CodeAnalysis;
 using STELLAREST_F1;
 using static STELLAREST_F1.Define;
 using UnityEngine;
+using DG.Tweening;
 
 /*
 [ TODO TODAY LIST ]
-// 24. 06. 05
->>> !!! 갈 수 없는 곳에 치킨이 위치해고, 팔라딘이 있을 때 팔라딘이 치킨에게 못찾아감.
->>> !!! 어그로 시스템도 망가져있음... 계속 한놈안 쫓아가는 버그...
+// 24. 06. 07
+>>> 데미지 트윈 애니메이션 지속적인 수정 필요(ULTIMATE DMG ASSET 가져오기)
+>>> 리더랑 히어로 멤버 같은 위치에 있을 때 아직 고장나있는거 확인 (AI 지속적으로 개선해야함)
 
->>> 팔라딘 공격 사거리부터 체크. - 딱히 문제는 없어 보이는데.. (없어보임 )
->>> 치킨 바디어택 만들기. (완료)
->>> 진도 빼기 시작하기. 그래야 컨텐츠를 쭈욱 만들 수 있다.
+// 24. 06. 05
+>>> 진도 빼기
+>>> Leader 행동 우선 
+---> Leader가 Idle 상태에서는 알아서 해라
+---> Leader가 공격 또는 채집 중이라면 리더 근처로 이동 시도 후 타겟 검색.
+
+>>> Hero들 Idle 상태에서 멍때리는거 잡는중
+---> 얼추 잡힌것같긴한데, 가끔 팔라딘 리더가 원거리 몬스터를 공격한다. 사거리도 안되는 주제에.
+>>> 가끔 Search Target을 안하는 느낌
+>>> 같은 위치에 리더랑 히어로 멤버가 있으면 멤버가 달리기를 시도함.
+
+[ 찐 히어로 제작 순서 목록 ]
+>>> 1. Paladin (Male)
+>>> 2. Archer (Female)
+>>> 3. Wizard (Female)
+>>> 4. Lancer (Male)
+>>> 5. Gunner (Male)
+>>> 6. Assassin (Male)
+>>> 7. Druid (Female)
+
+[ 찐 몬스터 제작 순서 목록, 보스 포함 ]
+>>> 1. Chicken
+>>> 2. Turkey
+>>> 3. Bunny
+>>> 4. Pug
+
 
 [ MEMO LIST ]
+>> 목표, Collider, Rigidbody를 빼는 것. 아니면 Collider 하나만 쓰고, OnTrigger등 메서드 사용하지 않기.
+>> 강화된 스킬은 내가 예상한대로 무조건 100% 새로 파서 해주는게 좋다고 함.
+>> 예를 들어 NextSkillLevelID를 박아서 한다던지
 >> --- 출시 계획
 >> -- IOS, IPAD, MAC OS
 >> 부대1(7명), 부대2(7명), 부대3(7명): 최대 히어로 개수 21개
@@ -67,56 +94,46 @@ public class Test2 : IEnumerable
 
 public class T_E_S_T : MonoBehaviour
 {
-    private float _movementSpeed = 3.0f;
-    private Vector2 _moveDir = Vector3.zero;
-    private int TestProperty { get; set; }
-
-    private IEnumerator CoStart()
-    {
-        yield return null;
-    }
-
-    private Coroutine _co = null;
-
     private IEnumerator Start()
     {
-        _co = StartCoroutine(CoStart());
+        yield return new WaitForSeconds(1f);
+        Sequence seq = DOTween.Sequence();
+        // seq.Append(transform.DOMove(new Vector3(3f, 3f, 0), 3f));
 
-        Managers.Game.OnMoveDirChangedHandler -= OnMoveDirChanged;
-        Managers.Game.OnMoveDirChangedHandler += OnMoveDirChanged;
-        yield return null;
-        // yield return new WaitForSeconds(3f);
-        // Debug.Log("MOVE START !!");
-        // while (true)
-        // {
-        //     // 거 = 속 * 시
-        //     float distance = _movementSpeed * Time.deltaTime;
-        //     while (true)
-        //     {
-        //         transform.position += Vector3.up * distance;
-        //         //transform.position = transform.position + (Vector3.up * _movementSpeed * Time.deltaTime);
-        //         yield return null;
-        //     }
-        // }
-    }
+        // seq.Join(transform.DOScale(new Vector3(3f, 3f, 0), 3f));
+        // seq.Join(GetComponent<SpriteRenderer>().material.DOColor(Color.red, 3f));
 
-    private void Update()
-    {
-        if (Managers.Game.JoystickState == EJoystickState.Drag)
-        {
-            float moveDistancePerFrame = _movementSpeed * Time.deltaTime;
-            transform.Translate(_moveDir * moveDistancePerFrame);
-        }
-    }
+        // seq.Append(transform.DORotate(new Vector3(0, 0, -135f), 3f));
+        seq.Append(transform.DOScale(endValue: 1.3f, duration: 0.3f)).SetEase(Ease.InOutBounce)
+       .Join(transform.DOMove(endValue: transform.position + Vector3.up, duration: 0.3f)).SetEase(Ease.Linear)
+       .Append(transform.DOScale(endValue: 1.0f, duration: 0.3f).SetEase(Ease.InOutBounce))
+       .Join(transform.GetComponent<SpriteRenderer>().material.DOFade(endValue: 0f, duration: 0.3f)).SetEase(Ease.InQuint)
+       .OnComplete(() => Debug.Log("COMPLETED !!"));
 
-    private void OnMoveDirChanged(Vector2 dir)
-    {
-        _moveDir = dir;
+        seq.Play();
     }
 }
 
 /* 
 [ MEMO ]
+// --- Skills
+// -- Paladin (Common)
+// - Skill_A : Double Attack
+// - Skill_B : Shield
+
+// -- Paladin (Elite)
+// - Skill_A : Triple Attack
+// - Skill_B : Defense of heavens
+
+// -- Archer (Common)
+// - Skill_A : Multi Shot (Three Arrows)
+// - Skill_B : Elemental Bomb Shot
+
+// -- Archer (Elite)
+// - Skill_A : Triple Multi + Continuous + Penetrated Shot
+// - Skill_B : Five Elemental Arrows (Guided Arrows)
+
+
 곡선은 삼각함수, 베지에 곡선으로도 가능.
 GameObject.CreatePrimitive(PrimitiveType.Sphere)
 

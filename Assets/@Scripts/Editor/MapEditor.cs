@@ -15,19 +15,6 @@ using Newtonsoft.Json;
 
 namespace STELLAREST_F1
 {
-    public struct NodeTest : IComparable<NodeTest>
-    {
-        public int H;
-
-        public int CompareTo(NodeTest other)
-        {
-            if (H == other.H)
-                return 0;
-
-            return H < other.H ? 1 : -1;
-        }
-    }
-
     public class MapEditor : EditorWindow
     {
 #if UNITY_EDITOR
@@ -61,16 +48,6 @@ namespace STELLAREST_F1
             // int[] arr = lst.Where(n => n <= 7).ToArray();
             // for (int i = 0; i < arr.Length; ++i)
             //     Debug.Log($"arr[{i}]: {arr[i]}");
-
-            // ###
-            PriorityQueue<NodeTest> pq = new PriorityQueue<NodeTest>();
-            NodeTest node = new NodeTest() { H = 23 };
-            pq.Push(node);
-            node = new NodeTest() { H = 10 };
-            pq.Push(node);
-
-            for (int i = 0; i < pq.Heap.Count; ++i)
-                Debug.Log($"pq[{i}]: {pq.Heap[i].H}");
         }
 
         // Mac: %(Command) #(Shift) K

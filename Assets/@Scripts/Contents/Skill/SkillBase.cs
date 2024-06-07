@@ -11,7 +11,7 @@ namespace STELLAREST_F1
         public Data.SkillData SkillData { get; private set; } = null;
         public int DataTemplateID { get; private set; } = -1;
         public ESkillType SkillType { get; private set; } = ESkillType.None;
-        public EAttachmentPoint SkillFrom { get; private set; } = EAttachmentPoint.None;
+        public EAttachmentPoint SkillFromPoint { get; private set; } = EAttachmentPoint.None;
         public float RemainCoolTime { get; protected set; } = 0.0f;
         public float InvokeRatioOnUpdate { get; private set; } = 0.0f;
 
@@ -35,7 +35,7 @@ namespace STELLAREST_F1
             SkillData = Managers.Data.SkillDataDict[dataID];
             DataTemplateID = dataID;
             SkillType = Util.GetEnumFromString<ESkillType>(SkillData.Type);
-            SkillFrom = Util.GetEnumFromString<EAttachmentPoint>(SkillData.AttachmentPoint);
+            SkillFromPoint = Util.GetEnumFromString<EAttachmentPoint>(SkillData.AttachmentPoint);
             InvokeRatioOnUpdate = SkillData.InvokeRatioOnUpdate;
             EnterInGame(owner, dataID);
             return true;
@@ -48,22 +48,24 @@ namespace STELLAREST_F1
 
         private void OnDisable()
         {
-            if (Managers.Game == null)
-                return;
-            if (Owner.IsValid() == false)
-                return;
-            if (Owner.CreatureAnim == null)
-                return;
+            // 왜 있는 것임?
+            // if (Managers.Game == null)
+            //     return;
+            // if (Owner.IsValid() == false)
+            //     return;
+            // if (Owner.CreatureAnim == null)
+            //     return;
         }
 
         public virtual void DoSkill()
         {
             Owner.LookAtValidTarget();
 
+            // 다소 무식한 방법이긴하지만 매우 직관적인 방식임.
             if (Owner.CreatureSkill != null)
                 Owner.CreatureSkill.ActiveSkills.Remove(this);
 
-            StartCoroutine(CoActivateSkill());
+            // StartCoroutine(CoActivateSkill());
             switch (SkillType)
             {
                 case ESkillType.Skill_Attack:
@@ -78,6 +80,8 @@ namespace STELLAREST_F1
                     Owner.CreatureState = ECreatureState.Skill_B;
                     break;
             }
+            
+            StartCoroutine(CoActivateSkill());
         }
 
         protected virtual void GenerateProjectile(Creature owner, Vector3 spawnPos)
@@ -116,9 +120,9 @@ namespace STELLAREST_F1
                 case EObjectType.Hero:
                     {
                         HeroBody heroBody = (Owner as Hero).HeroBody;
-                        if (SkillFrom == EAttachmentPoint.WeaponL)
+                        if (SkillFromPoint == EAttachmentPoint.WeaponL)
                             return heroBody.GetComponent<Transform>(EHeroWeapon.WeaponL).position;
-                        else if (SkillFrom == EAttachmentPoint.WeaponLSocket)
+                        else if (SkillFromPoint == EAttachmentPoint.WeaponLSocket)
                             return heroBody.GetComponent<Transform>(EHeroWeapon.WeaponLSocket).position;
                     }
                     break;

@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace STELLAREST_F1
 {
-    public class HeroLeaderController : InitBase
+    public class HeroLeaderController : BaseObject
     {
         private Transform _pointerPivot = null;
         private Transform _pointer = null;
@@ -135,7 +135,7 @@ namespace STELLAREST_F1
         public void ChangeChaseMode_Dev()
         {
             if (_changeLeaderChaseflag == false)
-                _heroMemberChaseMode = EHeroMemberChaseMode.EngageEnemy;
+                _heroMemberChaseMode = EHeroMemberChaseMode.EngageTarget;
             else
                 _heroMemberChaseMode = EHeroMemberChaseMode.FollowLeader;
 
@@ -241,6 +241,10 @@ namespace STELLAREST_F1
             if (base.Init() == false)
                 return false;
 
+            RigidBody.simulated = false;
+            Collider.enabled = false;
+            SortingGroup.sortingOrder = ReadOnly.SortingLayers.SLOrder_UI;
+
             _pointerPivot = Util.FindChild<Transform>(gameObject, "PointerPivot");
             _pointer = Util.FindChild<Transform>(_pointerPivot.gameObject, "Pointer");
             _leaderMark = Util.FindChild<Transform>(gameObject, "LeaderMark");
@@ -265,6 +269,7 @@ namespace STELLAREST_F1
              => _leader.Target.IsValid() ? _leader.Target.transform.position : _pointer.position;
 
         private Vector3 JoystickPos => _leader.transform.position + (_nMovementDir * _leader.MovementSpeed * Time.deltaTime);
+
         private void Update()
         {
             if (_leader == null)
@@ -394,10 +399,14 @@ namespace STELLAREST_F1
         private Queue<Vector3Int> _leaderPath = new Queue<Vector3Int>();
         private void AddLeaderPath(Vector3Int startCellPos, Vector3Int targetCellPos)
         {
+            int depth = 2;
+            if (_leader.Target.IsValid())
+                depth = ReadOnly.Numeric.HeroDefaultMoveDepth;
+
             List<Vector3Int> path = Managers.Map.FindPath(startCellPos: startCellPos,
                                                         destCellPos: targetCellPos,
-                                                        maxDepth: 2, // Max to 2 (이게 더 좋은듯)
-                                                        ignoreObjectType: EObjectType.Hero);
+                                                        maxDepth: depth,
+                                                        ignoreObjectType: EObjectType.None);
             _leaderPath.Clear();
             for (int i = 0; i < path.Count; ++i)
                 _leaderPath.Enqueue(path[i]);
@@ -588,15 +597,20 @@ namespace STELLAREST_F1
                 Vector3Int nextPos = _leaderPath.Peek();
                 Vector3 destPos = Managers.Map.CenteredCellToWorld(nextPos);
                 Vector3 dir = destPos - _leader.transform.position;
-                if (_leader.Target.IsValid() == false)
-                {
-                    if (dir.x < 0f)
-                        _leader.LookAtDir = ELookAtDirection.Left;
-                    else if (dir.x > 0f)
-                        _leader.LookAtDir = ELookAtDirection.Right;
-                }
-                else
-                    _leader.LookAtValidTarget();
+                if (dir.x < 0f)
+                    _leader.LookAtDir = ELookAtDirection.Left;
+                else if (dir.x > 0f)
+                    _leader.LookAtDir = ELookAtDirection.Right;
+
+                // if (_leader.Target.IsValid() == false)
+                // {
+                //     if (dir.x < 0f)
+                //         _leader.LookAtDir = ELookAtDirection.Left;
+                //     else if (dir.x > 0f)
+                //         _leader.LookAtDir = ELookAtDirection.Right;
+                // }
+                // else
+                //     _leader.LookAtValidTarget();
 
                 if (dir.sqrMagnitude < 0.001f)
                 {
@@ -605,6 +619,7 @@ namespace STELLAREST_F1
                     // Path Finding 도중에 중간에 움직일 수 있는 곳이 발견되었을 경우 중지
                     if (Managers.Map.CanMove(JoystickPos, ignoreObjects: true))
                     {
+                        _leader.LookAtValidTarget();
                         _lockFindPath = false;
                         break;
                     }
@@ -618,6 +633,7 @@ namespace STELLAREST_F1
                 yield return null;
             }
 
+            _leader.LookAtValidTarget();
             _lockFindPath = false;
             if (_leader.CreatureMoveState == ECreatureMoveState.None)
                 _leader.CreatureState = ECreatureState.Idle;
