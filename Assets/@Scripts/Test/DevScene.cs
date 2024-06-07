@@ -45,13 +45,13 @@ namespace STELLAREST_F1
                 HeroLeaderController leaderController = Managers.Object.SetHeroLeaderController();
                 CameraController cam = Camera.main.GetComponent<CameraController>();
                 Managers.Object.CameraController = cam;
-                Hero firstHero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
+                Hero firstHero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Wizard);
                 Managers.Map.MoveTo(firstHero, Vector3.zero, stopLerpToCell: true, forceMove: true);
                 firstHero.InitialSpawnedCellPos = Vector3Int.zero;
 
                 // Leader:1, Maximum Members:6
                 int memberCount = 0;
-                int memberMaxCount = 6;
+                int memberMaxCount = 0;
                 bool heroTypeFlag = false;
                 int dataID = -1;
                 while (memberCount < memberMaxCount)
@@ -102,7 +102,7 @@ namespace STELLAREST_F1
             {
                 // --- ENV SPREAD
                 int envCount = 0;
-                int envMaxCount = 15;
+                int envMaxCount = 0;
                 int minX = Managers.Map.MinX;
                 int maxX = Managers.Map.MaxX;
                 int minY = Managers.Map.MinY;
@@ -167,7 +167,7 @@ namespace STELLAREST_F1
                 {
                     Managers.Data.Init();
                     Managers.Sprite.Init();
-                    Managers.Animation.Init();
+                    //Managers.Animation.Init();
                     Test();
                 }
             });

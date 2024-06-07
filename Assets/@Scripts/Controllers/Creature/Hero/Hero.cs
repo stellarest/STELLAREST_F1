@@ -129,6 +129,7 @@ namespace STELLAREST_F1
                             func: IsValid);
 
             StartCoCheckSpaceOut();
+            // GetComponent<SpriteRenderer>().SetPropertyBlock(new MaterialPropertyBlock());
 
             // *** Events ***
             Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
@@ -514,7 +515,7 @@ namespace STELLAREST_F1
 
             float delta = 0f;
             float percent = 1f;
-            AnimationCurve curve = Managers.Animation.Curve(EAnimationCurveType.Ease_In);
+            //AnimationCurve curve = Managers.Animation.Curve(EAnimationCurveType.Ease_In);
 
             // 1. Fade Out - Skin
             while (percent > 0f)
@@ -523,7 +524,8 @@ namespace STELLAREST_F1
                 percent = 1f - (delta / ReadOnly.Numeric.DesiredDeadFadeOutEndTime);
                 for (int i = 0; i < HeroBody.Skin.Count; ++i)
                 {
-                    float current = Mathf.Lerp(0f, 1f, curve.Evaluate(percent));
+                    //float current = Mathf.Lerp(0f, 1f, curve.Evaluate(percent));
+                    float current = Mathf.Lerp(0f, 1f, percent);
                     HeroBody.Skin[i].color = new Color(HeroBody.Skin[i].color.r,
                                                        HeroBody.Skin[i].color.g,
                                                        HeroBody.Skin[i].color.b, current);
@@ -541,7 +543,8 @@ namespace STELLAREST_F1
                 percent = 1f - (delta / ReadOnly.Numeric.DesiredDeadFadeOutEndTime);
                 for (int i = 0; i < HeroBody.Appearance.Count; ++i)
                 {
-                    float current = Mathf.Lerp(0f, 1f, curve.Evaluate(percent));
+                    //float current = Mathf.Lerp(0f, 1f, curve.Evaluate(percent));
+                    float current = Mathf.Lerp(0f, 1f, percent);
                     HeroBody.Appearance[i].color = new Color(HeroBody.Appearance[i].color.r,
                                                              HeroBody.Appearance[i].color.g,
                                                              HeroBody.Appearance[i].color.b, current);

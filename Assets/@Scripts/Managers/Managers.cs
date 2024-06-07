@@ -33,8 +33,8 @@ namespace STELLAREST_F1
         }
 
         #region Contents
-        private AnimationManager _animation = new AnimationManager();
-        public static AnimationManager Animation => Instance?._animation;
+        // private AnimationManager _animation = new AnimationManager();
+        // public static AnimationManager Animation => Instance?._animation;
 
         private GameManager _game = new GameManager();
         public static GameManager Game => Instance?._game;

@@ -46,6 +46,7 @@ namespace STELLAREST_F1
 
         private void DoAnimation()
         {
+            // --- 개선 필요
             Sequence seq = DOTween.Sequence();
 
             //transform.localScale = Vector3.one * 0.5f;

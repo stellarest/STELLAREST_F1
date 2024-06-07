@@ -39,30 +39,6 @@ namespace STELLAREST_F1
         }
         protected event System.Action OnDeadFadeOutEndHandler = null;
 
-        protected float DistanceToTargetSQR
-        {
-            get
-            {
-                if (Target.IsValid() == false)
-                    return 0.0f;
-
-                Vector3 toTargetDir = Target.transform.position - transform.position;
-                return UnityEngine.Mathf.Max(0.0f, toTargetDir.sqrMagnitude); // ??? 의미 없는데 어차피 무조건 양수 나오는데
-            }
-        }
-
-        protected float AttackDistance // TEMP
-        {
-            get
-            {
-                float threshold = 2.2f;
-                if (Target.IsValid() && Target.ObjectType == EObjectType.Env)
-                    return UnityEngine.Mathf.Max(threshold, Collider.radius + Target.Collider.radius);
-
-                return AtkRange + Collider.radius + Target.ColliderRadius;
-            }
-        }
-
         #region Stat
         public Data.StatData StatData { get; private set; } = null;
         private int _levelCount = -1;
@@ -152,9 +128,11 @@ namespace STELLAREST_F1
             RigidBody.gravityScale = 0f;
             RigidBody.mass = 0f;
             RigidBody.drag = 0f;
+
             // RigidbodyType2D - Dynamic: 물리 완전 제어, 높은 비용, 충돌 감지
             // RigidbodyType2D - Kinematic: 물리 회전, 위치를 업데이트 하지 않음, 비교적 낮은 비용, 충돌 감지
             // RigidbodyType2D - Static: 절대적으로 움직이지 않는 상태에서만 충돌 감지.
+
             RigidBody.bodyType = RigidbodyType2D.Kinematic;
             SortingGroup = gameObject.GetOrAddComponent<SortingGroup>();
             SortingGroup.sortingLayerName = ReadOnly.SortingLayers.SLName_BaseObject;
@@ -262,7 +240,7 @@ namespace STELLAREST_F1
 
             float delta = 0f;
             float percent = 1f;
-            AnimationCurve curve = Managers.Animation.Curve(EAnimationCurveType.Ease_In);
+            //AnimationCurve curve = Managers.Animation.Curve(EAnimationCurveType.Ease_In);
             while (percent > 0f)
             {
                 // Debug.Log($"{gameObject.name}, {percent}");
@@ -270,7 +248,8 @@ namespace STELLAREST_F1
                 percent = 1f - (delta / ReadOnly.Numeric.DesiredDeadFadeOutEndTime);
                 foreach (SpriteRenderer spr in GetComponentsInChildren<SpriteRenderer>())
                 {
-                    float current = Mathf.Lerp(0f, 1f, curve.Evaluate(percent));
+                    //float current = Mathf.Lerp(0f, 1f, curve.Evaluate(percent));
+                    float current = Mathf.Lerp(0f, 1f, percent);
                     spr.color = new Color(spr.color.r, spr.color.g, spr.color.b, current);
                 }
 
@@ -410,3 +389,32 @@ namespace STELLAREST_F1
         #endregion
     }
 }
+
+/*
+        Collider.includeLayers = 1 << (int)ELayer.Obstacle;
+        Collider.excludeLayers = 1 << (int)ELayer.Monster | (1 << (int)ELayer.Hero);
+
+        // protected float DistanceToTargetSQR
+        // {
+        //     get
+        //     {
+        //         if (Target.IsValid() == false)
+        //             return 0.0f;
+
+        //         Vector3 toTargetDir = Target.transform.position - transform.position;
+        //         return UnityEngine.Mathf.Max(0.0f, toTargetDir.sqrMagnitude); // ??? 의미 없는데 어차피 무조건 양수 나오는데
+        //     }
+        // }
+
+        // protected float AttackDistance // TEMP
+        // {
+        //     get
+        //     {
+        //         float threshold = 2.2f;
+        //         if (Target.IsValid() && Target.ObjectType == EObjectType.Env)
+        //             return UnityEngine.Mathf.Max(threshold, Collider.radius + Target.Collider.radius);
+
+        //         return AtkRange + Collider.radius + Target.ColliderRadius;
+        //     }
+        // }
+*/

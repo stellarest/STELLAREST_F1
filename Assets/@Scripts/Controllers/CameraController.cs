@@ -62,7 +62,7 @@ namespace STELLAREST_F1
             _processTargeting = true;
             float delta = 0f;
             float percent = 0f;
-            AnimationCurve curve = Managers.Animation.Curve(EAnimationCurveType.Ease_In_Out); 
+            //AnimationCurve curve = Managers.Animation.Curve(EAnimationCurveType.Ease_In_Out); 
             Vector3 startPos = transform.position;
             Vector3 targetPos = new Vector3(_target.CenterPosition.x, _target.CenterPosition.y, -10f);
             while (percent < 1f)
