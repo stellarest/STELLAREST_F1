@@ -18,6 +18,11 @@ namespace STELLAREST_F1
             // ########## TEST ##########
             // StartPosition = Owner.WeaponLWorldPosition + ((TargetPosition - Owner.WeaponLWorldPosition).normalized * 2.25f);
             // ##############################
+
+            //   거
+            // 속 / 시
+            // >>> 거리 더 길어지는 것은 내일 조정하고... 애니메이션 커브 데이터로 추가
+            AnimationCurve curve = Managers.Contents.Curve(AnimCurveType);
             float distance = (StartPosition - TargetPosition).magnitude;
             float totalMovementTime = distance / _movementSpeed;
             float elapsedTime = 0f;
@@ -26,7 +31,8 @@ namespace STELLAREST_F1
             {
                 elapsedTime += Time.deltaTime;
                 float normalizedTime = elapsedTime / totalMovementTime;
-                transform.position = Vector3.Lerp(StartPosition, TargetPosition, normalizedTime);
+                // transform.position = Vector3.Lerp(StartPosition, TargetPosition, normalizedTime);
+                transform.position = Vector3.Lerp(StartPosition, TargetPosition, curve.Evaluate(normalizedTime));
 
                 if (RotateToTarget)
                     Rotation2D(TargetPosition - transform.position);                

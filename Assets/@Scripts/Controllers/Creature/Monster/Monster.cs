@@ -51,30 +51,35 @@ namespace STELLAREST_F1
         {
             if (base.SetInfo(dataID) == false)
             {
-                EnterInGame(dataID);
+                EnterInGame();
                 return false;
             }
-            
+
+            InitialSetInfo(dataID);
+            EnterInGame();
+            return true;
+        }
+
+        protected override void InitialSetInfo(int dataID)
+        {
+            base.InitialSetInfo(dataID);
             MonsterBody = new MonsterBody(this, dataID);
             MonsterAnim = CreatureAnim as MonsterAnimation;
             MonsterAnim.SetInfo(dataID, this);
             Managers.Sprite.SetInfo(dataID, target: this);
 
             MonsterData = Managers.Data.MonsterDataDict[dataID];
+            CreatureRarity = Util.GetEnumFromString<ECreatureRarity>(MonsterData.CreatureRarity);
             MonsterType = Util.GetEnumFromString<EMonsterType>(MonsterData.Type);
 
             gameObject.name += $"_{MonsterData.DescriptionTextID.Replace(" ", "")}";
             Collider.radius = MonsterData.ColliderRadius;
 
             CreatureSkill = gameObject.GetOrAddComponent<SkillComponent>();
-            //CreatureSkill.SetInfo(this, Managers.Data.MonsterDataDict[dataID].SkillIDs);
             CreatureSkill.SetInfo(owner: this, MonsterData);
-
-            EnterInGame(dataID);
-            return true;
         }
 
-        protected override void EnterInGame(int dataID)
+        protected override void EnterInGame()
         {
             _initPos = transform.position;
             LookAtDir = ELookAtDirection.Left;
@@ -86,7 +91,7 @@ namespace STELLAREST_F1
                                          secondTargets: null,
                                          func: IsValid);
 
-            base.EnterInGame(dataID);
+            base.EnterInGame();
         }
 
         private Vector3 _destPos = Vector3.zero;

@@ -31,10 +31,6 @@ namespace STELLAREST_F1
             _initialSet = true;
             return true;
         }
-        protected virtual void EnterInGame(int dataID) 
-        { 
-        }
-
 
         public virtual bool SetInfo(BaseObject owner, int dataID)
         {
@@ -43,28 +39,6 @@ namespace STELLAREST_F1
 
             _initialSet = true;
             return true;
-        }
-
-        // public virtual bool SetInfo(BaseObject owner, Data.CreatureData creatureData)
-        // {
-        //     if (_initialSet)
-        //         return false;
-
-        //     _initialSet = true;
-        //     return true;
-        // }
-
-        // public virtual bool SetInfo(BaseObject owner, List<int> dataIDs)
-        // {
-        //     if (_initialSet)
-        //         return false;
-
-        //     _initialSet = true;
-        //     return true;
-        // }
-
-        protected virtual void EnterInGame(BaseObject owner, int dataID) 
-        { 
         }
     }
 }

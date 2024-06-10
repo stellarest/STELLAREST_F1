@@ -8,6 +8,7 @@ namespace STELLAREST_F1
 {
     public class Creature : BaseObject
     {
+        public ECreatureRarity CreatureRarity { get; protected set; } = ECreatureRarity.Common;
         public SkillComponent CreatureSkill { get; protected set; } = null;
         public CreatureBody CreatureBody { get; protected set; } = null;
         public CreatureAnimation CreatureAnim { get; private set; } = null;
@@ -57,8 +58,6 @@ namespace STELLAREST_F1
             if (base.Init() == false)
                 return false;
 
-            // 최초 Animator Entry State는 Idle이기 때문에 최초에는 이와 동기화 시켜준다.
-            // _creatureState = ECreatureState.Idle;
             return true;
         }
 
@@ -66,18 +65,22 @@ namespace STELLAREST_F1
         {
             if (base.SetInfo(dataID) == false)
             {
-                EnterInGame(dataID);
+                EnterInGame();
                 return false;
             }
-
-            CreatureAnim = BaseAnim as CreatureAnimation;
 
             return true;
         }
 
-        protected override void SetStat(int dataID)
+        protected override void InitialSetInfo(int dataID)
         {
-            base.SetStat(dataID);
+            base.InitialSetInfo(dataID);
+            CreatureAnim = BaseAnim as CreatureAnimation;
+        }
+
+        protected override void InitStat(int dataID)
+        {
+            base.InitStat(dataID);
             for (int i = DataTemplateID; i < DataTemplateID + 10;)
             {
                 if (Managers.Data.StatDataDict.ContainsKey(i) == false)
@@ -87,9 +90,9 @@ namespace STELLAREST_F1
             }
         }
 
-        protected override void EnterInGame(int dataID)
+        protected override void EnterInGame()
         {
-            base.EnterInGame(dataID);
+            base.EnterInGame();
             RigidBody.simulated = false;
             CollectEnv = false;
             Target = null;
@@ -102,17 +105,10 @@ namespace STELLAREST_F1
                           Target = null;
                           CancelWait();
                           AddAnimationEvents();
-                          //CreatureState = ECreatureState.Idle; --> 각 클래스에서 관리
                           CreatureMoveState = ECreatureMoveState.None;
-                          StartCoroutine(CoUpdateAI()); // --> Leader도 AI 돌고 있어야함.
+                          StartCoroutine(CoUpdateAI());
                           StartCoLerpToCellPos();
-                          // StartCoroutine(CoLerpToCellPos()); // Map
                       });
-
-            // StartWait(waitCondition: () => BaseAnim.IsPlay() == false,
-            //         delegate()
-            //         {
-            //         });
         }
 
         private void AddAnimationEvents()
@@ -147,6 +143,9 @@ namespace STELLAREST_F1
 
         protected IEnumerator CoUpdateAI()
         {
+            // if (ObjectType == EObjectType.Monster)
+            //     yield break;
+
             while (true)
             {
                 switch (CreatureState)

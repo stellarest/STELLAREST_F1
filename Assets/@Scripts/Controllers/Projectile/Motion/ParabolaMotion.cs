@@ -33,6 +33,7 @@ namespace STELLAREST_F1
             StartPosition = transform.position;
         }
 
+        // 파라볼라 모션도 지금 고장나있는게 가까이 붙어 있으면 못맞춤
         protected override IEnumerator CoLaunchProjectile()
         {
             //Debug.Log($"### Launch::ParabolaMotion ###");
@@ -40,11 +41,15 @@ namespace STELLAREST_F1
             float journeyLength = Vector2.Distance(StartPosition, TargetPosition);
             float totalTime = journeyLength / _movementSpeed;
 
+            AnimationCurve curve = Managers.Contents.Curve(AnimCurveType);
             while (Time.time - startTime < totalTime)
             {
                 float normalizedTime = (Time.time - startTime) / totalTime;
-                float baseX = Mathf.Lerp(StartPosition.x, TargetPosition.x, normalizedTime);
-                float baseY = Mathf.Lerp(StartPosition.y, TargetPosition.y, normalizedTime);
+                // float baseX = Mathf.Lerp(StartPosition.x, TargetPosition.x, normalizedTime);
+                // float baseY = Mathf.Lerp(StartPosition.y, TargetPosition.y, normalizedTime);
+                float baseX = Mathf.Lerp(StartPosition.x, TargetPosition.x, curve.Evaluate(normalizedTime));
+                float baseY = Mathf.Lerp(StartPosition.y, TargetPosition.y, curve.Evaluate(normalizedTime));
+
                 float arc = HeightArc * Mathf.Sin(normalizedTime * Mathf.PI);
                 float arcY = baseY + arc;
 

@@ -88,7 +88,7 @@ namespace STELLAREST_F1
                         go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: HeroRoot, poolingID: dataID);
                         if (go == null)
                         {
-                            Debug.LogError($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input: \"{data.PrefabLabel}\"");
+                            Debug.LogError($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input: \"{dataID}\"");
                             return null;
                         }
                         Hero hero = go.GetComponent<Hero>();
@@ -103,7 +103,7 @@ namespace STELLAREST_F1
                         go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: MonsterRoot, poolingID: dataID);
                         if (go == null)
                         {
-                            Debug.LogError($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input: \"{data.PrefabLabel}\"");
+                            Debug.LogError($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input: \"{dataID}\"");
                             return null;
                         }
                         Monster monster = go.GetComponent<Monster>();
@@ -117,7 +117,7 @@ namespace STELLAREST_F1
                         go = Managers.Resource.Instantiate(data.PrefabLabel, parent: EnvRoot, poolingID: dataID);
                         if (go == null)
                         {
-                            Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{data.PrefabLabel}\"");
+                            Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{dataID}\"");
                             return null;
                         }
 
@@ -129,25 +129,12 @@ namespace STELLAREST_F1
                 case EObjectType.Projectile:
                     throw new System.NotImplementedException();
 
-                // case EObjectType.HeroCamp:
-                //     {
-                //         go = Managers.Resource.Instantiate(ReadOnly.String.HeroCamp);
-                //         if (go == null)
-                //         {
-                //             Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{ReadOnly.String.HeroCamp}\"");
-                //             return null;
-                //         }
-                //         go.name = $"@{go.name}";
-                //         Camp = go.GetComponent<HeroCamp>();
-                //         return Camp as T;
-                //     }
-
                 case EObjectType.LeaderController:
                     {
                         go = Managers.Resource.Instantiate(ReadOnly.String.LeaderController);
                         if (go == null)
                         {
-                            Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{ReadOnly.String.HeroCamp}\"");
+                            Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{EObjectType.LeaderController}\"");
                             return null;
                         }
                         go.name = $"@{go.name}";
@@ -234,21 +221,6 @@ namespace STELLAREST_F1
                         //go.SetActive(false);
                         return projectile as T;
                     }
-
-                // case EObjectType.HeroCamp:
-                //     {
-                //         go = Managers.Resource.Instantiate(ReadOnly.String.HeroCamp);
-                //         if (go == null)
-                //         {
-                //             Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{ReadOnly.String.HeroCamp}\"");
-                //             return null;
-                //         }
-
-                //         go.transform.position = position;
-                //         go.name = $"@{go.name}";
-                //         Camp = go.GetComponent<HeroCamp>();
-                //         return Camp as T;
-                //     }
             }
 
             return null;
@@ -275,10 +247,6 @@ namespace STELLAREST_F1
 
                 case EObjectType.Projectile:
                     Projectiles.Remove(obj as Projectile);
-                    break;
-
-                case EObjectType.HeroCamp:
-                    //Camp = null;
                     break;
             }
 

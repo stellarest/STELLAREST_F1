@@ -9,11 +9,12 @@ namespace STELLAREST_F1
 {
     public static class Define
     {
-        public enum EObjectRarity // TEMP
+        public enum ECreatureRarity
         {
-            Common,       // Common -> Elite
-            Elite,        // Common -> Elite
-            Special,      // 단일 등급, Common 보다 상급, Elite와 동급, 하급, 또는 다소 상급(랜덤), 보스는 전부 여기에 해당.
+            Common,
+            Elite,
+            Special,
+            Boss
         }
 
         public enum ECollectEnvRarity
@@ -84,7 +85,6 @@ namespace STELLAREST_F1
             Monster,
             Env,
             Projectile,
-            HeroCamp,
             LeaderController,
             Max = LeaderController + 1
         }
@@ -211,7 +211,9 @@ namespace STELLAREST_F1
             WeaponLSocket,
             WeaponLChildGroup,
             WeaponR,
-            Max = WeaponR + 1
+            WeaponRSocket,
+            WeaponRChildGroup,
+            Max = WeaponRChildGroup + 1
         }
 
         public enum EBirdBodyParts
@@ -384,12 +386,75 @@ namespace STELLAREST_F1
             Large
         }
 
+        public enum EEffectType
+        {
+            None,
+            Instant,
+            Buff,
+            DeBuff,
+            Dot,
+            Airborne,
+            Knockback,
+            Freeze,
+            Stun,
+        }
+
+        public enum EEffectSpawnType
+        {
+            None,
+            Skill,// 지속시간이 있는 기본적인 이펙트 
+            External, // 외부(장판스킬)에서 이펙트를 관리(지속시간에 영향을 받지않음
+        }
+
+        public enum EEffectClearType
+        {
+            None,
+            TimeOut,
+            ClearSKill,
+            TriggerOutAoE,
+            EndOfCC,
+            Disable,
+        }
+
         // ####################################################
         public static class ReadOnly
         {
             public static class DataAndPoolingID
             {
+                // --- Damage Font
                 public static readonly int DNPID_DamageFont = 109;
+                // --- Heroes
+                public static readonly int DNPID_Hero_Paladin = 101000;
+                public static readonly int DNPID_Hero_Archer = 101010;
+                public static readonly int DNPID_Hero_Wizard = 101020;
+                public static readonly int DNPID_Hero_Lancer = 101030;
+                public static readonly int DNPID_Hero_Gunner = 101040;
+                // --- Monsters
+                public static readonly int DNPID_Monster_Chicken = 102000;
+                public static readonly int DNPID_Monster_Turkey = 102001;
+                public static readonly int DNPID_Monster_Bunny = 102002;
+                public static readonly int DNPID_Monster_Pug = 102003;
+                // --- Envs
+                public static readonly int DNPID_Env_AshTree = 103000;
+                public static readonly int DNPID_Env_BlackOakTree = 103001;
+                public static readonly int DNPID_Env_GreenAppleTree = 103002;
+                public static readonly int DNPID_Env_IvyTree = 103003;
+                public static readonly int DNPID_Env_ManticoreTree = 103004;
+                public static readonly int DNPID_Env_MapleTree = 103005;
+                public static readonly int DNPID_Env_OakTree = 103006;
+                public static readonly int DNPID_Env_RedAppleTree = 103007;
+                public static readonly int DNPID_Env_RedSandalTree = 103008;
+                public static readonly int DNPID_Env_WillowTree = 103009;
+                public static readonly int DNPID_Env_YewTree = 103010;
+                public static readonly int DNPID_Env_CopperRock = 103011;
+                public static readonly int DNPID_Env_GoldRock = 103012;
+                public static readonly int DNPID_Env_IronRock = 103013;
+                public static readonly int DNPID_Env_LimestoneRock = 103014;
+                public static readonly int DNPID_Env_SilverRock = 103015;
+                public static readonly int DNPID_Env_StoneRock = 103016;
+                public static readonly int DNPID_Env_TinRock = 103017;
+                public static readonly int DNPID_Env_WhetstoneRock = 103018;
+                public static readonly int DNPID_Env_ZincRock = 103019;
             }
 
             public static class Prefabs
@@ -526,9 +591,9 @@ namespace STELLAREST_F1
 
                 // Hero Armored WeaponR
                 public static readonly string HBody_WeaponR = "WeaponR_Armor";
-                public static readonly string HBody_WeaponRAttachment1 = "WeaponRAttachment1_Armor";
-                public static readonly string HBody_WeaponRAttachment2 = "WeaponRAttachment2_Armor";
-                public static readonly string HBody_WeaponRAttachment3 = "WeaponRAttachment3_Armor";
+                // public static readonly string HBody_WeaponRAttachment1 = "WeaponRAttachment1_Armor";
+                // public static readonly string HBody_WeaponRAttachment2 = "WeaponRAttachment2_Armor";
+                // public static readonly string HBody_WeaponRAttachment3 = "WeaponRAttachment3_Armor";
 
                 public static readonly string HBody_PelvisSkin = "Pelvis";
                 public static readonly string HBody_Pelvis = "Pelvis_Armor";
@@ -605,40 +670,9 @@ namespace STELLAREST_F1
                 // //public static readonly int SortingOrder_Weapon = 200;
                 // public static readonly int SortingOrder_Weapon = 320;
 
-                // ID - Heroes
-                public static readonly int DataID_Hero_Paladin = 101000;
-                public static readonly int DataID_Hero_Archer = 101010;
-                public static readonly int DataID_Hero_Wizard = 101020;
-                // public static readonly int DataID_Hero_Lancer = 101999; // TEMP
-
                 // ID - Monsters
-                public static readonly int DataID_Monster_Chicken = 102000;
-                public static readonly int DataID_Monster_Turkey = 102001;
-                public static readonly int DataID_Monster_Bunny = 102002;
-                public static readonly int DataID_Monster_Pug = 102003;
 
                 // ID - Envs Trees & Rocks
-                public static readonly int DataID_Env_AshTree = 901000;
-                public static readonly int DataID_Env_BlackOakTree = 901001;
-                public static readonly int DataID_Env_GreenAppleTree = 901002;
-                public static readonly int DataID_Env_IvyTree = 901003;
-                public static readonly int DataID_Env_ManticoreTree = 901004;
-                public static readonly int DataID_Env_MapleTree = 901005;
-                public static readonly int DataID_Env_OakTree = 901006;
-                public static readonly int DataID_Env_RedAppleTree = 901007;
-                public static readonly int DataID_Env_RedSandalTree = 901008;
-                public static readonly int DataID_Env_WillowTree = 901009;
-                public static readonly int DataID_Env_YewTree = 901010;
-
-                public static readonly int DataID_Env_CopperRock = 901011;
-                public static readonly int DataID_Env_GoldRock = 901012;
-                public static readonly int DataID_Env_IronRock = 901013;
-                public static readonly int DataID_Env_LimestoneRock = 901014;
-                public static readonly int DataID_Env_SilverRock = 901015;
-                public static readonly int DataID_Env_StoneRock = 901016;
-                public static readonly int DataID_Env_TinRock = 901017;
-                public static readonly int DataID_Env_WhetstoneRock = 901018;
-                public static readonly int DataID_Env_ZincRock = 901019;
 
                 // MISC
                 public static readonly int RockElementsCount = 3;

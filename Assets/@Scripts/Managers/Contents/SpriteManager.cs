@@ -480,15 +480,16 @@ namespace STELLAREST_F1
                     heroBody.Appearance.Add(spr);
                 }
             }
-            else // Wepon
+            else // --- WEAPON
             {
                 List<SpriteRenderer> leftWeaponSPRs = new List<SpriteRenderer>();
                 List<SpriteRenderer> rightWeaponSPRs = new List<SpriteRenderer>();
-                Data.HeroSpriteData_Weapon weapon = Managers.Data.HeroSpriteDataDict[heroSpriteData.DataID].Weapon;
+                HeroSpriteData_Weapon weapon = Managers.Data.HeroSpriteDataDict[heroSpriteData.DataID].Weapon;
 
-                // Weapon - Left
+                // --- WEAPON LEFT
                 Transform weaponL = heroBody.GetComponent<Transform>(EHeroWeapon.WeaponL);
                 sprite = Managers.Resource.Load<Sprite>(weapon.LWeapon);
+                Transform weaponLTrRoot = heroBody.GetComponent<Transform>(EHeroWeapon.WeaponLChildGroup);
                 if (sprite != null)
                 {
                     spr = heroBody.GetComponent<SpriteRenderer>(EHeroWeapon.WeaponL);
@@ -498,9 +499,7 @@ namespace STELLAREST_F1
                     spr.flipY = weapon.LWeaponFlipY;
                     leftWeaponSPRs.Add(spr);
                     heroBody.Appearance.Add(spr);
-
-                    // INIT WEAPON SOCKET POSITION
-                    heroBody.GetComponent<Transform>(EHeroWeapon.WeaponLSocket).localPosition = weapon.LWeaponFireSocketPosition;
+                    heroBody.GetComponent<Transform>(EHeroWeapon.WeaponLSocket).localPosition = weapon.LWeaponFireSocketLocalPosition;
 
                     if (weapon.LWeaponChilds.Length != 0)
                     {
@@ -511,11 +510,10 @@ namespace STELLAREST_F1
                             if (childSprite != null)
                             {
                                 Transform childParent = heroBody.GetComponent<Transform>(EHeroWeapon.WeaponLChildGroup); // added
-
-                                //SpriteRenderer childSPR = weaponL.GetChild(i).GetComponent<SpriteRenderer>();
                                 SpriteRenderer childSPR = childParent.GetChild(i).GetComponent<SpriteRenderer>(); // fixed
 
                                 childSPR.sprite = childSprite;
+                                childSPR.transform.localPosition = weapon.LWeaponChildsLocalPositions[i]; // Added
                                 childSPR.sortingOrder = weapon.LWeaponChildSortings[i];
                                 childSPR.flipX = weapon.LWeaponChildFlipXs[i];
                                 childSPR.flipY = weapon.LWeaponChildFlipYs[i];
@@ -524,27 +522,33 @@ namespace STELLAREST_F1
                             }
                         }
 
-                        // L : 사용하지 않는 나머지 자식 비활성화
-                        for (int i = childLength; i < weaponL.childCount; ++i)
-                            weaponL.GetChild(i).gameObject.SetActive(false);
-
+                        // L: 사용하지 않는 나머지 자식은 비활성화 (애니메이션으로 제어할 경우 제외)
+                        // Archer는 3번 무기를 사용하지 않지만, 나중에 진화할 때 필요할 수도 있어서 애니메이션에서는
+                        // L,R Root 자체를 껏켜하는중
+                        for (int i = 0; i < weaponLTrRoot.childCount; ++i)
+                        {
+                            GameObject child = weaponLTrRoot.GetChild(i).gameObject;
+                            if (child.GetComponent<SpriteRenderer>().sprite == null)
+                                child.gameObject.SetActive(false);
+                        }
                     }
                     else
                     {
-                        for (int i = 0; i < weaponL.childCount; ++i)
-                            weaponL.GetChild(i).gameObject.SetActive(false);
+                        // L: 자식 무기가 아무것도 없으면 루트 자체를 비활성화
+                        // 비어있는 무기 오브젝트 자체를 비활성화하지 않는다. 맨주먹 소켓을 사용할 수도 있기 때문.
+                        weaponLTrRoot.gameObject.SetActive(false);
                     }
                 }
                 else
                 {
-                    for (int i = 0; i < weaponL.childCount; ++i)
-                        weaponL.GetChild(i).gameObject.SetActive(false);
-                    weaponL.gameObject.SetActive(false);
+                    // L: 만약에 무기가 없는 캐릭터라면.. 전부 비활성화
+                    weaponLTrRoot.gameObject.SetActive(false);
                 }
 
-                // Weapon - Right
+                // --- WEAPON RIGHT
                 Transform weaponR = heroBody.GetComponent<Transform>(EHeroWeapon.WeaponR);
                 sprite = Managers.Resource.Load<Sprite>(weapon.RWeapon);
+                Transform weaponRTrRoot = heroBody.GetComponent<Transform>(EHeroWeapon.WeaponRChildGroup);
                 if (sprite != null)
                 {
                     spr = heroBody.GetComponent<SpriteRenderer>(EHeroWeapon.WeaponR);
@@ -554,6 +558,7 @@ namespace STELLAREST_F1
                     spr.flipY = weapon.RWeaponFlipY;
                     rightWeaponSPRs.Add(spr);
                     heroBody.Appearance.Add(spr);
+                    heroBody.GetComponent<Transform>(EHeroWeapon.WeaponRSocket).localPosition = weapon.RWeaponFireSocketLocalPosition;
 
                     if (weapon.RWeaponChilds.Length != 0)
                     {
@@ -563,8 +568,11 @@ namespace STELLAREST_F1
                             Sprite childSprite = Managers.Resource.Load<Sprite>(weapon.RWeaponChilds[i]);
                             if (childSprite != null)
                             {
-                                SpriteRenderer childSPR = weaponR.GetChild(i).GetComponent<SpriteRenderer>();
+                                Transform childParent = heroBody.GetComponent<Transform>(EHeroWeapon.WeaponRChildGroup); // added
+                                SpriteRenderer childSPR = childParent.GetChild(i).GetComponent<SpriteRenderer>();
+                                
                                 childSPR.sprite = childSprite;
+                                childSPR.transform.localPosition = weapon.RWeaponChildsLocalPositions[i]; // Added
                                 childSPR.sortingOrder = weapon.RWeaponChildSortings[i];
                                 childSPR.flipX = weapon.RWeaponChildFlipXs[i];
                                 childSPR.flipY = weapon.RWeaponChildFlipYs[i];
@@ -573,21 +581,27 @@ namespace STELLAREST_F1
                             }
                         }
 
-                        // R : 사용하지 않는 나머지 자식 비활성화
-                        for (int i = childLength; i < weaponR.childCount; ++i)
-                            weaponR.GetChild(i).gameObject.SetActive(false);
+                        // R: 사용하지 않는 나머지 자식은 비활성화 (애니메이션으로 제어할 경우 제외)
+                        // Archer는 3번 무기를 사용하지 않지만, 나중에 진화할 때 필요할 수도 있어서 애니메이션에서는
+                        // L,R Root 자체를 껏켜하는중
+                        for (int i = 0; i < weaponRTrRoot.childCount; ++i)
+                        {
+                            GameObject child = weaponRTrRoot.GetChild(i).gameObject;
+                            if (child.GetComponent<SpriteRenderer>().sprite == null)
+                                child.gameObject.SetActive(false);
+                        }
                     }
                     else
                     {
-                        for (int i = 0; i < weaponR.childCount; ++i)
-                            weaponR.GetChild(i).gameObject.SetActive(false);
+                        // R: 자식 무기가 아무것도 없으면 루트 자체를 비활성화
+                        // 비어있는 무기 오브젝트 자체를 비활성화하지 않는다. 맨주먹 소켓을 사용할 수도 있기 때문.
+                        weaponRTrRoot.gameObject.SetActive(false);
                     }
                 }
                 else
                 {
-                    for (int i = 0; i < weaponR.childCount; ++i)
-                        weaponR.GetChild(i).gameObject.SetActive(false);
-                    weaponR.gameObject.SetActive(false);
+                    // R: 만약에 무기가 없는 캐릭터라면 루트 자체를 비활성화
+                    weaponRTrRoot.gameObject.SetActive(false);
                 }
 
                 heroBody.SetDefaultWeaponSprites(leftWeaponSPRs.ToArray(), rightWeaponSPRs.ToArray());

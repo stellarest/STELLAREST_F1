@@ -8,8 +8,24 @@ using DG.Tweening;
 
 /*
 // STAGE 100
+-- 이펙트 데이터 만들기
+-- 히어로 제작
+-- 몬스터 크기 조절, 히어로 무기 크기같은거 조절(ex)거너
+-- Gunner Shell Base Local Position 데이터 추가 필요
 
-[ TODO TODAY LIST ]
+// --- Gunner
+// --- Assassin
+// --- Tricster
+// --- Druid
+// --- Phantom Knight
+// --- Frost Weaver
+// --- ...
+
+// --- Skeleton King (SPECIAL)
+// --- Mutant (SPECIAL)
+// --- Queen (SPECIAL)
+
+[ TODO LIST ]
 // 24. 06. 07
 >>> 데미지 트윈 애니메이션 지속적인 수정 필요(ULTIMATE DMG ASSET 가져오기)
 >>> 리더랑 히어로 멤버 같은 위치에 있을 때 아직 고장나있는거 확인 (AI 지속적으로 개선해야함)
@@ -41,35 +57,16 @@ using DG.Tweening;
 >>> 3. Bunny
 >>> 4. Pug
 
+[ MEMO ]
+--- Data Sheet ID
+>> Heroes (101000 ~ 101999)
+>> Monsters (102000 ~ 102999)
+>> Envs (103000 ~ 103999)
 
-[ MEMO LIST ]
->> 목표, Collider, Rigidbody를 빼는 것. 아니면 Collider 하나만 쓰고, OnTrigger등 메서드 사용하지 않기.
->> 강화된 스킬은 내가 예상한대로 무조건 100% 새로 파서 해주는게 좋다고 함.
->> 예를 들어 NextSkillLevelID를 박아서 한다던지
->> --- 출시 계획
->> -- IOS, IPAD, MAC OS
->> 부대1(7명), 부대2(7명), 부대3(7명): 최대 히어로 개수 21개
->> --- 히어로 등급
->> -- Normal -> Ultimate: 진화형 히어로
->> -- Epic: 진화 불가 단일 개체, Normal보다 강하고 Ultimate보다 약함
->> -- Special: 진화 불가 단일 개체, Epic보다 강하고 Ultimate와 비동, 또는 다소 약함
->> 히어로 최소 이동속도는 6부터
->> 캐쥬얼하게 만들기.
->> Parabola 모션 개선 필요 (타겟 거리에 따라 HeightArc 조정)
->> Wizard Attack Anim 완성.
->> 채집물 채집할 떄 위치 파악. 어색하지 않게 채집하는지.
->> 스탯은 나중에
->> 스킬 예시 Character Skills Ex
-- Skill_Attack : Paladin MeleeAttack - 일반 공격
-- Skill_A : Double Attack - 액티브 스킬1
-- Skill_B : Shield - 액티브 스킬2
 >> 위아래 꼬불꼬불 위자드 특수스킬 프로젝타일
->>>>> 맵 대충 배치해놓고, 채집물 배치해보고, 몬스터 배치해보고, 기본 전투
->>>>> 히어로 애니메이션 바디에 있는 sorting group 제거함
 >>>>> TileMapRenderer Mode를 Individual로 바꾸니까 해결된 느낌
 >>>>> 나무쪽 타일맵 랜더러 Sorting Group 추가하지 말고 그냥 Sorting Layer만 BaseObject로
 >>>>> Mode를 Individual로 바꾸고, 나무1 스프라이트의 피벗을 0.5, 0.1로 바꾸면 자동정렬 완성
->>>>> AnimationCurveManager -> 제거 예정
 */
 
 public class Test1 : IEnumerator

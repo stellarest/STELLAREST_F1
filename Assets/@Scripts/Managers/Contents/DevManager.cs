@@ -111,7 +111,7 @@ namespace STELLAREST_F1
 
                 GameObject to = Util.FindChild(map, "Tilemap_Object", true, true);
                 if (to != null)
-                    to.SetActive(true);
+                    to.SetActive(false);
             }
 
             OnOffTileColliderFlag = !OnOffTileColliderFlag;

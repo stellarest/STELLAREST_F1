@@ -119,12 +119,69 @@ namespace STELLAREST_F1
                     }
                     else if (tile.ObjectType == EObjectType.Monster)
                     {
-                        // 지금은 이렇게 했지만, Respawn Spawn Data를 만들어서 해야할것같음
-                        // MONSTER IN TILE ORIGIN
+                        // --- Respawn Spawn Data 필요
+                        // --- CHICKEN IN TILE TEST(FIX)
                         Monster monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, tile.DataID);
                         //monster.SetCellPos(cellPos, stopLerpToCell: false, forceMove: true);
                         MoveTo(monster, cellPos, stopLerpToCell: true, forceMove: true);
                         monster.InitialSpawnedCellPos = cellPos;
+
+                        // --- TURKEY TEST
+                        int attemptSpawnCount = 0;
+                        while (attemptSpawnCount < 100)
+                        {
+                            cellPos = new Vector3Int(UnityEngine.Random.Range(cellPos.x + 1, cellPos.x + 5),
+                                                    UnityEngine.Random.Range(cellPos.y + 1, cellPos.y + 5), 0);
+                            if (Managers.Map.CanMove(cellPos))
+                            {
+                                monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, ReadOnly.DataAndPoolingID.DNPID_Monster_Turkey);
+                                MoveTo(monster, cellPos, stopLerpToCell: true, forceMove: true);
+                                monster.InitialSpawnedCellPos = cellPos;
+                                break;
+                            }
+                            else
+                            {
+                                ++attemptSpawnCount;
+                            }
+                        }
+
+                        // --- BUNNY TEST
+                        attemptSpawnCount = 0;
+                        while (attemptSpawnCount < 100)
+                        {
+                            cellPos = new Vector3Int(UnityEngine.Random.Range(cellPos.x + 1, cellPos.x + 5),
+                                                    UnityEngine.Random.Range(cellPos.y + 1, cellPos.y + 5), 0);
+                            if (Managers.Map.CanMove(cellPos))
+                            {
+                                monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, ReadOnly.DataAndPoolingID.DNPID_Monster_Bunny);
+                                MoveTo(monster, cellPos, stopLerpToCell: true, forceMove: true);
+                                monster.InitialSpawnedCellPos = cellPos;
+                                break;
+                            }
+                            else
+                            {
+                                ++attemptSpawnCount;
+                            }
+                        }
+
+                        // --- PUG TEST
+                        attemptSpawnCount = 0;
+                        while (attemptSpawnCount < 100)
+                        {
+                            cellPos = new Vector3Int(UnityEngine.Random.Range(cellPos.x + 1, cellPos.x + 5),
+                                                    UnityEngine.Random.Range(cellPos.y + 1, cellPos.y + 5), 0);
+                            if (Managers.Map.CanMove(cellPos))
+                            {
+                                monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, ReadOnly.DataAndPoolingID.DNPID_Monster_Pug);
+                                MoveTo(monster, cellPos, stopLerpToCell: true, forceMove: true);
+                                monster.InitialSpawnedCellPos = cellPos;
+                                break;
+                            }
+                            else
+                            {
+                                ++attemptSpawnCount;
+                            }
+                        }
 
                         // TEST MULTIPLE
                         // int currentMonsterCount = 0;

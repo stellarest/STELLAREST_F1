@@ -13,12 +13,12 @@ namespace STELLAREST_F1.Data
         public string PrefabLabel;
         public string DescriptionTextID;
         public string Type;
-        public string Rarity;
         public string IconImage;
     }
 
     public class CreatureData : BaseData
     {
+        public string CreatureRarity;
         public string AnimatorLabel;
         public float ColliderRadius;
         public int Skill_Attack_ID;
@@ -148,9 +148,10 @@ namespace STELLAREST_F1.Data
         public int LWeaponSorting;
         public bool LWeaponFlipX;
         public bool LWeaponFlipY;
-        public Vector3 LWeaponFireSocketPosition;
+        public Vector3 LWeaponFireSocketLocalPosition;
 
         public string[] LWeaponChilds;
+        public Vector3[] LWeaponChildsLocalPositions;
         public int[] LWeaponChildSortings;
         public bool[] LWeaponChildFlipXs;
         public bool[] LWeaponChildFlipYs;
@@ -159,8 +160,10 @@ namespace STELLAREST_F1.Data
         public int RWeaponSorting;
         public bool RWeaponFlipX;
         public bool RWeaponFlipY;
+        public Vector3 RWeaponFireSocketLocalPosition;
 
         public string[] RWeaponChilds;
+        public Vector3[] RWeaponChildsLocalPositions;
         public int[] RWeaponChildSortings;
         public bool[] RWeaponChildFlipXs;
         public bool[] RWeaponChildFlipYs;
@@ -450,7 +453,7 @@ namespace STELLAREST_F1.Data
 		public string ClassName;
         public string Size;
         public bool RotateToTarget;
-        public float Range;
+        public float ColliderRadius;
         public float MovementSpeed;
     }
 
@@ -462,6 +465,31 @@ namespace STELLAREST_F1.Data
         {
             Dictionary<int, ProjectileData> dict = new Dictionary<int, ProjectileData>();
             foreach (ProjectileData data in Projectiles)
+                dict.Add(data.DataID, data);
+
+            return dict;
+        }
+    }
+
+    [System.Serializable]
+    public class EffectData : BaseData
+    {
+        public string ClassName;
+        public float Amount;
+        public float PercentAdd;
+        public float PercentMulti;
+        public float Duration;
+        public float Period;
+    }
+
+    public class EffectDataLoader : ILoader<int, EffectData>
+    {
+        public List<EffectData> Effects = new List<EffectData>();
+
+        public Dictionary<int, EffectData> MakeDict()
+        {
+            Dictionary<int, EffectData> dict = new Dictionary<int,EffectData>();
+            foreach (EffectData data in Effects)
                 dict.Add(data.DataID, data);
 
             return dict;

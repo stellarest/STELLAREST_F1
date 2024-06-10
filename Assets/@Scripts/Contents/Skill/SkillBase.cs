@@ -1,14 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 using static STELLAREST_F1.Define;
+using STELLAREST_F1.Data;
 
 namespace STELLAREST_F1
 {
     public abstract class SkillBase : InitBase
     {
         public Creature Owner { get; protected set; } = null;
-        public Data.SkillData SkillData { get; private set; } = null;
+        public SkillData SkillData { get; private set; } = null;
         public int DataTemplateID { get; private set; } = -1;
         public ESkillType SkillType { get; private set; } = ESkillType.None;
         public EAttachmentPoint SkillFromPoint { get; private set; } = EAttachmentPoint.None;
@@ -41,7 +43,7 @@ namespace STELLAREST_F1
             return true;
         }
 
-        protected override void EnterInGame(BaseObject owner, int dataID)
+        protected virtual void EnterInGame(BaseObject owner, int dataID)
         {
             RemainCoolTime = 0.0f;
         }

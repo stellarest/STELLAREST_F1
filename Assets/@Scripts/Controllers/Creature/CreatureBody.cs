@@ -23,10 +23,10 @@ namespace STELLAREST_F1
         public CreatureBody(Creature owner, int dataID)
         {
             this.Owner = owner;
-            TemplateID = dataID;
+            DataTemplateID = dataID;
         }
 
-        public int TemplateID { get; protected set; } = -1;
+        public int DataTemplateID { get; protected set; } = -1;
         public Creature Owner { get; protected set; } = null;
         public T GetOwner<T>() where T : Creature => Owner as T;
 

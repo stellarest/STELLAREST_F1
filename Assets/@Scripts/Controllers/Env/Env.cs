@@ -42,31 +42,37 @@ namespace STELLAREST_F1
         {
             if (base.SetInfo(dataID) == false)
             {
-                EnterInGame(dataID);
+                EnterInGame();
                 return false;
             }
+        
+            InitialSetInfo(dataID);
+            EnterInGame();
+            return true;
+        }
 
+        protected override void InitialSetInfo(int dataID)
+        {
+            base.InitialSetInfo(dataID);
             EnvAnim = BaseAnim as EnvAnimation;
             EnvAnim.SetInfo(dataID, this);
             Managers.Sprite.SetInfo(dataID, this);
 
             EnvData = Managers.Data.EnvDataDict[dataID];
             EnvType = Util.GetEnumFromString<EEnvType>(EnvData.Type);
-            
+
             gameObject.name += $"_{EnvData.DescriptionTextID.Replace(" ", "")}";
-            EnterInGame(dataID);
-            return true;
         }
 
-        protected override void SetStat(int dataID)
+        protected override void InitStat(int dataID)
         {
-            base.SetStat(dataID);
+            base.InitStat(dataID);
             _maxLevel = dataID;
         }
 
-        protected override void EnterInGame(int dataID)
+        protected override void EnterInGame()
         {
-            base.EnterInGame(dataID);
+            base.EnterInGame();
             ShowBody(true);            
             EnvState = EEnvState.Idle;
         }
@@ -77,7 +83,8 @@ namespace STELLAREST_F1
                 return;
 
             float finalDamage = 1f;
-            if (attacker.ObjectRarity == EObjectRarity.Elite)
+            //if (attacker.ObjectRarity == EObjectRarity.Elite)
+            if ((attacker as Hero).CreatureRarity == ECreatureRarity.Elite) // TEMP
                 finalDamage++;
 
             EnvState = EEnvState.OnDamaged;

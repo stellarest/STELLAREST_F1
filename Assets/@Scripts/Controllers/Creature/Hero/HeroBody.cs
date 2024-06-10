@@ -16,9 +16,7 @@ namespace STELLAREST_F1
             InitBody(EHeroBodyParts.Head, (int)EHeroHead.Max);
             InitBody(EHeroBodyParts.UpperBody, (int)EHeroUpperBody.Max);
             InitBody(EHeroBodyParts.LowerBody, (int)EHeroLowerBody.Max);
-            //InitBody(EHeroBodyParts.Weapon, (int)EHeroLowerBody.Max); // NEED FIX
             InitBody(EHeroBodyParts.Weapon, (int)EHeroWeapon.Max); // NEED FIX
-
         }
         
         // ########## HERO FACE ##########
@@ -27,13 +25,12 @@ namespace STELLAREST_F1
         {
             public HeroFace(HeroBody heroBody)
             {
-                _heroBody = heroBody;
                 // Cache SPRs
-                _eyebrowsSPR = _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows);
-                _eyesSPR = _heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes);
+                _eyebrowsSPR = heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows);
+                _eyesSPR = heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes);
                 _mouthSPR = heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth);
 
-                Data.HeroSpriteData heroSpriteData = Managers.Data.HeroSpriteDataDict[heroBody.TemplateID];
+                Data.HeroSpriteData heroSpriteData = Managers.Data.HeroSpriteDataDict[heroBody.DataTemplateID];
 
                 // Eyebrows
                 _eyebrowsSprites = new Sprite[(int)EHeroEmoji.Max];
@@ -69,7 +66,6 @@ namespace STELLAREST_F1
                 }
             }
 
-            private HeroBody _heroBody = null;
             // Cache
             private SpriteRenderer _eyebrowsSPR = null;
             private SpriteRenderer _eyesSPR = null;
@@ -401,17 +397,25 @@ namespace STELLAREST_F1
                         containers[(int)EHeroWeapon.WeaponL] = new Container(tag, tr, spr);
 
                         containers[(int)EHeroWeapon.WeaponLSocket] = new Container(tag: null, 
-                                                                                        tr: tr.GetChild((int)EWeaponChildIndex.Socket), 
-                                                                                        spr: null);
+                                                tr: tr.GetChild((int)EWeaponChildIndex.Socket), 
+                                                spr: null);
 
                         containers[(int)EHeroWeapon.WeaponLChildGroup] = new Container(tag: null,
-                                                                                        tr: tr.GetChild((int)EWeaponChildIndex.ChildGroup),
-                                                                                        spr: null);
+                                                tr: tr.GetChild((int)EWeaponChildIndex.ChildGroup),
+                                                spr: null);
 
                         tag = ReadOnly.String.HBody_WeaponR;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.HBody_WeaponR, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
                         containers[(int)EHeroWeapon.WeaponR] = new Container(tag, tr, spr);
+
+                        containers[(int)EHeroWeapon.WeaponRSocket] = new Container(tag: null, 
+                                                tr: tr.GetChild((int)EWeaponChildIndex.Socket), 
+                                                spr: null);
+
+                        containers[(int)EHeroWeapon.WeaponRChildGroup] = new Container(tag: null,
+                                                tr: tr.GetChild((int)EWeaponChildIndex.ChildGroup),
+                                                spr: null);
                     }
                     break;
             }
@@ -536,14 +540,14 @@ namespace STELLAREST_F1
             switch (envType)
             {
                 case EEnvType.Tree:
-                    if (Owner.ObjectRarity == EObjectRarity.Common)
+                    if (Owner.CreatureRarity == ECreatureRarity.Common)
                         _rightWeaponSPRs[0].sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Tree][(int)ECollectEnvRarity.Common];
                     else
                         _rightWeaponSPRs[0].sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Tree][(int)ECollectEnvRarity.Elite];
                     break;
 
                 case EEnvType.Rock:
-                    if (Owner.ObjectRarity == EObjectRarity.Common)
+                    if (Owner.CreatureRarity == ECreatureRarity.Common)
                         _rightWeaponSPRs[0].sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Rock][(int)ECollectEnvRarity.Common];
                     else
                         _rightWeaponSPRs[0].sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Rock][(int)ECollectEnvRarity.Elite];

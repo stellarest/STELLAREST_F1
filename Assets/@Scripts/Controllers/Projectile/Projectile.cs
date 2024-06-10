@@ -61,6 +61,8 @@ namespace STELLAREST_F1
                     break;
             }
 
+            Collider.radius = projectileData.ColliderRadius;
+            
             LayerMask excludeLayerMask = 0;
             excludeLayerMask.AddLayer(ELayer.Default);
             excludeLayerMask.AddLayer(ELayer.Projectile);
@@ -87,7 +89,7 @@ namespace STELLAREST_F1
             return true;
         }
 
-        protected override void EnterInGame(BaseObject owner, int dataID)
+        protected virtual void EnterInGame(BaseObject owner, int dataID) // virtual -- TEMP
         {
             LayerMask excludeLayerMask = Collider.excludeLayers;
             if (Owner.ObjectType != owner.ObjectType)

@@ -15,17 +15,17 @@ namespace STELLAREST_F1
 {
     public class BaseObject : InitBase
     {
-        private void Update()
-        {
-            if (Input.GetKeyDown("5"))
-            {
-                LevelUp();
-            }    
-        }
+        // private void Update()
+        // {
+        //     if (Input.GetKeyDown("5"))
+        //     {
+        //         LevelUp();
+        //     }    
+        // }
 
         public int DataTemplateID { get; protected set; } = -1;
         public EObjectType ObjectType { get; protected set; } = EObjectType.None;
-        public EObjectRarity ObjectRarity { get; protected set; } = EObjectRarity.Common;
+        //public EObjectRarity ObjectRarity { get; protected set; } = EObjectRarity.Common;
         public BaseAnimation BaseAnim { get; private set; } = null;
         public CircleCollider2D Collider { get; private set; } = null;
         public Rigidbody2D RigidBody { get; private set; } = null;
@@ -76,7 +76,7 @@ namespace STELLAREST_F1
             // Debug.Log($"MovementSpeed: {StatData.MovementSpeed}");
         }
 
-        private float _hp = 0f;
+        [SerializeField] private float _hp = 0f;
         public float Hp
         {
             get => _hp;
@@ -147,30 +147,23 @@ namespace STELLAREST_F1
         {
             if (base.SetInfo(dataID) == false)
             {
-                EnterInGame(dataID);
+                EnterInGame();
                 return false;
             }
-
-            DataTemplateID = dataID;
-            ObjectRarity = EObjectRarity.Common; // TEMP
-            SetStat(dataID);
-
-            OnDeadFadeOutEndHandler -= this.OnDeadFadeOutEnded;
-            OnDeadFadeOutEndHandler += this.OnDeadFadeOutEnded;
 
             return true;
         }
 
-        protected override void EnterInGame(int dataID)
+        protected virtual void InitialSetInfo(int dataID)
         {
-            if (ObjectType == EObjectType.Projectile)
-                return;
+            DataTemplateID = dataID;
+            InitStat(dataID);
 
-            // Reset Stat
-            Hp = StatData.MaxHp;
+            OnDeadFadeOutEndHandler -= OnDeadFadeOutEnded;
+            OnDeadFadeOutEndHandler += OnDeadFadeOutEnded;
         }
 
-        protected virtual void SetStat(int dataID)
+        protected virtual void InitStat(int dataID)
         {
             if (Managers.Data.StatDataDict.TryGetValue(dataID, out Data.StatData statData) == false)
                 return;
@@ -186,6 +179,16 @@ namespace STELLAREST_F1
             CriticalRate = CriticalRateBase = StatData.CriticalRate;
             DodgeRate = DodgeRateBase = StatData.DodgeRate;
             MovementSpeed = MovementSpeedBase = StatData.MovementSpeed;
+        }
+
+        protected virtual void EnterInGame()
+        {
+            if (ObjectType == EObjectType.Projectile)
+                return;
+
+            // Reset Stat
+            MaxHp = StatData.MaxHp;
+            Hp = StatData.MaxHp;
         }
 
         public void LookAtValidTarget()

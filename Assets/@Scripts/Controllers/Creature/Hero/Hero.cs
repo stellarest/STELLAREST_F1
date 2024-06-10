@@ -84,42 +84,54 @@ namespace STELLAREST_F1
             return true;
         }
 
-        private float _waitMovementDistanceSQRFromLeader = 0f;
         public override bool SetInfo(int dataID)
         {
             if (base.SetInfo(dataID) == false)
             {
-                EnterInGame(dataID);
+                EnterInGame();
                 return false;
             }
             
+            InitialSetInfo(dataID);
+            EnterInGame();
+            return true;
+        }
+
+        protected override void InitialSetInfo(int dataID)
+        {
+            base.InitialSetInfo(dataID);
             HeroBody = new HeroBody(this, dataID);
             HeroAnim = CreatureAnim as HeroAnimation;
             HeroAnim.SetInfo(dataID, this);
             Managers.Sprite.SetInfo(dataID, target: this);
-
-            // SET WEAPONS SOCKERT INFO
             WeaponLSocket = HeroBody.GetComponent<Transform>(EHeroWeapon.WeaponLSocket);
 
             HeroData = Managers.Data.HeroDataDict[dataID];
+            CreatureRarity = Util.GetEnumFromString<ECreatureRarity>(HeroData.CreatureRarity);
+
             gameObject.name += $"_{HeroData.DescriptionTextID.Replace(" ", "")}";
             Collider.radius = HeroData.ColliderRadius;
 
             CreatureSkill = gameObject.GetOrAddComponent<SkillComponent>();
-            //CreatureSkill.SetInfo(owner: this, skillDataIDs: Managers.Data.HeroDataDict[dataID].SkillIDs);
             CreatureSkill.SetInfo(owner: this, HeroData);
-
             _waitMovementDistanceSQRFromLeader = ReadOnly.Numeric.WaitMovementDistanceSQRFromLeader;
-
-            EnterInGame(dataID);
-            return true;
         }
 
-        protected override void EnterInGame(int dataID)
+        private float _waitMovementDistanceSQRFromLeader = 0f;
+        protected override void EnterInGame()
         {
+            // if (IsMaxLevel) --- MaxLevel이 되었을 때 callback으로
+            // {
+            //     DataTemplateID = _maxLevel;
+            //     if (Managers.Data.HeroDataDict.TryGetValue(_maxLevel, out HeroData heroData))
+            //         HeroData = heroData;
+
+            //     Debug.Log("<color=cyan>Refresh HeroData</color>");
+            // }
+
             LookAtDir = ELookAtDirection.Right;
             CreatureState = ECreatureState.Move;
-            base.EnterInGame(dataID);
+            base.EnterInGame();
             StartCoIsFarFromLeaderTick();
 
             // --- First Targets: Monsters, Second Targets: Envs
@@ -265,7 +277,7 @@ namespace STELLAREST_F1
                     // --- 여기 고장남
                     if (CellPos == Managers.Object.HeroLeaderController.Leader.CellPos)
                     {
-                        Debug.Log($"<color=magenta>!!!!!{gameObject.name}</color>");
+                        Debug.Log($"<color=magenta>!!! NID FIX !!!{gameObject.name}</color>");
                         CreatureMoveState = ECreatureMoveState.None;
                         CreatureState = ECreatureState.Idle;
                         return;
@@ -516,7 +528,7 @@ namespace STELLAREST_F1
             float delta = 0f;
             float percent = 1f;
             AnimationCurve curve = Managers.Contents.Curve(EAnimationCurveType.Ease_In);
-            // 1. Fade Out - Skin
+            // --- 1. Fade Out - Skin
             while (percent > 0f)
             {
                 delta += Time.deltaTime;
@@ -532,7 +544,7 @@ namespace STELLAREST_F1
                 yield return null;
             }
 
-            // 2. Fade Out - Appearance
+            // --- 2. Fade Out - Appearance
             delta = 0f;
             percent = 1f;
             while (percent > 0f)

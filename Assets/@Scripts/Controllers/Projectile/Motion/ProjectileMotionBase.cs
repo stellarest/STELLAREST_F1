@@ -15,19 +15,9 @@ namespace STELLAREST_F1
         public Vector3 StartPosition { get; protected set; } = Vector3.zero; // TEMP
         public Vector3 TargetPosition { get; private set; } = Vector3.zero;
 
-        private EProjectileMotionType _motionTtype = EProjectileMotionType.None;
-        public EProjectileMotionType MotionType
-        {
-            get => _motionTtype;
-            private set => _motionTtype = value;
-        }
+        public EProjectileMotionType MotionType { get; private set; } = EProjectileMotionType.None;
+        public EAnimationCurveType AnimCurveType { get; private set; } = EAnimationCurveType.None;
 
-        private EAnimationCurveType _animCurveType { get; set; } = EAnimationCurveType.None;
-        public EAnimationCurveType AnimCurveType
-        {
-            get => _animCurveType;
-            private set => _animCurveType = value;
-        }
 
         private bool _rotateToTarget = false;
         public bool RotateToTarget
