@@ -12,6 +12,7 @@ namespace STELLAREST_F1
         public SkillComponent CreatureSkill { get; protected set; } = null;
         public CreatureBody CreatureBody { get; protected set; } = null;
         public CreatureAnimation CreatureAnim { get; private set; } = null;
+        public CreatureAnimationCallback CreatureAnimCallback { get; private set; } = null;
 
         [SerializeField] private ECreatureState _creatureState =  ECreatureState.Idle;
         public virtual ECreatureState CreatureState
@@ -58,6 +59,8 @@ namespace STELLAREST_F1
             if (base.Init() == false)
                 return false;
 
+            CreatureAnim = BaseAnim as CreatureAnimation;
+            CreatureAnimCallback = CreatureAnim.GetComponent<CreatureAnimationCallback>();
             return true;
         }
 
@@ -69,13 +72,14 @@ namespace STELLAREST_F1
                 return false;
             }
 
+            CreatureAnimCallback.SetInfo(this);
             return true;
         }
 
         protected override void InitialSetInfo(int dataID)
         {
             base.InitialSetInfo(dataID);
-            CreatureAnim = BaseAnim as CreatureAnimation;
+            //CreatureAnim = BaseAnim as CreatureAnimation;
         }
 
         protected override void InitStat(int dataID)

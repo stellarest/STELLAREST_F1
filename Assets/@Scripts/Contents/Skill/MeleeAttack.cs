@@ -34,17 +34,16 @@ namespace STELLAREST_F1
 
         #region CreatureStateMachine
         public override void OnSkillStateEnter() 
-        { 
-            if (Owner.Target.IsValid())
-                Owner.LookAtValidTarget();
+        {
+            Owner.LookAtValidTarget();
         }
 
         public override void OnSkillStateUpdate()
         {
-            if (Owner.Target.IsValid() == false)
-                return;
+            // if (Owner.Target.IsValid() == false)
+            //     return;
 
-            Owner.Target.OnDamaged(Owner, this);
+            // Owner.Target.OnDamaged(Owner, this);
         }
 
         public override void OnSkillStateEnd()
@@ -65,5 +64,17 @@ namespace STELLAREST_F1
             }
         }
         #endregion
+
+        public override void OnSkillAnimationCallback()
+        {
+            if (Owner.IsValid() == false)
+                return;
+
+            if (Owner.Target.IsValid() == false)
+                return;
+
+            Owner.Target.OnDamaged(Owner, this);
+            Debug.Log($"<color=magenta>Called from {Owner.gameObject.name}</color>");
+        }
     }
 }

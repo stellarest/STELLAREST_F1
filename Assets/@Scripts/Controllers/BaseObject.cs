@@ -30,6 +30,7 @@ namespace STELLAREST_F1
         public CircleCollider2D Collider { get; private set; } = null;
         public Rigidbody2D RigidBody { get; private set; } = null;
         public SortingGroup SortingGroup { get; private set; } = null;
+        public AnimationClipCallback AnimCallback { get; private set; } = null;
         public float ColliderRadius { get => Collider != null ? Collider.radius : 0.0f; }
         public Vector3 CenterPosition { get => transform.position + Vector3.up * ColliderRadius; } // Creature 및 다른 오브젝트의 경우, 발바닥 부분이 피벗임
         public Vector3 CenterLocalPosition => Vector3.up * ColliderRadius;
@@ -46,6 +47,7 @@ namespace STELLAREST_F1
                 }
             }
         }
+        
         protected event System.Action OnDeadFadeOutEndHandler = null;
 
         #region Stat
@@ -131,11 +133,11 @@ namespace STELLAREST_F1
             RigidBody.gravityScale = 0f;
             RigidBody.mass = 0f;
             RigidBody.drag = 0f;
-
             // RigidbodyType2D - Dynamic: 물리 완전 제어, 높은 비용, 충돌 감지
             // RigidbodyType2D - Kinematic: 물리 회전, 위치를 업데이트 하지 않음, 비교적 낮은 비용, 충돌 감지
             // RigidbodyType2D - Static: 절대적으로 움직이지 않는 상태에서만 충돌 감지.
             RigidBody.bodyType = RigidbodyType2D.Kinematic;
+
             SortingGroup = gameObject.GetOrAddComponent<SortingGroup>();
             SortingGroup.sortingLayerName = ReadOnly.SortingLayers.SLName_BaseObject;
             SortingGroup.sortingOrder = ReadOnly.SortingLayers.SLOrder_BaseObject;

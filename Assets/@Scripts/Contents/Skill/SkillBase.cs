@@ -7,15 +7,17 @@ using STELLAREST_F1.Data;
 
 namespace STELLAREST_F1
 {
+    // --- 규칙: 스킬은 Creature부터 사용 가능 (BaseObject는 불가능)
+    // --- 스킬은 반드시 스테이트, 애니메이션이 포함 되어 있어야함.
     public abstract class SkillBase : InitBase
     {
-        public Creature Owner { get; protected set; } = null;
+        public Creature Owner { get; private set; } = null;
         public SkillData SkillData { get; private set; } = null;
         public int DataTemplateID { get; private set; } = -1;
         public ESkillType SkillType { get; private set; } = ESkillType.None;
         public EAttachmentPoint SkillFromPoint { get; private set; } = EAttachmentPoint.None;
         public float RemainCoolTime { get; protected set; } = 0.0f;
-        public float InvokeRatioOnUpdate { get; private set; } = 0.0f;
+        //public float InvokeRatioOnUpdate { get; private set; } = 0.0f;
 
         public override bool Init()
         {
@@ -34,11 +36,15 @@ namespace STELLAREST_F1
             }
 
             Owner = owner as Creature;
+            Owner.CreatureAnimCallback.OnCreatureStateCallbackHandler -= OnSkillAnimationCallback;
+            Owner.CreatureAnimCallback.OnCreatureStateCallbackHandler += OnSkillAnimationCallback;
+
             SkillData = Managers.Data.SkillDataDict[dataID];
             DataTemplateID = dataID;
             SkillType = Util.GetEnumFromString<ESkillType>(SkillData.Type);
             SkillFromPoint = Util.GetEnumFromString<EAttachmentPoint>(SkillData.AttachmentPoint);
-            InvokeRatioOnUpdate = SkillData.InvokeRatioOnUpdate;
+            //InvokeRatioOnUpdate = SkillData.InvokeRatioOnUpdate;
+
             EnterInGame(owner, dataID);
             return true;
         }
@@ -46,17 +52,6 @@ namespace STELLAREST_F1
         protected virtual void EnterInGame(BaseObject owner, int dataID)
         {
             RemainCoolTime = 0.0f;
-        }
-
-        private void OnDisable()
-        {
-            // 왜 있는 것임?
-            // if (Managers.Game == null)
-            //     return;
-            // if (Owner.IsValid() == false)
-            //     return;
-            // if (Owner.CreatureAnim == null)
-            //     return;
         }
 
         public virtual void DoSkill()
@@ -133,12 +128,10 @@ namespace STELLAREST_F1
             return Owner.CenterPosition;
         }
 
-        // #########################################
-        // ######## IMPLEMENT SKILL METHODS ########
-        // #########################################
+        // >> From StateMachine, AnimCallback
         public abstract void OnSkillStateEnter();
         public abstract void OnSkillStateUpdate();
         public abstract void OnSkillStateEnd();
-        // #########################################
+        public abstract void OnSkillAnimationCallback();
     }
 }

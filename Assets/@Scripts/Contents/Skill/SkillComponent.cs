@@ -31,8 +31,6 @@ namespace STELLAREST_F1
             }
         }
 
-        // --- 현재 Skill_Attack이 Creature AI CoolTime으로 고정 사용중.
-        // --- 나중에 가지고 있는 스킬들 루프 돌려서 하나라도 쿨타임이 0f 이상이면 되도록 수정해도 될 듯. 
         public bool IsRemainingCoolTime(ESkillType skillType)
             => SkillArray[(int)skillType]?.RemainCoolTime > 0.0f;
 
@@ -48,7 +46,6 @@ namespace STELLAREST_F1
         // --- 어차피 Creature를 통해서 들어오기 때문에 한 번만 초기화 됨.
         public void SetInfo(Creature owner, CreatureData creatureData)
         {
-            //return base.SetInfo(owner, creatureData);
             _owner = owner;
 
             AddSkill(creatureData.Skill_Attack_ID);
@@ -98,11 +95,11 @@ namespace STELLAREST_F1
             }
         }
 
-        public float GetInvokeRatio(ECreatureState skillState)
-        {
-            float skillInvokeRatio = SkillArray[(int)skillState - ReadOnly.Numeric.MaxActiveSkillsCount].InvokeRatioOnUpdate;
-            return UnityEngine.Mathf.Clamp(skillInvokeRatio, 0.01f, 0.99f);
-        }
+        // public float GetInvokeRatio(ECreatureState skillState)
+        // {
+        //     float skillInvokeRatio = SkillArray[(int)skillState - ReadOnly.Numeric.MaxActiveSkillsCount].InvokeRatioOnUpdate;
+        //     return UnityEngine.Mathf.Clamp(skillInvokeRatio, 0.01f, 0.99f);
+        // }
 
         public void PassOnSkillStateEnter(ECreatureState onEnterState)
                 => SkillArray[(int)onEnterState - ReadOnly.Numeric.MaxActiveSkillsCount]?.OnSkillStateEnter();
@@ -110,6 +107,12 @@ namespace STELLAREST_F1
                 => SkillArray[(int)onUpdateState - ReadOnly.Numeric.MaxActiveSkillsCount]?.OnSkillStateUpdate();
         public void PassOnSkillStateEnd(ECreatureState onEndState)
                 => SkillArray[(int)onEndState - ReadOnly.Numeric.MaxActiveSkillsCount]?.OnSkillStateEnd();
+
+
+        private void OnDisable()
+        {
+            
+        }
     }
 }
 

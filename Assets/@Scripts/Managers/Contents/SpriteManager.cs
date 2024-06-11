@@ -488,10 +488,11 @@ namespace STELLAREST_F1
 
                 // --- WEAPON LEFT
                 Transform weaponL = heroBody.GetComponent<Transform>(EHeroWeapon.WeaponL);
-                sprite = Managers.Resource.Load<Sprite>(weapon.LWeapon);
                 Transform weaponLTrRoot = heroBody.GetComponent<Transform>(EHeroWeapon.WeaponLChildGroup);
+                sprite = Managers.Resource.Load<Sprite>(weapon.LWeapon);
                 if (sprite != null)
                 {
+                    weaponL.localScale = weapon.LWeaponLocalScale;
                     spr = heroBody.GetComponent<SpriteRenderer>(EHeroWeapon.WeaponL);
                     spr.sprite = sprite;
                     spr.sortingOrder = weapon.LWeaponSorting;
@@ -524,7 +525,7 @@ namespace STELLAREST_F1
 
                         // L: 사용하지 않는 나머지 자식은 비활성화 (애니메이션으로 제어할 경우 제외)
                         // Archer는 3번 무기를 사용하지 않지만, 나중에 진화할 때 필요할 수도 있어서 애니메이션에서는
-                        // L,R Root 자체를 껏켜하는중
+                        // L,R Root 자체를 껏켜하는중(*** 현재 애니메이션 제어에서 동작 안되는중 ***)
                         for (int i = 0; i < weaponLTrRoot.childCount; ++i)
                         {
                             GameObject child = weaponLTrRoot.GetChild(i).gameObject;
@@ -547,10 +548,11 @@ namespace STELLAREST_F1
 
                 // --- WEAPON RIGHT
                 Transform weaponR = heroBody.GetComponent<Transform>(EHeroWeapon.WeaponR);
-                sprite = Managers.Resource.Load<Sprite>(weapon.RWeapon);
                 Transform weaponRTrRoot = heroBody.GetComponent<Transform>(EHeroWeapon.WeaponRChildGroup);
+                sprite = Managers.Resource.Load<Sprite>(weapon.RWeapon);
                 if (sprite != null)
                 {
+                    weaponR.localScale = weapon.RWeaponLocalScale;
                     spr = heroBody.GetComponent<SpriteRenderer>(EHeroWeapon.WeaponR);
                     spr.sprite = sprite;
                     spr.sortingOrder = weapon.RWeaponSorting;
@@ -583,7 +585,7 @@ namespace STELLAREST_F1
 
                         // R: 사용하지 않는 나머지 자식은 비활성화 (애니메이션으로 제어할 경우 제외)
                         // Archer는 3번 무기를 사용하지 않지만, 나중에 진화할 때 필요할 수도 있어서 애니메이션에서는
-                        // L,R Root 자체를 껏켜하는중
+                        // L,R Root 자체를 껏켜하는중(*** 현재 애니메이션 제어에서 동작 안되는중 ***)
                         for (int i = 0; i < weaponRTrRoot.childCount; ++i)
                         {
                             GameObject child = weaponRTrRoot.GetChild(i).gameObject;

@@ -9,7 +9,6 @@ namespace STELLAREST_F1
     {
         private Creature _owner = null;
         private CreatureAnimation _creatureAnim = null;
-        private bool _canSkillAttackFlag = false;
         private bool _canCollectEnvFlag = false;
 
         public event System.Action<ECreatureState> OnStateEnterHandler = null;
@@ -24,7 +23,7 @@ namespace STELLAREST_F1
                 _owner = _creatureAnim.GetOwner<Creature>();
             }
 
-            // CreatureState, Animation State 동기화
+            // --- CreatureState, Animation State 동기화
             if (stateInfo.shortNameHash != _creatureAnim?.GetHash(_owner.CreatureState))
             {
                 _creatureAnim.UpdateAnimation();
@@ -33,8 +32,7 @@ namespace STELLAREST_F1
 
             if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureState.Skill_Attack))
             {
-                _canSkillAttackFlag = true;
-                OnStateEnterHandler?.Invoke(ECreatureState.Skill_Attack);
+                OnStateEnterHandler?.Invoke(ECreatureState.Skill_Attack); // LookAt Target
             }
             else if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureState.CollectEnv))
             {
@@ -46,24 +44,13 @@ namespace STELLAREST_F1
         public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
             float currentPercentage = stateInfo.normalizedTime % 1.0f;
-            if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureState.Skill_Attack) && _canSkillAttackFlag)
-            {
-                float invokeRatio = _owner.CreatureSkill.GetInvokeRatio(ECreatureState.Skill_Attack);
-                if (currentPercentage >= invokeRatio)
-                {
-                    OnStateUpdateHandler?.Invoke(ECreatureState.Skill_Attack);
-                    _canSkillAttackFlag = false;
-                }
-                return;
-            }
-            
-            // 가독성은 이게 더 좋긴함.
+            // Skill_Attack Out - 가독성은 이게 더 좋긴함.
             if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureState.Skill_Attack))
             {
                 // Transition duration에서 뺀 값: 0.90f
                 if (currentPercentage >= 0.90f)
                 {
-                    // 강제로 빠져나오기
+                    // --- 강제로 빠져나오기
                     _creatureAnim.AnimationEnd(ECreatureState.Skill_Attack);
                     return;
                 }
@@ -79,11 +66,6 @@ namespace STELLAREST_F1
                 }
                 else if (currentPercentage < endThresholdPercentage && _canCollectEnvFlag)
                     _canCollectEnvFlag = false;
-                // else if (currentPercentage >= 0.90f)
-                // {
-                //     _creatureAnim.AnimationEnd(ECreatureState.CollectEnv);
-                // }
-                return;
             }
         }
 
@@ -95,7 +77,6 @@ namespace STELLAREST_F1
             if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureState.Skill_Attack))
             {
                 OnStateEndHandler?.Invoke(ECreatureState.Skill_Attack);
-                _canSkillAttackFlag = false;
                 return;
             }
 

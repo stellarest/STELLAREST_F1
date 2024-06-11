@@ -8,6 +8,7 @@ using DG.Tweening;
 
 /*
 // STAGE 100
+-- Gunner Skill Attack 두 번 공격 해야함
 -- 이펙트 데이터 만들기
 -- 히어로 제작
 -- 몬스터 크기 조절, 히어로 무기 크기같은거 조절(ex)거너

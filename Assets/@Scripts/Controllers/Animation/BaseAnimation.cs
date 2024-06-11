@@ -8,14 +8,6 @@ using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
-    [System.Serializable]
-    public class HashTest
-    {
-        public string Name;
-        public int Hash;
-    }
-
-
     public class BaseAnimation : InitBase
     {
         public BaseObject Owner { get; set; } = null;

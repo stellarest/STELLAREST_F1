@@ -145,6 +145,7 @@ namespace STELLAREST_F1.Data
     public class HeroSpriteData_Weapon
     {
         public string LWeapon;
+        public Vector3 LWeaponLocalScale;
         public int LWeaponSorting;
         public bool LWeaponFlipX;
         public bool LWeaponFlipY;
@@ -152,11 +153,13 @@ namespace STELLAREST_F1.Data
 
         public string[] LWeaponChilds;
         public Vector3[] LWeaponChildsLocalPositions;
+        public Vector3[] LWeaponChildsLocalScales;
         public int[] LWeaponChildSortings;
         public bool[] LWeaponChildFlipXs;
         public bool[] LWeaponChildFlipYs;
 
         public string RWeapon;
+        public Vector3 RWeaponLocalScale;
         public int RWeaponSorting;
         public bool RWeaponFlipX;
         public bool RWeaponFlipY;
@@ -164,6 +167,7 @@ namespace STELLAREST_F1.Data
 
         public string[] RWeaponChilds;
         public Vector3[] RWeaponChildsLocalPositions;
+        public Vector3[] RWeaponChildsLocalScales;
         public int[] RWeaponChildSortings;
         public bool[] RWeaponChildFlipXs;
         public bool[] RWeaponChildFlipYs;
@@ -427,7 +431,7 @@ namespace STELLAREST_F1.Data
         public string AttachmentPoint;
         public int ProjectileID;
 		public float CoolTime;
-        public float InvokeRatioOnUpdate; // *** Invoke Ratio OnStateUpdate ***
+        //public float InvokeRatioOnUpdate;
     }
 
     public class SkillDataLoader : ILoader<int, SkillData>

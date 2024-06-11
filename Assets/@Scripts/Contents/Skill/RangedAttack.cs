@@ -41,23 +41,35 @@ namespace STELLAREST_F1
 
         public override void OnSkillStateUpdate()
         {
-            if (Owner.IsValid() == false)
-                return;
-            if (Owner.Target.IsValid() == false)
-                return;
-            // 아까 파이어볼이 Env로 향해 날라감
-            if (Owner.Target.ObjectType == EObjectType.Env)
-                return;
+            // if (Owner.IsValid() == false)
+            //     return;
+            // if (Owner.Target.IsValid() == false)
+            //     return;
+            // if (Owner.Target.ObjectType == EObjectType.Env)
+            //     return;
 
-            GenerateProjectile(Owner, GetSpawnPos());
+            // GenerateProjectile(Owner, GetSpawnPos());
         }
 
-    public override void OnSkillStateEnd()
+        public override void OnSkillStateEnd()
         {
             if (Owner.IsValid() == false)
                 return;
 
             Owner.CreatureState = ECreatureState.Idle;
+        }
+
+        public override void OnSkillAnimationCallback()
+        {
+            if (Owner.IsValid() == false)
+                return;
+            if (Owner.Target.IsValid() == false)
+                return;
+            if (Owner.Target.ObjectType == EObjectType.Env)
+                return;
+
+            GenerateProjectile(Owner, GetSpawnPos());
+            Debug.Log($"<color=magenta>Called from {Owner.gameObject.name}</color>");
         }
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
@@ -38,6 +39,76 @@ namespace STELLAREST_F1
 
         public override void OnSkillStateUpdate()
         {
+            // // --- DEFENSE
+            // if (Owner.IsValid() == false)
+            //     return;
+
+            // // --- DEFENSE
+            // if (Owner.Target.IsValid() == false)
+            //     return;
+
+            // if (_coBodyAttack != null)
+            // {
+            //     StopCoroutine(_coBodyAttack);
+            //     _coBodyAttack = null;
+            // }
+
+            // _coBodyAttack = StartCoroutine(CoBodyAttack());
+        }
+
+        public override void OnSkillStateEnd()
+        {
+        }
+        #endregion
+
+        #region Coroutines
+        private float _delta = 0f;
+        private float _desiredTimeToReach = 0.25f;
+        private float _desiredTimeToReturn = 0.35f;
+        private Vector3 _startPoint = Vector3.zero;
+        private Vector3 _targetPoint = Vector3.zero;
+
+        private Coroutine _coBodyAttack = null;
+        private IEnumerator CoBodyAttack(System.Action endCallback = null)
+        {
+            _delta = 0f;
+            _startPoint = Owner.transform.position;
+            _targetPoint = Owner.Target.CenterPosition;
+            yield return new WaitUntil(() => IsReachedPoint(_startPoint, _targetPoint, _desiredTimeToReach, EAnimationCurveType.Linear));
+            
+            if (Owner.IsValid() == false || Owner.Target.IsValid() == false)
+                yield break;
+
+            if ((Owner.CenterPosition - Owner.Target.CenterPosition).sqrMagnitude < 1f)
+                Owner.Target.OnDamaged(Owner, this);
+
+            _targetPoint = _startPoint;
+            _startPoint = Owner.transform.position;
+            yield return new WaitUntil(() => IsReachedPoint(_startPoint, _targetPoint, _desiredTimeToReturn, EAnimationCurveType.Ease_Out));
+        }
+
+        private bool IsReachedPoint(Vector3 startPoint, Vector3 targetPoint, float desiredTime, EAnimationCurveType animCurveType)
+        {
+            if (Owner.IsValid() == false || Owner.Target.IsValid() == false)
+                return true;
+
+            _delta += Time.deltaTime;
+            float percent = _delta / desiredTime * Owner.MovementSpeed;
+            AnimationCurve curve = MonoContentsManager.Instance.Curve(animCurveType);
+            Owner.transform.position = Vector3.Lerp(startPoint, targetPoint, curve.Evaluate(percent)); // Curve 필요?
+            if (percent >= 1f)
+            {
+                _delta = 0f;
+                Owner.transform.position = targetPoint;
+                return true;
+            }
+
+            return false;
+        }
+        #endregion
+
+        public override void OnSkillAnimationCallback()
+        {
             // --- DEFENSE
             if (Owner.IsValid() == false)
                 return;
@@ -52,57 +123,8 @@ namespace STELLAREST_F1
                 _coBodyAttack = null;
             }
 
+            //Debug.Log($"<color=magenta>Called from {Owner.gameObject.name}</color>");
             _coBodyAttack = StartCoroutine(CoBodyAttack());
         }
-
-        public override void OnSkillStateEnd()
-        {
-        }
-        #endregion
-
-        #region Coroutines
-        private float _delta = 0f;
-        private float _desiredTimeToReach = 0.25f;
-        private float _desiredTimeToReturn = 0.35f;
-        private Vector3 _startPoint = Vector3.zero;
-        private Vector3 _targetPoint = Vector3.zero;
-        private Coroutine _coBodyAttack = null;
-        private IEnumerator CoBodyAttack(System.Action endCallback = null)
-        {
-            _delta = 0f;
-            _startPoint = Owner.transform.position;
-            _targetPoint = Owner.Target.CenterPosition;
-            yield return new WaitUntil(() => IsReachedPoint(_startPoint, _targetPoint, _desiredTimeToReach));
-            
-            if (Owner.IsValid() == false || Owner.Target.IsValid() == false)
-                yield break;
-
-            if ((Owner.CenterPosition - Owner.Target.CenterPosition).sqrMagnitude < 1f)
-                Owner.Target.OnDamaged(Owner, this);
-
-            _targetPoint = _startPoint;
-            _startPoint = Owner.transform.position;
-            yield return new WaitUntil(() => IsReachedPoint(_startPoint, _targetPoint, _desiredTimeToReturn));
-        }
-
-        private bool IsReachedPoint(Vector3 startPoint, Vector3 targetPoint, float desiredTime)
-        {
-            if (Owner.IsValid() == false || Owner.Target.IsValid() == false)
-                return true;
-
-            _delta += Time.deltaTime;
-            float percent = _delta / desiredTime * Owner.MovementSpeed;
-            Owner.transform.position = Vector3.Lerp(startPoint, targetPoint, percent); // Curve 필요?
-            if (percent >= 1f)
-            {
-                _delta = 0f;
-                Owner.transform.position = targetPoint;
-                return true;
-            }
-
-            return false;
-        }
-
-        #endregion
     }
 }
