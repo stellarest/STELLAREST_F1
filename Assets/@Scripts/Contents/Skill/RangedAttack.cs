@@ -8,6 +8,19 @@ namespace STELLAREST_F1
     // Projectile 투사체가 있을 수도 있고, 없을 수도 있음. (ex)그브 산탄. 애니메이션 발동시 즉시 시전(투사체 오브젝트 없이)
     public class RangedAttack : SkillBase
     {
+        public override float RemainCoolTime
+        {
+            get => base.RemainCoolTime;
+            set
+            {
+                base.RemainCoolTime = value;
+                if (base.RemainCoolTime == 0f)
+                    Owner.CreatureAnim.CanSkillAttack = true;
+                else
+                    Owner.CreatureAnim.CanSkillAttack = false;
+            }
+        }
+
         public override bool Init()
         {
             if (base.Init() == false)
@@ -56,20 +69,22 @@ namespace STELLAREST_F1
             if (Owner.IsValid() == false)
                 return;
 
-            Owner.CreatureState = ECreatureState.Idle;
+            //Owner.CreatureAIState = ECreatureAIState.Idle;
         }
 
-        public override void OnSkillAnimationCallback()
+        public override void OnSkillCallback()
         {
             if (Owner.IsValid() == false)
                 return;
-            if (Owner.Target.IsValid() == false)
-                return;
-            if (Owner.Target.ObjectType == EObjectType.Env)
-                return;
 
-            GenerateProjectile(Owner, GetSpawnPos());
-            Debug.Log($"<color=magenta>Called from {Owner.gameObject.name}</color>");
+            // if (Owner.Target.IsValid() == false)
+            //     return;
+            // if (Owner.Target.ObjectType == EObjectType.Env)
+            //     return;
+
+            // 애니메이션에서 발사하면 무조건 생성하는게 자연스러움.
+            Projectile projectile = GenerateProjectile(Owner, GetSpawnPos());
+            //projectile.TargetPosition = Owner.Target.CenterPosition;
         }
     }
 }

@@ -18,6 +18,7 @@ namespace STELLAREST_F1.Data
 
     public class CreatureData : BaseData
     {
+        public string AIClassName;
         public string CreatureRarity;
         public string AnimatorLabel;
         public float ColliderRadius;
@@ -404,7 +405,7 @@ namespace STELLAREST_F1.Data
         public string LevelText;
         public float MaxHp;
         public float Atk;
-        public float AtkRange;
+        public int AtkRange;
         public float CriticalRate;
         public float DodgeRate;
         public float MovementSpeed;
@@ -431,7 +432,7 @@ namespace STELLAREST_F1.Data
         public string AttachmentPoint;
         public int ProjectileID;
 		public float CoolTime;
-        //public float InvokeRatioOnUpdate;
+        public bool CanMove;
     }
 
     public class SkillDataLoader : ILoader<int, SkillData>

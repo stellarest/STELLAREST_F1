@@ -32,7 +32,7 @@ namespace STELLAREST_F1
                 foreach (var pair in Managers.Map.Cells)
                 {
                     if (pair.Value != null)
-                        Debug.Log($"({pair.Key}, {pair.Value}");
+                        Debug.Log($"({pair.Key}, {pair.Value.gameObject.name}");
                 }
                 Debug.Log($"<color=white>Is GameOver: {Managers.Game.IsGameOver}</color>");
             }
@@ -42,9 +42,6 @@ namespace STELLAREST_F1
 
             if (Input.GetKeyDown("2"))
                 Managers.Object.HeroLeaderController.ChangeFormation_Dev();
-
-            if (Input.GetKeyDown("3"))
-                Managers.Object.HeroLeaderController.ChangeChaseMode_Dev();
 
             if (Input.GetKeyDown("4"))
                 OnOffTileCollider();
@@ -98,6 +95,10 @@ namespace STELLAREST_F1
                 GameObject tc = Util.FindChild(map, "Tilemap_Collision", true, true);
                 if (tc != null)
                     tc.SetActive(false);
+
+                // GameObject wall = Util.FindChild(map, "Wall", true, true);
+                // if (wall != null)
+                //     wall.SetActive(false);
 
                 GameObject to = Util.FindChild(map, "Tilemap_Object", true, true);
                 if (to != null)

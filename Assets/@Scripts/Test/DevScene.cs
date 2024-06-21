@@ -28,7 +28,8 @@ namespace STELLAREST_F1
             Managers.Map.LoadMap("SummerForestField_Test2");
             Managers.Map.Map.transform.position = Vector3.zero;
 
-            {   // --- HEROES TEST
+            {
+                // --- HEROES TEST
                 // RandPos Test
                 int attemptCount = 0;
                 Vector3Int randPos = new Vector3Int(Random.Range(-3, 3), Random.Range(-3, 3), 0);
@@ -45,45 +46,79 @@ namespace STELLAREST_F1
                 HeroLeaderController leaderController = Managers.Object.SetHeroLeaderController();
                 CameraController cam = Camera.main.GetComponent<CameraController>();
                 Managers.Object.CameraController = cam;
-                Hero firstHero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.DataAndPoolingID.DNPID_Hero_Gunner);
+                Hero firstHero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.DataAndPoolingID.DNPID_Hero_Paladin);
                 Managers.Map.MoveTo(firstHero, Vector3.zero, stopLerpToCell: true, forceMove: true);
                 firstHero.InitialSpawnedCellPos = Vector3Int.zero;
 
-                // Leader:1, Maximum Members:6
-                int memberCount = 0;
-                int memberMaxCount = 0;
-                bool heroTypeFlag = false;
-                int dataID = -1;
-                while (memberCount < memberMaxCount)
+                // // Leader:1, Maximum Members:6
+                // // Paladin - Archer, Wizard, Lancer, Gunner
+                // int memberCount = 0;
+                // int memberMaxCount = 1;
+                // // int dataID = ReadOnly.DataAndPoolingID.DNPID_Hero_Archer;
+                // int dataID = ReadOnly.DataAndPoolingID.DNPID_Hero_Paladin;
+                // while (memberCount < memberMaxCount)
+                // {
+                //     randPos = new Vector3Int(Random.Range(-4, 4), Random.Range(-4, 4), 0);
+                //     if (Managers.Map.CanMove(randPos) == false)
+                //         continue;
+
+                //     memberCount++;
+                //     Hero hero = Managers.Object.Spawn<Hero>(EObjectType.Hero, dataID);
+                //     //dataID -= 10;
+
+                //     hero.gameObject.name += $"___{memberCount.ToString()}";
+                //     Managers.Map.MoveTo(hero, randPos, stopLerpToCell: true, forceMove: true);
+                //     hero.InitialSpawnedCellPos = randPos;
+                // }
+                // leaderController.Leader = firstHero;
+
+                int paladin = 7;
+                int archer = 0;
+                int wizard = 0;
+                int lancer = 0;
+                int gunner = 0;
+
+                int current = 0;
+                int total = paladin + archer + wizard + lancer + gunner;
+                Hero heroMember = null;
+                while (current < total)
                 {
                     randPos = new Vector3Int(Random.Range(-4, 4), Random.Range(-4, 4), 0);
                     if (Managers.Map.CanMove(randPos) == false)
                         continue;
 
-                    if (heroTypeFlag)
+                    if (paladin > 0)
                     {
-                        if (Random.Range(0, 100) > 20f)
-                            dataID = ReadOnly.DataAndPoolingID.DNPID_Hero_Paladin;
-                        else
-                            dataID = ReadOnly.DataAndPoolingID.DNPID_Hero_Wizard;
+                        paladin--;
+                        heroMember = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.DataAndPoolingID.DNPID_Hero_Paladin);
+                    }
+                    else if (archer > 0)
+                    {
+                        archer--;
+                        heroMember = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.DataAndPoolingID.DNPID_Hero_Archer);
+                    }
+                    else if (wizard > 0)
+                    {
+                        wizard--;
+                        heroMember = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.DataAndPoolingID.DNPID_Hero_Wizard);
+                    }
+                    else if (lancer > 0)
+                    {
+                        lancer--;
+                        heroMember = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.DataAndPoolingID.DNPID_Hero_Lancer);
+                    }
+                    else if (gunner > 0)
+                    {
+                        gunner--;
+                        heroMember = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.DataAndPoolingID.DNPID_Hero_Gunner);
                     }
 
-                    else
-                    {
-                        if (Random.Range(0, 100) > 50f)
-                            dataID = ReadOnly.DataAndPoolingID.DNPID_Hero_Wizard;
-                        else
-                            dataID = ReadOnly.DataAndPoolingID.DNPID_Hero_Archer;
-                    }
-                    heroTypeFlag = !heroTypeFlag;
-
-                    memberCount++;
-                    Hero hero = Managers.Object.Spawn<Hero>(EObjectType.Hero, dataID);
-
-                    hero.gameObject.name += $"___{memberCount.ToString()}";
-                    Managers.Map.MoveTo(hero, randPos, stopLerpToCell: true, forceMove: true);
-                    hero.InitialSpawnedCellPos = randPos;
+                    current++;
+                    heroMember.gameObject.name += $"___{current.ToString()}";
+                    Managers.Map.MoveTo(heroMember, randPos, stopLerpToCell: true, forceMove: true);
+                    heroMember.InitialSpawnedCellPos = randPos;
                 }
+
                 leaderController.Leader = firstHero;
             }
 
@@ -99,44 +134,44 @@ namespace STELLAREST_F1
                 env.UpdateCellPos();
             }
 
-            // {
-            //     // --- ENV SPREAD
-            //     int envCount = 0;
-            //     int envMaxCount = 0;
-            //     int minX = Managers.Map.MinX;
-            //     int maxX = Managers.Map.MaxX;
-            //     int minY = Managers.Map.MinY;
-            //     int maxY = Managers.Map.MaxY;
-            //     int attempCount = 0;
-            //     Vector3Int cellPos = new Vector3Int(Random.Range(minX, maxX), Random.Range(minY, maxY));
-            //     while (envCount < envMaxCount)
-            //     {
-            //         if (attempCount++ > 100)
-            //             break;
+            {
+                // --- ENV SPREAD
+                int envCount = 0;
+                int envMaxCount = 0;
+                int minX = Managers.Map.MinX;
+                int maxX = Managers.Map.MaxX;
+                int minY = Managers.Map.MinY;
+                int maxY = Managers.Map.MaxY;
+                int attempCount = 0;
+                Vector3Int cellPos = new Vector3Int(Random.Range(minX, maxX), Random.Range(minY, maxY));
+                while (envCount < envMaxCount)
+                {
+                    if (attempCount++ > 100)
+                        break;
 
-            //         if (Managers.Map.CanMove(cellPos) == false)
-            //         {
-            //             cellPos = new Vector3Int(Random.Range(minX, maxX), Random.Range(minY, maxY));
-            //             continue;
-            //         }
+                    if (Managers.Map.CanMove(cellPos) == false)
+                    {
+                        cellPos = new Vector3Int(Random.Range(minX, maxX), Random.Range(minY, maxY));
+                        continue;
+                    }
 
-            //         bool envTree = true;
-            //          if (Random.Range(0, 100) > 50)
-            //             envTree = false;
+                    bool envTree = true;
+                    if (Random.Range(0, 100) > 50)
+                        envTree = false;
 
-            //         int spawnDataID = -1;
-            //         if (envTree)
-            //             spawnDataID = GetRandEnvTree;
-            //         else
-            //             spawnDataID = GetRandEnvRock;
+                    int spawnDataID = -1;
+                    if (envTree)
+                        spawnDataID = GetRandEnvTree;
+                    else
+                        spawnDataID = GetRandEnvRock;
 
-            //         Env env = Managers.Object.Spawn<Env>(EObjectType.Env, spawnDataID);
-            //         env.SetCellPos(cellPos: cellPos, stopLerpToCell: true, forceMove: true);
-            //         env.InitialSpawnedCellPos = cellPos;
-            //         env.UpdateCellPos();
-            //         ++envCount;
-            //     }
-            // }
+                    Env env = Managers.Object.Spawn<Env>(EObjectType.Env, spawnDataID);
+                    env.SetCellPos(cellPos: cellPos, stopLerpToCell: true, forceMove: true);
+                    env.InitialSpawnedCellPos = cellPos;
+                    env.UpdateCellPos();
+                    ++envCount;
+                }
+            }
 
             if (Managers.Object.HeroLeaderController == null)
             {

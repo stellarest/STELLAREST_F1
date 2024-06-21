@@ -7,6 +7,19 @@ namespace STELLAREST_F1
 {
     public class BodyAttack : SkillBase
     {
+        public override float RemainCoolTime
+        {
+            get => base.RemainCoolTime;
+            set
+            {
+                base.RemainCoolTime = value;
+                if (base.RemainCoolTime == 0f)
+                    Owner.CreatureAnim.CanSkillAttack = true;
+                else
+                    Owner.CreatureAnim.CanSkillAttack = false;
+            }
+        }
+
         public override bool Init()
         {
             if (base.Init() == false)
@@ -32,39 +45,14 @@ namespace STELLAREST_F1
             base.EnterInGame(owner, dataID);
         }
 
-        #region CreatureStateMachine
-        public override void OnSkillStateEnter()
-        {
-        }
-
-        public override void OnSkillStateUpdate()
-        {
-            // // --- DEFENSE
-            // if (Owner.IsValid() == false)
-            //     return;
-
-            // // --- DEFENSE
-            // if (Owner.Target.IsValid() == false)
-            //     return;
-
-            // if (_coBodyAttack != null)
-            // {
-            //     StopCoroutine(_coBodyAttack);
-            //     _coBodyAttack = null;
-            // }
-
-            // _coBodyAttack = StartCoroutine(CoBodyAttack());
-        }
-
-        public override void OnSkillStateEnd()
-        {
-        }
-        #endregion
-
         #region Coroutines
         private float _delta = 0f;
         private float _desiredTimeToReach = 0.25f;
+        //private float _desiredTimeToReach = 1.25f; // -- InAtkRange Test
+
         private float _desiredTimeToReturn = 0.35f;
+        //private float _desiredTimeToReturn = 1.35f;
+
         private Vector3 _startPoint = Vector3.zero;
         private Vector3 _targetPoint = Vector3.zero;
 
@@ -85,6 +73,7 @@ namespace STELLAREST_F1
             _targetPoint = _startPoint;
             _startPoint = Owner.transform.position;
             yield return new WaitUntil(() => IsReachedPoint(_startPoint, _targetPoint, _desiredTimeToReturn, EAnimationCurveType.Ease_Out));
+            Owner.CreatureAIState = ECreatureAIState.Idle;
         }
 
         private bool IsReachedPoint(Vector3 startPoint, Vector3 targetPoint, float desiredTime, EAnimationCurveType animCurveType)
@@ -95,7 +84,7 @@ namespace STELLAREST_F1
             _delta += Time.deltaTime;
             float percent = _delta / desiredTime * Owner.MovementSpeed;
             AnimationCurve curve = MonoContentsManager.Instance.Curve(animCurveType);
-            Owner.transform.position = Vector3.Lerp(startPoint, targetPoint, curve.Evaluate(percent)); // Curve 필요?
+            Owner.transform.position = Vector3.Lerp(startPoint, targetPoint, curve.Evaluate(percent));
             if (percent >= 1f)
             {
                 _delta = 0f;
@@ -107,7 +96,18 @@ namespace STELLAREST_F1
         }
         #endregion
 
-        public override void OnSkillAnimationCallback()
+        #region Anim State Events
+        public override void OnSkillStateEnter()
+        {
+            Owner.UpdateCellPos();
+        }
+
+        public override void OnSkillStateUpdate() { }
+        public override void OnSkillStateEnd() { }
+        #endregion
+
+        #region Anim Clip Callback
+        public override void OnSkillCallback()
         {
             // --- DEFENSE
             if (Owner.IsValid() == false)
@@ -123,8 +123,10 @@ namespace STELLAREST_F1
                 _coBodyAttack = null;
             }
 
+            //Owner.UpdateCellPos();
             //Debug.Log($"<color=magenta>Called from {Owner.gameObject.name}</color>");
             _coBodyAttack = StartCoroutine(CoBodyAttack());
         }
+        #endregion
     }
 }

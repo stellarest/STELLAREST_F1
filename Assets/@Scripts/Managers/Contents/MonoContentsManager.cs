@@ -5,6 +5,7 @@ using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
+    // Animation Curve, VFX...
     public class MonoContentsManager : MonoBehaviour
     {
         public static MonoContentsManager Instance = null;
@@ -22,6 +23,5 @@ namespace STELLAREST_F1
         {
             Instance = this;
         }
-
     }
 }

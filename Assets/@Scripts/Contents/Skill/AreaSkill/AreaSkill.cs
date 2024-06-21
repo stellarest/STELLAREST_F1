@@ -23,7 +23,7 @@ namespace STELLAREST_F1
             throw new System.NotImplementedException();
         }
 
-        public override void OnSkillAnimationCallback()
+        public override void OnSkillCallback()
         {
             throw new System.NotImplementedException();
         }

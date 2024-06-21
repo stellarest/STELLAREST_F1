@@ -1,46 +1,23 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
     public class Creature : BaseObject
     {
+        #region Background
+        public CreatureAI CreatureAI { get; protected set; } = null;
         public ECreatureRarity CreatureRarity { get; protected set; } = ECreatureRarity.Common;
         public SkillComponent CreatureSkill { get; protected set; } = null;
         public CreatureBody CreatureBody { get; protected set; } = null;
         public CreatureAnimation CreatureAnim { get; private set; } = null;
         public CreatureAnimationCallback CreatureAnimCallback { get; private set; } = null;
 
-        [SerializeField] private ECreatureState _creatureState =  ECreatureState.Idle;
-        public virtual ECreatureState CreatureState
-        {
-            get => _creatureState;
-            set
-            {
-                if (_creatureState != value)
-                {
-                    _creatureState = value;
-                    UpdateAnimation();
-                }
-            }
-        }
-        public void SetCreatureState(ECreatureState creatureState)
-            => _creatureState = creatureState;
-        [SerializeField] private ECreatureMoveState _creatureMoveState = ECreatureMoveState.None;
-        public virtual ECreatureMoveState CreatureMoveState
-        {
-            get => _creatureMoveState;
-            set => _creatureMoveState = value;
-        }
-        [SerializeField] private bool _collectEnv = false;
-        public virtual bool CollectEnv
-        {
-            get => _collectEnv;
-            set => _collectEnv = value;
-        }
         public virtual Vector3Int ChaseCellPos // *** NO SETTER !! ***
         {
             get
@@ -51,9 +28,155 @@ namespace STELLAREST_F1
                     return CellPos;
             }
         }
-        
 
         [SerializeField] protected EFindPathResult _findPathResult = EFindPathResult.None;
+        [field: SerializeField] public bool ForceMove { get; set; } = false;
+
+        public bool CanCreatureSkill(ESkillType skillType)
+        {
+            return false;
+        }
+
+        public void Dead() => CreatureAnim.Dead();
+
+        public virtual bool CanSkill(ESkillType skillType)
+        {
+            return CreatureSkill.IsRemainingCoolTime(skillType) == false;
+        }
+
+        public virtual bool CanCollectEnv
+        {
+            get
+            {
+                if (this.IsValid() == false)
+                    return false;
+
+                if (Target.IsValid() && Target.ObjectType != EObjectType.Env)
+                    return false;
+
+                if (IsMoving || CreatureAnim.CanEnterAnimState(ECreatureAnimState.Upper_Idle_To_CollectEnv) == false)
+                    return false;
+
+                return true;
+            }
+        }
+
+        public virtual void CollectEnv()
+        {
+            CreatureAnim.Collect();
+        }
+
+        [SerializeField] private ECreatureAIState _creatureAIState = ECreatureAIState.Idle;
+        public virtual ECreatureAIState CreatureAIState
+        {
+            get => _creatureAIState;
+            set
+            {
+                if (_creatureAIState != value)
+                {
+                    _creatureAIState = value;
+                    if (value == ECreatureAIState.Dead)
+                    {
+                        CreatureAnim.Dead();
+                        CreatureAI.OnDead();
+                    }
+                }
+            }
+        }
+
+        protected override void InitStat(int dataID)
+        {
+            base.InitStat(dataID);
+            for (int i = DataTemplateID; i < DataTemplateID + 10;)
+            {
+                if (Managers.Data.StatDataDict.ContainsKey(i) == false)
+                    break;
+
+                _maxLevel = i++;
+            }
+        }
+
+        public bool IsInTargetAttackRange()
+        {
+            if (Target.IsValid() == false)
+            {
+                CreatureAnim.IsInAttackRange = false;
+                return false;
+            }
+
+            int dx = Mathf.Abs(Target.CellPos.x - CellPos.x);
+            int dy = Mathf.Abs(Target.CellPos.y - CellPos.y);
+
+            if (Target.ObjectType == EObjectType.Monster || Target.ObjectType == EObjectType.Hero)
+            {
+                if (dx <= AtkRange && dy <= AtkRange)
+                {
+                    CreatureAnim.IsInAttackRange = true;
+                    return true;
+                }
+            }
+            else if (Target.ObjectType == EObjectType.Env)
+            {
+                if (dx <= 1 && dy <= 1)
+                    return true;
+            }
+
+            CreatureAnim.IsInAttackRange = false;
+            return false;
+        }
+
+        public bool IsValid(BaseObject bo) => bo.IsValid();
+
+        public virtual bool IsMoving
+        {
+            get => CreatureAnim.IsMoving;
+            set => CreatureAnim.IsMoving = value;
+        }
+
+        public EFindPathResult FindPathAndMoveToCellPos(Vector3 destPos, int maxDepth, EObjectType ignoreObjectType = EObjectType.None)
+        {
+            Vector3Int destCellPos = Managers.Map.WorldToCell(destPos);
+            return FindPathAndMoveToCellPos(destCellPos, maxDepth, ignoreObjectType);
+        }
+
+        public EFindPathResult FindPathAndMoveToCellPos(Vector3Int destPos, int maxDepth, EObjectType ignoreObjectType = EObjectType.None)
+        {
+            if (IsForceMovingPingPongObject)
+                return EFindPathResult.Fail_ForceMovePingPongObject;
+
+            // ***** 이미 스킬(공격)중이면 길찾기 금지 *****
+            // if (CreatureAIState == ECreatureAIState.Idle)
+            //     return EFindPathResult.Fail_LerpCell;
+
+            if (_coLerpToCellPos == null)
+            {
+                Managers.Map.RemoveObject(this);
+                Managers.Map.AddObject(this, CellPos);
+                return EFindPathResult.Fail_LerpCell;
+            }
+
+            // 움직임 진행중
+            if (LerpToCellPosCompleted == false)
+            {
+                return EFindPathResult.Fail_LerpCell;
+            }
+
+            // A*
+            List<Vector3Int> path = Managers.Map.FindPath(startCellPos: CellPos, destPos, maxDepth, ignoreObjectType);
+            if (path.Count < 2)
+                return EFindPathResult.Fail_NoPath;
+
+            Vector3Int dirCellPos = path[1] - CellPos;
+            Vector3Int nextPos = CellPos + dirCellPos;
+
+            if (Managers.Map.MoveTo(creature: this, cellPos: nextPos, ignoreObjectType: ignoreObjectType) == false)
+                return EFindPathResult.Fail_MoveTo;
+
+            return EFindPathResult.Success;
+        }
+        #endregion
+
+        #region Core
         public override bool Init()
         {
             if (base.Init() == false)
@@ -79,237 +202,32 @@ namespace STELLAREST_F1
         protected override void InitialSetInfo(int dataID)
         {
             base.InitialSetInfo(dataID);
-            //CreatureAnim = BaseAnim as CreatureAnimation;
-        }
-
-        protected override void InitStat(int dataID)
-        {
-            base.InitStat(dataID);
-            for (int i = DataTemplateID; i < DataTemplateID + 10;)
-            {
-                if (Managers.Data.StatDataDict.ContainsKey(i) == false)
-                    break;
-
-                _maxLevel = i++;
-            }
         }
 
         protected override void EnterInGame()
         {
             base.EnterInGame();
             RigidBody.simulated = false;
-            CollectEnv = false;
             Target = null;
 
             ShowBody(false);
-            StartWait(waitCondition: () => BaseAnim.IsPlay() == false,
-                      callbackWaitCompleted: () => {
+            CreatureAI.EnterInGame();
+            StartCoWait(waitCondition: () => BaseAnim.IsPlay() == false,
+                      callbackWaitCompleted: () =>
+                      {
                           ShowBody(true);
                           RigidBody.simulated = true;
                           Target = null;
-                          CancelWait();
-                          AddAnimationEvents();
-                          CreatureMoveState = ECreatureMoveState.None;
+                #region Events
+                          CreatureAnim.AddAnimClipEvents();
+                          CreatureAnim.AddAnimStateEvents();
+                #endregion
+                          CreatureAIState = ECreatureAIState.Idle;
                           StartCoroutine(CoUpdateAI());
                           StartCoLerpToCellPos();
                       });
         }
 
-        private void AddAnimationEvents()
-        {
-            CreatureStateMachine[] creatureStateMachines = CreatureAnim.Animator.GetBehaviours<CreatureStateMachine>();
-            for (int i = 0; i < creatureStateMachines.Length; ++i)
-            {
-                creatureStateMachines[i].OnStateEnterHandler -= OnStateEnter;
-                creatureStateMachines[i].OnStateEnterHandler += OnStateEnter;
-
-                creatureStateMachines[i].OnStateUpdateHandler -= OnStateUpdate;
-                creatureStateMachines[i].OnStateUpdateHandler += OnStateUpdate;
-
-                creatureStateMachines[i].OnStateEndHandler -= OnStateEnd;
-                creatureStateMachines[i].OnStateEndHandler += OnStateEnd;
-            }
-        }
-
-        private void ReleaseAnimationEvents()
-        {
-            if (CreatureAnim == null)
-                return;
-
-            CreatureStateMachine[] creatureStateMachines = CreatureAnim.Animator.GetBehaviours<CreatureStateMachine>();
-            for (int i = 0; i < creatureStateMachines.Length; ++i)
-            {
-                creatureStateMachines[i].OnStateEnterHandler -= OnStateEnter;
-                creatureStateMachines[i].OnStateUpdateHandler -= OnStateUpdate;
-                creatureStateMachines[i].OnStateEndHandler -= OnStateEnd;
-            }
-        }
-
-        protected IEnumerator CoUpdateAI()
-        {
-            // if (ObjectType == EObjectType.Monster)
-            //     yield break;
-
-            while (true)
-            {
-                switch (CreatureState)
-                {
-                    case ECreatureState.Idle:
-                        UpdateIdle();
-                        break;
-
-                    case ECreatureState.Move:
-                        UpdateMove();
-                        break;
-
-                    case ECreatureState.Skill_Attack:
-                    case ECreatureState.Skill_A:
-                    case ECreatureState.Skill_B:
-                        UpdateSkill();
-                        break;
-
-                    case ECreatureState.CollectEnv:
-                        UpdateCollectEnv();
-                        break;
-
-                    case ECreatureState.Dead:
-                        UpdateDead();
-                        break;
-                }
-                
-                yield return null;
-            }
-        }
-
-        protected virtual void UpdateIdle() { }
-        protected virtual void UpdateMove() { }
-        protected virtual void UpdateSkill() { }
-        protected virtual void UpdateCollectEnv() { }
-        protected virtual void UpdateDead()
-        {
-            // SetRigidBodyVelocity(Vector2.zero); - DELETED
-            CancelWait();
-        }
-
-        #region Coroutines
-        // Co Wait 없앨준비하라네
-        protected Coroutine _coWait = null;
-        protected void StartWait(float seconds)
-        {
-            CancelWait();
-            _coWait = StartCoroutine(CoWait(seconds));
-        }
-        private IEnumerator CoWait(float seconds)
-        {
-            yield return new WaitForSeconds(seconds);
-            _coWait = null;
-        }
-
-        protected void StartWait(System.Func<bool> waitCondition, System.Action callbackWaitCompleted = null)
-        {
-            CancelWait();
-            _coWait = StartCoroutine(CoWait(waitCondition, callbackWaitCompleted));
-        }
-        private IEnumerator CoWait(System.Func<bool> waitCondition, System.Action waitCompleted = null)
-        {
-            yield return new WaitUntil(waitCondition);
-            _coWait = null;
-            waitCompleted?.Invoke();
-        }
-
-        protected void CancelWait()
-        {
-            if (_coWait != null)
-                StopCoroutine(_coWait);
-            _coWait = null;
-        }
-        #endregion Coroutines
-
-        #region Events
-        protected void OnStateEnter(ECreatureState enterState)
-        {
-            switch (enterState)
-            {
-                case ECreatureState.Skill_Attack:
-                case ECreatureState.Skill_A:
-                case ECreatureState.Skill_B:
-                    CreatureSkill?.PassOnSkillStateEnter(enterState);
-                    break;
-
-                case ECreatureState.CollectEnv:
-                    OnCollectEnvStateEnter();
-                    break;
-            }
-        }
-        protected virtual void OnCollectEnvStateEnter()
-        {
-             CollectEnv = true;
-        }
-
-        protected void OnStateUpdate(ECreatureState updateState)
-        {
-            switch (updateState)
-            {
-                case ECreatureState.Skill_Attack:
-                case ECreatureState.Skill_A:
-                case ECreatureState.Skill_B:
-                    // 스킬을 사용하는 주체가 크리처이기 때문에 여기서 이벤트 등록, 삭제하고 호출
-                    CreatureSkill.PassOnSkillStateUpdate(updateState);
-                    break;
-
-                case ECreatureState.CollectEnv:
-                    OnCollectEnvStateUpdate();
-                    break;
-            }
-        }
-
-        protected virtual void OnCollectEnvStateUpdate() { }
-
-        protected void OnStateEnd(ECreatureState endState)
-        {
-            switch (endState)
-            {
-                case ECreatureState.Skill_Attack:
-                case ECreatureState.Skill_A:
-                case ECreatureState.Skill_B:
-                    CreatureSkill?.PassOnSkillStateEnd(endState);
-                    break;
-            }
-        }
-        #endregion State Machine Events 
-
-        protected BaseObject FindClosestInRange(float scaneRange, IEnumerable<BaseObject> objs, System.Func<BaseObject, bool> func = null)
-        {
-            BaseObject target = null;
-            float bestDistSQR = float.MaxValue;
-            float scanRangeSQR = scaneRange * scaneRange;
-
-            foreach (BaseObject obj in objs)
-            {
-                //Vector3 dir = obj.transform.position - transform.position;
-                // 5칸인지 테스트
-                Vector3Int dir = obj.CellPos - CellPos;
-                float distToTargetSQR = dir.sqrMagnitude;
-
-                if (scanRangeSQR < distToTargetSQR)
-                    continue;
-
-                if (bestDistSQR < distToTargetSQR)
-                    continue;
-
-                // 추가 조건 (ex)객체가 살아있는가? 람다 기반으로 넘겨줄수도 있으니까 뭐, 편함 이런게 있으면.
-                // 살아있는 객체만 찾아서, 살아있는 객체에게만 Target을 잡을 수 있도록. 이런식으로 가능.
-                if (func?.Invoke(obj) == false)
-                    continue;
-
-                bestDistSQR = distToTargetSQR;
-                target = obj;
-            }
-
-            return target;
-        }
-
-        #region Battle
         public override void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
         {
             Creature creature = attacker as Creature;
@@ -331,154 +249,70 @@ namespace STELLAREST_F1
         public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
         {
             StopCoLerpToCellPos(); // 길찾기 움직임 중이었다면 멈춘다.
-            StopCoSearchTarget(); // 크리처에서 돌고있는 모든 코루틴을 Dictionary로 관리하면 어떨까.
-            CreatureMoveState = ECreatureMoveState.None;
-            CreatureState = ECreatureState.Dead;
+            CreatureAIState = ECreatureAIState.Dead;
             base.OnDead(attacker, skillFromAttacker);
         }
 
-        #endregion Battle
-        protected bool IsInAttackRange()
+        protected override void OnDisable() { } // --- TEMP
+        #endregion
+
+        #region Coroutines
+        #endregion
+        protected IEnumerator CoUpdateAI()
         {
-            if (Target.IsValid() == false)
-                return false;
+            // if (ObjectType == EObjectType.Monster)
+            //     yield break;
 
-            int dx = Mathf.Abs(Target.CellPos.x - CellPos.x);
-            int dy = Mathf.Abs(Target.CellPos.y - CellPos.y);
-
-            if (Target.ObjectType == EObjectType.Monster)
+            while (true)
             {
-                if (dx <= AtkRange && dy <= AtkRange)
-                    return true;
-            }
-            else if (Target.ObjectType == EObjectType.Env)
-            {
-                if (dx <= 1 && dy <= 1)
-                    return true;
-            }
+                switch (CreatureAIState)
+                {
+                    case ECreatureAIState.Idle:
+                        CreatureAI.UpdateIdle();
+                        break;
 
-            return false;
-        }
+                    case ECreatureAIState.Move:
+                        CreatureAI.UpdateMove();
+                        break;
+                }
 
-        public bool CanAttackOrChase()
-        {
-            if (Target.IsValid() == false) // --- DEFENSE
-                return false;
-
-            if (IsInAttackRange())
-                return true;
-
-            return false;
-        }
-
-
-        // protected void ChaseOrAttackTarget_Prev_Temp(float chaseRange, float atkRange)
-        // {
-        //     //Vector3 toTargetDir = Target.transform.position - transform.position;
-        //     if (DistanceToTargetSQR <= atkRange * atkRange)
-        //     {
-        //         if (Target.IsValid() && Target.ObjectType == EObjectType.Env)
-        //             CreatureState = ECreatureState.CollectEnv;
-        //         else
-        //             CreatureSkill?.CurrentSkill.DoSkill();
-        //     }
-        //     else
-        //     {
-        //         _findPathResult = FindPathAndMoveToCellPos(Target.transform.position, ReadOnly.Numeric.HeroMaxMoveDepth);
-        //         float searchDistSQR = chaseRange * chaseRange;
-        //         if (DistanceToTargetSQR > searchDistSQR)
-        //         {
-        //             Target = null;
-        //             CreatureState = ECreatureState.Move;
-        //         }
-        //     }
-        // }
-
-        // Util로 빼야할듯
-        protected float CalculateMovementSpeed(float distanceToTargetSQR)
-        {
-            float maxDistance = ReadOnly.Numeric.MaxDistanceForMovementSpeed;
-            float maxMovementSpeed = MovementSpeed * ReadOnly.Numeric.MaxMovementSpeedMultiplier;
-            float movementSpeed = Mathf.Lerp(MovementSpeed, 
-                                            maxMovementSpeed, 
-                                            Mathf.Log(distanceToTargetSQR + 1.0f) / Mathf.Log(maxDistance * maxDistance + 1.0f));
-
-            return movementSpeed;
-        }
-
-        protected override void OnDisable()
-        {
-            //Debug.Log("Creature::OnDisable");
-            ReleaseAnimationEvents();
-        }
-
-        #region Misc
-        protected bool IsValid(BaseObject bo) => bo.IsValid();
-        public bool IsSkillState
-            => CreatureState == ECreatureState.Skill_Attack || CreatureState == ECreatureState.Skill_A || CreatureState == ECreatureState.Skill_B;
-        #endregion Misc
-
-        public EFindPathResult FindPathAndMoveToCellPos(Vector3 destPos, int maxDepth, EObjectType ignoreObjectType = EObjectType.None)
-        {
-            Vector3Int destCellPos = Managers.Map.WorldToCell(destPos);
-            return FindPathAndMoveToCellPos(destCellPos, maxDepth, ignoreObjectType);
-        }
-
-        public EFindPathResult FindPathAndMoveToCellPos(Vector3Int destPos, int maxDepth, EObjectType ignoreObjectType = EObjectType.None)
-        {
-            if (IsForceMovingPingPongObject)
-                return EFindPathResult.Fail_ForceMovePingPongObject;
-
-            // ***** 이미 스킬(공격)중이면 길찾기 금지 *****
-            if (CreatureState == ECreatureState.Skill_Attack)
-                return EFindPathResult.Fail_LerpCell;
-
-            // 움직임 진행중
-            if (LerpToCellPosCompleted == false)
-            {
-                return EFindPathResult.Fail_LerpCell;
-            }
-
-            // A*
-            List<Vector3Int> path = Managers.Map.FindPath(startCellPos: CellPos, destPos, maxDepth, ignoreObjectType);
-            if (path.Count < 2)
-                return EFindPathResult.Fail_NoPath;
-
-            Vector3Int dirCellPos = path[1] - CellPos;
-            Vector3Int nextPos = CellPos + dirCellPos;
-
-            if (Managers.Map.MoveTo(creature: this, nextPos, ignoreObjectType: ignoreObjectType) == false)
-                return EFindPathResult.Fail_MoveTo;
-
-            return EFindPathResult.Success;
-        }
-
-        // 제거예정
-        public bool MoveToCellPos(Vector3Int destCellPos, int maxDepth, bool forceMoveCloser = false)
-        {
-            if (LerpToCellPosCompleted == false)
-                return false;
-
-            return Managers.Map.MoveTo(this, cellPos: destCellPos);
-        }
-
-
-        protected void StartCoLerpToCellPos()
-        {
-            StopCoLerpToCellPos();
-            _coLerpToCellPos = StartCoroutine(CoLerpToCellPos());
-        }
-
-        protected void StopCoLerpToCellPos()
-        {
-            if (_coLerpToCellPos != null)
-            {
-                StopCoroutine(_coLerpToCellPos);
-                _coLerpToCellPos = null;
+                //UpdateCellPos();
+                yield return null;
             }
         }
 
-        // ### Creature: O, Projectile: X
+        protected Coroutine _coWait = null;
+        private IEnumerator CoWait(System.Func<bool> waitCondition, System.Action waitCompleted = null)
+        {
+            yield return new WaitUntil(waitCondition);
+            _coWait = null;
+            waitCompleted?.Invoke();
+        }
+        private IEnumerator CoWait(float seconds)
+        {
+            yield return new WaitForSeconds(seconds);
+            _coWait = null;
+        }
+
+        protected void StartCoWait(System.Func<bool> waitCondition, System.Action callbackWaitCompleted = null)
+        {
+            StopCoWait();
+            _coWait = StartCoroutine(CoWait(waitCondition, callbackWaitCompleted));
+        }
+        protected void StartCoWait(float seconds)
+        {
+            StopCoWait();
+            _coWait = StartCoroutine(CoWait(seconds));
+        }
+
+        protected void StopCoWait()
+        {
+            if (_coWait != null)
+                StopCoroutine(_coWait);
+            _coWait = null;
+        }
+
+        // --- In Creature.cs temporary
         protected Coroutine _coLerpToCellPos = null;
         protected IEnumerator CoLerpToCellPos()
         {
@@ -505,146 +339,26 @@ namespace STELLAREST_F1
 
                     LerpToCellPos(movementSpeed);
                 }
-                else // Monster
+                else //--- Monster
+                {
                     LerpToCellPos(MovementSpeed);
+                }
 
                 yield return null;
             }
         }
 
-        private T SearchClosestInRange<T>(float scanRange, IEnumerable<T> firstTargets, IEnumerable<T> secondTargets = null, 
-                                        System.Func<T, bool> func = null) where T : BaseObject
+        public void StartCoLerpToCellPos()
         {
-            T target = null;
-            float bestDistSQR = float.MaxValue;
-            float scanRangeSQR = scanRange * scanRange;
-
-            // --- Set Hero Leader Scan Range (half)
-            Hero hero = this as Hero;
-            if (hero.IsValid() && hero.IsLeader)
-                scanRangeSQR *= 0.8f;
-
-            foreach (T obj in firstTargets)
-            {
-                Vector3Int dir = obj.CellPos - CellPos;
-                float distToTargetSQR = dir.sqrMagnitude;
-                if (scanRangeSQR < distToTargetSQR)
-                    continue;
-
-                if (bestDistSQR < distToTargetSQR)
-                    continue;
-
-                if (func?.Invoke(obj) == false)
-                    continue;
-
-                bestDistSQR = distToTargetSQR;
-                target = obj;
-            }
-
-            if (target != null) // First Target
-                return target;
-            else if (target == null && secondTargets != null) // Second Targets
-            {
-                foreach (T obj in secondTargets)
-                {
-                    Vector3Int dir = obj.CellPos - CellPos;
-                    float distToTargetSQR = dir.sqrMagnitude;
-                    if (scanRangeSQR < distToTargetSQR)
-                        continue;
-
-                    if (bestDistSQR < distToTargetSQR)
-                        continue;
-
-                    if (func?.Invoke(obj) == false)
-                        continue;
-
-                    bestDistSQR = distToTargetSQR;
-                    target = obj;
-                }
-            }
-
-            return target;
+            StopCoLerpToCellPos();
+            _coLerpToCellPos = StartCoroutine(CoLerpToCellPos());
         }
 
-        protected bool _pauseSearchTarget = false;
-        private Coroutine _coSearchTarget = null;
-        private IEnumerator CoSearchTarget<T>(float scanRange, IEnumerable<T> firstTargets, IEnumerable<T> secondTargets = null, System.Func<T, bool> func = null) where T : BaseObject
+        public void StopCoLerpToCellPos()
         {
-            float tick = ReadOnly.Numeric.SearchFindTargetTick;
-            while (true)
-            {
-                if (this.IsValid() == false) // 방어
-                    yield break;
-
-                yield return new WaitForSeconds(tick);
-                if (_pauseSearchTarget)
-                {
-                    Target = null;
-                    yield return null;
-                    continue;
-                }
-
-                if (CreatureMoveState != ECreatureMoveState.ForceMove)
-                {
-                    if (_coWaitSearchTarget != null) // search tick이후, 이미 Wait이 진행중이었다면.. 
-                    {
-                        yield return null;
-                        continue;
-                    }
-
-                    Target = SearchClosestInRange(scanRange, firstTargets: firstTargets, secondTargets: secondTargets, func: func);
-                    if (Target.IsValid())
-                        CreatureMoveState = ECreatureMoveState.MoveToTarget;
-                    // --- Target이 존재하지 않을 때, MoveToTarget 해제는 Creature AI에서 해결    
-                }
-            }
-        }
-
-        protected void StartCoSearchTarget<T>(float scanRange, IEnumerable<T> firstTargets, IEnumerable<T> secondTargets = null, System.Func<T, bool> func = null) where T : BaseObject
-        {
-            if (_coSearchTarget != null)
-                return;
-
-            _coSearchTarget = StartCoroutine(CoSearchTarget<T>(scanRange, firstTargets: firstTargets, secondTargets: secondTargets, func: func));
-        }
-
-        protected void StopCoSearchTarget()
-        {
-            Target = null;
-            if (_coSearchTarget != null)
-            {
-                StopCoroutine(_coSearchTarget);
-                _coSearchTarget = null;
-            }
-        }
-
-        protected Coroutine _coWaitSearchTarget = null;
-        private IEnumerator CoWaitSearchTarget(float waitSeconds)
-        {
-            // --- 확인됨
-            //Debug.Log($"<color=white>{nameof(CoWaitSearchTarget)}</color>");
-            yield return new WaitForSeconds(waitSeconds);
-            StopCoWaitSearchTarget();
-        }
-
-        protected void StartCoWaitSearchTarget(float waitSeconds)
-        {
-            if (_coWaitSearchTarget != null)
-                return;
-
-            _coWaitSearchTarget = StartCoroutine(CoWaitSearchTarget(waitSeconds));
-        }
-
-        protected void StopCoWaitSearchTarget() // PRIVATE
-        {
-            if (_coWaitSearchTarget != null)
-            {
-                StopCoroutine(_coWaitSearchTarget);
-                _coWaitSearchTarget = null;
-            }
-
-            // --- 확인됨
-            // Debug.Log($"<color=white>{nameof(StopCoWaitSearchTarget)}</color>");
+            if (_coLerpToCellPos != null)
+                StopCoroutine(_coLerpToCellPos);
+            _coLerpToCellPos = null;
         }
 
         /*
@@ -724,7 +438,7 @@ namespace STELLAREST_F1
                     LookAtDir = ELookAtDirection.Left;
                 else if (dir.x > 0f)
                     LookAtDir = ELookAtDirection.Right;
-                
+
                 if (dir.sqrMagnitude < 0.01f)
                 {
                     transform.position = destPos;
@@ -764,7 +478,445 @@ namespace STELLAREST_F1
 }
 
 /*
-        [ PREV CODEs ]
+        [ PREV REF ]
+        private T SearchClosestInRange<T>(float scanRange, IEnumerable<T> firstTargets, IEnumerable<T> secondTargets = null,
+                                        System.Func<T, bool> func = null, System.Func<bool> allTargetsCondition = null) where T : BaseObject
+        {
+            T firstTarget = null;
+            T secondTarget = null;
+            float bestDistSQR = float.MaxValue;
+            float scanRangeSQR = scanRange * scanRange;
+
+            // --- Set Hero Leader Scan Range (half)
+            // --- 없어도 될 것 같은데
+            Hero hero = this as Hero;
+            if (hero.IsValid() && hero.IsLeader)
+                scanRangeSQR *= 0.8f;
+
+            foreach (T obj in firstTargets)
+            {
+                Vector3Int dir = obj.CellPos - CellPos;
+                float distToTargetSQR = dir.sqrMagnitude;
+                if (scanRangeSQR < distToTargetSQR)
+                    continue;
+
+                if (bestDistSQR < distToTargetSQR)
+                    continue;
+
+                if (func?.Invoke(obj) == false)
+                    continue;
+
+                bestDistSQR = distToTargetSQR;
+                firstTarget = obj;
+            }
+
+            // --- 일반적인 Searching 또는 AutoTarget이 켜져있을 때
+            if (allTargetsCondition == null || allTargetsCondition.Invoke() == false)
+            {
+                if (firstTarget != null)
+                    return firstTarget;
+                else if (firstTarget == null && secondTargets != null)
+                {
+                    foreach (T obj in secondTargets)
+                    {
+                        Vector3Int dir = obj.CellPos - CellPos;
+                        float distToTargetSQR = dir.sqrMagnitude;
+                        if (scanRangeSQR < distToTargetSQR)
+                            continue;
+
+                        if (bestDistSQR < distToTargetSQR)
+                            continue;
+
+                        if (func?.Invoke(obj) == false)
+                            continue;
+
+                        bestDistSQR = distToTargetSQR;
+                        secondTarget = obj;
+                    }
+                }
+
+                return secondTarget;
+            }
+            // --- AutoTarget과 상관 없이 리더이고 ForceMove가 True일 때.
+            else if (allTargetsCondition != null && allTargetsCondition.Invoke())
+            {
+                foreach (T obj in secondTargets)
+                {
+                    Vector3Int dir = obj.CellPos - CellPos;
+                    float distToTargetSQR = dir.sqrMagnitude;
+                    if (scanRangeSQR < distToTargetSQR)
+                        continue;
+
+                    if (bestDistSQR < distToTargetSQR)
+                        continue;
+
+                    if (func?.Invoke(obj) == false)
+                        continue;
+
+                    bestDistSQR = distToTargetSQR;
+                    secondTarget = obj;
+                }
+
+                if (func?.Invoke(firstTarget) == false)
+                    return secondTarget;
+                else if (func?.Invoke(secondTarget) == false)
+                    return firstTarget;
+                else
+                {
+                    float fDistSQR = (firstTarget.CellPos - CellPos).sqrMagnitude;
+                    float sDistSQR = (secondTarget.CellPos - CellPos).sqrMagnitude;
+                    if (fDistSQR < sDistSQR)
+                        return firstTarget;
+                    else
+                        return secondTarget;
+                }
+
+                // // 두 개 모두 있는지부터 가정
+                // if (firstTarget != null && secondTarget != null)
+                // {
+                //     float fDistSQR = (firstTarget.CellPos - CellPos).sqrMagnitude;
+                //     float sDistSQR = (secondTarget.CellPos - CellPos).sqrMagnitude;
+                //     if (fDistSQR < sDistSQR)
+                //         return firstTarget;
+
+                //     return secondTarget;
+                // }
+                // else if (firstTarget != null)
+                //     return firstTarget;
+                // else
+                //     return secondTarget; // null이 나올수도 있음
+            }
+
+            return null;
+        }
+
+        // --- Creature -> BaseObject
+        //public bool PauseSearchTarget { get; protected set; } = false;
+
+        private Coroutine _coSearchTarget = null;
+        private IEnumerator CoSearchTarget<T>(float scanRange, IEnumerable<T> firstTargets, IEnumerable<T> secondTargets = null, System.Func<T, bool> func = null, System.Func<bool> allTargetsCondition = null) where T : BaseObject
+        {
+            float tick = ReadOnly.Numeric.SearchFindTargetTick;
+            while (true)
+            {
+                if (this.IsValid() == false)
+                    yield break;
+
+                yield return new WaitForSeconds(tick);
+                if (PauseSearchTarget)
+                {
+                    Target = null; // --- DEFENSE
+                    yield return null;
+                    continue;
+                }
+
+                // if (_coWaitSearchTarget != null) // 이것도 필요할지...
+                // {
+                //     yield return null;
+                //     continue;
+                // }
+                Target = SearchClosestInRange(scanRange, firstTargets: firstTargets, secondTargets: secondTargets, func: func, allTargetsCondition: allTargetsCondition);
+
+                // if (Target.IsValid() == false)
+                // {
+                //     Debug.Log("<color=red>!@#!@#!@#!@#!@#!@#!@#</color>");
+                // }
+
+                // CreatureAnim.IsTargetValid = Target != null ? true : false;
+                // if (Target.IsValid())
+                //     CreatureMoveState = ECreatureMoveState.MoveToTarget;
+                // --- Target이 존재하지 않을 때, MoveToTarget 해제는 Creature AI에서 해결    
+            }
+        }
+
+        protected void StartCoSearchTarget<T>(float scanRange, IEnumerable<T> firstTargets, IEnumerable<T> secondTargets = null, System.Func<T, bool> func = null, System.Func<bool> allTargetsCondition = null) where T : BaseObject
+        {
+            // if (_coSearchTarget != null)
+            //     return;
+            StopCoSearchTarget();
+            _coSearchTarget = StartCoroutine(CoSearchTarget<T>(scanRange, firstTargets: firstTargets, secondTargets: secondTargets, func: func, allTargetsCondition: allTargetsCondition));
+        }
+
+        protected void StopCoSearchTarget()
+        {
+            Target = null;
+            if (_coSearchTarget != null)
+            {
+                StopCoroutine(_coSearchTarget);
+                _coSearchTarget = null;
+            }
+        }private T SearchClosestInRange<T>(float scanRange, IEnumerable<T> firstTargets, IEnumerable<T> secondTargets = null,
+                                        System.Func<T, bool> func = null, System.Func<bool> allTargetsCondition = null) where T : BaseObject
+        {
+            T firstTarget = null;
+            T secondTarget = null;
+            float bestDistSQR = float.MaxValue;
+            float scanRangeSQR = scanRange * scanRange;
+
+            // --- Set Hero Leader Scan Range (half)
+            // --- 없어도 될 것 같은데
+            Hero hero = this as Hero;
+            if (hero.IsValid() && hero.IsLeader)
+                scanRangeSQR *= 0.8f;
+
+            foreach (T obj in firstTargets)
+            {
+                Vector3Int dir = obj.CellPos - CellPos;
+                float distToTargetSQR = dir.sqrMagnitude;
+                if (scanRangeSQR < distToTargetSQR)
+                    continue;
+
+                if (bestDistSQR < distToTargetSQR)
+                    continue;
+
+                if (func?.Invoke(obj) == false)
+                    continue;
+
+                bestDistSQR = distToTargetSQR;
+                firstTarget = obj;
+            }
+
+            // --- 일반적인 Searching 또는 AutoTarget이 켜져있을 때
+            if (allTargetsCondition == null || allTargetsCondition.Invoke() == false)
+            {
+                if (firstTarget != null)
+                    return firstTarget;
+                else if (firstTarget == null && secondTargets != null)
+                {
+                    foreach (T obj in secondTargets)
+                    {
+                        Vector3Int dir = obj.CellPos - CellPos;
+                        float distToTargetSQR = dir.sqrMagnitude;
+                        if (scanRangeSQR < distToTargetSQR)
+                            continue;
+
+                        if (bestDistSQR < distToTargetSQR)
+                            continue;
+
+                        if (func?.Invoke(obj) == false)
+                            continue;
+
+                        bestDistSQR = distToTargetSQR;
+                        secondTarget = obj;
+                    }
+                }
+
+                return secondTarget;
+            }
+            // --- AutoTarget과 상관 없이 리더이고 ForceMove가 True일 때.
+            else if (allTargetsCondition != null && allTargetsCondition.Invoke())
+            {
+                foreach (T obj in secondTargets)
+                {
+                    Vector3Int dir = obj.CellPos - CellPos;
+                    float distToTargetSQR = dir.sqrMagnitude;
+                    if (scanRangeSQR < distToTargetSQR)
+                        continue;
+
+                    if (bestDistSQR < distToTargetSQR)
+                        continue;
+
+                    if (func?.Invoke(obj) == false)
+                        continue;
+
+                    bestDistSQR = distToTargetSQR;
+                    secondTarget = obj;
+                }
+
+                if (func?.Invoke(firstTarget) == false)
+                    return secondTarget;
+                else if (func?.Invoke(secondTarget) == false)
+                    return firstTarget;
+                else
+                {
+                    float fDistSQR = (firstTarget.CellPos - CellPos).sqrMagnitude;
+                    float sDistSQR = (secondTarget.CellPos - CellPos).sqrMagnitude;
+                    if (fDistSQR < sDistSQR)
+                        return firstTarget;
+                    else
+                        return secondTarget;
+                }
+
+                // // 두 개 모두 있는지부터 가정
+                // if (firstTarget != null && secondTarget != null)
+                // {
+                //     float fDistSQR = (firstTarget.CellPos - CellPos).sqrMagnitude;
+                //     float sDistSQR = (secondTarget.CellPos - CellPos).sqrMagnitude;
+                //     if (fDistSQR < sDistSQR)
+                //         return firstTarget;
+
+                //     return secondTarget;
+                // }
+                // else if (firstTarget != null)
+                //     return firstTarget;
+                // else
+                //     return secondTarget; // null이 나올수도 있음
+            }
+
+            return null;
+        }
+
+        // --- Creature -> BaseObject
+        //public bool PauseSearchTarget { get; protected set; } = false;
+
+        private Coroutine _coSearchTarget = null;
+        private IEnumerator CoSearchTarget<T>(float scanRange, IEnumerable<T> firstTargets, IEnumerable<T> secondTargets = null, System.Func<T, bool> func = null, System.Func<bool> allTargetsCondition = null) where T : BaseObject
+        {
+            float tick = ReadOnly.Numeric.SearchFindTargetTick;
+            while (true)
+            {
+                if (this.IsValid() == false)
+                    yield break;
+
+                yield return new WaitForSeconds(tick);
+                if (PauseSearchTarget)
+                {
+                    Target = null; // --- DEFENSE
+                    yield return null;
+                    continue;
+                }
+
+                // if (_coWaitSearchTarget != null) // 이것도 필요할지...
+                // {
+                //     yield return null;
+                //     continue;
+                // }
+                Target = SearchClosestInRange(scanRange, firstTargets: firstTargets, secondTargets: secondTargets, func: func, allTargetsCondition: allTargetsCondition);
+
+                // if (Target.IsValid() == false)
+                // {
+                //     Debug.Log("<color=red>!@#!@#!@#!@#!@#!@#!@#</color>");
+                // }
+
+                // CreatureAnim.IsTargetValid = Target != null ? true : false;
+                // if (Target.IsValid())
+                //     CreatureMoveState = ECreatureMoveState.MoveToTarget;
+                // --- Target이 존재하지 않을 때, MoveToTarget 해제는 Creature AI에서 해결    
+            }
+        }
+
+        protected void StartCoSearchTarget<T>(float scanRange, IEnumerable<T> firstTargets, IEnumerable<T> secondTargets = null, System.Func<T, bool> func = null, System.Func<bool> allTargetsCondition = null) where T : BaseObject
+        {
+            // if (_coSearchTarget != null)
+            //     return;
+            StopCoSearchTarget();
+            _coSearchTarget = StartCoroutine(CoSearchTarget<T>(scanRange, firstTargets: firstTargets, secondTargets: secondTargets, func: func, allTargetsCondition: allTargetsCondition));
+        }
+
+        protected void StopCoSearchTarget()
+        {
+            Target = null;
+            if (_coSearchTarget != null)
+            {
+                StopCoroutine(_coSearchTarget);
+                _coSearchTarget = null;
+            }
+        }
+
+          // --- WILL DEPRECIATE
+        protected Coroutine _coWaitSearchTarget = null;
+        private IEnumerator CoWaitSearchTarget(float waitSeconds)
+        {
+            // --- 확인됨
+            //Debug.Log($"<color=white>{nameof(CoWaitSearchTarget)}</color>");
+            yield return new WaitForSeconds(waitSeconds);
+            StopCoWaitSearchTarget();
+        }
+
+        protected void StartCoWaitSearchTarget(float waitSeconds)
+        {
+            if (_coWaitSearchTarget != null)
+                return;
+
+            _coWaitSearchTarget = StartCoroutine(CoWaitSearchTarget(waitSeconds));
+        }
+
+        protected void StopCoWaitSearchTarget() // PRIVATE
+        {
+            if (_coWaitSearchTarget != null)
+            {
+                StopCoroutine(_coWaitSearchTarget);
+                _coWaitSearchTarget = null;
+            }
+
+            // --- 확인됨
+            // Debug.Log($"<color=white>{nameof(StopCoWaitSearchTarget)}</color>");
+        }
+
+        // Util로 빼야할듯
+        protected float CalculateMovementSpeed(float distanceToTargetSQR)
+        {
+            float maxDistance = ReadOnly.Numeric.MaxDistanceForMovementSpeed;
+            float maxMovementSpeed = MovementSpeed * ReadOnly.Numeric.MaxMovementSpeedMultiplier;
+            float movementSpeed = Mathf.Lerp(MovementSpeed,
+                                            maxMovementSpeed,
+                                            Mathf.Log(distanceToTargetSQR + 1.0f) / Mathf.Log(maxDistance * maxDistance + 1.0f));
+
+            return movementSpeed;
+        }
+
+        // protected void ChaseOrAttackTarget_Prev_Temp(float chaseRange, float atkRange)
+        // {
+        //     //Vector3 toTargetDir = Target.transform.position - transform.position;
+        //     if (DistanceToTargetSQR <= atkRange * atkRange)
+        //     {
+        //         if (Target.IsValid() && Target.ObjectType == EObjectType.Env)
+        //             CreatureState = ECreatureState.CollectEnv;
+        //         else
+        //             CreatureSkill?.CurrentSkill.DoSkill();
+        //     }
+        //     else
+        //     {
+        //         _findPathResult = FindPathAndMoveToCellPos(Target.transform.position, ReadOnly.Numeric.HeroMaxMoveDepth);
+        //         float searchDistSQR = chaseRange * chaseRange;
+        //         if (DistanceToTargetSQR > searchDistSQR)
+        //         {
+        //             Target = null;
+        //             CreatureState = ECreatureState.Move;
+        //         }
+        //     }
+        // }
+
+                // 제거예정
+        public bool MoveToCellPos(Vector3Int destCellPos, int maxDepth, bool forceMoveCloser = false)
+        {
+            if (LerpToCellPosCompleted == false)
+                return false;
+
+            return Managers.Map.MoveTo(this, cellPos: destCellPos);
+        }
+
+        protected BaseObject FindClosestInRange(float scaneRange, IEnumerable<BaseObject> objs, System.Func<BaseObject, bool> func = null)
+        {
+            BaseObject target = null;
+            float bestDistSQR = float.MaxValue;
+            float scanRangeSQR = scaneRange * scaneRange;
+
+            foreach (BaseObject obj in objs)
+            {
+                //Vector3 dir = obj.transform.position - transform.position;
+                // 5칸인지 테스트
+                Vector3Int dir = obj.CellPos - CellPos;
+                float distToTargetSQR = dir.sqrMagnitude;
+
+                if (scanRangeSQR < distToTargetSQR)
+                    continue;
+
+                if (bestDistSQR < distToTargetSQR)
+                    continue;
+
+                // 추가 조건 (ex)객체가 살아있는가? 람다 기반으로 넘겨줄수도 있으니까 뭐, 편함 이런게 있으면.
+                // 살아있는 객체만 찾아서, 살아있는 객체에게만 Target을 잡을 수 있도록. 이런식으로 가능.
+                if (func?.Invoke(obj) == false)
+                    continue;
+
+                bestDistSQR = distToTargetSQR;
+                target = obj;
+            }
+
+            return target;
+        }
+
         protected IEnumerator CoLerpToCellPos()
         {
             while (true)

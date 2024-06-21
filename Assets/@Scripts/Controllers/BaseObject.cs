@@ -87,14 +87,14 @@ namespace STELLAREST_F1
 
         public float MaxHpBase { get; set; } = 0f;
         public float AtkBase { get; set; } = 0f;
-        public float AtkRangeBase { get; set; } = 0f;
+        public int AtkRangeBase { get; set; } = 0;
         public float CriticalRateBase { get; set; } = 0f;
         public float DodgeRateBase { get; set; } = 0f;
         public float MovementSpeedBase { get; set; } = 0f;
         
         [field: SerializeField] public float MaxHp { get; set; } = 0f;
         [field: SerializeField] public float Atk { get; set; } = 0f;
-        [field: SerializeField] public float AtkRange { get; set; } = 0f;
+        [field: SerializeField] public int AtkRange { get; set; } = 0;
         [field: SerializeField] public float CriticalRate { get; set; } = 0f;
         [field: SerializeField] public float DodgeRate { get; set; } = 0f;
         [field: SerializeField] public float MovementSpeed { get; set; } = 0f;
@@ -114,12 +114,20 @@ namespace STELLAREST_F1
         }
         #endregion
 
+        public bool PauseSearchTarget { get; protected set; } = false;
         [field: SerializeField] private BaseObject _target = null;
          public virtual BaseObject Target 
          { 
             get => _target;
-            set => _target = value;
+            set
+            {
+                _target = value;
+                if (_target.IsValid() && _target.ObjectType == EObjectType.Monster)
+                    TargetPosition = _target.CenterPosition;
+            }
         }
+
+        public Vector3 TargetPosition { get; private set; } = Vector3.zero;
 
         public override bool Init()
         {
@@ -225,7 +233,7 @@ namespace STELLAREST_F1
         public virtual void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker) { }
         public virtual void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
         {
-            RigidBody.simulated = false; // RigidBody 제거 예정
+            RigidBody.simulated = false;
             StartCoroutine(CoDeadFadeOut(this.OnDeadFadeOutEndHandler));
         }
 
@@ -235,36 +243,24 @@ namespace STELLAREST_F1
             // Debug.Log("BaseObject::OnDisable!!");
         }
 
-        protected virtual IEnumerator CoDeadFadeOut(Action endFadeOutCallback = null)
-        {
-            if (isActiveAndEnabled == false)
-                yield break;
+        // Pass
+        // private Coroutine _coPauseSearchTarget = null;
+        // private IEnumerator CoPauseSearchTarget(float seconds)
+        // {
+        //     Target = null;
+        //     PauseSearchTarget = true;
+        //     yield return new WaitForSeconds(seconds);
+        //     PauseSearchTarget = false;
+        //     _coPauseSearchTarget = null;
+        // }
 
-            yield return new WaitForSeconds(ReadOnly.Numeric.StartDeadFadeOutTime);
+        // public void StartCoPauseSearchTarget(float seconds)
+        // {
+        //     if (_coPauseSearchTarget != null)
+        //         return;
 
-            float delta = 0f;
-            float percent = 1f;
-            AnimationCurve curve = Managers.Contents.Curve(EAnimationCurveType.Ease_In);
-            while (percent > 0f)
-            {
-                // Debug.Log($"{gameObject.name}, {percent}");
-                delta += Time.deltaTime;
-                percent = 1f - (delta / ReadOnly.Numeric.DesiredDeadFadeOutEndTime);
-                foreach (SpriteRenderer spr in GetComponentsInChildren<SpriteRenderer>())
-                {
-                    float current = Mathf.Lerp(0f, 1f, curve.Evaluate(percent));
-                    spr.color = new Color(spr.color.r, spr.color.g, spr.color.b, current);
-                }
-
-                yield return null;
-            }
-
-            //Debug.Log($"{gameObject.name} is dead.");
-            endFadeOutCallback?.Invoke();
-
-            Managers.Object.Despawn(this, DataTemplateID);
-            _initialSpawnedCellPos = null;
-        }
+        //     _coPauseSearchTarget = StartCoroutine(CoPauseSearchTarget(seconds));
+        // }
         #endregion
 
         // protected void ShowBody(bool show)
@@ -301,20 +297,7 @@ namespace STELLAREST_F1
                 Collider.enabled = true;
         }
 
-        #region Map
         [field: SerializeField] public bool LerpToCellPosCompleted { get; protected set; } = false;
-
-
-        // [SerializeField] private Vector3Int _cellPos = Vector3Int.zero;
-        // public Vector3Int CellPos // ### CORE
-        // {
-        //     get => _cellPos;
-        //     protected set
-        //     {
-        //         _cellPos = value;
-        //         LerpToCellPosCompleted = false;
-        //     }
-        // }
 
         [field: SerializeField] public Vector3Int CellPos { get; protected set; } = Vector3Int.zero;
 
@@ -361,7 +344,7 @@ namespace STELLAREST_F1
             }
         }
 
-        public void LerpToCellPos(float movementSpeed) // Coroutine every tick
+        public virtual void LerpToCellPos(float movementSpeed) // Coroutine every tick
         {
             if (LerpToCellPosCompleted)
             {
@@ -386,9 +369,40 @@ namespace STELLAREST_F1
             float moveDist = Mathf.Min(dir.magnitude, movementSpeed * Time.deltaTime);
             transform.position += dir.normalized * moveDist;
         }
-        #endregion
 
-        #region MISC
+        #region Coroutines
+        protected virtual IEnumerator CoDeadFadeOut(Action endFadeOutCallback = null)
+        {
+            if (isActiveAndEnabled == false)
+                yield break;
+
+            yield return new WaitForSeconds(ReadOnly.Numeric.StartDeadFadeOutTime);
+
+            float delta = 0f;
+            float percent = 1f;
+            AnimationCurve curve = Managers.Contents.Curve(EAnimationCurveType.Ease_In);
+            while (percent > 0f)
+            {
+                // Debug.Log($"{gameObject.name}, {percent}");
+                delta += Time.deltaTime;
+                percent = 1f - (delta / ReadOnly.Numeric.DesiredDeadFadeOutEndTime);
+                foreach (SpriteRenderer spr in GetComponentsInChildren<SpriteRenderer>())
+                {
+                    float current = Mathf.Lerp(0f, 1f, curve.Evaluate(percent));
+                    spr.color = new Color(spr.color.r, spr.color.g, spr.color.b, current);
+                }
+
+                yield return null;
+            }
+
+            //Debug.Log($"{gameObject.name} is dead.");
+            endFadeOutCallback?.Invoke();
+
+            Managers.Object.Despawn(this, DataTemplateID);
+            _initialSpawnedCellPos = null;
+        }
+
+        
         #endregion
     }
 }

@@ -48,12 +48,29 @@ namespace STELLAREST_F1
         {
             _owner = owner;
 
+            if (SkillArray == null)
+                SkillArray = new SkillBase[(int)ESkillType.Max];
+
             AddSkill(creatureData.Skill_Attack_ID);
             AddSkill(creatureData.Skill_A_ID);
             AddSkill(creatureData.Skill_B_ID);
 
-            if (SkillArray == null)
-                SkillArray = new SkillBase[(int)ESkillType.Max];
+            // --- Check Validation
+            {
+                int skillCount = 0;
+                for (int i = 0; i < SkillArray.Length; ++i)
+                {
+                    SkillBase skill = SkillArray[i];
+                    if (skill != null)
+                        ++skillCount;
+                }
+
+                if (skillCount == 0)
+                {
+                    Debug.LogError($"{nameof(SkillComponent)}, {nameof(SetInfo)}");
+                    Debug.Break();
+                }
+            }
         }
 
         private void AddSkill(int skillDataID)
@@ -101,17 +118,15 @@ namespace STELLAREST_F1
         //     return UnityEngine.Mathf.Clamp(skillInvokeRatio, 0.01f, 0.99f);
         // }
 
-        public void PassOnSkillStateEnter(ECreatureState onEnterState)
+        public void PassOnSkillStateEnter(ECreatureAIState onEnterState)
                 => SkillArray[(int)onEnterState - ReadOnly.Numeric.MaxActiveSkillsCount]?.OnSkillStateEnter();
-        public void PassOnSkillStateUpdate(ECreatureState onUpdateState)
+        public void PassOnSkillStateUpdate(ECreatureAIState onUpdateState)
                 => SkillArray[(int)onUpdateState - ReadOnly.Numeric.MaxActiveSkillsCount]?.OnSkillStateUpdate();
-        public void PassOnSkillStateEnd(ECreatureState onEndState)
+        public void PassOnSkillStateEnd(ECreatureAIState onEndState)
                 => SkillArray[(int)onEndState - ReadOnly.Numeric.MaxActiveSkillsCount]?.OnSkillStateEnd();
-
 
         private void OnDisable()
         {
-            
         }
     }
 }

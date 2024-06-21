@@ -16,14 +16,7 @@ namespace STELLAREST_F1
     public class HeroAnimation : CreatureAnimation
     {
         private Hero _heroOwner = null;
-
-        public override bool Init()
-        {
-            if (base.Init() == false)
-                return false;
-
-            return true;
-        }
+        public new Hero Owner => _heroOwner;
 
         public override void SetInfo(int dataID, BaseObject owner)
         {
@@ -36,64 +29,147 @@ namespace STELLAREST_F1
             _heroOwner = owner as Hero;
         }
 
-        public override void UpdateAnimation()
-        {
-            if (_heroOwner == null)
-                return;
+        // public override void UpdateAnimation()
+        // {
+        //     if (Owner == null)
+        //         return;
 
-            switch (_heroOwner.CreatureState)
-            {
-                case ECreatureState.Idle:
-                    _heroOwner.HeroBody.SetEmoji(EHeroEmoji.Idle);
-                    break;
+        //     // 일단 Emoji만 설정
+        //     switch (Owner.CreatureAIState)
+        //     {
+        //         case ECreatureAIState.Idle:
+        //             Owner.HeroBody.SetEmoji(EHeroEmoji.Idle);
+        //             break;
 
-                case ECreatureState.Move:
-                    _heroOwner.HeroBody.SetEmoji(EHeroEmoji.Move);
-                    break;
+        //         case ECreatureAIState.Move:
+        //             Owner.HeroBody.SetEmoji(EHeroEmoji.Move);
+        //             break;
 
-                case ECreatureState.Skill_Attack:
-                    {
-                        // --- 이미 쿨타임은 돌아가고 있는 상태. 타겟은 없더라도 스킬은 실행되었기 때문에 쿨타임만 돌림.
-                        if (_heroOwner.Target.IsValid() == false)
-                            return;
+        //         case ECreatureAIState.Skill_Attack:
+        //             {
+        //                 // --- 이미 쿨타임은 돌아가고 있는 상태. 타겟은 없더라도 스킬은 실행되었기 때문에 쿨타임만 돌림.
+        //                 if (Owner.Target.IsValid() == false)
+        //                     return;
 
-                        _heroOwner.HeroBody.SetEmoji(EHeroEmoji.Skill_Attack);
-                    }
-                    break;
+        //                 Owner.HeroBody.SetEmoji(EHeroEmoji.Skill_Attack);
+        //             }
+        //             break;
 
-                case ECreatureState.Skill_A:
-                    _heroOwner.HeroBody.SetEmoji(EHeroEmoji.Skill_Attack);
-                    break;
+        //         case ECreatureAIState.Skill_A:
+        //             Owner.HeroBody.SetEmoji(EHeroEmoji.Skill_Attack);
+        //             break;
 
-                case ECreatureState.Skill_B:
-                    _heroOwner.HeroBody.SetEmoji(EHeroEmoji.Skill_Attack);
-                    break;
+        //         case ECreatureAIState.Skill_B:
+        //             Owner.HeroBody.SetEmoji(EHeroEmoji.Skill_Attack);
+        //             break;
 
-                case ECreatureState.CollectEnv:
-                    // if (_heroOwner.DataTemplateID == ReadOnly.Numeric.DataID_Hero_Wizard)
-                    //     _heroOwner.HeroBody.SetEmoji(EHeroEmoji.Move);
-                    // else
-                    // 캐릭터마다 Emoji를 어떻게 설정할지 고민해볼것
-                    _heroOwner.HeroBody.SetEmoji(EHeroEmoji.Idle);
-                    break;
+        //         case ECreatureAIState.CollectEnv:
+        //             // if (_heroOwner.DataTemplateID == ReadOnly.Numeric.DataID_Hero_Wizard)
+        //             //     _heroOwner.HeroBody.SetEmoji(EHeroEmoji.Move);
+        //             // else
+        //             // 캐릭터마다 Emoji를 어떻게 설정할지 고민해볼것
+        //             _heroOwner.HeroBody.SetEmoji(EHeroEmoji.Idle);
+        //             break;
 
-                case ECreatureState.Dead:
-                    _heroOwner.HeroBody.SetEmoji(EHeroEmoji.Dead);
-                    break;
-            }
+        //         case ECreatureAIState.Dead:
+        //             _heroOwner.HeroBody.SetEmoji(EHeroEmoji.Dead);
+        //             break;
+        //     }
 
-            PlayCreatureAnimation(_heroOwner.CreatureState);
-        }
+        //     //PlayCreatureAnimation(_heroOwner.CreatureState);
+        // }
 
         public override void Flip(ELookAtDirection lookAtDir)
         {
-            // Hero LookAtDir Default Sprite : Right
+            // --- Hero LookAtDir Default Sprite : Right
             Vector3 localScale = _heroOwner.transform.localScale;
             int sign = (lookAtDir == ELookAtDirection.Left) ?
                                              -1 : (localScale.x < 0) ? -1 : 1;
             localScale.x = localScale.x * sign;
             _heroOwner.transform.localScale = localScale;
         }
+
+        #region Anim Clip Callbacks
+        public override void OnCollectEnvCallback()
+        {
+            if (Owner.IsValid() == false)
+                return;
+
+            if (Owner.Target.IsValid() == false)
+                return;
+
+            if (Owner.Target.ObjectType != EObjectType.Env)
+                return;
+
+            Owner.Target.OnDamaged(attacker: Owner, skillFromAttacker: null);
+            if (Owner.Target.Hp <= 0f && Owner.HeroStateWeaponType != EHeroStateWeaponType.Default)
+            {
+                Owner.HeroStateWeaponType = EHeroStateWeaponType.Default;
+                Debug.Log("<color=yellow>Reset Default Weapon</color>");
+            }
+        }
+        #endregion
+
+        #region Anim State Events
+        // --- Enter
+        public override void OnUpperIdleEnter()
+        {
+            if (CanEnterAnimState(ECreatureAnimState.Upper_Idle_To_Skill_Attack) == false ||
+               CanEnterAnimState(ECreatureAnimState.Upper_Move_To_Skill_Attack) == false)
+            {
+                Debug.Log($"<color=white>{nameof(OnUpperIdleEnter)}</color>");
+                ReleaseAnimState(ECreatureAnimState.Upper_Idle_To_Skill_Attack);
+                ReleaseAnimState(ECreatureAnimState.Upper_Move_To_Skill_Attack);
+            }
+        }
+
+        public override void OnUpperIdleToCollectEnvEnter()
+        {
+            // Debug.Log($"<color=white>{nameof(OnUpperIdleToCollectEnvEnter)}</color>");
+            if (Owner.Target.IsValid() && Owner.Target.ObjectType == EObjectType.Env)
+            {
+                if (Owner.HeroStateWeaponType == EHeroStateWeaponType.Default)
+                {
+                    Env envTarget = Owner.Target as Env;
+                    if (envTarget.EnvType == EEnvType.Tree)
+                        Owner.HeroStateWeaponType = EHeroStateWeaponType.EnvTree;
+                    else if (envTarget.EnvType == EEnvType.Rock)
+                        Owner.HeroStateWeaponType = EHeroStateWeaponType.EnvRock;
+                }
+
+                Owner.LookAtValidTarget();
+            }
+        }
+
+        // --- Update
+
+        // --- Exit
+        public override void OnUpperIdleToSkillAttackExit()
+        {
+            ReleaseAnimState(ECreatureAnimState.Upper_Idle_To_Skill_Attack);
+            ReleaseAnimState(ECreatureAnimState.Upper_Move_To_Skill_Attack);
+        }
+        public override void OnUpperIdleToCollectEnvExit()
+        {
+            // --- DEFENSE
+            if (CanEnterAnimState(ECreatureAnimState.Upper_Idle_To_Skill_Attack) == false ||
+                CanEnterAnimState(ECreatureAnimState.Upper_Move_To_Skill_Attack) == false)
+            {
+                ReleaseAnimState(ECreatureAnimState.Upper_Idle_To_Skill_Attack);
+                ReleaseAnimState(ECreatureAnimState.Upper_Move_To_Skill_Attack);
+            }
+
+            Debug.Log($"{nameof(OnUpperIdleToCollectEnvExit)}");
+            ReleaseAnimState(ECreatureAnimState.Upper_Idle_To_CollectEnv);
+            //Owner.CreatureAIState = ECreatureAIState.Move;
+            
+        }
+        public override void OnUpperMoveToSkillAttackExit()
+        {
+            ReleaseAnimState(ECreatureAnimState.Upper_Idle_To_Skill_Attack);
+            ReleaseAnimState(ECreatureAnimState.Upper_Move_To_Skill_Attack);
+        }
+        #endregion
     }
 }
 

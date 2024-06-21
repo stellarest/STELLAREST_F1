@@ -66,8 +66,8 @@ namespace STELLAREST_F1
                 return enumValue;
             else
             {
-                Debug.LogError($"{nameof(Util)}, {nameof(GetEnumFromString)}, Input : \"{value}\"");
-                Debug.Break();
+                //Debug.LogError($"{nameof(Util)}, {nameof(GetEnumFromString)}, Input : \"{value}\"");
+                //Debug.Break();
                 return default(T);
             }
         }
@@ -94,6 +94,18 @@ namespace STELLAREST_F1
 
                 case EClassName.BodyAttack:
                     return typeof(BodyAttack);
+
+                case EClassName.CreatureAI:
+                    return typeof(CreatureAI);
+
+                case EClassName.HeroAI:
+                    return typeof(HeroAI);
+
+                case EClassName.ArcherAI:
+                    return typeof(ArcherAI);
+
+                case EClassName.MonsterAI:
+                    return typeof(MonsterAI);
 
                 default:
                     Debug.LogError($"{nameof(Util)}, {nameof(GetTypeFromName)}, Input : \"{className}, Please check Define.EClassName\"");

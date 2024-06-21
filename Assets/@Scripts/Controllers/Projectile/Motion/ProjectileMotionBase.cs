@@ -50,7 +50,8 @@ namespace STELLAREST_F1
             _movementSpeed = ProjectileData.MovementSpeed;
 
             StartPosition = transform.position;
-            TargetPosition = owner.Target.CenterPosition;
+            // TargetPosition = owner.Target.CenterPosition; // 이동하면서 중간에 사정거리에서 아웃되면 null crash
+            TargetPosition = owner.TargetPosition;
 
             if (_coLaunchProjectile != null)
                 StopCoroutine(_coLaunchProjectile);

@@ -91,6 +91,7 @@ namespace STELLAREST_F1
 
             // TODO : Show UI
             Hp = UnityEngine.Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
+            // Debug.Log($"{gameObject.name}: {Hp}/{MaxHp}");
 
             Managers.Object.ShowDamageFont(position: this.CenterPosition, damage: finalDamage, isCritical: false);
             //Debug.Log($"{gameObject.name} is damaged. ({Hp} / {MaxHp})");
@@ -104,10 +105,11 @@ namespace STELLAREST_F1
 
         public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
         {
+            // (attacker as Creature).StartCoPauseSearchTarget(0.5f); // TEST
             EnvState = EEnvState.Dead;
             base.OnDead(attacker, skillFromAttacker);
-            
-            // TODO : Drop Item
+
+            // --- TODO : Drop Item
             // Managers.Object.Despawn(this);
         }
     }

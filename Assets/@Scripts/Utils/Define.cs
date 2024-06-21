@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
+using Unity.VisualScripting;
 using UnityEditor.AddressableAssets.Settings;
 using UnityEngine;
 
@@ -89,27 +90,41 @@ namespace STELLAREST_F1
             Max = LeaderController + 1
         }
 
-        public enum ECreatureState
+        public enum ECreatureAIState // -- > ECreatureAnimMachineState
         {
-            None = -1,
+            None,
             Idle,
             Move,
-            Skill_Attack,
-            Skill_A,
-            Skill_B,
-            CollectEnv,
-            OnDamaged, // TEMP
             Dead,
             Max = Dead + 1
         }
 
-        public enum ECreatureMoveState
-        {
-            None,
-            MoveToTarget,
-            ForceMove,
-            ForcePath,
-        }
+        // public enum ECreatureUpperAnimState // --> ECreatureUpperAnimState
+        // {
+        //     None = -1,
+        //     UA_Idle,
+        //     UA_MoveStart,
+        //     UA_Move,
+        //     UA_MoveEnd,
+        //     UA_Skill_Attack,
+        //     Max
+        // }
+
+        // public enum ECreatureLowerAnimState // --> ECreatureLowerAnimState
+        // {
+        //     None = -1,
+        //     LA_Idle,
+        //     LA_Move,
+        //     Max
+        // }
+
+        // public enum ECreatureMoveState
+        // {
+        //     None,
+        //     //MoveToTarget,
+        //     Move,
+        //     ForceMove,
+        // }
 
         public enum ELookAtDirection
         {
@@ -303,9 +318,9 @@ namespace STELLAREST_F1
         public enum ESkillType
         {
             None = -1,
-            Skill_Attack,
-            Skill_A,
-            Skill_B,
+            Skill_Attack, // UpperBody, LowerBody 분리
+            Skill_A, // Upper-Lower 통합, 분리도 가능하다는 가정을 하고
+            Skill_B, // Upper-Lower 통합
             Max = Skill_B + 1
         }
 
@@ -319,6 +334,10 @@ namespace STELLAREST_F1
             StraightMotion,
             ParabolaMotion,
             BodyAttack,
+            CreatureAI,
+            HeroAI,
+            ArcherAI,
+            MonsterAI
         }
 
         public enum EProjectileMotionType
@@ -371,13 +390,13 @@ namespace STELLAREST_F1
             ForceStop
         }
 
-        // 제거 예정. FollowLeader 모드만 제대로 만들어놓으면 될듯.
-        public enum EHeroMemberChaseMode
-        {
-            FollowLeader, // --- Default, Skill_A,B 제외 Drag시 리더 추적, 리더가 공격하면 리더를 따라서 타겟을 찾고 공격. 리더가 채집하면 채집함. 이렇게?
-            EngageTarget, // --- 리더가 이동하지 않고 있을 때 타겟 우선 (제거할 수도 있음. 필요 없는듯.)
-            // --- 아니면 진짜 극단적으로 리더가 이동해도 타겟만 쫓아가는 방식으로. 이거 고민.
-        }
+        // // 제거 예정. FollowLeader 모드만 제대로 만들어놓으면 될듯.
+        // public enum EHeroMemberChaseMode
+        // {
+        //     FollowLeader, // --- Default, Skill_A,B 제외 Drag시 리더 추적, 리더가 공격하면 리더를 따라서 타겟을 찾고 공격. 리더가 채집하면 채집함. 이렇게?
+        //     EngageTarget, // --- 리더가 이동하지 않고 있을 때 타겟 우선 (제거할 수도 있음. 필요 없는듯.)
+        //     // --- 아니면 진짜 극단적으로 리더가 이동해도 타겟만 쫓아가는 방식으로. 이거 고민.
+        // }
 
         public enum EProjectileSize
         {
@@ -416,6 +435,30 @@ namespace STELLAREST_F1
             Disable,
         }
 
+        public enum EHeroStateWeaponType
+        {
+            Default,
+            EnvTree,
+            EnvRock
+        }
+
+        // new
+        public enum ECreatureAnimState
+        {
+            // Upper
+            None = -1,
+            Upper_Idle,
+            Upper_Idle_To_Skill_Attack,
+            Upper_Idle_To_CollectEnv,
+            Upper_Idle_To_Dead,
+            Upper_Move,
+            Upper_Move_To_Skill_Attack,
+            // Lower
+            Lower_Idle,
+            Lower_Move,
+            Max = Lower_Move + 1
+        }
+
         // ####################################################
         public static class ReadOnly
         {
@@ -429,6 +472,7 @@ namespace STELLAREST_F1
                 public static readonly int DNPID_Hero_Wizard = 101020;
                 public static readonly int DNPID_Hero_Lancer = 101030;
                 public static readonly int DNPID_Hero_Gunner = 101040;
+                public static readonly int DNPID_Hero_Assassin = 101050;
                 // --- Monsters
                 public static readonly int DNPID_Monster_Chicken = 102000;
                 public static readonly int DNPID_Monster_Turkey = 102001;
@@ -460,6 +504,31 @@ namespace STELLAREST_F1
             public static class Prefabs
             {
                 public static readonly string PFName_DamageFont = "DamageFont";
+            }
+
+            public static class AnimationParams
+            {
+                // --- States for State Machine
+                public static readonly string Upper_Dummy = "Upper_Dummy";
+
+                public static readonly string Upper_Idle = "Upper_Idle";
+                public static readonly string Upper_Idle_To_Skill_Attack = "Upper_Idle_To_Skill_Attack";
+                public static readonly string Upper_Idle_To_CollectEnv = "Upper_Idle_To_CollectEnv";
+                public static readonly string Upper_Idle_To_Dead = "Upper_Idle_To_Dead";
+
+                public static readonly string Upper_Move = "Upper_Move";
+                public static readonly string Upper_Move_To_Skill_Attack = "Upper_Move_To_Skill_Attack";
+
+                public static readonly string Lower_Idle = "Lower_Idle";
+                public static readonly string Lower_Move = "Lower_Move";
+
+                // --- Params
+                public static readonly string Moving = "Moving";
+                public static readonly string Skill_Attack = "Skill_Attack";
+                public static readonly string CollectEnv = "CollectEnv";
+                public static readonly string AttackRange = "AttackRange";
+                public static readonly string ReadySkillAttack = "ReadySkillAttack";
+                public static readonly string OnDead = "OnDead";
             }
 
             public static class SortingLayers
@@ -687,7 +756,7 @@ namespace STELLAREST_F1
                 // -- [ HERO ]
                 public static readonly float CheckFarFromHeroesLeaderTick = 1.0F;
                 public static readonly float CheckFarFromHeroesLeaderDistanceForWarp = 30.0F; // 15F(15칸, 상하좌우 기준) -> 30칸
-                public static readonly float WaitMovementDistanceSQRFromLeader = 2.4F;
+                //public static readonly float WaitMovementDistanceSQRFromLeader = 2.4F;
 
                 public static readonly float MinSecPatrolPingPong = 1.0F;
                 public static readonly float MaxSecPatrolPingPong = 2.0F;
@@ -703,6 +772,7 @@ namespace STELLAREST_F1
 
                 // -- [ MISC ]
                 public static readonly float SearchFindTargetTick = 0.25F;
+                //public static readonly float SearchFindTargetTick = 0.5F;
 
                 public static readonly float CamOrthoSize = 12.0F; 
                 public static readonly float JoystickFocusMinDist = -0.18F;
@@ -713,7 +783,7 @@ namespace STELLAREST_F1
                 public static readonly float MonsterSize_Large = 1.2F;
 
                 public static readonly float HeroDefaultScanRange = 8.0F; // 오리지날 6F, 일단 6칸
-                public static readonly float MonsterDefaultScanRange = 4.0F; // 상하좌우 한칸 기준, 대각선X
+                public static readonly float MonsterDefaultScanRange = 6.0F; // 상하좌우 한칸 기준, 대각선X
                 public static readonly float Temp_StopDistance = 1.25F;
                 
                 // Dead Fade Out Time

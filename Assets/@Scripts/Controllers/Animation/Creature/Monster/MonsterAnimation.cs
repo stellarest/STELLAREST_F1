@@ -8,14 +8,7 @@ namespace STELLAREST_F1
     public class MonsterAnimation : CreatureAnimation
     {
         private Monster _monsterOwner = null;
-
-        public override bool Init()
-        {
-            if (base.Init() == false)
-                return false;
-
-            return true;
-        }
+        public new Monster Owner => _monsterOwner;
 
         public override void SetInfo(int dataID, BaseObject owner)
         {
@@ -35,38 +28,38 @@ namespace STELLAREST_F1
             _monsterOwner = owner as Monster;
         }
 
-        public override void UpdateAnimation()
-        {
-            if (_monsterOwner == null)
-                return;
+        // public override void UpdateAnimation()
+        // {
+        //     if (_monsterOwner == null)
+        //         return;
 
-            switch (_monsterOwner.CreatureState)
-            {
-                case ECreatureState.Idle:
-                    _monsterOwner.MonsterBody.SetEmoji(EMonsterEmoji.Default);
-                    break;
+        //     switch (_monsterOwner.CreatureAIState)
+        //     {
+        //         case ECreatureAIState.Idle:
+        //             _monsterOwner.MonsterBody.SetEmoji(EMonsterEmoji.Default);
+        //             break;
 
-                case ECreatureState.Move:
-                    _monsterOwner.MonsterBody.SetEmoji(EMonsterEmoji.Default);
-                    break;
+        //         case ECreatureAIState.Move:
+        //             _monsterOwner.MonsterBody.SetEmoji(EMonsterEmoji.Default);
+        //             break;
 
-                case ECreatureState.Skill_Attack:
-                    {
-                        // --- 이미 쿨타임은 돌아가고 있는 상태. 타겟은 없더라도 스킬은 실행되었기 때문에 쿨타임만 돌림.
-                        if (_monsterOwner.Target.IsValid() == false)
-                            return;
+        //         case ECreatureAIState.Skill_Attack:
+        //             {
+        //                 // --- 이미 쿨타임은 돌아가고 있는 상태. 타겟은 없더라도 스킬은 실행되었기 때문에 쿨타임만 돌림.
+        //                 if (_monsterOwner.Target.IsValid() == false)
+        //                     return;
 
-                        _monsterOwner.MonsterBody.SetEmoji(EMonsterEmoji.Angry);
-                    }
-                    break;
+        //                 _monsterOwner.MonsterBody.SetEmoji(EMonsterEmoji.Angry);
+        //             }
+        //             break;
 
-                case ECreatureState.Dead:
-                    _monsterOwner.MonsterBody.SetEmoji(EMonsterEmoji.Dead);
-                    break;
-            }
+        //         case ECreatureAIState.Dead:
+        //             _monsterOwner.MonsterBody.SetEmoji(EMonsterEmoji.Dead);
+        //             break;
+        //     }
 
-            PlayCreatureAnimation(_monsterOwner.CreatureState);
-        }
+        //     PlayCreatureAnimation(_monsterOwner.CreatureAIState);
+        // }
 
         public override void Flip(ELookAtDirection lookAtDir)
         {
@@ -76,5 +69,24 @@ namespace STELLAREST_F1
             localScale.x = localScale.x * sign;
             _monsterOwner.transform.localScale = localScale;
         }
+
+        #region Anim State Events
+        public override void OnUpperIdleToSkillAttackEnter()
+        {
+            // Debug.Log($"<color=yellow>{nameof(OnUpperIdleToSkillAttackEnter)}</color>");
+            // Owner.UpdateCellPos();
+            Debug.Log("<color=white>Pass to Skill Method..</color>");
+            Owner.CreatureSkill.SkillArray[(int)ESkillType.Skill_Attack].OnSkillStateEnter();
+        }
+
+        public override void OnUpperMoveEnter()
+        {
+            if (Owner.IsValid() == false)
+                return;
+
+            Debug.Log($"<color=cyan>{nameof(OnUpperMoveEnter)}</color>");
+            Owner.StartCoLerpToCellPos();
+        }
+        #endregion
     }
 }

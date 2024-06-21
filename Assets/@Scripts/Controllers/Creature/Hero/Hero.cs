@@ -1,16 +1,20 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Security.Cryptography;
+using System.Runtime.InteropServices.WindowsRuntime;
 using STELLAREST_F1.Data;
 using UnityEngine;
+using UnityEngine.UIElements;
 using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
     public class Hero : Creature
     {
+        #region Background
         public HeroData HeroData { get; private set; } = null;
         public HeroAnimation HeroAnim { get; private set; } = null;
+        public HeroAI HeroAI { get; private set; } = null;
         private HeroBody _heroBody = null;
         public HeroBody HeroBody
         {
@@ -24,21 +28,7 @@ namespace STELLAREST_F1
         }
         public Transform WeaponLSocket { get; private set; } = null;
         public Transform WeaponRFireSocket { get; private set; } = null;
-        public override bool CollectEnv
-        {
-            get => base.CollectEnv;
-            set
-            {
-                base.CollectEnv = value;
-                if (value && Target.IsValid())
-                {
-                    Env envTarget = Target as Env;
-                    HeroBody.EnvWeapon(envTarget.EnvType);
-                }
-                else
-                    HeroBody.DefaultWeapon();
-            }
-        }
+
         [SerializeField] private bool _isLeader = false;
         public bool IsLeader
         {
@@ -56,23 +46,129 @@ namespace STELLAREST_F1
             }
         }
 
-        public override BaseObject Target
+        [SerializeField] private EHeroStateWeaponType _heroStateWeaponType = EHeroStateWeaponType.Default;
+        public EHeroStateWeaponType HeroStateWeaponType
         {
-            get => base.Target;
+            get => _heroStateWeaponType;
             set
             {
-                base.Target = value;
-                if (Target.IsValid())
+                if (_heroStateWeaponType != value)
                 {
-                    if (Target.ObjectType == EObjectType.Monster)
+                    _heroStateWeaponType = value;
+                    switch (value)
                     {
-                        if (CollectEnv)
-                            CollectEnv = false;
+                        case EHeroStateWeaponType.Default:
+                            HeroBody.HeroStateWeaponType(EHeroStateWeaponType.Default);
+                            break;
+
+                        case EHeroStateWeaponType.EnvTree:
+                            HeroBody.HeroStateWeaponType(EHeroStateWeaponType.EnvTree);
+                            break;
+
+                        case EHeroStateWeaponType.EnvRock:
+                            HeroBody.HeroStateWeaponType(EHeroStateWeaponType.EnvRock);
+                            break;
                     }
                 }
             }
         }
 
+        public override void LerpToCellPos(float movementSpeed) // Coroutine every tick
+        {
+            if (IsLeader)
+                return;
+
+            Hero leader = Managers.Object.HeroLeaderController.Leader;
+            if (LerpToCellPosCompleted && leader.IsMoving == false)
+            {
+                IsMoving = false;
+                return;
+            }
+
+            Vector3 destPos = Managers.Map.CenteredCellToWorld(CellPos); // 이동은 가운데로.
+            Vector3 dir = destPos - transform.position;
+
+            if (dir.x < 0f)
+                LookAtDir = ELookAtDirection.Left;
+            else if (dir.x > 0f)
+                LookAtDir = ELookAtDirection.Right;
+
+            if (dir.sqrMagnitude < 0.001f)
+            {
+                transform.position = destPos;
+                LerpToCellPosCompleted = true;
+                return;
+            }
+
+            IsMoving = true;
+            float moveDist = Mathf.Min(dir.magnitude, movementSpeed * Time.deltaTime);
+            transform.position += dir.normalized * moveDist;
+        }
+
+        public override bool IsMoving 
+        { 
+            get => base.IsMoving; 
+            set
+            {
+                base.IsMoving = value;
+                if (value && HeroStateWeaponType != EHeroStateWeaponType.Default)
+                    HeroStateWeaponType = EHeroStateWeaponType.Default;
+            }
+        }
+
+        protected override void OnDeadFadeOutEnded()
+        {
+            if (IsLeader)
+                Managers.Game.ChangeHeroLeader(autoChangeFromDead: true);
+
+            Debug.Log("Hero::OnDeadFadeOutEnded");
+            base.OnDeadFadeOutEnded();
+        }
+
+        public override bool CanCollectEnv
+        {
+            get
+            {
+                if (CreatureAnim.CanEnterAnimState(ECreatureAnimState.Upper_Idle_To_CollectEnv) == false)
+                    return false;
+
+                if (IsMoving)
+                {
+                    if (HeroStateWeaponType != EHeroStateWeaponType.Default)
+                        HeroStateWeaponType = EHeroStateWeaponType.Default;
+                    return false;
+                }
+
+                if (this.IsValid() == false)
+                {
+                    if (HeroStateWeaponType != EHeroStateWeaponType.Default)
+                        HeroStateWeaponType = EHeroStateWeaponType.Default;
+
+                    return false;
+                }
+
+                if (Target.IsValid() && Target.ObjectType != EObjectType.Env)
+                {
+                    if (HeroStateWeaponType != EHeroStateWeaponType.Default)
+                        HeroStateWeaponType = EHeroStateWeaponType.Default;
+
+                    return false;
+                }
+
+                if (ForceMove)
+                {
+                    if (HeroStateWeaponType != EHeroStateWeaponType.Default)
+                        HeroStateWeaponType = EHeroStateWeaponType.Default;
+
+                    return false;
+                }
+
+                return true;
+            }
+        }
+        #endregion
+
+        #region Core
         public override bool Init()
         {
             if (base.Init() == false)
@@ -100,6 +196,7 @@ namespace STELLAREST_F1
         protected override void InitialSetInfo(int dataID)
         {
             base.InitialSetInfo(dataID);
+
             HeroBody = new HeroBody(this, dataID);
             HeroAnim = CreatureAnim as HeroAnimation;
             HeroAnim.SetInfo(dataID, this);
@@ -107,386 +204,29 @@ namespace STELLAREST_F1
             WeaponLSocket = HeroBody.GetComponent<Transform>(EHeroWeapon.WeaponLSocket);
 
             HeroData = Managers.Data.HeroDataDict[dataID];
-            CreatureRarity = Util.GetEnumFromString<ECreatureRarity>(HeroData.CreatureRarity);
+            Type aiClassType = Util.GetTypeFromName(HeroData.AIClassName);
+            CreatureAI = gameObject.AddComponent(aiClassType) as CreatureAI;          
+            CreatureAI.SetInfo(this);  
+            HeroAI = CreatureAI as HeroAI;
 
+            CreatureRarity = Util.GetEnumFromString<ECreatureRarity>(HeroData.CreatureRarity);
             gameObject.name += $"_{HeroData.DescriptionTextID.Replace(" ", "")}";
             Collider.radius = HeroData.ColliderRadius;
 
             CreatureSkill = gameObject.GetOrAddComponent<SkillComponent>();
             CreatureSkill.SetInfo(owner: this, HeroData);
-            _waitMovementDistanceSQRFromLeader = ReadOnly.Numeric.WaitMovementDistanceSQRFromLeader;
         }
 
-        private float _waitMovementDistanceSQRFromLeader = 0f;
         protected override void EnterInGame()
         {
-            // if (IsMaxLevel) --- MaxLevel이 되었을 때 callback으로
-            // {
-            //     DataTemplateID = _maxLevel;
-            //     if (Managers.Data.HeroDataDict.TryGetValue(_maxLevel, out HeroData heroData))
-            //         HeroData = heroData;
-
-            //     Debug.Log("<color=cyan>Refresh HeroData</color>");
-            // }
-
+            // --- Heroes Default Dir
             LookAtDir = ELookAtDirection.Right;
-            CreatureState = ECreatureState.Move;
             base.EnterInGame();
-            StartCoIsFarFromLeaderTick();
 
-            // --- First Targets: Monsters, Second Targets: Envs
-            StartCoSearchTarget<BaseObject>(scanRange: ReadOnly.Numeric.HeroDefaultScanRange,
-                            firstTargets: Managers.Object.Monsters,
-                            secondTargets: Managers.Object.Envs,
-                            func: IsValid);
-
-            StartCoCheckSpaceOut();
-            // GetComponent<SpriteRenderer>().SetPropertyBlock(new MaterialPropertyBlock());
-
-            // *** Events ***
             Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
             Managers.Game.OnJoystickStateChangedHandler += OnJoystickStateChanged;
         }
 
-        public override Vector3Int ChaseCellPos
-        {
-            get
-            {
-                if (CreatureMoveState != ECreatureMoveState.ForceMove && Target.IsValid())
-                {
-                    if (CanAttackOrChase())
-                    {
-                        if (_canHandleSkill)
-                        {
-                            if (Target.ObjectType == EObjectType.Env)
-                                CreatureState = ECreatureState.CollectEnv;
-                            else if (Target.ObjectType == EObjectType.Monster)
-                            {
-                                if (CreatureSkill.IsRemainingCoolTime((int)ESkillType.Skill_Attack) == false)
-                                    CreatureSkill?.CurrentSkill.DoSkill();
-                                else
-                                    CreatureState = ECreatureState.Idle;
-                            }
-                        }
-                    }
-
-                    return Target.CellPos;
-                }
-
-                HeroLeaderController heroLeaderController = Managers.Object.HeroLeaderController;
-                switch (heroLeaderController.HeroMemberFormationMode)
-                {
-                    case EHeroMemberFormationMode.FollowLeaderClosely:
-                    {
-                        return Managers.Map.WorldToCell(heroLeaderController.Leader.transform.position);
-                    }
-
-                    case EHeroMemberFormationMode.NarrowFormation:
-                    case EHeroMemberFormationMode.WideFormation:
-                    {
-                        return Managers.Object.HeroLeaderController.RequestFormationCellPos(this);
-                    }
-
-                    case EHeroMemberFormationMode.RandomFormation:
-                    {
-                        return Managers.Object.HeroLeaderController.RequestRandomFormationCellPos(this);
-                    }
-
-                    case EHeroMemberFormationMode.ForceStop:
-                    {
-                        return PrevCellPosForForceStop;
-                    }
-
-                    default:
-                        return Vector3Int.zero;
-                }
-            }
-        }
-
-        #region AI
-        protected override void UpdateIdle()
-        {
-            if (IsLeader)
-                return;
-
-            // --- Follow Leader
-            if (CanForceMoveInFollowLeaderMode() && IsForceStopMode() == false)
-            {
-                MoveFromLeader();
-                return;
-            }
-
-            LookAtValidTarget();
-            if (CreatureSkill.IsRemainingCoolTime((int)ESkillType.Skill_Attack))
-                return;
-
-            // --- 타겟이 존재하거나, 타겟이 죽었을 경우, Move 상태로 전환
-            if (Target.IsValid() || CreatureMoveState == ECreatureMoveState.MoveToTarget && IsForceStopMode() == false)
-                CreatureState = ECreatureState.Move;
-
-            if (IsForceStopMode() == false)
-            {
-                MoveFromLeader();
-                return;
-            }
-        }
-
-        private bool _canHandleSkill = false;
-        protected override void UpdateMove()
-        {
-            if (IsLeader)
-                return;
-
-            EFindPathResult result = FindPathAndMoveToCellPos(destPos: ChaseCellPos,
-                maxDepth: ReadOnly.Numeric.HeroDefaultMoveDepth);
-
-            if (result == EFindPathResult.Fail_ForceMovePingPongObject) // 확인됨
-                return;
-
-            if (CreatureMoveState == ECreatureMoveState.None)
-            {
-                if (result == EFindPathResult.Fail_NoPath)
-                {
-                    _pauseSearchTarget = false;
-                    CreatureState = ECreatureState.Idle;
-                    return;
-                }
-            }
-            else if (CreatureMoveState == ECreatureMoveState.MoveToTarget)
-            {
-                _canHandleSkill = false;
-                List<Vector3Int> path = Managers.Map.FindPath(CellPos, ChaseCellPos, 2);
-                if (path.Count > 0)
-                {
-                    for (int i = 0; i < path.Count; ++i)
-                    {
-                        // 일단 무조건 Cell의 중앙에 와야함. (스키타는 움직임 방지)
-                        Vector3 centeredPathPos = Managers.Map.CenteredCellToWorld(path[i]);
-                        if ((transform.position - centeredPathPos).sqrMagnitude > 0.01f)
-                            continue;
-
-                        // Cell 중앙에 위치 후, 공격 범위에 들어오면 공격 시작.
-                        if (IsInAttackRange())
-                        {
-                            _canHandleSkill = true;
-                            return;
-                        }
-                    }
-
-                    // 겹쳐서 계속 MoveState로 허공질하고 있을 때
-                    // --- 여기 고장남
-                    if (CellPos == Managers.Object.HeroLeaderController.Leader.CellPos)
-                    {
-                        Debug.Log($"<color=magenta>!!! NID FIX !!!{gameObject.name}</color>");
-                        CreatureMoveState = ECreatureMoveState.None;
-                        CreatureState = ECreatureState.Idle;
-                        return;
-                    }
-
-                    // 와리가리 핑퐁 오브젝트 체크
-                    Vector3 centeredLastPathPos = Managers.Map.CenteredCellToWorld(path[path.Count - 1]);
-                    if (Target.IsValid() && (transform.position - centeredLastPathPos).sqrMagnitude < 0.01f)
-                    {
-                        if (IsPingPongAndCantMoveToDest(CellPos))
-                        {
-                            if (_currentPingPongCantMoveCount >= ReadOnly.Numeric.MaxCanPingPongConditionCount && IsForceMovingPingPongObject == false)
-                            {
-                                Debug.Log($"<color=cyan>[!]{gameObject.name}, Start force moving for PingPong Object.</color>");
-                                CoStartForceMovePingPongObject(CellPos, ChaseCellPos, endCallback: delegate ()
-                                {
-                                    _currentPingPongCantMoveCount = 0;
-                                    CoStopForceMovePingPongObject();
-                                    CreatureMoveState = ECreatureMoveState.None;
-                                    CreatureState = ECreatureState.Idle;
-                                });
-                            }
-                             else if (IsForceMovingPingPongObject == false)
-                                ++_currentPingPongCantMoveCount;
-
-                            return;
-                        }
-                    }
-
-                    // 타겟이 죽었다면.. return to leader
-                    if (Target.IsValid() == false && CreatureMoveState == ECreatureMoveState.MoveToTarget)
-                    {
-                        if ((transform.position - centeredLastPathPos).sqrMagnitude < 0.01f)
-                        {
-                            CreatureMoveState = ECreatureMoveState.None;
-                            CreatureState = ECreatureState.Idle;
-                            Debug.Log($"<color=cyan>{gameObject.name}, return to leader</color>");
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-
-        protected override void UpdateSkill()
-        {
-            if (IsLeader)
-                return;
-
-            if (CanForceMoveInFollowLeaderMode())
-                MoveFromLeader();
-        }
-
-        protected override void UpdateCollectEnv()
-        {
-            if (IsLeader)
-                return;
-
-            LookAtValidTarget();
-            // Retarget Monster or Env is dead
-            if ((Target.IsValid() && Target.ObjectType == EObjectType.Monster) || Target.IsValid() == false)
-            {
-                CollectEnv = false;
-                CreatureState = ECreatureState.Move;
-            }
-
-            if (CanForceMoveInFollowLeaderMode())
-                MoveFromLeader();
-        }
-
-        protected override void UpdateDead()
-        {
-            base.UpdateDead();
-        }
-        #endregion
-
-        protected override void OnCollectEnvStateUpdate()
-        {
-            if (Target.IsValid() == false)
-                return;
-
-            Target.OnDamaged(this, null);
-        }
-
-        #region Misc
-        public Vector3Int PrevCellPosForForceStop { get; set; } = Vector3Int.zero;
-        private bool IsForceStopMode()
-        {
-            HeroLeaderController leaderController = Managers.Object.HeroLeaderController;
-
-            if (leaderController == null)
-                return false;
-
-            return leaderController.HeroMemberFormationMode == EHeroMemberFormationMode.ForceStop;
-        }
-
-        private bool IsCorrectHeroMemberChaseMode(EHeroMemberChaseMode chaseMode)
-        {
-            HeroLeaderController leaderController = Managers.Object.HeroLeaderController;
-            if (leaderController == null)
-                return false;
-
-            EHeroMemberChaseMode heroMemberChaseMode = leaderController.HeroMemberChaseMode;
-            if (heroMemberChaseMode == chaseMode)
-                return true;
-            else
-                return false;
-        }
-
-        private bool CanForceMoveInFollowLeaderMode()
-        {
-            if (this.IsValid() == false)
-                return false;
-
-            HeroLeaderController leaderController = Managers.Object.HeroLeaderController;
-            if (leaderController == null)
-                return false;
-
-            EHeroMemberChaseMode heroMemberChaseMode = leaderController.HeroMemberChaseMode;
-            if (heroMemberChaseMode == EHeroMemberChaseMode.EngageTarget)
-                return false;
-
-            if (CreatureMoveState == ECreatureMoveState.ForceMove)
-                return true;
-            else
-                return false;
-        }
-
-        private void MoveFromLeader()
-        {
-            if (_isFarFromLeader)
-            {
-                _pauseSearchTarget = true;
-                CreatureState = ECreatureState.Move;
-                return;
-            }
-
-            if (CreatureMoveState == ECreatureMoveState.ForceMove || CreatureMoveState == ECreatureMoveState.None)
-            {
-                Hero leader = Managers.Object.HeroLeaderController.Leader;
-                // --- 리더가 이동한다고해서 바로 움직이지 않는다.
-                if ((transform.position - leader.transform.position).sqrMagnitude < _waitMovementDistanceSQRFromLeader)
-                    return;
-
-                List<Vector3Int> idlePathFind = Managers.Map.FindPath(startCellPos: CellPos, destCellPos: ChaseCellPos, maxDepth: 2);
-                if (idlePathFind.Count > 1)
-                {
-                    if (Managers.Map.CanMove(idlePathFind[1]))
-                    {
-                        CreatureState = ECreatureState.Move;
-                        return;
-                    }
-                }
-                return;
-            }
-        }
-        #endregion
-
-        #region Event
-        private void OnJoystickStateChanged(EJoystickState joystickState)
-        {
-            if (IsLeader)
-                return;
-
-            if (CreatureState == ECreatureState.Dead)
-                return;
-
-            switch (joystickState)
-            {
-                case EJoystickState.PointerUp:
-                    {
-                        if (CreatureMoveState != ECreatureMoveState.MoveToTarget)
-                            CreatureMoveState = ECreatureMoveState.None;
-                    }
-                    break;
-
-                case EJoystickState.Drag:
-                    if (Managers.Object.HeroLeaderController.HeroMemberChaseMode == EHeroMemberChaseMode.EngageTarget)
-                    {
-                        if (Target.IsValid() && _isFarFromLeader == false)
-                        {
-                            CreatureMoveState = ECreatureMoveState.MoveToTarget;
-                            return;
-                        }
-                    }
-
-                    if (IsForceStopMode() == false)
-                    {
-                        CreatureMoveState = ECreatureMoveState.ForceMove;
-                        Target = null;
-                    }
-                    break;
-
-                default:
-                    break;
-            }
-        }
-
-        protected override void OnDeadFadeOutEnded()
-        {
-            if (IsLeader)
-                Managers.Game.ChangeHeroLeader(autoChangeFromDead: true);
-
-            Debug.Log("Hero::OnDeadFadeOutEnded");
-            base.OnDeadFadeOutEnded();
-        }
-        #endregion
-
-        #region Battle
         public override void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
         {
             base.OnDamaged(attacker, skillFromAttacker);
@@ -501,19 +241,34 @@ namespace STELLAREST_F1
                 Managers.Object.HeroLeaderController.EnablePointer(false);
             }
 
-            StopCoIsFarFromLeaderTick();
-            StopCoCheckSpaceOut();
             base.OnDead(attacker, skillFromAttacker);
         }
-        protected override void OnDisable()
+
+        protected override void OnDisable() // --- TEMP
         {
-            //Debug.Log("Hero::OnDisable");
             base.OnDisable();
 
             if (Managers.Game == null)
                 return;
+        }
+        #endregion
 
-            Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
+        #region Event
+        private void OnJoystickStateChanged(EJoystickState joystickState)
+        {
+            if (this.IsValid() == false)
+                return;
+
+            switch (joystickState)
+            {
+                case EJoystickState.Drag:
+                    ForceMove = true;
+                    break;
+
+                case EJoystickState.PointerUp:
+                    ForceMove = false;
+                    break;
+            }
         }
         #endregion
 
@@ -564,87 +319,468 @@ namespace STELLAREST_F1
 
             callback?.Invoke();
         }
+        #endregion
+    }
+}
 
-        [SerializeField] private bool _isFarFromLeader = false;
-        private Coroutine _coIsFarFromLeaderTick = null;
-        private IEnumerator CoIsFarFromLeaderTick()
+/*
+    [PREV REF]
+    public override Vector3Int ChaseCellPos
         {
-            // Scan Range 보다 50%이상 멀어졌을 때
-            float farFromLeaderDistSQR = ReadOnly.Numeric.HeroDefaultScanRange * ReadOnly.Numeric.HeroDefaultScanRange + (ReadOnly.Numeric.HeroDefaultScanRange * ReadOnly.Numeric.HeroDefaultScanRange * 0.5f);
-            float canWarpDistSQR = ReadOnly.Numeric.CheckFarFromHeroesLeaderDistanceForWarp * ReadOnly.Numeric.CheckFarFromHeroesLeaderDistanceForWarp;
-            while (true)
+            get
+            {
+                if (ForceMove == false && Target.IsValid())
+                    return Target.CellPos;
+                
+                HeroLeaderController leaderController = Managers.Object.HeroLeaderController;
+                switch (leaderController.HeroMemberFormationMode)
+                {
+                    case EHeroMemberFormationMode.FollowLeaderClosely:
+                        return Managers.Map.WorldToCell(leaderController.Leader.transform.position); ;
+
+                    case EHeroMemberFormationMode.NarrowFormation:
+                    case EHeroMemberFormationMode.WideFormation:
+                        return leaderController.RequestFormationCellPos(this); ;
+
+                    case EHeroMemberFormationMode.RandomFormation:
+                        return leaderController.RequestRandomFormationCellPos(this);
+
+                    case EHeroMemberFormationMode.ForceStop:
+                        return HeroAI.PrevCellPosForForceStop;
+                }
+
+                return Vector3Int.zero;
+            }
+        }
+     // public override Vector3Int ChaseCellPos
+        // {
+        //     get
+        //     {
+        //         if (CreatureMoveState != ECreatureMoveState.ForceMove && Target.IsValid())
+        //         {
+        //             if (CanAttackOrChase())
+        //             {
+        //                 if (_canHandleSkill)
+        //                 {
+        //                     if (Target.ObjectType == EObjectType.Env)
+        //                         CreatureAIState = ECreatureAIState.CollectEnv;
+        //                     else if (Target.ObjectType == EObjectType.Monster)
+        //                     {
+        //                         if (CreatureSkill.IsRemainingCoolTime((int)ESkillType.Skill_Attack) == false)
+        //                             CreatureSkill?.CurrentSkill.DoSkill();
+        //                         else
+        //                             CreatureAIState = ECreatureAIState.Idle;
+        //                     }
+        //                 }
+        //             }
+
+        //             return Target.CellPos;
+        //         }
+
+        //         HeroLeaderController heroLeaderController = Managers.Object.HeroLeaderController;
+        //         switch (heroLeaderController.HeroMemberFormationMode)
+        //         {
+        //             case EHeroMemberFormationMode.FollowLeaderClosely:
+        //             {
+        //                 return Managers.Map.WorldToCell(heroLeaderController.Leader.transform.position);
+        //             }
+
+        //             case EHeroMemberFormationMode.NarrowFormation:
+        //             case EHeroMemberFormationMode.WideFormation:
+        //             {
+        //                 return Managers.Object.HeroLeaderController.RequestFormationCellPos(this);
+        //             }
+
+        //             case EHeroMemberFormationMode.RandomFormation:
+        //             {
+        //                 return Managers.Object.HeroLeaderController.RequestRandomFormationCellPos(this);
+        //             }
+
+        //             case EHeroMemberFormationMode.ForceStop:
+        //             {
+        //                 return PrevCellPosForForceStop;
+        //             }
+
+        //             default:
+        //                 return Vector3Int.zero;
+        //         }
+        //     }
+        // }
+
+        // private void Update()
+        // {
+        //     if (IsLeader)
+        //         return;
+
+        //     if (MoveAfterLeader())
+        //     {
+        //         EFindPathResult result = FindPathAndMoveToCellPos(destPos: ChaseCellPos,
+        //             maxDepth: ReadOnly.Numeric.HeroDefaultMoveDepth);
+
+        //         if (result == EFindPathResult.Fail_ForceMovePingPongObject) // 확인됨
+        //             return;
+
+        //         if (result == EFindPathResult.Fail_NoPath)
+        //             IsMoving = false;
+        //         else
+        //             IsMoving = true;
+        //     }
+        // }
+
+        // private void LateUpdate()
+        // {
+        //     if (IsLeader)
+        //         return;
+
+        //     // 와리가리 핑퐁 체크
+        // }
+
+        protected override void UpdateMove()
+        {
+            if (IsLeader)
+                return;
+
+            if (ForceMove == false && IsInTargetAttackRange())
+            {
+                CreatureAIState = ECreatureAIState.Idle;
+                return;
+            }
+
+            EFindPathResult result = FindPathAndMoveToCellPos(destPos: ChaseCellPos,
+                maxDepth: ReadOnly.Numeric.HeroDefaultMoveDepth);
+
+            if (result == EFindPathResult.Fail_NoPath)
             {
                 Hero leader = Managers.Object.HeroLeaderController.Leader;
-                if (leader.IsValid() == false) // --- DEFENSE
+                if (leader.IsMoving == false)
                 {
-                    yield return null;
-                    continue;
+                    //Debug.Log("111-111");
+                    CreatureAIState = ECreatureAIState.Idle;
                 }
 
-                if ((leader.CellPos - CellPos).sqrMagnitude > farFromLeaderDistSQR)
-                    _isFarFromLeader = true;
-                else
-                    _isFarFromLeader = false;
+                return;
+            }
+        }
+    private bool MoveAfterLeader()
+        {
+            if (_isFarFromLeader)
+            {
+                PauseSearchTarget = true;
+                return true;
+            }
 
-                // 15칸(225) 이상일 때, 어차피 로그 함수 이동속도로 금방 따라오긴하지만 알수 없는 이유로 히어로가 막혀있을 때
-                if ((leader.CellPos - CellPos).sqrMagnitude > canWarpDistSQR && _coWaitForceStopWarp == null && IsForceStopMode() == false)
+            if (ForceMove)
+            {
+                // --- 리더가 이동한다고해서 바로 움직이지 않는다.
+                Hero leader = Managers.Object.HeroLeaderController.Leader;
+                if ((transform.position - leader.transform.position).sqrMagnitude < _waitMovementDistanceSQRFromLeader)
+                    return true;
+
+                List<Vector3Int> idlePathFind = Managers.Map.FindPath(startCellPos: CellPos, destCellPos: ChaseCellPos, maxDepth: 2);
+                if (idlePathFind.Count > 1)
                 {
-                    Vector3 leaderWorldPos = Managers.Object.HeroLeaderController.Leader.transform.position;
-                    Managers.Map.WarpTo(this, Managers.Map.WorldToCell(leaderWorldPos), warpEndCallback: null);
+                    if (Managers.Map.CanMove(idlePathFind[1]))
+                        return true;
                 }
-
-                yield return new WaitForSeconds(ReadOnly.Numeric.CheckFarFromHeroesLeaderTick);
             }
+
+            return false;
+        }
+     // Prev
+        // private void OnJoystickStateChanged(EJoystickState joystickState)
+        // {
+        //     // 일부러 리더랑 분리해서 보는게 편해서 이렇게 했음
+        //     if (IsLeader)
+        //         return;
+
+        //     if (CreatureAIState == ECreatureAIState.Dead)
+        //         return;
+
+        //     // switch (joystickState)
+        //     // {
+        //     //     case EJoystickState.PointerUp:
+        //     //         {
+        //     //             if (CreatureMoveState != ECreatureMoveState.MoveToTarget)
+        //     //                 CreatureMoveState = ECreatureMoveState.None;
+        //     //         }
+        //     //         break;
+
+        //     //     case EJoystickState.Drag:
+        //     //         if (Managers.Object.HeroLeaderController.HeroMemberChaseMode == EHeroMemberChaseMode.EngageTarget)
+        //     //         {
+        //     //             if (Target.IsValid() && _isFarFromLeader == false)
+        //     //             {
+        //     //                 CreatureMoveState = ECreatureMoveState.MoveToTarget;
+        //     //                 return;
+        //     //             }
+        //     //         }
+
+        //     //         if (IsForceStopMode() == false)
+        //     //         {
+        //     //             CreatureMoveState = ECreatureMoveState.ForceMove;
+        //     //             Target = null;
+        //     //         }
+        //     //         break;
+
+        //     //     default:
+        //     //         break;
+        //     // }
+        // }
+
+            public void StartSearchTarget(System.Func<bool> allTargetsCondition = null)
+        {
+            StartCoSearchTarget<BaseObject>(scanRange: ReadOnly.Numeric.HeroDefaultScanRange,
+                                        firstTargets: Managers.Object.Monsters,
+                                        secondTargets: Managers.Object.Envs,
+                                        func: IsValid,
+                                        allTargetsCondition: allTargetsCondition);
         }
 
-        private void StartCoIsFarFromLeaderTick()
-        {
-            if (_coIsFarFromLeaderTick == null)
-                _coIsFarFromLeaderTick = StartCoroutine(CoIsFarFromLeaderTick());
-        }
+        public void StopSearchTarget()
+            => StopCoSearchTarget();
+    #region AI - Prev
+        // protected override void UpdateIdle()
+        // {
+        //     if (IsLeader)
+        //         return;
 
-        private void StopCoIsFarFromLeaderTick()
+        //     if (MoveAfterLeader2())
+        //     {
+        //         CreatureAIState = ECreatureAIState.Move;
+        //         return;
+        //     }
+
+        //     // Prev Code
+        //     // --- Follow Leader
+        //     // if (CanForceMoveInFollowLeaderMode() && IsForceStopMode() == false)
+        //     // {
+        //     //     MoveFromLeader();
+        //     //     return;
+        //     // }
+
+        //     // LookAtValidTarget();
+        //     // if (CreatureSkill.IsRemainingCoolTime((int)ESkillType.Skill_Attack))
+        //     //     return;
+
+        //     // --- 타겟이 존재하거나, 타겟이 죽었을 경우, Move 상태로 전환
+        //     // if (Target.IsValid() || CreatureMoveState == ECreatureMoveState.MoveToTarget && IsForceStopMode() == false)
+        //     // {
+        //     //     CreatureAIState = ECreatureAIState.Move;
+        //     //     CreatureUpperAnimState = ECreatureUpperAnimState.UA_Move;
+        //     //     CreatureLowerAnimState = ECreatureLowerAnimState.LA_Move;
+        //     //     return;
+        //     // }
+
+        //     // if (IsForceStopMode() == false)
+        //     // {
+        //     //     MoveFromLeader();
+        //     //     return;
+        //     // }
+        // }
+
+        private bool _canHandleSkill = false;
+
+        // --- UpdateMove
+        // >> Upper - Move, Skill_Attack, Skill_A, Skill_B
+        // >> Lower - Move
+        // protected override void UpdateMove()
+        // {
+        //     if (IsLeader)
+        //         return;
+
+        //     EFindPathResult result = FindPathAndMoveToCellPos(destPos: ChaseCellPos,
+        //         maxDepth: ReadOnly.Numeric.HeroDefaultMoveDepth);
+
+        //     if (result == EFindPathResult.Fail_ForceMovePingPongObject) // 확인됨
+        //         return;
+
+        //     if (CreatureMoveState == ECreatureMoveState.None)
+        //     {
+        //         if (result == EFindPathResult.Fail_NoPath)
+        //         {
+        //             PauseSearchTarget = false;
+        //             CreatureAIState = ECreatureAIState.Idle;
+        //             return;
+        //         }
+        //     }
+        //     // else if (CreatureMoveState == ECreatureMoveState.MoveToTarget)
+        //     // {
+        //     //     _canHandleSkill = false;
+        //     //     List<Vector3Int> path = Managers.Map.FindPath(CellPos, ChaseCellPos, 2);
+        //     //     if (path.Count > 0)
+        //     //     {
+        //     //         for (int i = 0; i < path.Count; ++i)
+        //     //         {
+        //     //             // 일단 무조건 Cell의 중앙에 와야함. (스키타는 움직임 방지)
+        //     //             Vector3 centeredPathPos = Managers.Map.CenteredCellToWorld(path[i]);
+        //     //             if ((transform.position - centeredPathPos).sqrMagnitude > 0.01f)
+        //     //                 continue;
+
+        //     //             // Cell 중앙에 위치 후, 공격 범위에 들어오면 공격 시작.
+        //     //             if (IsInAttackRange())
+        //     //             {
+        //     //                 _canHandleSkill = true;
+        //     //                 return;
+        //     //             }
+        //     //         }
+
+        //     //         // 겹쳐서 계속 MoveState로 허공질하고 있을 때
+        //     //         // --- 여기 고장남
+        //     //         // if (CellPos == Managers.Object.HeroLeaderController.Leader.CellPos)
+        //     //         // {
+        //     //         //     Debug.Log($"<color=magenta>!!! NID FIX !!!{gameObject.name}</color>");
+        //     //         //     CreatureMoveState = ECreatureMoveState.None;
+        //     //         //     CreatureState = ECreatureState.Idle;
+        //     //         //     return;
+        //     //         // }
+
+        //     //         // 와리가리 핑퐁 오브젝트 체크
+        //     //         Vector3 centeredLastPathPos = Managers.Map.CenteredCellToWorld(path[path.Count - 1]);
+        //     //         if (Target.IsValid() && (transform.position - centeredLastPathPos).sqrMagnitude < 0.01f)
+        //     //         {
+        //     //             if (IsPingPongAndCantMoveToDest(CellPos))
+        //     //             {
+        //     //                 if (_currentPingPongCantMoveCount >= ReadOnly.Numeric.MaxCanPingPongConditionCount && IsForceMovingPingPongObject == false)
+        //     //                 {
+        //     //                     Debug.Log($"<color=cyan>[!]{gameObject.name}, Start force moving for PingPong Object.</color>");
+        //     //                     CoStartForceMovePingPongObject(CellPos, ChaseCellPos, endCallback: delegate ()
+        //     //                     {
+        //     //                         _currentPingPongCantMoveCount = 0;
+        //     //                         CoStopForceMovePingPongObject();
+        //     //                         CreatureMoveState = ECreatureMoveState.None;
+        //     //                         CreatureAIState = ECreatureAIState.Idle;
+        //     //                         CreatureUpperAnimState = ECreatureUpperAnimState.UA_Idle;
+        //     //                         CreatureLowerAnimState = ECreatureLowerAnimState.LA_Idle;
+        //     //                     });
+        //     //                 }
+        //     //                  else if (IsForceMovingPingPongObject == false)
+        //     //                     ++_currentPingPongCantMoveCount;
+
+        //     //                 return;
+        //     //             }
+        //     //         }
+
+        //     //         // 타겟이 죽었다면.. return to leader
+        //     //         if (Target.IsValid() == false && CreatureMoveState == ECreatureMoveState.MoveToTarget)
+        //     //         {
+        //     //             if ((transform.position - centeredLastPathPos).sqrMagnitude < 0.01f)
+        //     //             {
+        //     //                 CreatureMoveState = ECreatureMoveState.None;
+        //     //                 CreatureAIState = ECreatureAIState.Idle;
+        //     //                 CreatureUpperAnimState = ECreatureUpperAnimState.UA_Idle;
+        //     //                 CreatureLowerAnimState = ECreatureLowerAnimState.LA_Idle;
+        //     //                 Debug.Log($"<color=cyan>{gameObject.name}, return to leader</color>");
+        //     //                 return;
+        //     //             }
+        //     //         }
+        //     //     }
+        //     // }
+        // }
+
+        // protected override void UpdateSkill()
+        // {
+        //     if (IsLeader)
+        //         return;
+
+        //     if (CanForceMoveInFollowLeaderMode())
+        //         MoveFromLeader();
+        // }
+
+        // protected override void UpdateCollectEnv()
+        // {
+        //     if (IsLeader)
+        //         return;
+
+        //     LookAtValidTarget();
+        //     // Retarget Monster or Env is dead
+        //     if ((Target.IsValid() && Target.ObjectType == EObjectType.Monster) || Target.IsValid() == false)
+        //     {
+        //         // CollectEnv = false;
+        //         CreatureAIState = ECreatureAIState.Move;
+        //     }
+
+        //     if (CanForceMoveInFollowLeaderMode())
+        //         MoveFromLeader();
+        // }
+
+        protected override void UpdateDead()
         {
-            if (_coIsFarFromLeaderTick != null)
+            base.UpdateDead();
+        }
+        #endregion
+      // private void MoveAfterLeader()
+        // {
+        //     if (_isFarFromLeader)
+        //     {
+        //         PauseSearchTarget = true;
+        //         return;
+        //     }
+
+        //     if (ForceMove)
+        //     {
+        //         Hero leader = Managers.Object.HeroLeaderController.Leader;
+        //         if ((transform.position - leader.transform.position).sqrMagnitude < _waitMovementDistanceSQRFromLeader)
+        //             return;
+
+        //         List<Vector3Int> idlePathFind = Managers.Map.FindPath(startCellPos: CellPos, destCellPos: ChaseCellPos, maxDepth: 2);
+        //         if (idlePathFind.Count > 1)
+        //         {
+        //             if (Managers.Map.CanMove(idlePathFind[1]))
+        //             {
+        //                 CreatureAIState = ECreatureAIState.Move;
+        //                 return;
+        //             }
+        //         }
+        //         return;
+        //     }
+        // }
+
+        private void MoveFromLeader()
+        {
+            if (_isFarFromLeader)
             {
-                StopCoroutine(_coIsFarFromLeaderTick);
-                _coIsFarFromLeaderTick = null;
+                PauseSearchTarget = true;
+                //CreatureAIState = ECreatureAIState.Move;
+                return;
             }
+
+            // if (CreatureMoveState == ECreatureMoveState.ForceMove || CreatureMoveState == ECreatureMoveState.None)
+            // {
+            //     Hero leader = Managers.Object.HeroLeaderController.Leader;
+            //     // --- 리더가 이동한다고해서 바로 움직이지 않는다.
+            //     if ((transform.position - leader.transform.position).sqrMagnitude < _waitMovementDistanceSQRFromLeader)
+            //         return;
+
+            //     List<Vector3Int> idlePathFind = Managers.Map.FindPath(startCellPos: CellPos, destCellPos: ChaseCellPos, maxDepth: 2);
+            //     if (idlePathFind.Count > 1)
+            //     {
+            //         if (Managers.Map.CanMove(idlePathFind[1]))
+            //         {
+            //             //CreatureAIState = ECreatureAIState.Move;
+            //             return;
+            //         }
+            //     }
+            //     return;
+            // }
         }
 
-        private Coroutine _coWaitForceStopWarp = null;
-        private IEnumerator CoWaitForceStopWarp(float seconds)
-        {
-            yield return new WaitForSeconds(seconds);
-            StopCoWaitForceStopWarp();
-        }
-
-        public void StartCoWaitForceStopWarp(float seconds)
-        {
-            StopCoWaitForceStopWarp(); // --- 즉시 곧바로 다시 Force Stop 모드로 돌아올 수도 있으므로
-            _coWaitForceStopWarp = StartCoroutine(CoWaitForceStopWarp(seconds));
-        }
-
-        public void StopCoWaitForceStopWarp()
-        {
-            if (_coWaitForceStopWarp != null)
-            {
-                StopCoroutine(_coWaitForceStopWarp);
-                _coWaitForceStopWarp = null;
-            }
-        }
-
-        // -- 가끔 간헐적으로 멍때림을 방지하는 코루틴(임시)
+    // -- 가끔 간헐적으로 멍때림을 방지하는 코루틴(임시)
         private Coroutine _coCheckSpaceOut = null;
         private IEnumerator CoCheckSpaceOut()
         {
             bool spaceOut = false;
             while (true)
             {
+                if (IsLeader)
+                {
+                    yield return null;
+                    continue;
+                }
+
                 // 아무것도 안하고 있을 때.. 타겟이 있는데 가만히 멍대리고 있는다..
                 // 아까 Idle 상태였는데 
-                if (CreatureState == ECreatureState.Idle && Target.IsValid())
-                    spaceOut = true;
+                // if (CreatureAIState == ECreatureAIState.Idle && Target.IsValid())
+                //     spaceOut = true;
 
                 // --- 검토 필요. 전체적인 AI 검토 필요 ---
                 if (spaceOut)
@@ -652,8 +788,7 @@ namespace STELLAREST_F1
                     Debug.Log($"<color=yellow>ZoneOut: {gameObject.name}</color>");
                     spaceOut = false;
                     Target = null;
-                    CreatureMoveState = ECreatureMoveState.None;
-                    CreatureState = ECreatureState.Idle;
+                    CreatureAIState = ECreatureAIState.Idle;
                 }
 
                 yield return new WaitForSeconds(3f);
@@ -676,12 +811,7 @@ namespace STELLAREST_F1
                 _coCheckSpaceOut = null;
             }
         }
-        #endregion
-    }
-}
 
-/*
-    [PREV CODE]
     // if (_isFarFromLeader)
                 // {
                 //     _pauseSearchTarget = true;

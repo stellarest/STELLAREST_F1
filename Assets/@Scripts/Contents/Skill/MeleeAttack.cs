@@ -7,6 +7,19 @@ namespace STELLAREST_F1
 {
     public class MeleeAttack : SkillBase
     {
+        public override float RemainCoolTime 
+        { 
+            get => base.RemainCoolTime; 
+            set
+            {
+                base.RemainCoolTime = value;
+                if (base.RemainCoolTime == 0f)
+                    Owner.CreatureAnim.CanSkillAttack = true;
+                else
+                    Owner.CreatureAnim.CanSkillAttack = false;
+            }
+        }
+
         public override bool Init()
         {
             if (base.Init() == false)
@@ -57,15 +70,16 @@ namespace STELLAREST_F1
                 - 그래서, 만약 알 수 없는 이유로 인해 ForceExitState를 호출하지 못했을 때 여기서 수행.
                 - DEFENSE CODE
             */
-            if (Owner.CreatureState != ECreatureState.Idle) // --- DEFENSE
-            {
-                Owner.CreatureMoveState = ECreatureMoveState.MoveToTarget;
-                Owner.CreatureState = ECreatureState.Idle;
-            }
+            // if (Owner.CreatureAIState != ECreatureAIState.Idle) // --- DEFENSE
+            // {
+            //     //Owner.CreatureMoveState = ECreatureMoveState.MoveToTarget;
+            //     Owner.CreatureAIState = ECreatureAIState.Idle;
+            // }
         }
         #endregion
 
-        public override void OnSkillAnimationCallback()
+
+        public override void OnSkillCallback()
         {
             if (Owner.IsValid() == false)
                 return;
@@ -73,8 +87,10 @@ namespace STELLAREST_F1
             if (Owner.Target.IsValid() == false)
                 return;
 
+            if (Owner.Target.ObjectType != EObjectType.Monster)
+                return;
+
             Owner.Target.OnDamaged(Owner, this);
-            Debug.Log($"<color=magenta>Called from {Owner.gameObject.name}</color>");
         }
     }
 }

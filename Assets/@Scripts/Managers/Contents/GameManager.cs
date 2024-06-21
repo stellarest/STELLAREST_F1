@@ -41,7 +41,7 @@ namespace STELLAREST_F1
                 return;
 
             Hero leader = leaderController.Leader;
-            if (autoChangeFromDead == false && (leader.IsValid() == false || leader.CreatureState == ECreatureState.Dead))
+            if (autoChangeFromDead == false && (leader.IsValid() == false || leader.CreatureAIState == ECreatureAIState.Dead))
             {
                 Debug.LogWarning("What the... hell is going on!");
                 return;
@@ -49,15 +49,13 @@ namespace STELLAREST_F1
 
             if (autoChangeFromDead == false)
             {
-                if (leaderController._coCanChangeLeader != null)
+                if (leaderController._coActivateChangeLeaderCoolTime != null)
                 {
                     Debug.LogWarning("Wait Change Leader CoolTime..");
                     return;
                 }
                 else
-                {
-                    leaderController.StartCoCanChangeLeader();
-                }
+                    leaderController.StartCoActivateChangeLeaderCoolTime();
             }
 
             leaderController.StartCoChangeRandomHeroLeader();

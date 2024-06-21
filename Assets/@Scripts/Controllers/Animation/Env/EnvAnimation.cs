@@ -43,7 +43,7 @@ namespace STELLAREST_F1
                     break;
 
                 case EEnvState.Dead:
-                    Dead();
+                    // Dead();
                     break;
             }
         }

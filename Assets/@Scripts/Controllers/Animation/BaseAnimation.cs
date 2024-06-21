@@ -17,7 +17,7 @@ namespace STELLAREST_F1
 
         protected readonly int Play_Idle = Animator.StringToHash(ReadOnly.String.AnimParam_Idle);
         protected readonly int Play_Move = Animator.StringToHash(ReadOnly.String.AnimParam_Move);
-        protected readonly int Play_Skill_Attack = Animator.StringToHash(ReadOnly.String.AnimParam_Skill_Attack);
+        // protected readonly int Play_Skill_Attack = Animator.StringToHash(ReadOnly.String.AnimParam_Skill_Attack);
         protected readonly int Play_Skill_A = Animator.StringToHash(ReadOnly.String.AnimParam_Skill_A);
         protected readonly int Play_Skill_B = Animator.StringToHash(ReadOnly.String.AnimParam_Skill_B);
         protected readonly int Play_CollectEnv = Animator.StringToHash(ReadOnly.String.AnimParam_CollectEnv);
@@ -31,47 +31,47 @@ namespace STELLAREST_F1
                 return "CurrentAnimState: Play_Idle";
             if (stateInfo.shortNameHash == Play_Move)
                 return "CurrentAnimState: Play_Move";
-            if (stateInfo.shortNameHash == Play_Skill_Attack)
-                return "CurrentAnimState: Play_Skill_Attack";
+            // if (stateInfo.shortNameHash == Play_Skill_Attack)
+            //     return "CurrentAnimState: Play_Skill_Attack";
 
             return string.Empty;
         }
 #endif
-        public bool IsCurrentAnimationState(ECreatureState creatureState)
-        {
-            AnimatorStateInfo stateInfo = Animator.GetCurrentAnimatorStateInfo(0);
-            return stateInfo.shortNameHash == GetHash(creatureState);
-        }
+        // public bool IsCurrentAnimationState(ECreatureState creatureState)
+        // {
+        //     AnimatorStateInfo stateInfo = Animator.GetCurrentAnimatorStateInfo(0);
+        //     return stateInfo.shortNameHash == GetHash(creatureState);
+        // }
 
-        public int GetHash(ECreatureState state)
-        {
-            switch (state)
-            {
-                case ECreatureState.Idle:
-                    return Play_Idle;
+        // public int GetHash(ECreatureState state)
+        // {
+        //     switch (state)
+        //     {
+        //         case ECreatureState.Idle:
+        //             return Play_Idle;
 
-                case ECreatureState.Move:
-                    return Play_Move;
+        //         case ECreatureState.Move:
+        //             return Play_Move;
 
-                case ECreatureState.Skill_Attack:
-                    return Play_Skill_Attack;
+        //         case ECreatureState.Skill_Attack:
+        //             return Play_Skill_Attack;
 
-                case ECreatureState.Skill_A:
-                    return Play_Skill_A;
+        //         case ECreatureState.Skill_A:
+        //             return Play_Skill_A;
 
-                case ECreatureState.Skill_B:
-                    return Play_Skill_B;
+        //         case ECreatureState.Skill_B:
+        //             return Play_Skill_B;
 
-                case ECreatureState.CollectEnv:
-                    return Play_CollectEnv;
+        //         case ECreatureState.CollectEnv:
+        //             return Play_CollectEnv;
 
-                case ECreatureState.Dead:
-                    return Play_Dead;
+        //         case ECreatureState.Dead:
+        //             return Play_Dead;
 
-                default:
-                    return -1;
-            }
-        }
+        //         default:
+        //             return -1;
+        //     }
+        // }
 
         public override bool Init()
         {
@@ -104,8 +104,8 @@ namespace STELLAREST_F1
         protected virtual void Move()
             => Animator.Play(Play_Move);
 
-        protected virtual void Skill_Attack()
-            => Animator.Play(Play_Skill_Attack);
+        // protected virtual void Skill_Attack()
+        //     => Animator.Play(Play_Skill_Attack);
 
         protected virtual void Skill_A()
             => Animator.Play(Play_Skill_A);
@@ -113,11 +113,11 @@ namespace STELLAREST_F1
         protected virtual void Skill_B()
             => Animator.Play(Play_Skill_B);
 
-        protected virtual void CollectEnv()
-            => Animator.Play(Play_CollectEnv);
+        // protected virtual void CollectEnv()
+        //     => Animator.Play(Play_CollectEnv);
 
-        protected virtual void Dead()
-            => Animator.Play(Play_Dead);
+        // protected virtual void Dead()
+        //     => Animator.Play(Play_Dead);
 
         public virtual void Flip(ELookAtDirection lookAtDir) { }
     }
