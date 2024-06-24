@@ -270,19 +270,11 @@ namespace STELLAREST_F1
         {
             while (true)
             {
-                if (_leader.IsInTargetAttackRange())
-                {
-                    if (_leader.Target.ObjectType == EObjectType.Monster)
-                    {
-                        if (_leader.CanSkill(ESkillType.Skill_Attack))
-                             _leader.CreatureSkill.CurrentSkill.DoSkill();
-                    }
-                    else if (_leader.Target.ObjectType == EObjectType.Env)
-                    {
-                        if (_leader.CanCollectEnv)
-                            _leader.CollectEnv();
-                    }
-                }
+                if (_leader.CanSkill)
+                    _leader.CreatureSkill.CurrentSkill.DoSkill();
+
+                if (_leader.CanCollectEnv)
+                    _leader.CollectEnv();
 
                 yield return null;
             }
@@ -293,12 +285,6 @@ namespace STELLAREST_F1
             if (_leader.IsValid() == false)
                 return;
 
-            // if (_leader.Target.IsValid())
-            // {
-            //     Debug.Log($"Dist: {(_leader.transform.position - _leader.Target.transform.position).magnitude}");
-            //     Debug.Log($"SQR_Dist: {(_leader.transform.position - _leader.Target.transform.position).sqrMagnitude}");
-            // }
-
             if (Input.GetKeyDown("5"))
             {
                 _leader.Dead();
@@ -306,36 +292,34 @@ namespace STELLAREST_F1
 
             if (_leader.ForceMove)
             {
-                // // --- Joystick Only
+                // --- Joystick Only
                 if (_lockFindPath == false && Managers.Map.CanMove(JoystickPos, ignoreObjectType: EObjectType.Hero))
                     Move();
                 // --- Joystick + Path Finding
                 else if (_lockFindPath == false && Managers.Map.CanMove(JoystickPos, ignoreObjectType: EObjectType.Hero) == false)
                     TryPathFinding(_pointer.position);
             }
+            // --- AutoTargeting Mode
             else if (AutoTarget && _lockFindPath == false)
             {
                 if (_leader.Target.IsValid())
                 {
-                    //TryPathFinding(_leader.Target.transform.position);
-                    if (_leader.IsInTargetAttackRange())
-                    {
-                        _leader.IsMoving = false;
-                    }
+                    // --- Stop in the nearest target
+                    if (_leader.IsInTheNearestTarget)
+                        _leader.Moving = false;
+                    // --- Go to target
                     else
                     {
-                        _leader.IsMoving = true;
+                        _leader.Moving = true;
                         TryPathFinding(_leader.Target.transform.position);
                     }
                 }
+                // --- Stop if target is invalid.
                 else
-                    _leader.IsMoving = false;
-
+                    _leader.Moving = false;
             }
             else if (_coPathFinding == null)
-            {
-                _leader.IsMoving = false;
-            }
+                _leader.Moving = false;
         }
 
         private void LateUpdate()
@@ -392,31 +376,16 @@ namespace STELLAREST_F1
                 return;
             else if (_coPathFinding == null)
             {
-                // --- ZERO MOVEMENT
-                // if (_nMovementDir == Vector3.zero)
-                // {
-                //     _leader.IsMoving = false;
-                //     //_leader.CreatureLowerAnimState = ECreatureLowerAnimState.LA_Idle;
-                //     if (_leader.CreatureAIState != ECreatureAIState.Skill)
-                //         _leader.CreatureUpperAnimState = ECreatureUpperAnimState.UA_Idle;
-                //     return;
-                // }
-
                 // --- MOVEMENT
-                if (_leader.Target.IsValid() == false || _leader.IsInTargetAttackRange() == false)
+                if (_leader.CanSkill == false)
                 {
                     if (_nMovementDir.x < 0f)
                         Leader.LookAtDir = ELookAtDirection.Left;
                     else
                         Leader.LookAtDir = ELookAtDirection.Right;
                 }
-                else if (_leader.Target.IsValid() && _leader.Target.ObjectType == EObjectType.Monster)
-                    _leader.LookAtValidTarget();
 
-                _leader.IsMoving = true;
-                // _leader.CreatureLowerAnimState = ECreatureLowerAnimState.LA_Move;
-                // if (_leader.CreatureAIState != ECreatureAIState.Skill)
-                //     _leader.CreatureUpperAnimState = ECreatureUpperAnimState.UA_Move;
+                _leader.Moving = true;
                 _leader.transform.position = JoystickPos;
             }
         }
@@ -430,26 +399,32 @@ namespace STELLAREST_F1
                 Debug.Log($"Maybe Same Leader, Current: {_leader.name}, new: {newLeader.name}");
                 return;
             }
-            else if (_leader.IsValid() == false) // First Leader
+            else if (_leader.IsValid() == false) // --- First Leader
             {
                 _leader = newLeader;
                 _leader.IsLeader = true;
             }
             else if (_leader != newLeader)
             {
+                // --- Release Prev Leader
+                _leader.StartCoUpdateAI();
                 _leader.HeroAI.StartSearchTarget(allTargetsCondition: null);
-                _leader.IsLeader = false; // Release Prev Leader
+                _leader.IsLeader = false;
+                _leader.NextCenteredCellPos = Managers.Map.CenteredCellPos(_leader.CellPos);
+                // --- Set New Leader
                 _leader = newLeader;
                 _leader.IsLeader = true;
             }
 
+            newLeader.StopCoUpdateAI();
+            newLeader.NextCenteredCellPos = null;
             newLeader.HeroAI.StartSearchTarget(allTargetsCondition: () => (_leader.IsLeader && _leader.ForceMove) || AutoTarget == false);
 
             // Leader Hero는 항상 0번 인덱스로 변경
             List<Hero> heroes = Managers.Object.Heroes;
             if (heroes.Contains(newLeader))
                 heroes.Remove(newLeader);
-            heroes.Insert(0, newLeader);
+            heroes.Insert(index: 0, item: newLeader);
 
             // Leader 제외 인덱스. 이미 따닥 따닥 붙어있을 때, 리더 변경시 멤버들을 Move상태로 만들지 않는다. 
             if (_heroMemberFormationMode != EHeroMemberFormationMode.FollowLeaderClosely)
@@ -458,9 +433,11 @@ namespace STELLAREST_F1
                 //     heroes[i].CreatureAIState = ECreatureAIState.Move;
             }
 
-            //newLeader.CreatureMoveState = ECreatureMoveState.None;
-            //newLeader.CreatureAIState = ECreatureAIState.Idle;
-            newLeader.CreatureAIState = ECreatureAIState.None; // --- 리더는 항상 None, 아니면 Dead
+            // newLeader.CreatureMoveState = ECreatureMoveState.None;
+            // newLeader.CreatureAIState = ECreatureAIState.Idle;
+
+            // 일단 원인은 이게 맞았음
+            // newLeader.CreatureAIState = ECreatureAIState.None; // --- 리더는 항상 None, 아니면 Dead
             Managers.Object.CameraController.Target = newLeader;
             EnableLeaderMark(true);
         }
@@ -474,7 +451,7 @@ namespace STELLAREST_F1
         private void LateTickLeaderPos()
         {
             _leader.UpdateCellPos();
-            
+
             {
                 // --- Sorting for leader in same cellpos
                 BaseObject obj = Managers.Map.GetObject(_leader.CellPos);

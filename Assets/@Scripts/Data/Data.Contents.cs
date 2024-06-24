@@ -405,7 +405,6 @@ namespace STELLAREST_F1.Data
         public string LevelText;
         public float MaxHp;
         public float Atk;
-        public int AtkRange;
         public float CriticalRate;
         public float DodgeRate;
         public float MovementSpeed;
@@ -430,9 +429,10 @@ namespace STELLAREST_F1.Data
     {
 		public string ClassName;
         public string AttachmentPoint;
+        public int InvokeRange; // --- 시전 조건
+        public int TargetRange; // --- 시전 범위
         public int ProjectileID;
 		public float CoolTime;
-        public bool CanMove;
     }
 
     public class SkillDataLoader : ILoader<int, SkillData>

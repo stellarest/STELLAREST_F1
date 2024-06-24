@@ -52,7 +52,7 @@ namespace STELLAREST_F1
             CellGrid = map.GetComponent<Grid>();
 
             ParseCollisionData(map, mapName);
-            // SpawnObjectsByData(map, mapName);
+            SpawnObjectsByData(map, mapName);
         }
 
         private void ParseCollisionData(GameObject map, string mapName, string tileMap = "Tilemap_Collision")
@@ -60,7 +60,6 @@ namespace STELLAREST_F1
             // GameObject collision = Util.FindChild(map, tileMap, true);
             // if (collision != null)
             //     collision.SetActive(false);
-
             TextAsset txt = Managers.Resource.Load<TextAsset>($"{mapName}_Collision");
             StringReader stringReader = new StringReader(txt.text); // StringReader, 파일 입출력(System.IO)
 
@@ -130,74 +129,80 @@ namespace STELLAREST_F1
                         MoveTo(monster, cellPos, stopLerpToCell: true, forceMove: true);
                         monster.InitialSpawnedCellPos = cellPos;
 
-                        // // --- TURKEY TEST
-                        // int current = 0;
-                        // int attemptSpawnCount = 0;
-                        // int spawnCount = 0;
-                        // while (attemptSpawnCount < 100)
-                        // {
-                        //     cellPos = new Vector3Int(UnityEngine.Random.Range(cellPos.x - 5, cellPos.x + 5),
-                        //                             UnityEngine.Random.Range(cellPos.y - 5, cellPos.y + 5), 0);
-                        //     if (Managers.Map.CanMove(cellPos))
-                        //     {
-                        //         monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, ReadOnly.DataAndPoolingID.DNPID_Monster_Turkey);
-                        //         MoveTo(monster, cellPos, stopLerpToCell: true, forceMove: true);
-                        //         monster.InitialSpawnedCellPos = cellPos;
-                        //         if (++current >= spawnCount)
-                        //             break;
-                        //     }
-                        //     else
-                        //     {
-                        //         ++attemptSpawnCount;
-                        //         Debug.Log("Fail to spawn Turkey");
-                        //     }
-                        // }
+                        // --- TURKEY TEST
+                        int current = 0;
+                        int spawnCount = 0;
+                        int attemptSpawnCount = 0;
+                        while (attemptSpawnCount < 100)
+                        {
+                            cellPos = new Vector3Int(UnityEngine.Random.Range(cellPos.x - 5, cellPos.x + 5),
+                                                    UnityEngine.Random.Range(cellPos.y - 5, cellPos.y + 5), 0);
+                            if (Managers.Map.CanMove(cellPos))
+                            {
+                                if (spawnCount == current)
+                                    break;
 
-                        // // --- BUNNY TEST
-                        // current = 0;
-                        // attemptSpawnCount = 0;
-                        // spawnCount = 0;
-                        // while (attemptSpawnCount < 100)
-                        // {
-                        //     cellPos = new Vector3Int(UnityEngine.Random.Range(cellPos.x - 5, cellPos.x + 5),
-                        //                             UnityEngine.Random.Range(cellPos.y - 5, cellPos.y + 5), 0);
-                        //     if (Managers.Map.CanMove(cellPos))
-                        //     {
-                        //         monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, ReadOnly.DataAndPoolingID.DNPID_Monster_Bunny);
-                        //         MoveTo(monster, cellPos, stopLerpToCell: true, forceMove: true);
-                        //         monster.InitialSpawnedCellPos = cellPos;
-                        //         if (++current >= spawnCount)
-                        //             break;
-                        //     }
-                        //     else
-                        //     {
-                        //         ++attemptSpawnCount;
-                        //         Debug.Log("Fail to spawn Bunny");
-                        //     }
-                        // }
+                                monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, ReadOnly.DataAndPoolingID.DNPID_Monster_Turkey);
+                                MoveTo(monster, cellPos, stopLerpToCell: true, forceMove: true);
+                                monster.InitialSpawnedCellPos = cellPos;
+                                ++current;
+                            }
+                            else
+                            {
+                                ++attemptSpawnCount;
+                                Debug.Log("Fail to spawn Turkey");
+                            }
+                        }
 
-                        // // // --- PUG TEST
-                        // current = 0;
-                        // attemptSpawnCount = 0;
-                        // spawnCount = 0;
-                        // while (attemptSpawnCount < 100)
-                        // {
-                        //     cellPos = new Vector3Int(UnityEngine.Random.Range(cellPos.x - 5, cellPos.x + 5),
-                        //                             UnityEngine.Random.Range(cellPos.y - 5, cellPos.y + 5), 0);
-                        //     if (Managers.Map.CanMove(cellPos))
-                        //     {
-                        //         monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, ReadOnly.DataAndPoolingID.DNPID_Monster_Pug);
-                        //         MoveTo(monster, cellPos, stopLerpToCell: true, forceMove: true);
-                        //         monster.InitialSpawnedCellPos = cellPos;
-                        //         if (++current >= spawnCount)
-                        //             break;
-                        //     }
-                        //     else
-                        //     {
-                        //         ++attemptSpawnCount;
-                        //         Debug.Log("Fail to spawn Pug");
-                        //     }
-                        // }
+                        // --- BUNNY TEST
+                        current = 0;
+                        spawnCount = 0;
+                        attemptSpawnCount = 0;
+                        while (attemptSpawnCount < 100)
+                        {
+                            cellPos = new Vector3Int(UnityEngine.Random.Range(cellPos.x - 5, cellPos.x + 5),
+                                                    UnityEngine.Random.Range(cellPos.y - 5, cellPos.y + 5), 0);
+                            if (Managers.Map.CanMove(cellPos))
+                            {
+                                if (spawnCount == current)
+                                    break;
+
+                                monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, ReadOnly.DataAndPoolingID.DNPID_Monster_Bunny);
+                                MoveTo(monster, cellPos, stopLerpToCell: true, forceMove: true);
+                                monster.InitialSpawnedCellPos = cellPos;
+                                ++current;
+                            }
+                            else
+                            {
+                                ++attemptSpawnCount;
+                                Debug.Log("Fail to spawn Bunny");
+                            }
+                        }
+
+                        // --- PUG TEST
+                        current = 0;
+                        spawnCount = 0;
+                        attemptSpawnCount = 0;
+                        while (attemptSpawnCount < 100)
+                        {
+                            cellPos = new Vector3Int(UnityEngine.Random.Range(cellPos.x - 5, cellPos.x + 5),
+                                                    UnityEngine.Random.Range(cellPos.y - 5, cellPos.y + 5), 0);
+                            if (Managers.Map.CanMove(cellPos))
+                            {
+                                if (spawnCount == current)
+                                    break;
+
+                                monster = Managers.Object.Spawn<Monster>(EObjectType.Monster, ReadOnly.DataAndPoolingID.DNPID_Monster_Pug);
+                                MoveTo(monster, cellPos, stopLerpToCell: true, forceMove: true);
+                                monster.InitialSpawnedCellPos = cellPos;
+                                ++current;
+                            }
+                            else
+                            {
+                                ++attemptSpawnCount;
+                                Debug.Log("Fail to spawn Pug");
+                            }
+                        }
 
                         // TEST MULTIPLE
                         // int currentMonsterCount = 0;

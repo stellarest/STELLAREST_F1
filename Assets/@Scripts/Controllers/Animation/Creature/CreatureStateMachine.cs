@@ -20,40 +20,78 @@ namespace STELLAREST_F1
 
             if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle)
                 OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_Idle);
-
-            // --- Skill은 Skill Script로 재정의할 수 있도록 옮겨야 할 듯 (일단 이것만 임시로)
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle_To_Skill_Attack)
-                OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_Idle_To_Skill_Attack);
-
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle_To_Skill_A)
+                OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_Idle_To_Skill_A);
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle_To_Skill_B)
+                OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_Idle_To_Skill_B);
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle_To_Skill_C)
+                OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_Idle_To_Skill_C);
             if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle_To_CollectEnv)
                 OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_Idle_To_CollectEnv);
 
             if (stateInfo.shortNameHash == _creatureAnim.Upper_Move)
                 OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_Move);
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_Move_To_Skill_A)
+                OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_Move_To_Skill_A);
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_Move_To_Skill_B)
+                OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_Move_To_Skill_B);
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_Move_To_Skill_C)
+                OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_Move_To_Skill_C);
+
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_Dead)
+                OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_Dead);
         }
 
         public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
-            // float currentPercentage = stateInfo.normalizedTime % 1.0f;
-            // if (stateInfo.shortNameHash == _creatureAnim.Upper_Move_To_Skill_Attack)
-            // {
-            //      if (currentPercentage >= 0.90f)
-            //      {
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle)
+                OnAnimStateUpdateHandler?.Invoke(ECreatureAnimState.Upper_Idle);
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle_To_Skill_A)
+                OnAnimStateUpdateHandler?.Invoke(ECreatureAnimState.Upper_Idle_To_Skill_A);
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle_To_Skill_B)
+                OnAnimStateUpdateHandler?.Invoke(ECreatureAnimState.Upper_Idle_To_Skill_B);
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle_To_Skill_C)
+                OnAnimStateUpdateHandler?.Invoke(ECreatureAnimState.Upper_Idle_To_Skill_C);
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle_To_CollectEnv)
+                OnAnimStateUpdateHandler?.Invoke(ECreatureAnimState.Upper_Idle_To_CollectEnv);
 
-            //      }
-            // }
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_Move)
+                OnAnimStateUpdateHandler?.Invoke(ECreatureAnimState.Upper_Move);
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_Move_To_Skill_A)
+                OnAnimStateUpdateHandler?.Invoke(ECreatureAnimState.Upper_Move_To_Skill_A);
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_Move_To_Skill_B)
+                OnAnimStateUpdateHandler?.Invoke(ECreatureAnimState.Upper_Move_To_Skill_B);
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_Move_To_Skill_C)
+                OnAnimStateUpdateHandler?.Invoke(ECreatureAnimState.Upper_Move_To_Skill_C);
+
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_Dead)
+                OnAnimStateUpdateHandler?.Invoke(ECreatureAnimState.Upper_Dead);
         }
 
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle)
+                OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_Idle);
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle_To_Skill_A)
+                OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_Idle_To_Skill_A);
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle_To_Skill_B)
+                OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_Idle_To_Skill_B);
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle_To_Skill_C)
+                OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_Idle_To_Skill_C);
             if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle_To_CollectEnv)
                 OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_Idle_To_CollectEnv);
 
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle_To_Skill_Attack)
-                OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_Idle_To_Skill_Attack);
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_Move)
+                OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_Move);
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_Move_To_Skill_A)
+                OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_Move_To_Skill_A);
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_Move_To_Skill_B)
+                OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_Move_To_Skill_B);
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_Move_To_Skill_C)
+                OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_Move_To_Skill_C);
 
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Move_To_Skill_Attack)
-                OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_Move_To_Skill_Attack);
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_Dead)
+                OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_Dead);
         }
     }
 }

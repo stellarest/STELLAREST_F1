@@ -72,7 +72,7 @@ namespace STELLAREST_F1
                 // }
                 // leaderController.Leader = firstHero;
 
-                int paladin = 7;
+                int paladin = 1;
                 int archer = 0;
                 int wizard = 0;
                 int lancer = 0;
@@ -123,7 +123,7 @@ namespace STELLAREST_F1
             }
 
             {   // --- ENV SINGLE TEST
-                // Temp - Spawn Env (스폰 데이터 시트로 빼야함)
+                // // // Temp - Spawn Env (스폰 데이터 시트로 빼야함)
                 Env env = Managers.Object.Spawn<Env>(EObjectType.Env, ReadOnly.DataAndPoolingID.DNPID_Env_AshTree);
                 // int x = Managers.Object.Monsters[0].CellPos.x;
                 // int y = Managers.Object.Monsters[0].CellPos.y;

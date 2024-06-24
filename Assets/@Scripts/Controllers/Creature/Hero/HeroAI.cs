@@ -105,9 +105,11 @@ namespace STELLAREST_F1
         {
             get
             {
+                // --- Owner.ForceMove == false는 계속 false로 잠그고 있어야함.
+                // --- 기본적으로 Leader의 Position을 쫓는다.
                 if (Owner.ForceMove == false && Owner.Target.IsValid())
                     return Owner.Target.CellPos;
-                
+
                 HeroLeaderController leaderController = Managers.Object.HeroLeaderController;
                 switch (leaderController.HeroMemberFormationMode)
                 {
@@ -137,6 +139,50 @@ namespace STELLAREST_F1
 
             return leaderController.HeroMemberFormationMode == EHeroMemberFormationMode.ForceStop;
         }
+
+        protected bool TryForceMove()
+        {
+            // --- ForceMove가 아닌 상태에서 싸우고 있을 때
+            if (Owner.ForceMove == false)
+                return false;
+
+            HeroLeaderController leaderController = Managers.Object.HeroLeaderController;
+            Hero leader = leaderController.Leader;
+
+            // --- Idle에서 ForceMove 상태가 되었을 때
+            if (Owner.Target.IsValid() == false)
+            {
+                // --- 타겟이 없으면 바로 움직인다.
+                List<Vector3Int> idlePathFind = Managers.Map.FindPath(startCellPos: Owner.CellPos, destCellPos: leader.CellPos, maxDepth: 2);
+                if (idlePathFind.Count > 1)
+                {
+                    if (Managers.Map.CanMove(idlePathFind[1]))
+                        return true;
+                }
+            }
+            else
+            {
+                // --- 기존에 타겟이 있었을 경우(Skill 또는 Env를 하고 있었던 경우)
+                if (Owner.IsInTheNearestTarget)
+                {
+                    int dx = Mathf.Abs(leader.CellPos.x - Owner.CellPos.x);
+                    int dy = Mathf.Abs(leader.CellPos.y - Owner.CellPos.y);
+
+                    // --- 리더가 움직였을 때, 리더와 일정한 칸 이상 떨어진 상태가 되면 강제로 움직인다.
+                    // --- Force를 해야 Move 상태로 돌아갈 수 있다.
+                    if (Owner.Target.ObjectType == EObjectType.Monster)
+                    {
+                        // 몇 칸 떨어졌는지 약간 늦게 체크되는 것 같으면 이것만 LateUpdate 등으로 빼도 될 것 같긴함.
+                        if (dx >= 3 && dy >= 3)
+                            return true;
+                    }
+                    else // --- Env가 Target이었다면 움직였을 때 무조건 Move로 전환한다.
+                        return true;
+                }
+            }
+            
+            return false;
+        }
         #endregion
 
         #region Core
@@ -164,101 +210,8 @@ namespace STELLAREST_F1
                             func: Owner.IsValid);
         }
 
-        public override void UpdateIdle()
-        {
-            if (Owner.IsLeader)
-                return;
-
-            if (Owner.IsValid() == false)
-                return;
-
-            Owner.LookAtValidTarget();
-            if (Owner.ForceMove == false && Owner.IsInTargetAttackRange())
-            {
-                if (Owner.Target.ObjectType == EObjectType.Monster)
-                {
-                    if (Owner.CanSkill(ESkillType.Skill_Attack))
-                        Owner.CreatureSkill.CurrentSkill.DoSkill();
-                }
-                else if (Owner.Target.ObjectType == EObjectType.Env)
-                {
-                    if (Owner.CanCollectEnv)
-                        Owner.CollectEnv();
-                }
-            }
-            else
-            {
-                List<Vector3Int> idlePathFind = Managers.Map.FindPath(startCellPos: Owner.CellPos, destCellPos: ChaseCellPos, maxDepth: 2);
-                if (idlePathFind.Count > 1)
-                {
-                    if (Managers.Map.CanMove(idlePathFind[1]))
-                    {
-                        Owner.CreatureAIState = ECreatureAIState.Move;
-                        return;
-                    }
-                }
-            }
-        }
-
-        public override void UpdateMove()
-        {
-            if (Owner.IsLeader)
-                return;
-
-            if (Owner.IsValid() == false)
-                return;
-
-            if (Owner.ForceMove == false && Owner.IsInTargetAttackRange())
-            {
-                Owner.CreatureAIState = ECreatureAIState.Idle;
-                return;
-            }
-
-            EFindPathResult result = Owner.FindPathAndMoveToCellPos(destPos: ChaseCellPos,
-                maxDepth: ReadOnly.Numeric.HeroDefaultMoveDepth);
-
-            if (result == EFindPathResult.Fail_NoPath)
-            {
-                Hero leader = Managers.Object.HeroLeaderController.Leader;
-                if (leader.IsMoving == false)
-                {
-                    Owner.CreatureAIState = ECreatureAIState.Idle;
-                }
-
-                return;
-            }
-            
-
-            {
-                List<Vector3Int> path = Managers.Map.FindPath(Owner.CellPos, ChaseCellPos, 2);
-                if (path.Count > 0)
-                {
-                    Vector3 centeredLastPathPos = Managers.Map.CenteredCellToWorld(path[path.Count - 1]);
-                    if (Owner.Target.IsValid() && (Owner.transform.position - centeredLastPathPos).sqrMagnitude < 0.01f)
-                    {
-                        if (IsPingPongAndCantMoveToDest(Owner.CellPos))
-                        {
-                            if (_currentPingPongCantMoveCount >= ReadOnly.Numeric.MaxCanPingPongConditionCount && IsForceMovingPingPongObject == false)
-                            {
-                                Debug.Log($"<color=magenta>[!]{Owner.gameObject.name}, Start force moving for PingPong Object.</color>");
-                                Owner.StopCoLerpToCellPos();
-                                CoStartForceMovePingPongObject(Owner.CellPos, ChaseCellPos, endCallback: delegate ()
-                                {
-                                    Debug.Log($"<color=cyan>[!]{Owner.gameObject.name}, End ForcePingPong..</color>");
-                                    _currentPingPongCantMoveCount = 0;
-                                    CoStopForceMovePingPongObject();
-                                    Owner.StartCoLerpToCellPos();
-                                    Owner.CreatureAIState = ECreatureAIState.Idle;
-                                });
-                            }
-                            else if (IsForceMovingPingPongObject == false)
-                                ++_currentPingPongCantMoveCount;
-                        }
-                    }
-                }
-            }
-        }
-
+        public override void UpdateIdle() { }
+        public override void UpdateMove() { }
         public override void OnDead()
         {
             StopCoIsFarFromLeaderTick();
@@ -272,7 +225,8 @@ namespace STELLAREST_F1
             StartCoSearchTarget<BaseObject>(scanRange: ReadOnly.Numeric.HeroDefaultScanRange,
                             firstTargets: Managers.Object.Monsters,
                             secondTargets: Managers.Object.Envs,
-                            func: Owner.IsValid);
+                            func: Owner.IsValid,
+                            allTargetsCondition: allTargetsCondition);
 
             StartCoIsFarFromLeaderTick();
         }
@@ -352,3 +306,20 @@ namespace STELLAREST_F1
         #endregion
     }
 }
+
+/*
+    [PREV REF]
+    // --- 상태이상 등에 의해 못갈수도 있으므로 Try를 붙임.
+    protected void TryForceMove_Prev()
+    {
+        List<Vector3Int> idlePathFind = Managers.Map.FindPath(startCellPos: Owner.CellPos, destCellPos: ChaseCellPos, maxDepth: 2);
+        if (idlePathFind.Count > 1)
+        {
+            if (Managers.Map.CanMove(idlePathFind[1]))
+            {
+                Owner.CreatureAIState = ECreatureAIState.Move;
+                return;
+            }
+        }
+    }
+*/

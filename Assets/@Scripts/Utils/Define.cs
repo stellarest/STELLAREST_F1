@@ -92,7 +92,6 @@ namespace STELLAREST_F1
 
         public enum ECreatureAIState // -- > ECreatureAnimMachineState
         {
-            None,
             Idle,
             Move,
             Dead,
@@ -137,9 +136,10 @@ namespace STELLAREST_F1
             None = -1,
             Idle,
             Move,
-            Skill_Attack,
             Skill_A,
             Skill_B,
+            Skill_C,
+            CollectEnv,
             Sick,
             Dead,
             Max = Dead + 1
@@ -318,10 +318,10 @@ namespace STELLAREST_F1
         public enum ESkillType
         {
             None = -1,
-            Skill_Attack, // UpperBody, LowerBody 분리
-            Skill_A, // Upper-Lower 통합, 분리도 가능하다는 가정을 하고
-            Skill_B, // Upper-Lower 통합
-            Max = Skill_B + 1
+            Skill_A,
+            Skill_B,
+            Skill_C,
+            Max = Skill_C + 1
         }
 
         // ####################################################
@@ -336,7 +336,8 @@ namespace STELLAREST_F1
             BodyAttack,
             CreatureAI,
             HeroAI,
-            ArcherAI,
+            MeleeHeroAI,
+            RangedHeroAI,
             MonsterAI
         }
 
@@ -447,15 +448,23 @@ namespace STELLAREST_F1
         {
             // Upper
             None = -1,
+
             Upper_Idle,
-            Upper_Idle_To_Skill_Attack,
+            Upper_Idle_To_Skill_A,
+            Upper_Idle_To_Skill_B,
+            Upper_Idle_To_Skill_C,
             Upper_Idle_To_CollectEnv,
-            Upper_Idle_To_Dead,
+
             Upper_Move,
-            Upper_Move_To_Skill_Attack,
+            Upper_Move_To_Skill_A,
+            Upper_Move_To_Skill_B,
+            Upper_Move_To_Skill_C,
+
+            Upper_Dead,
             // Lower
             Lower_Idle,
             Lower_Move,
+
             Max = Lower_Move + 1
         }
 
@@ -509,25 +518,31 @@ namespace STELLAREST_F1
             public static class AnimationParams
             {
                 // --- States for State Machine
-                public static readonly string Upper_Dummy = "Upper_Dummy";
-
+                // Upper Layers
                 public static readonly string Upper_Idle = "Upper_Idle";
-                public static readonly string Upper_Idle_To_Skill_Attack = "Upper_Idle_To_Skill_Attack";
+                public static readonly string Upper_Idle_To_Skill_A = "Upper_Idle_To_Skill_A";
+                public static readonly string Upper_Idle_To_Skill_B = "Upper_Idle_To_Skill_B";
+                public static readonly string Upper_Idle_To_Skill_C = "Upper_Idle_To_Skill_C";
                 public static readonly string Upper_Idle_To_CollectEnv = "Upper_Idle_To_CollectEnv";
-                public static readonly string Upper_Idle_To_Dead = "Upper_Idle_To_Dead";
 
                 public static readonly string Upper_Move = "Upper_Move";
-                public static readonly string Upper_Move_To_Skill_Attack = "Upper_Move_To_Skill_Attack";
+                public static readonly string Upper_Move_To_Skill_A = "Upper_Move_To_Skill_A";
+                public static readonly string Upper_Move_To_Skill_B = "Upper_Move_To_Skill_B";
+                public static readonly string Upper_Move_To_Skill_C = "Upper_Move_To_Skill_C";
 
+                public static readonly string Upper_Dead = "Upper_Dead";
+
+                // Lower Layers
                 public static readonly string Lower_Idle = "Lower_Idle";
                 public static readonly string Lower_Move = "Lower_Move";
 
                 // --- Params
-                public static readonly string Moving = "Moving";
-                public static readonly string Skill_Attack = "Skill_Attack";
-                public static readonly string CollectEnv = "CollectEnv";
-                public static readonly string AttackRange = "AttackRange";
-                public static readonly string ReadySkillAttack = "ReadySkillAttack";
+                public static readonly string IsMoving = "IsMoving";
+                public static readonly string CanSkill = "CanSkill";
+                public static readonly string OnSkill_A = "OnSkill_A";
+                public static readonly string OnSkill_B = "OnSkill_B";
+                public static readonly string OnSkill_C = "OnSkill_C";
+                public static readonly string OnCollectEnv = "OnCollectEnv";
                 public static readonly string OnDead = "OnDead";
             }
 
@@ -750,7 +765,7 @@ namespace STELLAREST_F1
                 public static readonly int HeroMaxMoveDepth = 100;
                 public static readonly int CreatureWarpMoveDepth = 50;
                 public static readonly int MonsterDefaultMoveDepth = 5; // default: 3 -> 5       
-                public static readonly int MaxCanPingPongConditionCount = 10;
+                public static readonly int MaxCanPingPongConditionCount = 20;
 
                 // --- [ FLOATING ]
                 // -- [ HERO ]

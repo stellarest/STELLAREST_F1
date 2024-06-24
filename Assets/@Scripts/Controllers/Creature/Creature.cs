@@ -18,7 +18,8 @@ namespace STELLAREST_F1
         public CreatureAnimation CreatureAnim { get; private set; } = null;
         public CreatureAnimationCallback CreatureAnimCallback { get; private set; } = null;
 
-        public virtual Vector3Int ChaseCellPos // *** NO SETTER !! ***
+        // --- NO SETTER
+        public virtual Vector3Int ChaseCellPos 
         {
             get
             {
@@ -32,16 +33,63 @@ namespace STELLAREST_F1
         [SerializeField] protected EFindPathResult _findPathResult = EFindPathResult.None;
         [field: SerializeField] public bool ForceMove { get; set; } = false;
 
-        public bool CanCreatureSkill(ESkillType skillType)
+        public bool CanSkill
         {
-            return false;
-        }
+            get
+            {
+                if (this.IsValid() == false)
+                {
+                    CreatureAnim.ReadySkill = false;
+                    return false;
+                }
 
-        public void Dead() => CreatureAnim.Dead();
+                if (Target.IsValid() == false)
+                {
+                    CreatureAnim.ReadySkill = false;
+                    return false;
+                }
 
-        public virtual bool CanSkill(ESkillType skillType)
-        {
-            return CreatureSkill.IsRemainingCoolTime(skillType) == false;
+                if (CreatureAnim.CanEnterAnimState(ECreatureAnimState.Upper_Idle_To_Skill_A) == false ||
+                    CreatureAnim.CanEnterAnimState(ECreatureAnimState.Upper_Move_To_Skill_A) == false)
+                {
+                    return false;
+                }
+
+                SkillBase currentSkill = CreatureSkill.CurrentSkill;
+                if (currentSkill.RemainCoolTime > 0f)
+                {
+                    CreatureAnim.ReadySkill = false;
+                    return false;
+                }
+
+                int dx = Mathf.Abs(Target.CellPos.x - CellPos.x);
+                int dy = Mathf.Abs(Target.CellPos.y - CellPos.y);
+                int invokeRange = currentSkill.InvokeRange;
+                if (Target.ObjectType == EObjectType.Monster || Target.ObjectType == EObjectType.Hero)
+                {
+                    if (dx <= invokeRange && dy <= invokeRange)
+                    {
+                        // --- For HeroAI, MonsterAI, 자기 자신이 아직 Cell 중앙까지 오지 않은 상황이라면 리턴
+                        if (NextCenteredCellPos.HasValue)
+                        {
+                            if ((transform.position - NextCenteredCellPos.Value).sqrMagnitude > 0.01f)
+                                return false;
+                        }
+                        // --- For Leader Hero (ex. 리더같은 경우에는 치킨이 중앙에 왔을 때 때려야함)
+                        else
+                        {
+                            if ((Target.transform.position - Target.NextCenteredCellPos.Value).sqrMagnitude > 0.01f)
+                                return false;
+                        }                        
+
+                        CreatureAnim.ReadySkill = true;
+                        return true;
+                    }
+                }
+
+                CreatureAnim.ReadySkill = false;
+                return false;
+            }
         }
 
         public virtual bool CanCollectEnv
@@ -54,16 +102,16 @@ namespace STELLAREST_F1
                 if (Target.IsValid() && Target.ObjectType != EObjectType.Env)
                     return false;
 
-                if (IsMoving || CreatureAnim.CanEnterAnimState(ECreatureAnimState.Upper_Idle_To_CollectEnv) == false)
+                if (Moving || CreatureAnim.CanEnterAnimState(ECreatureAnimState.Upper_Idle_To_CollectEnv) == false)
                     return false;
+
+                int dx = Mathf.Abs(Target.CellPos.x - CellPos.x);
+                int dy = Mathf.Abs(Target.CellPos.y - CellPos.y);
+                if (dx <= 1 && dy <= 1)
+                    return true;
 
                 return true;
             }
-        }
-
-        public virtual void CollectEnv()
-        {
-            CreatureAnim.Collect();
         }
 
         [SerializeField] private ECreatureAIState _creatureAIState = ECreatureAIState.Idle;
@@ -77,7 +125,7 @@ namespace STELLAREST_F1
                     _creatureAIState = value;
                     if (value == ECreatureAIState.Dead)
                     {
-                        CreatureAnim.Dead();
+                        Dead();
                         CreatureAI.OnDead();
                     }
                 }
@@ -96,42 +144,7 @@ namespace STELLAREST_F1
             }
         }
 
-        public bool IsInTargetAttackRange()
-        {
-            if (Target.IsValid() == false)
-            {
-                CreatureAnim.IsInAttackRange = false;
-                return false;
-            }
-
-            int dx = Mathf.Abs(Target.CellPos.x - CellPos.x);
-            int dy = Mathf.Abs(Target.CellPos.y - CellPos.y);
-
-            if (Target.ObjectType == EObjectType.Monster || Target.ObjectType == EObjectType.Hero)
-            {
-                if (dx <= AtkRange && dy <= AtkRange)
-                {
-                    CreatureAnim.IsInAttackRange = true;
-                    return true;
-                }
-            }
-            else if (Target.ObjectType == EObjectType.Env)
-            {
-                if (dx <= 1 && dy <= 1)
-                    return true;
-            }
-
-            CreatureAnim.IsInAttackRange = false;
-            return false;
-        }
-
         public bool IsValid(BaseObject bo) => bo.IsValid();
-
-        public virtual bool IsMoving
-        {
-            get => CreatureAnim.IsMoving;
-            set => CreatureAnim.IsMoving = value;
-        }
 
         public EFindPathResult FindPathAndMoveToCellPos(Vector3 destPos, int maxDepth, EObjectType ignoreObjectType = EObjectType.None)
         {
@@ -168,11 +181,63 @@ namespace STELLAREST_F1
 
             Vector3Int dirCellPos = path[1] - CellPos;
             Vector3Int nextPos = CellPos + dirCellPos;
+            NextCenteredCellPos = Managers.Map.CenteredCellToWorld(nextPos);
 
             if (Managers.Map.MoveTo(creature: this, cellPos: nextPos, ignoreObjectType: ignoreObjectType) == false)
                 return EFindPathResult.Fail_MoveTo;
 
             return EFindPathResult.Success;
+        }
+
+        public virtual bool Moving
+        {
+            get => CreatureAnim.Moving;
+            set => CreatureAnim.Moving = value;
+        }
+
+        public bool ReadySkill
+        {
+            get => CreatureAnim.ReadySkill;
+            set => CreatureAnim.ReadySkill = value;
+        }
+
+        public void Skill(ESkillType skillType) => CreatureAnim.Skill(skillType);
+        public void CollectEnv() => CreatureAnim.CollectEnv();
+        public void Dead() => CreatureAnim.Dead();
+
+        public bool IsInTheNearestTarget
+        {
+            get
+            {
+                if (Target.IsValid() == false)
+                    return false;
+
+                int dx = Mathf.Abs(Target.CellPos.x - CellPos.x);
+                int dy = Mathf.Abs(Target.CellPos.y - CellPos.y);
+                if (Target.ObjectType == EObjectType.Monster)
+                {
+                    float bestShortRange = float.MaxValue;
+                    for (int i = 0; i < (int)ESkillType.Max; ++i)
+                    {
+                        SkillBase skill = CreatureSkill.SkillArray[i];
+                        if (skill == null)
+                            continue;
+
+                        if (skill.InvokeRange < bestShortRange)
+                            bestShortRange = skill.InvokeRange;
+                    }
+
+                    if (dx <= bestShortRange && dy <= bestShortRange)
+                        return true;
+                }
+                else if (Target.ObjectType == EObjectType.Env)
+                {
+                    if (dx <= 1 && dy <= 1)
+                        return true;
+                }
+
+                return false;
+            }
         }
         #endregion
 
@@ -222,8 +287,8 @@ namespace STELLAREST_F1
                           CreatureAnim.AddAnimClipEvents();
                           CreatureAnim.AddAnimStateEvents();
                 #endregion
-                          CreatureAIState = ECreatureAIState.Idle;
-                          StartCoroutine(CoUpdateAI());
+                          //StartCoroutine(CoUpdateAI());
+                          StartCoUpdateAI();
                           StartCoLerpToCellPos();
                       });
         }
@@ -257,12 +322,12 @@ namespace STELLAREST_F1
         #endregion
 
         #region Coroutines
+        protected Coroutine _coUpdateAI = null;
         #endregion
         protected IEnumerator CoUpdateAI()
         {
             // if (ObjectType == EObjectType.Monster)
             //     yield break;
-
             while (true)
             {
                 switch (CreatureAIState)
@@ -279,6 +344,20 @@ namespace STELLAREST_F1
                 //UpdateCellPos();
                 yield return null;
             }
+        }
+
+        public void StartCoUpdateAI()
+        {
+            StopCoUpdateAI();
+            _coUpdateAI = StartCoroutine(CoUpdateAI());
+        }
+
+        public void StopCoUpdateAI()
+        {
+            if (_coUpdateAI != null)
+                StopCoroutine(_coUpdateAI);
+            
+            _coUpdateAI = null;
         }
 
         protected Coroutine _coWait = null;
@@ -479,6 +558,41 @@ namespace STELLAREST_F1
 
 /*
         [ PREV REF ]
+        public virtual bool IsMoving
+        {
+            get => CreatureAnim.IsMoving;
+            set => CreatureAnim.IsMoving = value;
+        }
+
+        public bool IsValidTargetInAttackRange()
+        {
+            if (Target.IsValid() == false)
+            {
+                CreatureAnim.IsInAttackRange = false;
+                return false;
+            }
+
+            int dx = Mathf.Abs(Target.CellPos.x - CellPos.x);
+            int dy = Mathf.Abs(Target.CellPos.y - CellPos.y);
+
+            if (Target.ObjectType == EObjectType.Monster || Target.ObjectType == EObjectType.Hero)
+            {
+                if (dx <= AtkRange && dy <= AtkRange)
+                {
+                    CreatureAnim.IsInAttackRange = true;
+                    return true;
+                }
+            }
+            else if (Target.ObjectType == EObjectType.Env)
+            {
+                if (dx <= 1 && dy <= 1)
+                    return true;
+            }
+
+            CreatureAnim.IsInAttackRange = false;
+            return false;
+        }
+
         private T SearchClosestInRange<T>(float scanRange, IEnumerable<T> firstTargets, IEnumerable<T> secondTargets = null,
                                         System.Func<T, bool> func = null, System.Func<bool> allTargetsCondition = null) where T : BaseObject
         {

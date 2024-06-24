@@ -127,7 +127,8 @@ namespace STELLAREST_F1
             }
         }
 
-        public Vector3 TargetPosition { get; private set; } = Vector3.zero;
+        public Vector3 TargetPosition { get; private set; } = Vector3.zero;        
+        [field: SerializeField] public Vector3? NextCenteredCellPos { get; set; } = Vector3.zero;
 
         public override bool Init()
         {
@@ -185,7 +186,7 @@ namespace STELLAREST_F1
 
             MaxHp = MaxHpBase = StatData.MaxHp;
             Atk = AtkBase = StatData.Atk;
-            AtkRange = AtkRangeBase = StatData.AtkRange;
+            //AtkRange = AtkRangeBase = StatData.AtkRange;
             CriticalRate = CriticalRateBase = StatData.CriticalRate;
             DodgeRate = DodgeRateBase = StatData.DodgeRate;
             MovementSpeed = MovementSpeedBase = StatData.MovementSpeed;
@@ -353,7 +354,7 @@ namespace STELLAREST_F1
 
             Vector3 destPos = Managers.Map.CenteredCellToWorld(CellPos); // 이동은 가운데로.
             Vector3 dir = destPos - transform.position;
-
+            // --- LookAtValidTarget은 이동할 때 바라보면서 백스텝하는게 어색해보여서 생략
             if (dir.x < 0f)
                 LookAtDir = ELookAtDirection.Left;
             else if (dir.x > 0f)

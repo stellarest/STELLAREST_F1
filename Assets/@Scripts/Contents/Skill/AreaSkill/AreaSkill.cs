@@ -8,7 +8,7 @@ namespace STELLAREST_F1
     {
         public SpellIndicator Indicator { get; protected set; } = null;
 
-        public override void OnSkillStateEnd()
+        public override void OnSkillStateExit()
         {
             throw new System.NotImplementedException();
         }

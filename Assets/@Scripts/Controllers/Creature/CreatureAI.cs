@@ -154,6 +154,65 @@ namespace STELLAREST_F1
         }
 
         protected bool IsForceMovingPingPongObject => _coForceMovePingPongObject != null;
+
+        protected void EvadePingPongMovement()
+        {
+            if (Owner.ForceMove)
+                return;
+
+            {
+                List<Vector3Int> path = Managers.Map.FindPath(Owner.CellPos, ChaseCellPos, 2);
+                if (path.Count > 0)
+                {
+                    Vector3 centeredLastPathPos = Managers.Map.CenteredCellToWorld(path[path.Count - 1]);
+                    if (Owner.Target.IsValid() && (Owner.transform.position - centeredLastPathPos).sqrMagnitude < 0.01f)
+                    {
+                        if (IsPingPongAndCantMoveToDest(Owner.CellPos))
+                        {
+                            if (_currentPingPongCantMoveCount >= ReadOnly.Numeric.MaxCanPingPongConditionCount && IsForceMovingPingPongObject == false)
+                            {
+                                Debug.Log($"<color=magenta>[!]{Owner.gameObject.name}, Start force moving for PingPong Object.</color>");
+                                Owner.StopCoLerpToCellPos();
+                                CoStartForceMovePingPongObject(Owner.CellPos, ChaseCellPos, endCallback: delegate ()
+                                {
+                                    Debug.Log($"<color=cyan>[!]{Owner.gameObject.name}, End ForcePingPong..</color>");
+                                    _currentPingPongCantMoveCount = 0;
+                                    CoStopForceMovePingPongObject();
+                                    Owner.StartCoLerpToCellPos();
+                                    Owner.CreatureAIState = ECreatureAIState.Idle;
+                                });
+                            }
+                            else if (IsForceMovingPingPongObject == false)
+                                ++_currentPingPongCantMoveCount;
+                        }
+                    }
+                }
+            }
+        }
+        protected Vector3Int GetWorldToCellDest(Vector3 dir, float dist)
+        {
+            Vector3 dest = dir * dist;
+            float minRot = -30f;
+            float maxRot = 30f;
+            Quaternion randRot = Quaternion.Euler(0f, 0f, UnityEngine.Random.Range(minRot, maxRot));
+            Vector3Int destCellPos = Managers.Map.WorldToCell(randRot * dest);
+            int attemptCount = 0;
+            while (Managers.Map.CanMove(destCellPos) == false)
+            {
+                if (attemptCount++ > 100)
+                {
+                    destCellPos = Owner.CellPos;
+                    break;
+                }
+
+                dest = dir * UnityEngine.Random.Range(dist, dist++);
+                randRot = Quaternion.Euler(0f, 0f, UnityEngine.Random.Range(minRot--, maxRot++));
+                destCellPos = Managers.Map.WorldToCell(randRot * dest);
+            }
+
+            return destCellPos;
+        }
+
         #endregion
 
         #region Core
@@ -232,6 +291,14 @@ namespace STELLAREST_F1
             for (int i = 0; i < path.Count; ++i)
                 pathQueue.Enqueue(path[i]);
             pathQueue.Dequeue();
+
+            // --- DEFENSE
+            if (pathQueue.Count == 0)
+            {
+                endCallback?.Invoke();
+                Owner.UpdateCellPos();
+                yield break;
+            }
 
             Vector3Int nextPos = pathQueue.Dequeue();
             Vector3 currentWorldPos = Managers.Map.CellToWorld(currentCellPos);

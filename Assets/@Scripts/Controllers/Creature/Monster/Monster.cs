@@ -11,7 +11,7 @@ namespace STELLAREST_F1
     {
         #region Background
         public Data.MonsterData MonsterData { get; private set; } = null;
-        private MonsterBody _monsterBody = null;
+        [SerializeField] private MonsterBody _monsterBody = null;
         public MonsterBody MonsterBody
         {
             get => _monsterBody;
@@ -36,19 +36,19 @@ namespace STELLAREST_F1
 
                     case ECreatureAIState.Idle:
                         {
-                            IsMoving = false;
+                            Moving = false;
                             return;
                         }
 
                     case ECreatureAIState.Move:
                         {
-                            IsMoving = true;
+                            Moving = true;
                             return;
                         }
 
                     case ECreatureAIState.Dead:
                         {
-                            CreatureAnim.Dead();
+                            Dead();
                             return;
                         }
                 }
@@ -109,6 +109,7 @@ namespace STELLAREST_F1
             // --- Monsters Default Dir
             LookAtDir = ELookAtDirection.Left;
             base.EnterInGame();
+            CreatureAIState = ECreatureAIState.Idle;
         }
 
         public override void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)

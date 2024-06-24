@@ -7,6 +7,32 @@ using UnityEngine;
 using DG.Tweening;
 
 /*
+// --- MeleeHeroAI 대략적으로 수정 된듯. 근데 뭔가 똥을 덜 닦은 느낌.
+// --- Formation 모드는 리더랑 멀어질 수 밖에 없긴함. 이거 떄문인가.
+// --- 아 완성인듯. Formation 모드와 상관없이 모든 오너는, 오너가 ForceMove일 때, InInTheNearestTarget을 체크하고
+// --- 이 때, 거리가 먼 상태라면 강제로 ForceMove 상태로 들어감.
+// --- 그러니까 Force가 아닌 상태에서 가만히 있으면 Target에게 Skill 또는 Env를 시전하는 것이 맞는 것 같음.
+
+// --- 공격 범위 대략 고침
+// --- 리더가 처음으로 바뀌면 잘 되는데 다시 그 리더로 설정하게 되면 AI 먹통됨.
+
+// --- Chicken 완료했으므로 나머지 몬스터들 완료해놓기
+// --- Archer, Wizard, Gunner(RangedHeroAI) 만들어 놓고, 기존 RangedHeroAI 스크립트(Static, Dynamic AI) 제거
+// --- 코드 정리랑 애니메이션을 다시 만들어서 하니까 애니메이션 파라미터를 제대로 인식하는듯. 이전에 어딘가 잘못되었었다는 뜻.
+// --- Env 애니메이션도 복원시켜놔야함. (BaseAnim 신경쓰지말고 그냥 EnvAnim으로 퉁치기. 어차피 Env들 끼리는 똑같아서)
+// --- 몬스터가 BodyAttack으로 히어로에게 들이댈 때, 히어로 Melee 어택이 안나가게 해야할까? 이건 선택이긴한데.
+
+// --- Upper_Idle_To_Skill_A, Move_Skill_A 전부 CreatureAnimState Enter, Exit 넣어야함.
+// --- 쿨탐 매우 낮아지면 빨라지면 답 없음.
+
+// --- MeleeHeroAI, RangedHeroAI 완성 이후, Dynamic, Static Hero AI 전부 제거
+// --- 모든 캐릭터는 이동하면서 Skill_A 사용 가능, 이후 Skill_B, C는 고민좀 해 볼것. 스킬 데이터에 static 옵션을 넣는다던지
+// --- 원거리 히어로 AI도 마찬가지로 공격 State Update 중일때만 LookAtValidTarget으로 수정해야함
+
+// --- Archar AI 구현 준비
+// 일단 뒤로물러간다음에 공격하는 것으로, 무빙샷 말고. 그 다음에 무빙샷 구현.
+// --- 다른 히어로들 애니메이션, AI 준비
+
 // 물체 뒤에 가려진 보이지 않는 오브젝트 아웃라인 처리
 // 몬스터 BodyAttack은 몬스터 본체가 아닌, AnimBody같은것으로 인식해서 히어로 앞에 가까이 와도 히어로의 AttackRange 1에 인식이 안되게끔 수정하는것도 괜찮을듯
 // (아니면 이것보다 더 좋은것은 IsAttackInRange 자체를 수정하는 것)

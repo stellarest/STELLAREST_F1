@@ -3,12 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Unity.Properties;
 using UnityEngine;
 using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
+    [System.Serializable]
     public class HeroFace
     {
         public HeroFace(HeroBody heroBody)
@@ -68,84 +70,237 @@ namespace STELLAREST_F1
         private Sprite[] _mouthSprites = null;
         private Color[] _mouthColors = null;
 
-        public void SetEmoji(EHeroEmoji heroEmoji)
+        [SerializeField] private EHeroEmoji _heroEmoji = EHeroEmoji.None;
+        public EHeroEmoji HeroEmoji
         {
-            switch (heroEmoji)
+            get => _heroEmoji;
+            set
             {
-                case EHeroEmoji.Idle:
+                if (_heroEmoji != value)
+                {
+                    switch (value)
                     {
-                        _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Idle];
-                        _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Idle];
+                        case EHeroEmoji.Idle:
+                            {
+                                _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Idle];
+                                _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Idle];
 
-                        _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Idle];
-                        _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Idle];
+                                _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Idle];
+                                _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Idle];
 
-                        _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Idle];
-                        _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Idle];
+                                _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Idle];
+                                _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Idle];
+                            }
+                            break;
+
+                        case EHeroEmoji.Move:
+                            {
+                                _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Move];
+                                _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Move];
+
+                                _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Move];
+                                _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Move];
+
+                                _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Move];
+                                _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Move];
+                            }
+                            break;
+
+                        case EHeroEmoji.Skill_A:
+                            {
+                                _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Skill_A];
+                                _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Skill_A];
+
+                                _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Skill_A];
+                                _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Skill_A];
+
+                                _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Skill_A];
+                                _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Skill_A];
+                            }
+                            break;
+
+                        case EHeroEmoji.Skill_B:
+                            {
+                                _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Skill_B];
+                                _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Skill_B];
+
+                                _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Skill_B];
+                                _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Skill_B];
+
+                                _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Skill_B];
+                                _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Skill_B];
+                            }
+                            break;
+
+                        case EHeroEmoji.Skill_C:
+                            {
+                                _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Skill_C];
+                                _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Skill_C];
+
+                                _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Skill_C];
+                                _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Skill_C];
+
+                                _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Skill_C];
+                                _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Skill_C];
+                            }
+                            break;
+
+                        case EHeroEmoji.CollectEnv:
+                            {
+                                _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.CollectEnv];
+                                _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.CollectEnv];
+
+                                _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.CollectEnv];
+                                _eyesSPR.color = _eyesColors[(int)EHeroEmoji.CollectEnv];
+
+                                _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.CollectEnv];
+                                _mouthSPR.color = _mouthColors[(int)EHeroEmoji.CollectEnv];
+                            }
+                            break;
+
+                        case EHeroEmoji.Sick:
+                            {
+                                _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Sick];
+                                _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Sick];
+
+                                _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Sick];
+                                _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Sick];
+
+                                _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Sick];
+                                _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Sick];
+                            }
+                            break;
+
+                        case EHeroEmoji.Dead:
+                            {
+                                _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Dead];
+                                _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Dead];
+
+                                _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Dead];
+                                _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Dead];
+
+                                _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Dead];
+                                _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Dead];
+                            }
+                            break;
                     }
-                    break;
-
-                case EHeroEmoji.Move:
-                    {
-                        _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Move];
-                        _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Move];
-
-                        _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Move];
-                        _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Move];
-
-                        _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Move];
-                        _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Move];
-                    }
-                    break;
-
-                case EHeroEmoji.Skill_Attack:
-                    {
-                        _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Skill_Attack];
-                        _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Skill_Attack];
-
-                        _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Skill_Attack];
-                        _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Skill_Attack];
-
-                        _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Skill_Attack];
-                        _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Skill_Attack];
-                    }
-                    break;
-
-                case EHeroEmoji.Skill_A:
-                    break;
-
-                case EHeroEmoji.Skill_B:
-                    break;
-
-                case EHeroEmoji.Sick:
-                    {
-                        _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Sick];
-                        _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Sick];
-
-                        _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Sick];
-                        _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Sick];
-
-                        _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Sick];
-                        _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Sick];
-                    }
-                    break;
-
-                case EHeroEmoji.Dead:
-                    {
-                        _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Dead];
-                        _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Dead];
-
-                        _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Dead];
-                        _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Dead];
-
-                        _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Dead];
-                        _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Dead];
-                    }
-                    break;
+                }
+                _heroEmoji = value;
             }
         }
+
+        // public void SetEmoji(EHeroEmoji heroEmoji)
+        // {
+        //     switch (heroEmoji)
+        //     {
+        //         case EHeroEmoji.Idle:
+        //             {
+        //                 _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Idle];
+        //                 _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Idle];
+
+        //                 _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Idle];
+        //                 _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Idle];
+
+        //                 _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Idle];
+        //                 _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Idle];
+        //             }
+        //             break;
+
+        //         case EHeroEmoji.Move:
+        //             {
+        //                 _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Move];
+        //                 _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Move];
+
+        //                 _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Move];
+        //                 _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Move];
+
+        //                 _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Move];
+        //                 _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Move];
+        //             }
+        //             break;
+
+        //         case EHeroEmoji.Skill_A:
+        //             {
+        //                 _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Skill_A];
+        //                 _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Skill_A];
+
+        //                 _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Skill_A];
+        //                 _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Skill_A];
+
+        //                 _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Skill_A];
+        //                 _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Skill_A];
+        //             }
+        //             break;
+
+        //         case EHeroEmoji.Skill_B:
+        //             {
+        //                 _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Skill_B];
+        //                 _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Skill_B];
+
+        //                 _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Skill_B];
+        //                 _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Skill_B];
+
+        //                 _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Skill_B];
+        //                 _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Skill_B];
+        //             }
+        //             break;
+
+        //         case EHeroEmoji.Skill_C:
+        //             {
+        //                 _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Skill_C];
+        //                 _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Skill_C];
+
+        //                 _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Skill_C];
+        //                 _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Skill_C];
+
+        //                 _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Skill_C];
+        //                 _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Skill_C];
+        //             }
+        //             break;
+
+        //         case EHeroEmoji.CollectEnv:
+        //             {
+        //                 _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.CollectEnv];
+        //                 _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.CollectEnv];
+
+        //                 _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.CollectEnv];
+        //                 _eyesSPR.color = _eyesColors[(int)EHeroEmoji.CollectEnv];
+
+        //                 _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.CollectEnv];
+        //                 _mouthSPR.color = _mouthColors[(int)EHeroEmoji.CollectEnv];
+        //             }
+        //             break;
+
+        //         case EHeroEmoji.Sick:
+        //             {
+        //                 _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Sick];
+        //                 _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Sick];
+
+        //                 _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Sick];
+        //                 _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Sick];
+
+        //                 _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Sick];
+        //                 _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Sick];
+        //             }
+        //             break;
+
+        //         case EHeroEmoji.Dead:
+        //             {
+        //                 _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Dead];
+        //                 _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Dead];
+
+        //                 _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Dead];
+        //                 _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Dead];
+
+        //                 _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Dead];
+        //                 _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Dead];
+        //             }
+        //             break;
+        //     }
+        // }
     }
 
+    [System.Serializable]
     public class HeroBody : CreatureBody
     {
         public HeroBody(Hero owner, int dataID) : base(owner, dataID)
@@ -155,14 +310,19 @@ namespace STELLAREST_F1
             InitBody(EHeroBodyParts.LowerBody, (int)EHeroLowerBody.Max);
             InitBody(EHeroBodyParts.Weapon, (int)EHeroWeapon.Max); // NEED FIX
         }
-        
+
         // ########## HERO FACE ##########
         #region Hero - Face
-        
+
         #endregion
         private Dictionary<EHeroBodyParts, Container[]> _bodyDict = new Dictionary<EHeroBodyParts, Container[]>();
-        public HeroFace Face { get; private set; } = null;
-        public void SetEmoji(EHeroEmoji emoji) => Face?.SetEmoji(emoji);
+        [field: SerializeField] public HeroFace Face { get; private set; } = null;
+        //public void SetEmoji(EHeroEmoji emoji) => Face?.SetEmoji(emoji);
+        public EHeroEmoji HeroEmoji
+        {
+            get => Face.HeroEmoji;
+            set => Face.HeroEmoji = value;
+        }
 
         public List<SpriteRenderer> Skin { get; } = new List<SpriteRenderer>();
         public List<SpriteRenderer> Appearance { get; } = new List<SpriteRenderer>();
@@ -396,8 +556,8 @@ namespace STELLAREST_F1
                         SpriteRenderer spr = tr.GetComponent<SpriteRenderer>();
                         containers[(int)EHeroWeapon.WeaponL] = new Container(tag, tr, spr);
 
-                        containers[(int)EHeroWeapon.WeaponLSocket] = new Container(tag: null, 
-                                                tr: tr.GetChild((int)EWeaponChildIndex.Socket), 
+                        containers[(int)EHeroWeapon.WeaponLSocket] = new Container(tag: null,
+                                                tr: tr.GetChild((int)EWeaponChildIndex.Socket),
                                                 spr: null);
 
                         containers[(int)EHeroWeapon.WeaponLChildGroup] = new Container(tag: null,
@@ -409,8 +569,8 @@ namespace STELLAREST_F1
                         spr = tr.GetComponent<SpriteRenderer>();
                         containers[(int)EHeroWeapon.WeaponR] = new Container(tag, tr, spr);
 
-                        containers[(int)EHeroWeapon.WeaponRSocket] = new Container(tag: null, 
-                                                tr: tr.GetChild((int)EWeaponChildIndex.Socket), 
+                        containers[(int)EHeroWeapon.WeaponRSocket] = new Container(tag: null,
+                                                tr: tr.GetChild((int)EWeaponChildIndex.Socket),
                                                 spr: null);
 
                         containers[(int)EHeroWeapon.WeaponRChildGroup] = new Container(tag: null,

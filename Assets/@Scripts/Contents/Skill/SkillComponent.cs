@@ -10,10 +10,11 @@ namespace STELLAREST_F1
 {
     public class SkillComponent : InitBase
     {
+        private Creature _owner = null;
         public List<SkillBase> Skills { get; } = new List<SkillBase>();
         public List<SkillBase> ActiveSkills { get; } = new List<SkillBase>();
         public SkillBase FindSkill(int dataID) => Skills.FirstOrDefault(n => n.DataTemplateID == dataID);
-        public SkillBase[] SkillArray { get; private set; } = new SkillBase[(int)ESkillType.Max]; // Caching
+        public SkillBase[] SkillArray { get; private set; } = new SkillBase[(int)ESkillType.Max]; // --- Caching
         public SkillBase CurrentSkill
         {
             get
@@ -24,17 +25,15 @@ namespace STELLAREST_F1
                     ###########################################################
                 */
                 if (ActiveSkills.Count == 0)
-                    return SkillArray[(int)ESkillType.Skill_Attack];
+                    return SkillArray[(int)ESkillType.Skill_A];
 
                 // SkillArray로 떔빵 할 수 있을 것 같긴 한데
                 return ActiveSkills[UnityEngine.Random.Range(0, ActiveSkills.Count)];
             }
         }
 
-        public bool IsRemainingCoolTime(ESkillType skillType)
-            => SkillArray[(int)skillType]?.RemainCoolTime > 0.0f;
+        public bool IsRemainingCoolTime(ESkillType skillType) => SkillArray[(int)skillType]?.RemainCoolTime > 0.0f;
 
-        private Creature _owner = null;
         public override bool Init()
         {
             if (base.Init() == false)
@@ -96,17 +95,17 @@ namespace STELLAREST_F1
             ESkillType skillType = Util.GetEnumFromString<ESkillType>(skillData.Type);
             switch (skillType)
             {
-                case ESkillType.Skill_Attack:
-                    SkillArray[(int)ESkillType.Skill_Attack] = skill;
-                    break;
-
                 case ESkillType.Skill_A:
                     SkillArray[(int)ESkillType.Skill_A] = skill;
-                    ActiveSkills.Add(skill);
                     break;
 
                 case ESkillType.Skill_B:
                     SkillArray[(int)ESkillType.Skill_B] = skill;
+                    ActiveSkills.Add(skill);
+                    break;
+
+                case ESkillType.Skill_C:
+                    SkillArray[(int)ESkillType.Skill_C] = skill;
                     ActiveSkills.Add(skill);
                     break;
             }
@@ -118,12 +117,12 @@ namespace STELLAREST_F1
         //     return UnityEngine.Mathf.Clamp(skillInvokeRatio, 0.01f, 0.99f);
         // }
 
-        public void PassOnSkillStateEnter(ECreatureAIState onEnterState)
-                => SkillArray[(int)onEnterState - ReadOnly.Numeric.MaxActiveSkillsCount]?.OnSkillStateEnter();
-        public void PassOnSkillStateUpdate(ECreatureAIState onUpdateState)
-                => SkillArray[(int)onUpdateState - ReadOnly.Numeric.MaxActiveSkillsCount]?.OnSkillStateUpdate();
-        public void PassOnSkillStateEnd(ECreatureAIState onEndState)
-                => SkillArray[(int)onEndState - ReadOnly.Numeric.MaxActiveSkillsCount]?.OnSkillStateEnd();
+        public void OnSkillStateEnter(ESkillType skillType)
+                => SkillArray[(int)skillType]?.OnSkillStateEnter();
+        public void OnSkillStateUpdate(ESkillType skillType)
+                => SkillArray[(int)skillType]?.OnSkillStateUpdate();
+        public void OnSkillStateExit(ESkillType skillType)
+                => SkillArray[(int)skillType]?.OnSkillStateExit();
 
         private void OnDisable()
         {

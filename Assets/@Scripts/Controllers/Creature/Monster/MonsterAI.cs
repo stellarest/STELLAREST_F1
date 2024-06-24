@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using Unity.VisualScripting.Dependencies.Sqlite;
 using UnityEngine;
 using static STELLAREST_F1.Define;
@@ -63,9 +64,9 @@ namespace STELLAREST_F1
                 return;
 
             Owner.LookAtValidTarget();
-            if (Owner.IsInTargetAttackRange() && Owner.CanSkill(ESkillType.Skill_Attack))
+            if (Owner.CanSkill && Owner.LerpToCellPosCompleted)
             {
-                Owner.StopCoLerpToCellPos();
+                //Owner.StopCoLerpToCellPos();
                 Owner.CreatureSkill.CurrentSkill.DoSkill();
                 return;
             }
@@ -88,17 +89,31 @@ namespace STELLAREST_F1
 
             Owner.LookAtValidTarget();
             EFindPathResult result = Owner.FindPathAndMoveToCellPos(destPos: ChaseCellPos, maxDepth: ReadOnly.Numeric.MonsterDefaultMoveDepth);
-            Vector3 centeredPos = Managers.Map.CenteredCellToWorld(ChaseCellPos);
-            if (Owner.IsInTargetAttackRange() && Owner.CanSkill(ESkillType.Skill_Attack))
+            //Vector3 centeredPos = Managers.Map.CenteredCellToWorld(ChaseCellPos);
+            if (Owner.CanSkill || result == EFindPathResult.Fail_NoPath)
             {
                 Owner.CreatureAIState = ECreatureAIState.Idle;
                 return;
             }
-            else if ((transform.position - centeredPos).sqrMagnitude < 0.01f || result == EFindPathResult.Fail_NoPath)
-            {
-                Owner.CreatureAIState = ECreatureAIState.Idle;
-                return;
-            }
+
+            // if ((transform.position - centeredPos).sqrMagnitude < 0.01f && Owner.CanSkill)
+            // {
+            //     if ((transform.position - centeredPos).sqrMagnitude < 0.01f)
+            //     {
+            //         Debug.Log("<color=magenta>### 111 ###</color>");
+            //         Debug.Break();
+            //     }
+
+            //     //Owner.StopCoLerpToCellPos();
+            //     Owner.CreatureAIState = ECreatureAIState.Idle;
+            //     return;
+            // }
+            // else if ((transform.position - centeredPos).sqrMagnitude < 0.01f || result == EFindPathResult.Fail_NoPath)
+            // {
+            //     Debug.Log("<color=magenta>### 222 ###</color>");
+            //     Owner.CreatureAIState = ECreatureAIState.Idle;
+            //     return;
+            // }
         }
 
         public override void OnDead()

@@ -64,12 +64,8 @@ namespace STELLAREST_F1
         {
             if (System.Enum.TryParse<T>(value, out T enumValue))
                 return enumValue;
-            else
-            {
-                //Debug.LogError($"{nameof(Util)}, {nameof(GetEnumFromString)}, Input : \"{value}\"");
-                //Debug.Break();
-                return default(T);
-            }
+
+            return default(T);
         }
 
         public static System.Type GetTypeFromName(string className)
@@ -101,8 +97,11 @@ namespace STELLAREST_F1
                 case EClassName.HeroAI:
                     return typeof(HeroAI);
 
-                case EClassName.ArcherAI:
-                    return typeof(ArcherAI);
+                case EClassName.MeleeHeroAI:
+                    return typeof(MeleeHeroAI);
+
+                case EClassName.RangedHeroAI:
+                    return typeof(RangedHeroAI);
 
                 case EClassName.MonsterAI:
                     return typeof(MonsterAI);

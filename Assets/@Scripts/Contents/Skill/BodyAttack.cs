@@ -7,18 +7,18 @@ namespace STELLAREST_F1
 {
     public class BodyAttack : SkillBase
     {
-        public override float RemainCoolTime
-        {
-            get => base.RemainCoolTime;
-            set
-            {
-                base.RemainCoolTime = value;
-                if (base.RemainCoolTime == 0f)
-                    Owner.CreatureAnim.CanSkillAttack = true;
-                else
-                    Owner.CreatureAnim.CanSkillAttack = false;
-            }
-        }
+        // public override float RemainCoolTime
+        // {
+        //     get => base.RemainCoolTime;
+        //     set
+        //     {
+        //         base.RemainCoolTime = value;
+        //         if (base.RemainCoolTime == 0f)
+        //             Owner.CreatureAnim.CanSkillAttack = true;
+        //         else
+        //             Owner.CreatureAnim.CanSkillAttack = false;
+        //     }
+        // }
 
         public override bool Init()
         {
@@ -96,16 +96,6 @@ namespace STELLAREST_F1
         }
         #endregion
 
-        #region Anim State Events
-        public override void OnSkillStateEnter()
-        {
-            Owner.UpdateCellPos();
-        }
-
-        public override void OnSkillStateUpdate() { }
-        public override void OnSkillStateEnd() { }
-        #endregion
-
         #region Anim Clip Callback
         public override void OnSkillCallback()
         {
@@ -127,6 +117,17 @@ namespace STELLAREST_F1
             //Debug.Log($"<color=magenta>Called from {Owner.gameObject.name}</color>");
             _coBodyAttack = StartCoroutine(CoBodyAttack());
         }
+        #endregion
+
+        #region Anim State Events
+        public override void OnSkillStateEnter()
+        {
+            Owner.StopCoLerpToCellPos(); // Body Attack은 이게 맞는듯
+            Owner.UpdateCellPos(); // --- DEFENSE
+        }
+
+        public override void OnSkillStateUpdate() { }
+        public override void OnSkillStateExit() { }
         #endregion
     }
 }

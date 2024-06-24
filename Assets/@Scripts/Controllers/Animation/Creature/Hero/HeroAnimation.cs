@@ -103,10 +103,7 @@ namespace STELLAREST_F1
 
             Owner.Target.OnDamaged(attacker: Owner, skillFromAttacker: null);
             if (Owner.Target.Hp <= 0f && Owner.HeroStateWeaponType != EHeroStateWeaponType.Default)
-            {
                 Owner.HeroStateWeaponType = EHeroStateWeaponType.Default;
-                Debug.Log("<color=yellow>Reset Default Weapon</color>");
-            }
         }
         #endregion
 
@@ -114,17 +111,33 @@ namespace STELLAREST_F1
         // --- Enter
         public override void OnUpperIdleEnter()
         {
-            if (CanEnterAnimState(ECreatureAnimState.Upper_Idle_To_Skill_Attack) == false ||
-               CanEnterAnimState(ECreatureAnimState.Upper_Move_To_Skill_Attack) == false)
+            Owner.HeroBody.HeroEmoji = EHeroEmoji.Idle;
+
+            base.OnUpperIdleEnter();
+            if (CanEnterAnimState(ECreatureAnimState.Upper_Idle_To_Skill_A) == false ||
+               CanEnterAnimState(ECreatureAnimState.Upper_Move_To_Skill_A) == false)
             {
-                Debug.Log($"<color=white>{nameof(OnUpperIdleEnter)}</color>");
-                ReleaseAnimState(ECreatureAnimState.Upper_Idle_To_Skill_Attack);
-                ReleaseAnimState(ECreatureAnimState.Upper_Move_To_Skill_Attack);
+                ReleaseAnimState(ECreatureAnimState.Upper_Idle_To_Skill_A);
+                ReleaseAnimState(ECreatureAnimState.Upper_Move_To_Skill_A);
             }
         }
-
+        public override void OnUpperIdleToSkillAEnter()
+        {
+            Owner.HeroBody.HeroEmoji = EHeroEmoji.Skill_A;
+            base.OnUpperIdleToSkillAEnter();
+        }
+        public override void OnUpperIdleToSkillBEnter()
+        {
+            base.OnUpperIdleToSkillBEnter();
+        }
+        public override void OnUpperIdleToSkillCEnter()
+        {
+            base.OnUpperIdleToSkillCEnter();
+        }
         public override void OnUpperIdleToCollectEnvEnter()
         {
+            Owner.HeroBody.HeroEmoji = EHeroEmoji.CollectEnv;
+            base.OnUpperIdleToCollectEnvEnter();
             // Debug.Log($"<color=white>{nameof(OnUpperIdleToCollectEnvEnter)}</color>");
             if (Owner.Target.IsValid() && Owner.Target.ObjectType == EObjectType.Env)
             {
@@ -141,33 +154,125 @@ namespace STELLAREST_F1
             }
         }
 
+        public override void OnUpperMoveEnter()
+        {
+            Owner.HeroBody.HeroEmoji = EHeroEmoji.Move;
+            base.OnUpperMoveEnter();
+        }
+        public override void OnUpperMoveToSkillAEnter()
+        {
+            Owner.HeroBody.HeroEmoji = EHeroEmoji.Skill_A;
+            base.OnUpperIdleToSkillAEnter();
+        }
+        public override void OnUpperMoveToSkillBEnter()
+        {
+            base.OnUpperIdleToSkillBEnter();
+        }
+        public override void OnUpperMoveToSkillCEnter()
+        {
+            base.OnUpperIdleToSkillCEnter();
+        }
+
+        public override void OnUpperDeadEnter()
+        {
+            Owner.HeroBody.HeroEmoji = EHeroEmoji.Dead;
+            base.OnUpperDeadEnter();
+        }
+
         // --- Update
+        public override void OnUpperIdleUpdate()
+        {
+            base.OnUpperIdleUpdate();
+        }
+        public override void OnUpperIdleToSkillAUpdate()
+        {
+            base.OnUpperIdleToSkillAUpdate();
+        }
+        public override void OnUpperIdleToSkillBUpdate()
+        {
+            base.OnUpperIdleToSkillBUpdate();
+        }
+        public override void OnUpperIdleToSkillCUpdate()
+        {
+            base.OnUpperIdleToSkillCUpdate();
+        }
+        public override void OnUpperIdleToCollectEnvUpdate()
+        {
+            base.OnUpperIdleToCollectEnvUpdate();
+        }
+
+        public override void OnUpperMoveUpdate()
+        {
+            base.OnUpperMoveUpdate();
+        }
+        public override void OnUpperMoveToSkillAUpdate()
+        {
+            base.OnUpperMoveToSkillAUpdate();
+        }
+        public override void OnUpperMoveToSkillBUpdate()
+        {
+            base.OnUpperMoveToSkillAUpdate();
+        }
+        public override void OnUpperMoveToSkillCUpdate()
+        {
+            base.OnUpperMoveToSkillAUpdate();
+        }
+
+        public override void OnUpperDeadUpdate()
+        {
+            base.OnUpperDeadUpdate();
+        }
 
         // --- Exit
-        public override void OnUpperIdleToSkillAttackExit()
+        public override void OnUpperIdleExit()
         {
-            ReleaseAnimState(ECreatureAnimState.Upper_Idle_To_Skill_Attack);
-            ReleaseAnimState(ECreatureAnimState.Upper_Move_To_Skill_Attack);
+            base.OnUpperIdleExit();
+        }
+        public override void OnUpperIdleToSkillAExit()
+        {
+            base.OnUpperIdleToSkillAExit();
+        }
+        public override void OnUpperIdleToSkillBExit()
+        {
+            base.OnUpperIdleToSkillBExit();
+        }
+        public override void OnUpperIdleToSkillCExit()
+        {
+            base.OnUpperIdleToSkillCExit();
         }
         public override void OnUpperIdleToCollectEnvExit()
         {
             // --- DEFENSE
-            if (CanEnterAnimState(ECreatureAnimState.Upper_Idle_To_Skill_Attack) == false ||
-                CanEnterAnimState(ECreatureAnimState.Upper_Move_To_Skill_Attack) == false)
+            if (CanEnterAnimState(ECreatureAnimState.Upper_Idle_To_Skill_A) == false ||
+                CanEnterAnimState(ECreatureAnimState.Upper_Move_To_Skill_A) == false)
             {
-                ReleaseAnimState(ECreatureAnimState.Upper_Idle_To_Skill_Attack);
-                ReleaseAnimState(ECreatureAnimState.Upper_Move_To_Skill_Attack);
+                ReleaseAnimState(ECreatureAnimState.Upper_Idle_To_Skill_A);
+                ReleaseAnimState(ECreatureAnimState.Upper_Move_To_Skill_A);
             }
 
-            Debug.Log($"{nameof(OnUpperIdleToCollectEnvExit)}");
             ReleaseAnimState(ECreatureAnimState.Upper_Idle_To_CollectEnv);
-            //Owner.CreatureAIState = ECreatureAIState.Move;
-            
         }
-        public override void OnUpperMoveToSkillAttackExit()
+
+        public override void OnUpperMoveExit()
         {
-            ReleaseAnimState(ECreatureAnimState.Upper_Idle_To_Skill_Attack);
-            ReleaseAnimState(ECreatureAnimState.Upper_Move_To_Skill_Attack);
+            base.OnUpperMoveExit();
+        }
+        public override void OnUpperMoveToSkillAExit()
+        {
+            base.OnUpperMoveToSkillAExit();
+        }
+        public override void OnUpperMoveToSkillBExit()
+        {
+            base.OnUpperMoveToSkillBExit();
+        }
+        public override void OnUpperMoveToSkillCExit()
+        {
+            base.OnUpperMoveToSkillCExit();
+        }
+
+        public override void OnUpperDeadExit()
+        {
+            base.OnUpperDeadExit();
         }
         #endregion
     }

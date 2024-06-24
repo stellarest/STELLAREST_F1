@@ -7,18 +7,18 @@ namespace STELLAREST_F1
 {
     public class MeleeAttack : SkillBase
     {
-        public override float RemainCoolTime 
-        { 
-            get => base.RemainCoolTime; 
-            set
-            {
-                base.RemainCoolTime = value;
-                if (base.RemainCoolTime == 0f)
-                    Owner.CreatureAnim.CanSkillAttack = true;
-                else
-                    Owner.CreatureAnim.CanSkillAttack = false;
-            }
-        }
+        // public override float RemainCoolTime 
+        // { 
+        //     get => base.RemainCoolTime; 
+        //     set
+        //     {
+        //         base.RemainCoolTime = value;
+        //         if (base.RemainCoolTime == 0f)
+        //             Owner.CreatureAnim.CanSkillAttack = true;
+        //         else
+        //             Owner.CreatureAnim.CanSkillAttack = false;
+        //     }
+        // }
 
         public override bool Init()
         {
@@ -45,40 +45,7 @@ namespace STELLAREST_F1
             base.EnterInGame(owner, dataID);
         }
 
-        #region CreatureStateMachine
-        public override void OnSkillStateEnter() 
-        {
-            Owner.LookAtValidTarget();
-        }
-
-        public override void OnSkillStateUpdate()
-        {
-            // if (Owner.Target.IsValid() == false)
-            //     return;
-
-            // Owner.Target.OnDamaged(Owner, this);
-        }
-
-        public override void OnSkillStateEnd()
-        {
-            if (Owner.IsValid() == false)
-                return;
-
-            /*
-                - 공격 애니메이션은 Idle Transition으로 연결되어 있어서 크리처 상태 업데이트도 해줘야함.
-                - 그러나 CreatureStateMachine에서 ForceExitState로 인해 이미 None, Idle로 처리하는 것으로 변경.
-                - 그래서, 만약 알 수 없는 이유로 인해 ForceExitState를 호출하지 못했을 때 여기서 수행.
-                - DEFENSE CODE
-            */
-            // if (Owner.CreatureAIState != ECreatureAIState.Idle) // --- DEFENSE
-            // {
-            //     //Owner.CreatureMoveState = ECreatureMoveState.MoveToTarget;
-            //     Owner.CreatureAIState = ECreatureAIState.Idle;
-            // }
-        }
-        #endregion
-
-
+        #region Anim Clip Callback
         public override void OnSkillCallback()
         {
             if (Owner.IsValid() == false)
@@ -92,5 +59,28 @@ namespace STELLAREST_F1
 
             Owner.Target.OnDamaged(Owner, this);
         }
+        #endregion
+
+        #region Anim State Events
+        public override void OnSkillStateEnter() 
+        {
+            // Owner.LookAtValidTarget();
+        }
+
+        public override void OnSkillStateUpdate()
+        {
+            // if (Owner.IsValid() == false)
+            //     return;
+
+            // Owner.LookAtValidTarget();
+        }
+
+        public override void OnSkillStateExit() 
+        {             
+            // Owner.CreatureAnim.ReleaseAnimState(ECreatureAnimState.Upper_Idle_To_Skill_A);
+            // Owner.CreatureAnim.ReleaseAnimState(ECreatureAnimState.Upper_Move_To_Skill_A);
+            // Debug.Log($"<color=white>{nameof(OnSkillStateExit)}</color>");
+        }
+        #endregion
     }
 }

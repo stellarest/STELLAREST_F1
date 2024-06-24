@@ -15,7 +15,7 @@ namespace STELLAREST_F1
         public HeroData HeroData { get; private set; } = null;
         public HeroAnimation HeroAnim { get; private set; } = null;
         public HeroAI HeroAI { get; private set; } = null;
-        private HeroBody _heroBody = null;
+        [SerializeField] private HeroBody _heroBody = null;
         public HeroBody HeroBody
         {
             get => _heroBody;
@@ -79,9 +79,9 @@ namespace STELLAREST_F1
                 return;
 
             Hero leader = Managers.Object.HeroLeaderController.Leader;
-            if (LerpToCellPosCompleted && leader.IsMoving == false)
+            if (LerpToCellPosCompleted && leader.Moving == false)
             {
-                IsMoving = false;
+                Moving = false;
                 return;
             }
 
@@ -100,17 +100,17 @@ namespace STELLAREST_F1
                 return;
             }
 
-            IsMoving = true;
+            Moving = true;
             float moveDist = Mathf.Min(dir.magnitude, movementSpeed * Time.deltaTime);
             transform.position += dir.normalized * moveDist;
         }
 
-        public override bool IsMoving 
+        public override bool Moving 
         { 
-            get => base.IsMoving; 
+            get => base.Moving; 
             set
             {
-                base.IsMoving = value;
+                base.Moving = value;
                 if (value && HeroStateWeaponType != EHeroStateWeaponType.Default)
                     HeroStateWeaponType = EHeroStateWeaponType.Default;
             }
@@ -132,7 +132,7 @@ namespace STELLAREST_F1
                 if (CreatureAnim.CanEnterAnimState(ECreatureAnimState.Upper_Idle_To_CollectEnv) == false)
                     return false;
 
-                if (IsMoving)
+                if (Moving)
                 {
                     if (HeroStateWeaponType != EHeroStateWeaponType.Default)
                         HeroStateWeaponType = EHeroStateWeaponType.Default;
@@ -140,6 +140,14 @@ namespace STELLAREST_F1
                 }
 
                 if (this.IsValid() == false)
+                {
+                    if (HeroStateWeaponType != EHeroStateWeaponType.Default)
+                        HeroStateWeaponType = EHeroStateWeaponType.Default;
+
+                    return false;
+                }
+
+                if (Target.IsValid() == false)
                 {
                     if (HeroStateWeaponType != EHeroStateWeaponType.Default)
                         HeroStateWeaponType = EHeroStateWeaponType.Default;
@@ -163,7 +171,12 @@ namespace STELLAREST_F1
                     return false;
                 }
 
-                return true;
+                int dx = Mathf.Abs(Target.CellPos.x - CellPos.x);
+                int dy = Mathf.Abs(Target.CellPos.y - CellPos.y);
+                if (dx <= 1 && dy <= 1)
+                    return true;
+
+                return false;
             }
         }
         #endregion
@@ -190,6 +203,7 @@ namespace STELLAREST_F1
             
             InitialSetInfo(dataID);
             EnterInGame();
+            StartCoroutine(CoInitialReleaseLeaderAI());
             return true;
         }
 
@@ -222,6 +236,7 @@ namespace STELLAREST_F1
             // --- Heroes Default Dir
             LookAtDir = ELookAtDirection.Right;
             base.EnterInGame();
+            CreatureAIState = ECreatureAIState.Move;
 
             Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
             Managers.Game.OnJoystickStateChangedHandler += OnJoystickStateChanged;
@@ -318,6 +333,31 @@ namespace STELLAREST_F1
             }
 
             callback?.Invoke();
+        }
+
+        private IEnumerator CoInitialReleaseLeaderAI()
+        {
+            yield return new WaitUntil(() => 
+            {
+                bool allStartedHeroAI = true;
+                for (int i = 0; i < Managers.Object.Heroes.Count; ++i)
+                {
+                    Hero hero = Managers.Object.Heroes[i];
+                    if (hero._coUpdateAI == null)
+                        allStartedHeroAI = false;
+                }
+
+                if (allStartedHeroAI)
+                    return true;
+
+                return false;
+            });
+
+            if (IsLeader)
+            {
+                StopCoUpdateAI();
+                Debug.Log("<color=white>Initial Release Leader Hero's AI</color>");
+            }
         }
         #endregion
     }

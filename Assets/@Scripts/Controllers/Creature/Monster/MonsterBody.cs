@@ -7,6 +7,7 @@ using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
+    [System.Serializable]
     public class MonsterBody : CreatureBody
     {
         public MonsterBody(Monster owner, int dataID) : base(owner, dataID)
@@ -23,8 +24,6 @@ namespace STELLAREST_F1
         public EMonsterType Type { get; private set; } = EMonsterType.None;
         public EMonsterSize Size { get; private set; } = EMonsterSize.None;
 
-        // 전반적인 코드 정리가 필요해보이긴함. 너무 뒤죽박죽.
-        // 각 객체마다 Sprite 데이터도 들고 있어야 할 것 같은데.
         private Sprite[] _heads = null;
         private Dictionary<EBirdBodyParts, Container> _birdBodyDict = null;
         private Dictionary<EQuadrupedsParts, Container> _quadrupedsBodyDict = null; // TODO : 추가해볼것
@@ -109,6 +108,48 @@ namespace STELLAREST_F1
                         _quadrupedsBodyDict.Add(EQuadrupedsParts.Tail, new Container(tag, tr, spr));
                     }
                     break;
+            }
+        }
+
+        [SerializeField] private EMonsterEmoji _monsterEmoji = EMonsterEmoji.None;
+        public EMonsterEmoji MonsterEmoji
+        {
+            get => _monsterEmoji;
+            set
+            {
+                if (_monsterEmoji != value)
+                {
+                    _monsterEmoji = value;
+                    switch (value)
+                    {
+                        case EMonsterEmoji.Default:
+                            {
+                                if (Type == EMonsterType.Bird)
+                                    _birdBodyDict[EBirdBodyParts.Head].SPR.sprite = _heads[(int)EMonsterEmoji.Default];
+                                else if (Type == EMonsterType.Quadrupeds)
+                                    _quadrupedsBodyDict[EQuadrupedsParts.Head].SPR.sprite = _heads[(int)EMonsterEmoji.Default];
+                            }
+                            break;
+
+                        case EMonsterEmoji.Angry:
+                            {
+                                if (Type == EMonsterType.Bird)
+                                    _birdBodyDict[EBirdBodyParts.Head].SPR.sprite = _heads[(int)EMonsterEmoji.Angry];
+                                else if (Type == EMonsterType.Quadrupeds)
+                                    _quadrupedsBodyDict[EQuadrupedsParts.Head].SPR.sprite = _heads[(int)EMonsterEmoji.Angry];
+                            }
+                            break;
+
+                        case EMonsterEmoji.Dead:
+                            {
+                                if (Type == EMonsterType.Bird)
+                                    _birdBodyDict[EBirdBodyParts.Head].SPR.sprite = _heads[(int)EMonsterEmoji.Dead];
+                                else if (Type == EMonsterType.Quadrupeds)
+                                    _quadrupedsBodyDict[EQuadrupedsParts.Head].SPR.sprite = _heads[(int)EMonsterEmoji.Dead];
+                            }
+                            break;
+                    }
+                }
             }
         }
 
