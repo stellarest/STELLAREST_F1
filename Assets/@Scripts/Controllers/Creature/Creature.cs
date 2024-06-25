@@ -214,7 +214,7 @@ namespace STELLAREST_F1
 
                 int dx = Mathf.Abs(Target.CellPos.x - CellPos.x);
                 int dy = Mathf.Abs(Target.CellPos.y - CellPos.y);
-                if (Target.ObjectType == EObjectType.Monster)
+                if (Target.ObjectType == EObjectType.Monster || Target.ObjectType == EObjectType.Hero)
                 {
                     float bestShortRange = float.MaxValue;
                     for (int i = 0; i < (int)ESkillType.Max; ++i)
@@ -237,6 +237,25 @@ namespace STELLAREST_F1
                 }
 
                 return false;
+            }
+        }
+
+        public float TheShortestSkillInvokeRange
+        {
+            get
+            {
+                float bestShortRange = float.MaxValue;
+                for (int i = 0; i < (int)ESkillType.Max; ++i)
+                {
+                    SkillBase skill = CreatureSkill.SkillArray[i];
+                    if (skill == null)
+                        continue;
+
+                    if (skill.InvokeRange < bestShortRange)
+                        bestShortRange = skill.InvokeRange;
+                }
+
+                return bestShortRange;
             }
         }
         #endregion
@@ -326,8 +345,6 @@ namespace STELLAREST_F1
         #endregion
         protected IEnumerator CoUpdateAI()
         {
-            // if (ObjectType == EObjectType.Monster)
-            //     yield break;
             while (true)
             {
                 switch (CreatureAIState)

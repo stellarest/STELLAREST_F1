@@ -26,7 +26,7 @@ namespace STELLAREST_F1
             if (Owner.IsValid() == false)
                 return;
 
-            // --- 1
+            // --- Try ForceMove
             if (TryForceMove())
             {
                 Owner.CreatureAIState = ECreatureAIState.Move;

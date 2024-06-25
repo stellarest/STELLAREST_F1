@@ -51,13 +51,10 @@ namespace STELLAREST_F1
             if (Owner.IsValid() == false)
                 return;
 
-            // if (Owner.Target.IsValid() == false)
-            //     return;
-            // if (Owner.Target.ObjectType == EObjectType.Env)
-            //     return;
-
             // 애니메이션에서 발사하면 무조건 생성하는게 자연스러움.
             Projectile projectile = GenerateProjectile(Owner, GetSpawnPos());
+            if (Owner.Target.IsValid() == false)
+                Owner.CreatureAIState = ECreatureAIState.Move;
             //projectile.TargetPosition = Owner.Target.CenterPosition;
         }
 

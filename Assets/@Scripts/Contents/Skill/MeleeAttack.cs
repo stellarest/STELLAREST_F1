@@ -58,6 +58,9 @@ namespace STELLAREST_F1
                 return;
 
             Owner.Target.OnDamaged(Owner, this);
+            // --- 간헐적으로 한번 더 공격할 때가 있음. 나중에 발생하면 한번 더 체크
+            if (Owner.Target.Hp <= 0f)
+                Owner.CreatureAIState = ECreatureAIState.Move;
         }
         #endregion
 

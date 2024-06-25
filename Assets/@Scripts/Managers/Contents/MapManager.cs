@@ -131,7 +131,7 @@ namespace STELLAREST_F1
 
                         // --- TURKEY TEST
                         int current = 0;
-                        int spawnCount = 0;
+                        int spawnCount = 3;
                         int attemptSpawnCount = 0;
                         while (attemptSpawnCount < 100)
                         {
@@ -156,7 +156,7 @@ namespace STELLAREST_F1
 
                         // --- BUNNY TEST
                         current = 0;
-                        spawnCount = 0;
+                        spawnCount = 3;
                         attemptSpawnCount = 0;
                         while (attemptSpawnCount < 100)
                         {
@@ -181,7 +181,7 @@ namespace STELLAREST_F1
 
                         // --- PUG TEST
                         current = 0;
-                        spawnCount = 0;
+                        spawnCount = 3;
                         attemptSpawnCount = 0;
                         while (attemptSpawnCount < 100)
                         {

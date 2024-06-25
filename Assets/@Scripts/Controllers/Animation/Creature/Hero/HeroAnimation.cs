@@ -103,7 +103,10 @@ namespace STELLAREST_F1
 
             Owner.Target.OnDamaged(attacker: Owner, skillFromAttacker: null);
             if (Owner.Target.Hp <= 0f && Owner.HeroStateWeaponType != EHeroStateWeaponType.Default)
+            {
                 Owner.HeroStateWeaponType = EHeroStateWeaponType.Default;
+                Owner.CreatureAIState = ECreatureAIState.Move;
+            }
         }
         #endregion
 

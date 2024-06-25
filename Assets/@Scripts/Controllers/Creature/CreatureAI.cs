@@ -189,29 +189,29 @@ namespace STELLAREST_F1
                 }
             }
         }
-        protected Vector3Int GetWorldToCellDest(Vector3 dir, float dist)
-        {
-            Vector3 dest = dir * dist;
-            float minRot = -30f;
-            float maxRot = 30f;
-            Quaternion randRot = Quaternion.Euler(0f, 0f, UnityEngine.Random.Range(minRot, maxRot));
-            Vector3Int destCellPos = Managers.Map.WorldToCell(randRot * dest);
-            int attemptCount = 0;
-            while (Managers.Map.CanMove(destCellPos) == false)
-            {
-                if (attemptCount++ > 100)
-                {
-                    destCellPos = Owner.CellPos;
-                    break;
-                }
+        // protected Vector3Int GetWorldToCellDest(Vector3 dir, float dist)
+        // {
+        //     Vector3 dest = dir * dist;
+        //     float minRot = -30f;
+        //     float maxRot = 30f;
+        //     Quaternion randRot = Quaternion.Euler(0f, 0f, UnityEngine.Random.Range(minRot, maxRot));
+        //     Vector3Int destCellPos = Managers.Map.WorldToCell(randRot * dest);
+        //     int attemptCount = 0;
+        //     while (Managers.Map.CanMove(destCellPos) == false)
+        //     {
+        //         if (attemptCount++ > 100)
+        //         {
+        //             destCellPos = Owner.CellPos;
+        //             break;
+        //         }
 
-                dest = dir * UnityEngine.Random.Range(dist, dist++);
-                randRot = Quaternion.Euler(0f, 0f, UnityEngine.Random.Range(minRot--, maxRot++));
-                destCellPos = Managers.Map.WorldToCell(randRot * dest);
-            }
+        //         dest = dir * UnityEngine.Random.Range(dist, dist++);
+        //         randRot = Quaternion.Euler(0f, 0f, UnityEngine.Random.Range(minRot--, maxRot++));
+        //         destCellPos = Managers.Map.WorldToCell(randRot * dest);
+        //     }
 
-            return destCellPos;
-        }
+        //     return destCellPos;
+        // }
 
         #endregion
 

@@ -43,7 +43,21 @@ namespace STELLAREST_F1
             if (Input.GetKeyDown("2"))
                 Managers.Object.HeroLeaderController.ChangeFormation_Dev();
 
+            if (Input.GetKeyDown("3"))
+            {
+                bool autoTarget = Managers.Object.HeroLeaderController.AutoTarget;
+                Managers.Object.HeroLeaderController.AutoTarget = !autoTarget;
+                Debug.Log($"<color=white>AutoTarget: {Managers.Object.HeroLeaderController.AutoTarget}</color>");
+            }
+
             if (Input.GetKeyDown("4"))
+            {
+                bool forceFollowToLeader = Managers.Object.HeroLeaderController.ForceFollowToLeader;
+                Managers.Object.HeroLeaderController.ForceFollowToLeader = !forceFollowToLeader;
+                Debug.Log($"<color=white>ForceFollowToLeader: {Managers.Object.HeroLeaderController.ForceFollowToLeader}</color>");
+            }
+
+            if (Input.GetKeyDown("5"))
                 OnOffTileCollider();
 
             if (Input.GetKeyDown("9"))

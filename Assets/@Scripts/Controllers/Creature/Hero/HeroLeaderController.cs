@@ -21,6 +21,10 @@ namespace STELLAREST_F1
         private Transform _pointer = null;
         private Transform _leaderMark = null;
         [field: SerializeField] public bool AutoTarget { get; set; } = false;
+
+        // --- Member들이 전투중에 Leader가 ForceMove를 시도하면 Env처럼 무조건 MoveState로 전환
+        [field: SerializeField] public bool ForceFollowToLeader { get; set; } = false;
+
         [SerializeField] private Vector3 _nMovementDir = Vector3.zero;
 
         [SerializeField] private EHeroMemberFormationMode _heroMemberFormationMode = EHeroMemberFormationMode.FollowLeaderClosely;
@@ -260,8 +264,8 @@ namespace STELLAREST_F1
             Managers.Game.OnJoystickStateChangedHandler += OnJoystickStateChanged;
 
             HeroMemberFormationMode = EHeroMemberFormationMode.FollowLeaderClosely;
-            //_heroMemberChaseMode = EHeroMemberChaseMode.FollowLeader;
-            AutoTarget = false;
+            AutoTarget = true;
+            ForceFollowToLeader = false;
             EnablePointer(false);
             return true;
         }

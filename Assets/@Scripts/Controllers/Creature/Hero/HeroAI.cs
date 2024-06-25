@@ -146,8 +146,11 @@ namespace STELLAREST_F1
             if (Owner.ForceMove == false)
                 return false;
 
+            _currentPingPongCantMoveCount = 0;
             HeroLeaderController leaderController = Managers.Object.HeroLeaderController;
             Hero leader = leaderController.Leader;
+            if (leader.IsValid() == false)
+                return false;
 
             // --- Idle에서 ForceMove 상태가 되었을 때
             if (Owner.Target.IsValid() == false)
@@ -172,8 +175,14 @@ namespace STELLAREST_F1
                     // --- Force를 해야 Move 상태로 돌아갈 수 있다.
                     if (Owner.Target.ObjectType == EObjectType.Monster)
                     {
-                        // 몇 칸 떨어졌는지 약간 늦게 체크되는 것 같으면 이것만 LateUpdate 등으로 빼도 될 것 같긴함.
-                        if (dx >= 3 && dy >= 3)
+                        if (leaderController.ForceFollowToLeader == false)
+                        {
+                            // 몇 칸 떨어졌는지 약간 늦게 체크되는 것 같으면 이것만 LateUpdate 등으로 빼도 될 것 같긴함.
+                            if (dx >= 5 && dy >= 5)
+                                return true;
+                        }
+                        // --- ForceFollowToLeader가 true라면 ForceMove를 시도했을 때, Env처럼 강제로 바로 움직인다.
+                        else
                             return true;
                     }
                     else // --- Env가 Target이었다면 움직였을 때 무조건 Move로 전환한다.

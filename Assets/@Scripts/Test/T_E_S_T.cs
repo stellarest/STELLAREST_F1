@@ -7,11 +7,15 @@ using UnityEngine;
 using DG.Tweening;
 
 /*
+// --- LeaderController에 BattleMode추가해서 true로 되어 있다면 Env와 마찬가지로 움직이면 바로 움직이도록
+
 // --- MeleeHeroAI 대략적으로 수정 된듯. 근데 뭔가 똥을 덜 닦은 느낌.
 // --- Formation 모드는 리더랑 멀어질 수 밖에 없긴함. 이거 떄문인가.
 // --- 아 완성인듯. Formation 모드와 상관없이 모든 오너는, 오너가 ForceMove일 때, InInTheNearestTarget을 체크하고
 // --- 이 때, 거리가 먼 상태라면 강제로 ForceMove 상태로 들어감.
 // --- 그러니까 Force가 아닌 상태에서 가만히 있으면 Target에게 Skill 또는 Env를 시전하는 것이 맞는 것 같음.
+// --- OnSkillCallback MeleeAttack 부분 체크해볼것. 여기 말고 다른 곳을 수정해야할 것임. 죽었는데 한번 더 때림. (간헐적으로 발생함)
+// --- 이 부분 또 발생하면 수정해볼것.
 
 // --- 공격 범위 대략 고침
 // --- 리더가 처음으로 바뀌면 잘 되는데 다시 그 리더로 설정하게 되면 AI 먹통됨.
