@@ -39,6 +39,7 @@ namespace STELLAREST_F1
 
         // --- Lower Layer
         public readonly int Lower_Idle = Animator.StringToHash(ReadOnly.AnimationParams.Lower_Idle);
+        public readonly int Lower_Idle_To_Skill_A = Animator.StringToHash(ReadOnly.AnimationParams.Lower_Idle_To_Skill_A);
         public readonly int Lower_Move = Animator.StringToHash(ReadOnly.AnimationParams.Lower_Move);
 
         // --- Parameters

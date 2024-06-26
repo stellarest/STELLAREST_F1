@@ -494,6 +494,7 @@ namespace STELLAREST_F1
                 {
                     weaponL.localScale = weapon.LWeaponLocalScale;
                     spr = heroBody.GetComponent<SpriteRenderer>(EHeroWeapon.WeaponL);
+                    heroBody.SetLeftWeapon(spr.transform, weapon.LWeaponLocalScale);
                     spr.sprite = sprite;
                     spr.sortingOrder = weapon.LWeaponSorting;
                     spr.flipX = weapon.LWeaponFlipX;
@@ -554,6 +555,7 @@ namespace STELLAREST_F1
                 {
                     weaponR.localScale = weapon.RWeaponLocalScale;
                     spr = heroBody.GetComponent<SpriteRenderer>(EHeroWeapon.WeaponR);
+                    heroBody.SetRightWeapon(spr.transform, weapon.RWeaponLocalScale);
                     spr.sprite = sprite;
                     spr.sortingOrder = weapon.RWeaponSorting;
                     spr.flipX = weapon.RWeaponFlipX;

@@ -17,22 +17,23 @@ namespace STELLAREST_F1
             {
                 // --- Owner.ForceMove == false는 계속 false로 잠그고 있어야함.
                 // --- 기본적으로 Leader의 Position을 쫓는다.
-                if (Owner.ForceMove == false && Owner.Target.IsValid())
+                if (HeroOwner.ForceMove == false)
                 {
                     if (_tryBackStep)
                     {
-                        int dx = Mathf.Abs(_backStepDestPos.x - Owner.CellPos.x);
-                        int dy = Mathf.Abs(_backStepDestPos.y - Owner.CellPos.y);
+                        int dx = Mathf.Abs(_backStepDestCellPos.x - HeroOwner.CellPos.x);
+                        int dy = Mathf.Abs(_backStepDestCellPos.y - HeroOwner.CellPos.y);
                         if (dx <= 1 && dy <= 1)
                         {
                             _tryBackStep = false;
-                            Owner.CreatureAIState = ECreatureAIState.Idle;
+                            HeroOwner.CreatureAIState = ECreatureAIState.Idle;
+                            return HeroOwner.CellPos;
                         }
 
-                        return _backStepDestPos;
+                        return _backStepDestCellPos;
                     }
-                    else
-                        return Owner.Target.CellPos;
+                    else if (HeroOwner.Target.IsValid())
+                        return HeroOwner.Target.CellPos;
                 }
 
                 HeroLeaderController leaderController = Managers.Object.HeroLeaderController;
@@ -43,10 +44,10 @@ namespace STELLAREST_F1
 
                     case EHeroMemberFormationMode.NarrowFormation:
                     case EHeroMemberFormationMode.WideFormation:
-                        return leaderController.RequestFormationCellPos(Owner); ;
+                        return leaderController.RequestFormationCellPos(HeroOwner); ;
 
                     case EHeroMemberFormationMode.RandomFormation:
-                        return leaderController.RequestRandomFormationCellPos(Owner);
+                        return leaderController.RequestRandomFormationCellPos(HeroOwner);
 
                     case EHeroMemberFormationMode.ForceStop:
                         return PrevCellPosForForceStop;
@@ -58,28 +59,40 @@ namespace STELLAREST_F1
 
         private Vector3Int GetBackStepRandomCellPos(Vector3 dir, float dist)
         {
+            Hero leader = Managers.Object.HeroLeaderController.Leader;
             Vector3 dest = dir * dist;
             float minRot = -5f;
             float maxRot = 5f;
             Quaternion randRot = Quaternion.Euler(0f, 0f, UnityEngine.Random.Range(minRot, maxRot));
             Vector3Int destCellPos = Managers.Map.WorldToCell(randRot * dest);
             int attemptCount = 0;
-            while (Managers.Map.CanMove(destCellPos) == false)
+            bool isShortDist = false;
+            while (Managers.Map.CanMove(destCellPos) == false || isShortDist)
             {
                 if (attemptCount++ > 100)
                 {
-                    destCellPos = Owner.CellPos;
+                    if (leader.IsValid())
+                        destCellPos = leader.CellPos;
+                    else
+                        destCellPos = HeroOwner.CellPos;
                     break;
                 }
 
-                dest = dir * UnityEngine.Random.Range(dist, dist++);
+                //dest = dir * UnityEngine.Random.Range(dist, dist++);
                 randRot = Quaternion.Euler(0f, 0f, UnityEngine.Random.Range(minRot--, maxRot++));
                 destCellPos = Managers.Map.WorldToCell(randRot * dest);
+
+                int dx = Mathf.Abs(destCellPos.x - HeroOwner.CellPos.x);
+                int dy = Mathf.Abs(destCellPos.y - HeroOwner.CellPos.y);
+                if (dx <= 1 && dy <= 1)
+                    isShortDist = true;
+                else
+                    isShortDist = false;
             }
 
             return Managers.Map.CenteredCellPos(destCellPos);
         }
-        private Vector3Int _backStepDestPos = Vector3Int.zero;
+        private Vector3Int _backStepDestCellPos = Vector3Int.zero;
         #endregion
 
         #region Core
@@ -96,66 +109,72 @@ namespace STELLAREST_F1
 
         public override void UpdateIdle()
         {
-            if (Owner.IsValid() == false)
+            if (HeroOwner.IsValid() == false)
                 return;
 
             // --- Try ForceMove
             if (TryForceMove())
             {
                 _tryBackStep = false;
-                Owner.CreatureAIState = ECreatureAIState.Move;
+                HeroOwner.CreatureAIState = ECreatureAIState.Move;
                 return;
             }
-            else if (Owner.Target.IsValid())
+            else if (HeroOwner.Target.IsValid())
             {
                 // --- ForceMove가 아니고, Target이 탐지 범위에만 들어간 상태라면 타겟에게 이동을 시작한다.
-                if (Owner.IsInTheNearestTarget == false)
+                if (HeroOwner.IsInTheNearestTarget == false)
                 {
-                    Owner.CreatureAIState = ECreatureAIState.Move;
+                    HeroOwner.CreatureAIState = ECreatureAIState.Move;
                     return;
                 }
 
                 // --- Try BackStep
-                Monster monster = Owner.Target as Monster;
-                if (monster.Target == Owner && monster.IsInTheNearestTarget)
+                if (HeroOwner.Target.ObjectType == EObjectType.Monster && _tryBackStep == false)
                 {
-                    _tryBackStep = true;
-                    Vector3 nDir = (Owner.transform.position - Owner.Target.transform.position).normalized;
-                    _backStepDestPos = GetBackStepRandomCellPos(nDir, Owner.TheShortestSkillInvokeRange);
-                    Owner.CreatureAIState = ECreatureAIState.Move;
-                    return;
+                    Monster monster = HeroOwner.Target as Monster;
+                    if (monster.Target == HeroOwner && monster.IsInTheNearestTarget)
+                    {
+                        _tryBackStep = true;
+                        Vector3 nDir = (HeroOwner.transform.position - HeroOwner.Target.transform.position).normalized;
+                        _backStepDestCellPos = GetBackStepRandomCellPos(nDir, HeroOwner.TheShortestSkillInvokeRange);
+                        //_backStepDestCellPos = GetBackStepRandomCellPos(nDir, ReadOnly.Numeric.HeroDefaultScanRange - 1f);
+                        HeroOwner.CreatureAIState = ECreatureAIState.Move;
+                        return;
+                    }
                 }
+                else // --- 몬스터 타겟이 죽고, Env 타겟이 잡혀있는 상태라면 TryBackStep 초기화
+                    _tryBackStep = false;
             }
             else
                 _tryBackStep = false;
 
             // --- Skill, Env는 Move -> Idle로 부터 실행
-            if (Owner.CanSkill)
-                Owner.CreatureSkill.CurrentSkill.DoSkill();
-            else if (Owner.CanCollectEnv)
-                Owner.CollectEnv();
+            if (HeroOwner.CanSkill)
+                HeroOwner.CreatureSkill.CurrentSkill.DoSkill();
+            else if (HeroOwner.CanCollectEnv)
+                HeroOwner.CollectEnv();
         }
 
         public override void UpdateMove()
         {
-            if (Owner.IsValid() == false)
+            if (HeroOwner.IsValid() == false)
                 return;
 
-            EFindPathResult result = Owner.FindPathAndMoveToCellPos(destPos: ChaseCellPos,
+            EFindPathResult result = HeroOwner.FindPathAndMoveToCellPos(destPos: ChaseCellPos,
                maxDepth: ReadOnly.Numeric.HeroDefaultMoveDepth);
 
-            if (Owner.CanSkill || Owner.CanCollectEnv || result == EFindPathResult.Fail_NoPath)
+            if (HeroOwner.CanSkill || HeroOwner.CanCollectEnv || result == EFindPathResult.Fail_NoPath)
             {
                 Hero leader = Managers.Object.HeroLeaderController.Leader;
                 if (leader.Moving == false)
                 {
-                    Owner.CreatureAIState = ECreatureAIState.Idle;
+                    HeroOwner.CreatureAIState = ECreatureAIState.Idle;
                     return;
                 }
                 // --- 움직이고 있을 때, Skill이 가능하면 Moving Shot을 한다.
-                else if (leader.Moving && Owner.CanSkill)
+                else if (leader.Moving && HeroOwner.CanSkill)
                 {
-                    Owner.CreatureSkill.CurrentSkill.DoSkill();
+                    HeroOwner.CreatureSkill.CurrentSkill.DoSkill();
                     return;
                 }
             }
@@ -312,5 +331,128 @@ namespace STELLAREST_F1
     //     // #endregion
     // }
 
-    
+    // public class StaticHeroAI : HeroAI
+    // {
+    //     // #region Background
+    //     // private bool _forceBackStepMovement = false;
+    //     // public override Vector3Int ChaseCellPos
+    //     // {
+    //     //     get
+    //     //     {
+    //     //         if (Owner.ForceMove == false && Owner.Target.IsValid())
+    //     //         {
+    //     //             if (_forceBackStepMovement)
+    //     //             {
+    //     //                 Vector3 nDir = (Owner.transform.position - Owner.Target.transform.position).normalized;
+    //     //                 return GetWorldToCellDest(nDir, Owner.AtkRange);
+    //     //             }
+    //     //             else
+    //     //                 return Owner.Target.CellPos;
+    //     //         }
+                
+    //     //         HeroLeaderController leaderController = Managers.Object.HeroLeaderController;
+    //     //         switch (leaderController.HeroMemberFormationMode)
+    //     //         {
+    //     //             case EHeroMemberFormationMode.FollowLeaderClosely:
+    //     //                 return Managers.Map.WorldToCell(leaderController.Leader.transform.position); ;
+
+    //     //             case EHeroMemberFormationMode.NarrowFormation:
+    //     //             case EHeroMemberFormationMode.WideFormation:
+    //     //                 return leaderController.RequestFormationCellPos(Owner); ;
+
+    //     //             case EHeroMemberFormationMode.RandomFormation:
+    //     //                 return leaderController.RequestRandomFormationCellPos(Owner);
+
+    //     //             case EHeroMemberFormationMode.ForceStop:
+    //     //                 return PrevCellPosForForceStop;
+    //     //         }
+
+    //     //         return Vector3Int.zero;
+    //     //     }
+    //     // }
+    //     // #endregion
+
+    //     // #region Core
+    //     // public override bool Init()
+    //     // {
+    //     //     if (base.Init() == false)
+    //     //         return false;
+
+    //     //     return true;
+    //     // }
+    //     // public override void SetInfo(Creature owner) => base.SetInfo(owner);
+    //     // public override void EnterInGame() => base.EnterInGame();
+        
+    //     // public override void UpdateIdle()
+    //     // {
+    //     //     if (Owner.IsLeader)
+    //     //         return;
+
+    //     //     if (Owner.IsValid() == false)
+    //     //         return;
+
+    //     //     if (Owner.ForceMove)
+    //     //         TryForceMove();
+    //     //     else
+    //     //     {
+    //     //         Owner.LookAtValidTarget();
+                
+    //     //     }
+
+    //     //     if (Owner.ForceMove == false && Owner.IsValidTargetInAttackRange())
+    //     //     {
+    //     //         if (Owner.Target.ObjectType == EObjectType.Monster)
+    //     //         {
+    //     //             if (Owner.CanSkill)
+    //     //                 Owner.CreatureSkill.CurrentSkill.DoSkill();
+
+    //     //             Monster target = Owner.Target as Monster;
+    //     //             if (target.IsValidTargetInAttackRange())
+    //     //             {
+    //     //                 _forceBackStepMovement = true;
+    //     //                 Owner.CreatureAIState = ECreatureAIState.Move;
+    //     //                 return;
+    //     //             }
+    //     //         }
+    //     //         else if (Owner.Target.ObjectType == EObjectType.Env)
+    //     //         {
+    //     //             if (Owner.CanCollectEnv)
+    //     //                 Owner.CollectEnv();
+    //     //         }
+    //     //     }
+    //     // }
+
+    //     // public override void UpdateMove()
+    //     // {
+    //     //     if (Owner.IsLeader)
+    //     //         return;
+
+    //     //     if (Owner.Target.IsValid() && _forceBackStepMovement)
+    //     //     {
+    //     //         if ((Owner.transform.position - Owner.Target.transform.position).magnitude > Owner.AtkRange)
+    //     //         {
+    //     //             _forceBackStepMovement = false;
+    //     //             Owner.CreatureAIState = ECreatureAIState.Idle;
+    //     //             return;
+    //     //         }
+    //     //     }
+
+    //     //     EFindPathResult result = Owner.FindPathAndMoveToCellPos(destPos: ChaseCellPos,
+    //     //         maxDepth: ReadOnly.Numeric.HeroDefaultMoveDepth);
+
+    //     //     if (result == EFindPathResult.Fail_NoPath)
+    //     //     {
+    //     //         Hero leader = Managers.Object.HeroLeaderController.Leader;
+    //     //         if (leader.IsMoving == false)
+    //     //         {
+    //     //             Owner.CreatureAIState = ECreatureAIState.Idle;
+    //     //         }
+
+    //     //         return;
+    //     //     }
+
+    //     //     EvadePingPongMovement();
+    //     // }
+    //     // #endregion
+    // }
 */

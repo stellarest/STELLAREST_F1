@@ -23,51 +23,51 @@ namespace STELLAREST_F1
 
         public override void UpdateIdle()
         {
-            if (Owner.IsValid() == false)
+            if (HeroOwner.IsValid() == false)
                 return;
 
             // --- Try ForceMove
             if (TryForceMove())
             {
-                Owner.CreatureAIState = ECreatureAIState.Move;
+                HeroOwner.CreatureAIState = ECreatureAIState.Move;
                 return;
             }
-            else if (Owner.Target.IsValid())
+            else if (HeroOwner.Target.IsValid())
             {
                 // --- ForceMove가 아니고, Target이 탐지 범위에만 들어간 상태라면 타겟에게 이동을 시작한다.
-                if (Owner.IsInTheNearestTarget == false)
+                if (HeroOwner.IsInTheNearestTarget == false)
                 {
-                    Owner.CreatureAIState = ECreatureAIState.Move;
+                    HeroOwner.CreatureAIState = ECreatureAIState.Move;
                     return;
                 }
             }
 
             // --- Skill, Env는 Move -> Idle로 부터 실행
-            if (Owner.CanSkill)
-                Owner.CreatureSkill.CurrentSkill.DoSkill();
-            else if (Owner.CanCollectEnv)
-                Owner.CollectEnv();
+            if (HeroOwner.CanSkill)
+                HeroOwner.CreatureSkill.CurrentSkill.DoSkill();
+            else if (HeroOwner.CanCollectEnv)
+                HeroOwner.CollectEnv();
         }
 
         public override void UpdateMove()
         {
-            if (Owner.IsValid() == false)
+            if (HeroOwner.IsValid() == false)
                 return;
 
-            EFindPathResult result = Owner.FindPathAndMoveToCellPos(destPos: ChaseCellPos,
+            EFindPathResult result = HeroOwner.FindPathAndMoveToCellPos(destPos: ChaseCellPos,
                maxDepth: ReadOnly.Numeric.HeroDefaultMoveDepth);
-            if (Owner.CanSkill || Owner.CanCollectEnv || result == EFindPathResult.Fail_NoPath)
+            if (HeroOwner.CanSkill || HeroOwner.CanCollectEnv || result == EFindPathResult.Fail_NoPath)
             {
                 Hero leader = Managers.Object.HeroLeaderController.Leader;
                 if (leader.Moving == false)
                 {
-                    Owner.CreatureAIState = ECreatureAIState.Idle;
+                    HeroOwner.CreatureAIState = ECreatureAIState.Idle;
                     return;
                 }
                 // --- 움직이고 있을 때, Skill이 가능하면 Moving Shot을 한다.
-                else if (leader.Moving && Owner.CanSkill)
+                else if (leader.Moving && HeroOwner.CanSkill)
                 {
-                    Owner.CreatureSkill.CurrentSkill.DoSkill();
+                    HeroOwner.CreatureSkill.CurrentSkill.DoSkill();
                     return;
                 }
             }

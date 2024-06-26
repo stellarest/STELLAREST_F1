@@ -7,6 +7,14 @@ using UnityEngine;
 using DG.Tweening;
 
 /*
+// Assassin Skill_A 빠른 두방, 또는 세방으로 수정
+// --- Lv.10 -> Lv.5로 다운 예정
+
+// --- Ranged Hero AI 최초에 가까이 가는 듯한 느낌. 아니면 최초에는 리더를 쫓아가서 그런듯.
+// --- FoeceMove랑 관계없이 타겟에게 가까이가는거 확인됨
+// --- Ranged Hero AI TryBackStep 켜진상태에서 와리가리하면서 TryBackStep가 false가 안되는거 확인됨
+// --- Zone Out, Idle 상태에서 아무것도안하고 가만히 있을 때 예외 처리 줘야할듯
+
 // --- LeaderController에 BattleMode추가해서 true로 되어 있다면 Env와 마찬가지로 움직이면 바로 움직이도록
 
 // --- MeleeHeroAI 대략적으로 수정 된듯. 근데 뭔가 똥을 덜 닦은 느낌.

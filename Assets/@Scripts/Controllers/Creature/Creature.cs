@@ -62,6 +62,7 @@ namespace STELLAREST_F1
                     return false;
                 }
 
+                // 가로 범위, 새로 범위, 대각선 범위로 바꿔야할지
                 int dx = Mathf.Abs(Target.CellPos.x - CellPos.x);
                 int dy = Mathf.Abs(Target.CellPos.y - CellPos.y);
                 int invokeRange = currentSkill.InvokeRange;

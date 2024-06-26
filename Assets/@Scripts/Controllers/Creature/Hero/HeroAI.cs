@@ -9,7 +9,7 @@ namespace STELLAREST_F1
     public class HeroAI : CreatureAI
     {
         #region Background
-        public new Hero Owner { get; private set; } = null;
+        public Hero HeroOwner { get; private set; } = null;
         protected override T SearchClosestInRange<T>(float scanRange, IEnumerable<T> firstTargets, IEnumerable<T> secondTargets = null, Func<T, bool> func = null, Func<bool> allTargetsCondition = null)
         {
             T firstTarget = null;
@@ -17,7 +17,7 @@ namespace STELLAREST_F1
             float bestDistSQR = float.MaxValue;
             float scanRangeSQR = scanRange * scanRange;
 
-            if (Owner.IsValid() && Owner.IsLeader)
+            if (HeroOwner.IsValid() && HeroOwner.IsLeader)
                 scanRangeSQR *= 0.8f;
 
             foreach (T obj in firstTargets)
@@ -118,10 +118,10 @@ namespace STELLAREST_F1
 
                     case EHeroMemberFormationMode.NarrowFormation:
                     case EHeroMemberFormationMode.WideFormation:
-                        return leaderController.RequestFormationCellPos(Owner); ;
+                        return leaderController.RequestFormationCellPos(HeroOwner); ;
 
                     case EHeroMemberFormationMode.RandomFormation:
-                        return leaderController.RequestRandomFormationCellPos(Owner);
+                        return leaderController.RequestRandomFormationCellPos(HeroOwner);
 
                     case EHeroMemberFormationMode.ForceStop:
                         return PrevCellPosForForceStop;
@@ -206,7 +206,7 @@ namespace STELLAREST_F1
         public override void SetInfo(Creature owner)
         {
             base.SetInfo(owner);
-            Owner = owner as Hero;
+            HeroOwner = owner as Hero;
         }
         public override void EnterInGame()
         {

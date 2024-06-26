@@ -9,7 +9,7 @@ using static STELLAREST_F1.Define;
 #if UNITY_EDITOR
 namespace STELLAREST_F1
 {
-    public class DevScene : BaseScene
+    public class DevScene_Map : BaseScene
     {
         public override bool Init()
         {
@@ -46,7 +46,7 @@ namespace STELLAREST_F1
                 HeroLeaderController leaderController = Managers.Object.SetHeroLeaderController();
                 CameraController cam = Camera.main.GetComponent<CameraController>();
                 Managers.Object.CameraController = cam;
-                Hero firstHero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.DataAndPoolingID.DNPID_Hero_Paladin);
+                Hero firstHero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.DataAndPoolingID.DNPID_Hero_Lancer);
                 Managers.Map.MoveTo(firstHero, Vector3.zero, stopLerpToCell: true, forceMove: true);
                 firstHero.InitialSpawnedCellPos = Vector3Int.zero;
 
@@ -72,7 +72,7 @@ namespace STELLAREST_F1
                 // }
                 // leaderController.Leader = firstHero;
 
-                int paladin = 3;
+                int paladin = 0;
                 int archer = 0;
                 int wizard = 0;
                 int lancer = 0;
@@ -123,15 +123,15 @@ namespace STELLAREST_F1
             }
 
             {   // --- ENV SINGLE TEST
-                // // // // Temp - Spawn Env (스폰 데이터 시트로 빼야함)
-                // Env env = Managers.Object.Spawn<Env>(EObjectType.Env, ReadOnly.DataAndPoolingID.DNPID_Env_AshTree);
-                // // int x = Managers.Object.Monsters[0].CellPos.x;
-                // // int y = Managers.Object.Monsters[0].CellPos.y;
-                // //Vector3Int randPos = new Vector3Int(Random.Range(x + 3, x + 5), Random.Range(y + 3, y + 5));
-                // Vector3Int randPos = new Vector3Int(-6, 11, 0);
-                // env.SetCellPos(cellPos: randPos, stopLerpToCell: true, forceMove: true);
-                // env.InitialSpawnedCellPos = randPos;
-                // env.UpdateCellPos();
+                // // // Temp - Spawn Env (스폰 데이터 시트로 빼야함)
+                Env env = Managers.Object.Spawn<Env>(EObjectType.Env, ReadOnly.DataAndPoolingID.DNPID_Env_AshTree);
+                // int x = Managers.Object.Monsters[0].CellPos.x;
+                // int y = Managers.Object.Monsters[0].CellPos.y;
+                //Vector3Int randPos = new Vector3Int(Random.Range(x + 3, x + 5), Random.Range(y + 3, y + 5));
+                Vector3Int randPos = new Vector3Int(-6, 11, 0);
+                env.SetCellPos(cellPos: randPos, stopLerpToCell: true, forceMove: true);
+                env.InitialSpawnedCellPos = randPos;
+                env.UpdateCellPos();
             }
 
             // {

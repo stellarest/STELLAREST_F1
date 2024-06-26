@@ -131,7 +131,7 @@ namespace STELLAREST_F1
 
                         // --- TURKEY TEST
                         int current = 0;
-                        int spawnCount = 3;
+                        int spawnCount = 0;
                         int attemptSpawnCount = 0;
                         while (attemptSpawnCount < 100)
                         {
@@ -156,7 +156,7 @@ namespace STELLAREST_F1
 
                         // --- BUNNY TEST
                         current = 0;
-                        spawnCount = 3;
+                        spawnCount = 0;
                         attemptSpawnCount = 0;
                         while (attemptSpawnCount < 100)
                         {
@@ -181,7 +181,7 @@ namespace STELLAREST_F1
 
                         // --- PUG TEST
                         current = 0;
-                        spawnCount = 3;
+                        spawnCount = 0;
                         attemptSpawnCount = 0;
                         while (attemptSpawnCount < 100)
                         {
@@ -204,9 +204,9 @@ namespace STELLAREST_F1
                             }
                         }
 
-                        // TEST MULTIPLE
+                        // // TEST MULTIPLE
                         // int currentMonsterCount = 0;
-                        // int maxMonsterCount = UnityEngine.Random.Range(20, 31);
+                        // int maxMonsterCount = UnityEngine.Random.Range(10, 20);
                         // while (currentMonsterCount < maxMonsterCount)
                         // {
                         //     Vector3Int randPos = new Vector3Int

@@ -471,6 +471,10 @@ namespace STELLAREST_F1
         // ####################################################
         public static class ReadOnly
         {
+            // 1. Paladin - 101000
+            // 2. Archer - 101010
+            // 3. Lancer - 101020
+
             public static class DataAndPoolingID
             {
                 // --- Damage Font
@@ -478,10 +482,13 @@ namespace STELLAREST_F1
                 // --- Heroes
                 public static readonly int DNPID_Hero_Paladin = 101000;
                 public static readonly int DNPID_Hero_Archer = 101010;
-                public static readonly int DNPID_Hero_Wizard = 101020;
-                public static readonly int DNPID_Hero_Lancer = 101030;
-                public static readonly int DNPID_Hero_Gunner = 101040;
-                public static readonly int DNPID_Hero_Assassin = 101050;
+
+                public static readonly int DNPID_Hero_Lancer = 101020;
+                public static readonly int DNPID_Hero_Wizard = 101030;
+
+                public static readonly int DNPID_Hero_Assassin = 101040;
+                public static readonly int DNPID_Hero_Gunner = 101050;
+                
                 // --- Monsters
                 public static readonly int DNPID_Monster_Chicken = 102000;
                 public static readonly int DNPID_Monster_Turkey = 102001;
@@ -534,6 +541,7 @@ namespace STELLAREST_F1
 
                 // Lower Layers
                 public static readonly string Lower_Idle = "Lower_Idle";
+                public static readonly string Lower_Idle_To_Skill_A = "Lower_Idle_To_Skill_A";
                 public static readonly string Lower_Move = "Lower_Move";
 
                 // --- Params

@@ -311,10 +311,6 @@ namespace STELLAREST_F1
             InitBody(EHeroBodyParts.Weapon, (int)EHeroWeapon.Max); // NEED FIX
         }
 
-        // ########## HERO FACE ##########
-        #region Hero - Face
-
-        #endregion
         private Dictionary<EHeroBodyParts, Container[]> _bodyDict = new Dictionary<EHeroBodyParts, Container[]>();
         [field: SerializeField] public HeroFace Face { get; private set; } = null;
         //public void SetEmoji(EHeroEmoji emoji) => Face?.SetEmoji(emoji);
@@ -656,6 +652,22 @@ namespace STELLAREST_F1
                 Face = new HeroFace(this);
         }
 
+        public Transform LeftWeapon { get; private set; } = null;
+        public Vector3 LeftWeaponLocalScale { get; private set; } = Vector3.zero;
+        public void SetLeftWeapon(Transform leftWeapon, Vector3 leftWeaponLocalScale)
+        {
+            LeftWeapon = leftWeapon;
+            LeftWeaponLocalScale = leftWeaponLocalScale;
+        }
+
+        public Transform RightWeapon { get; private set; } = null;
+        public Vector3 RightWeaponLocalScale { get; private set; } = Vector3.zero;
+        public void SetRightWeapon(Transform rightWeapon, Vector3 rightWeaponLocalScale)
+        {
+            RightWeapon = rightWeapon;
+            RightWeaponLocalScale = rightWeaponLocalScale;
+        }
+
         private SpriteRenderer[] _leftWeaponSPRs = null;
         private Sprite[] _defaultLeftWeaponSPs = null;
 
@@ -701,15 +713,20 @@ namespace STELLAREST_F1
             {
                 case EHeroStateWeaponType.Default:
                     {
+                        if (LeftWeapon != null)
+                            LeftWeapon.localScale = LeftWeaponLocalScale;
                         for (int i = 0; i < _leftWeaponSPRs.Length; ++i)
                             _leftWeaponSPRs[i].sprite = _defaultLeftWeaponSPs[i];
 
+                        if (RightWeapon != null)
+                            RightWeapon.localScale = RightWeaponLocalScale;
                         for (int i = 0; i < _rightWeaponSPRs.Length; ++i)
                             _rightWeaponSPRs[i].sprite = _defaultRightWeaponSPs[i];
                     }
                     break;
 
                 case EHeroStateWeaponType.EnvTree:
+                    RightWeapon.localScale = Vector3.one;
                     if (Owner.CreatureRarity == ECreatureRarity.Common)
                         _rightWeaponSPRs[0].sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Tree][(int)ECollectEnvRarity.Common];
                     else
@@ -717,6 +734,7 @@ namespace STELLAREST_F1
                     break;
 
                 case EHeroStateWeaponType.EnvRock:
+                    RightWeapon.localScale = Vector3.one;
                     if (Owner.CreatureRarity == ECreatureRarity.Common)
                         _rightWeaponSPRs[0].sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Rock][(int)ECollectEnvRarity.Common];
                     else
