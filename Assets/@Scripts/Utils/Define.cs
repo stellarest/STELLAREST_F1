@@ -488,7 +488,16 @@ namespace STELLAREST_F1
 
                 public static readonly int DNPID_Hero_Assassin = 101040;
                 public static readonly int DNPID_Hero_Gunner = 101050;
-                
+
+                public static readonly int DNPID_Hero_Trickster = 101060;
+                public static readonly int DNPID_Hero_Druid = 101070;
+
+                public static readonly int DNPID_Hero_Barbarian = 101080;
+                public static readonly int DNPID_Hero_Ninja = 101090;
+
+                public static readonly int DNPID_Hero_PhantomKnight = 101100;
+                public static readonly int DNPID_Hero_Hunter = 101110;
+
                 // --- Monsters
                 public static readonly int DNPID_Monster_Chicken = 102000;
                 public static readonly int DNPID_Monster_Turkey = 102001;
@@ -548,6 +557,8 @@ namespace STELLAREST_F1
                 public static readonly string IsMoving = "IsMoving";
                 public static readonly string CanSkill = "CanSkill";
                 public static readonly string OnSkill_A = "OnSkill_A";
+                public static readonly string LowerIdleToSkillA = "LowerIdleToSkillA";                 
+
                 public static readonly string OnSkill_B = "OnSkill_B";
                 public static readonly string OnSkill_C = "OnSkill_C";
                 public static readonly string OnCollectEnv = "OnCollectEnv";

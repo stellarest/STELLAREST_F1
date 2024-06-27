@@ -12,10 +12,18 @@ namespace STELLAREST_F1
 
 
         public event System.Action OnSkillCallbackHandler = null;
-        public void OnSkillClipCallback() => OnSkillCallbackHandler?.Invoke();
+        public void OnSkill() => OnSkillCallbackHandler?.Invoke();
 
 
         public event System.Action OnCollectEnvCallbackHandler = null;
-        public void OnCollectEnvClipCallback() => OnCollectEnvCallbackHandler?.Invoke();
+        public void OnCollectEnv() => OnCollectEnvCallbackHandler?.Invoke();
+
+
+        public event System.Action OnEnterLowerAnimIdleToSkillACallbackHandler = null;
+        public void OnEnterLowerAnimIdleToSkillA() => OnEnterLowerAnimIdleToSkillACallbackHandler?.Invoke();
+
+
+        public event System.Action OnExitLowerAnimIdleToSkillACallbackHandler = null;
+        public void OnExitLowerAnimIdleToSkillA() => OnExitLowerAnimIdleToSkillACallbackHandler?.Invoke();
     }
 }

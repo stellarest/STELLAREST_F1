@@ -60,9 +60,9 @@ namespace STELLAREST_F1
         private Vector3Int GetBackStepRandomCellPos(Vector3 dir, float dist)
         {
             Hero leader = Managers.Object.HeroLeaderController.Leader;
-            Vector3 dest = dir * dist;
-            float minRot = -5f;
-            float maxRot = 5f;
+            Vector3 dest = HeroOwner.transform.position + (dir * dist);
+            float minRot = -30f;
+            float maxRot = 30f;
             Quaternion randRot = Quaternion.Euler(0f, 0f, UnityEngine.Random.Range(minRot, maxRot));
             Vector3Int destCellPos = Managers.Map.WorldToCell(randRot * dest);
             int attemptCount = 0;

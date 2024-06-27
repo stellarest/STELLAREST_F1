@@ -46,6 +46,8 @@ namespace STELLAREST_F1
         protected readonly int IsMoving = Animator.StringToHash(ReadOnly.AnimationParams.IsMoving);
         protected readonly int CanSkill = Animator.StringToHash(ReadOnly.AnimationParams.CanSkill);
         protected readonly int OnSkill_A = Animator.StringToHash(ReadOnly.AnimationParams.OnSkill_A);
+        protected readonly int LowerIdleToSkillA = Animator.StringToHash(ReadOnly.AnimationParams.LowerIdleToSkillA);
+        
         protected readonly int OnSkill_B = Animator.StringToHash(ReadOnly.AnimationParams.OnSkill_B);
         protected readonly int OnSkill_C = Animator.StringToHash(ReadOnly.AnimationParams.OnSkill_C);
         protected readonly int OnCollectEnv = Animator.StringToHash(ReadOnly.AnimationParams.OnCollectEnv);
@@ -61,6 +63,12 @@ namespace STELLAREST_F1
         {
             get => Animator.GetBool(CanSkill);
             set => Animator.SetBool(CanSkill, value);
+        }
+
+        public bool EnterLowerAnimIdleToSkillA
+        {
+            get => Animator.GetBool(LowerIdleToSkillA);
+            private set => Animator.SetBool(LowerIdleToSkillA, value);
         }
 
         public void Skill(ESkillType skillType)
@@ -140,9 +148,17 @@ namespace STELLAREST_F1
 
             _creatureAnimCallback.OnCollectEnvCallbackHandler -= OnCollectEnvCallback;
             _creatureAnimCallback.OnCollectEnvCallbackHandler += OnCollectEnvCallback;
+
+            _creatureAnimCallback.OnEnterLowerAnimIdleToSkillACallbackHandler -= OnEnterLowerAnimIdleToSkillACallback;
+            _creatureAnimCallback.OnEnterLowerAnimIdleToSkillACallbackHandler += OnEnterLowerAnimIdleToSkillACallback;
+            
+            _creatureAnimCallback.OnExitLowerAnimIdleToSkillACallbackHandler -= OnExitLowerAnimIdleToSkillACallback;
+            _creatureAnimCallback.OnExitLowerAnimIdleToSkillACallbackHandler += OnExitLowerAnimIdleToSkillACallback;
         }
 
         public virtual void OnCollectEnvCallback() { }
+        public void OnEnterLowerAnimIdleToSkillACallback() => EnterLowerAnimIdleToSkillA = true;
+        public void OnExitLowerAnimIdleToSkillACallback() => EnterLowerAnimIdleToSkillA = false;
         #endregion
 
         #region Anim State Events

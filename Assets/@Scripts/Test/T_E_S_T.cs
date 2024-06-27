@@ -7,6 +7,13 @@ using UnityEngine;
 using DG.Tweening;
 
 /*
+// --- Assassin Upper_Skill_A 수정 필요
+// --- 이제 Tricster, Druid 만들고 Assassin Skill_A 수정하면 됨. 그러면 딱 7명.
+// --- 이후, 몬스터 애니메이션 체크하고 히어로 AI 다듬고 스킬 제대로 시작.
+
+// --- Lower_Idle_To_Skill_A: 아쳐도 서서 공격할때가 있음
+// --- Wizard의 경우 약간 자연스러워지긴했는데, 정말로 Lower_Idle_To_Skill_A 이게 필요할지.
+
 // Assassin Skill_A 빠른 두방, 또는 세방으로 수정
 // --- Lv.10 -> Lv.5로 다운 예정
 
