@@ -75,12 +75,19 @@ namespace STELLAREST_F1
                 Debug.Log($"<color=cyan>CurrentLv: {Level}</color>");
                 Debug.Log($"<color=cyan>MaxLv: {Level}</color>");
                 Debug.Log("<color=cyan>==============================</color>");
+
+                if (_level == _maxLevel)
+                {
+                    Debug.Log("<color=yellow>Try to change new sprite set</color>");
+                    Managers.Sprite.ChangeSpriteSet(newDataID: _maxLevel, owner: this);
+                }
             }
-            else
+            else if (_level == _maxLevel)
             {
-                Debug.LogWarning("==============================");
-                Debug.LogWarning($"Failed to level up, {gameObject.name}");
-                Debug.LogWarning("==============================");
+                Debug.LogWarning($"Failed to level up, MaxLv: {gameObject.name}");
+                // Debug.LogWarning("==============================");
+                // Debug.LogWarning($"Failed to level up, {gameObject.name}");
+                // Debug.LogWarning("==============================");
             }
 
             // Debug.Log($"===== {gameObject.name} =====");

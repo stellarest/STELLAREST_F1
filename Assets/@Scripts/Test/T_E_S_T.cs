@@ -7,6 +7,11 @@ using UnityEngine;
 using DG.Tweening;
 
 /*
+// --- 애니메이션 디테일한것들은 나중에 고쳐야함(ex. 트릭스터 공격시 왼팔 sprite sorting order)
+// --- 어쌔신 공격 애니메이션 고치는건 조금 급하긴 함
+// --- 리더 히어로 이동시 동료 히어로 무시하는거 변경해보기
+// --- Druid 표정 정해야함
+
 // --- Assassin Upper_Skill_A 수정 필요
 // --- 이제 Tricster, Druid 만들고 Assassin Skill_A 수정하면 됨. 그러면 딱 7명.
 // --- 이후, 몬스터 애니메이션 체크하고 히어로 AI 다듬고 스킬 제대로 시작.

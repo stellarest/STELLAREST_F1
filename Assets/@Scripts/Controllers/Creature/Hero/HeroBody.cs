@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Runtime.InteropServices;
+using STELLAREST_F1.Data;
 using Unity.Properties;
 using UnityEngine;
 using static STELLAREST_F1.Define;
@@ -51,6 +52,36 @@ namespace STELLAREST_F1
             {
                 _mouthSprites[i] = Managers.Resource.Load<Sprite>(heroSpriteData.Head.Mouth[i]);
                 string mouthColor = heroSpriteData.Head.MouthColors[i];
+                if (ColorUtility.TryParseHtmlString(mouthColor, out Color color))
+                    _mouthColors[i] = color;
+            }
+        }
+
+        public void ChangeHeroFaceSet(HeroSpriteData heroNewSpriteData)
+        {
+            // --- Eyebrows
+            for (int i = 0; i < (int)EHeroEmoji.Max; ++i)
+            {
+                _eyebrowsSprites[i] = Managers.Resource.Load<Sprite>(heroNewSpriteData.Head.Eyebrows[i]);
+                string eyebrowsColor = heroNewSpriteData.Head.EyebrowsColors[i];
+                if (ColorUtility.TryParseHtmlString(eyebrowsColor, out Color color))
+                    _eyebrowsColors[i] = color;
+            }
+
+            // --- Eyes
+            for (int i = 0; i < (int)EHeroEmoji.Max; ++i)
+            {
+                _eyesSprites[i] = Managers.Resource.Load<Sprite>(heroNewSpriteData.Head.Eyes[i]);
+                string eyesColor = heroNewSpriteData.Head.EyesColors[i];
+                if (ColorUtility.TryParseHtmlString(eyesColor, out Color color))
+                    _eyesColors[i] = color;
+            }
+
+            // --- Mouth
+            for (int i = 0; i < (int)EHeroEmoji.Max; ++i)
+            {
+                _mouthSprites[i] = Managers.Resource.Load<Sprite>(heroNewSpriteData.Head.Mouth[i]);
+                string mouthColor = heroNewSpriteData.Head.MouthColors[i];
                 if (ColorUtility.TryParseHtmlString(mouthColor, out Color color))
                     _mouthColors[i] = color;
             }
@@ -188,116 +219,6 @@ namespace STELLAREST_F1
                 _heroEmoji = value;
             }
         }
-
-        // public void SetEmoji(EHeroEmoji heroEmoji)
-        // {
-        //     switch (heroEmoji)
-        //     {
-        //         case EHeroEmoji.Idle:
-        //             {
-        //                 _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Idle];
-        //                 _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Idle];
-
-        //                 _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Idle];
-        //                 _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Idle];
-
-        //                 _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Idle];
-        //                 _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Idle];
-        //             }
-        //             break;
-
-        //         case EHeroEmoji.Move:
-        //             {
-        //                 _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Move];
-        //                 _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Move];
-
-        //                 _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Move];
-        //                 _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Move];
-
-        //                 _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Move];
-        //                 _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Move];
-        //             }
-        //             break;
-
-        //         case EHeroEmoji.Skill_A:
-        //             {
-        //                 _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Skill_A];
-        //                 _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Skill_A];
-
-        //                 _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Skill_A];
-        //                 _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Skill_A];
-
-        //                 _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Skill_A];
-        //                 _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Skill_A];
-        //             }
-        //             break;
-
-        //         case EHeroEmoji.Skill_B:
-        //             {
-        //                 _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Skill_B];
-        //                 _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Skill_B];
-
-        //                 _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Skill_B];
-        //                 _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Skill_B];
-
-        //                 _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Skill_B];
-        //                 _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Skill_B];
-        //             }
-        //             break;
-
-        //         case EHeroEmoji.Skill_C:
-        //             {
-        //                 _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Skill_C];
-        //                 _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Skill_C];
-
-        //                 _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Skill_C];
-        //                 _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Skill_C];
-
-        //                 _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Skill_C];
-        //                 _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Skill_C];
-        //             }
-        //             break;
-
-        //         case EHeroEmoji.CollectEnv:
-        //             {
-        //                 _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.CollectEnv];
-        //                 _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.CollectEnv];
-
-        //                 _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.CollectEnv];
-        //                 _eyesSPR.color = _eyesColors[(int)EHeroEmoji.CollectEnv];
-
-        //                 _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.CollectEnv];
-        //                 _mouthSPR.color = _mouthColors[(int)EHeroEmoji.CollectEnv];
-        //             }
-        //             break;
-
-        //         case EHeroEmoji.Sick:
-        //             {
-        //                 _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Sick];
-        //                 _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Sick];
-
-        //                 _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Sick];
-        //                 _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Sick];
-
-        //                 _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Sick];
-        //                 _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Sick];
-        //             }
-        //             break;
-
-        //         case EHeroEmoji.Dead:
-        //             {
-        //                 _eyebrowsSPR.sprite = _eyebrowsSprites[(int)EHeroEmoji.Dead];
-        //                 _eyebrowsSPR.color = _eyebrowsColors[(int)EHeroEmoji.Dead];
-
-        //                 _eyesSPR.sprite = _eyesSprites[(int)EHeroEmoji.Dead];
-        //                 _eyesSPR.color = _eyesColors[(int)EHeroEmoji.Dead];
-
-        //                 _mouthSPR.sprite = _mouthSprites[(int)EHeroEmoji.Dead];
-        //                 _mouthSPR.color = _mouthColors[(int)EHeroEmoji.Dead];
-        //             }
-        //             break;
-        //     }
-        // }
     }
 
     [System.Serializable]
@@ -674,17 +595,40 @@ namespace STELLAREST_F1
         private SpriteRenderer[] _rightWeaponSPRs = null;
         private Sprite[] _defaultRightWeaponSPs = null;
 
-        public void SetDefaultWeaponSprites(SpriteRenderer[] defaultLeftWeaponSPs, SpriteRenderer[] defaultRightWeaponSPs)
+        public void SetDefaultWeaponSprites(SpriteRenderer[] leftWeaponSPRs, SpriteRenderer[] rightWeaponSPRs)
         {
-            _leftWeaponSPRs = defaultLeftWeaponSPs;
-            _defaultLeftWeaponSPs = new Sprite[defaultLeftWeaponSPs.Length];
-            for (int i = 0; i < defaultLeftWeaponSPs.Length; ++i)
-                _defaultLeftWeaponSPs[i] = defaultLeftWeaponSPs[i].sprite;
+            _leftWeaponSPRs = leftWeaponSPRs;
+            _defaultLeftWeaponSPs = new Sprite[leftWeaponSPRs.Length];
+            for (int i = 0; i < leftWeaponSPRs.Length; ++i)
+                _defaultLeftWeaponSPs[i] = leftWeaponSPRs[i].sprite;
 
-            _rightWeaponSPRs = defaultRightWeaponSPs;
-            _defaultRightWeaponSPs = new Sprite[defaultRightWeaponSPs.Length];
-            for (int i = 0; i < defaultRightWeaponSPs.Length; ++i)
-                _defaultRightWeaponSPs[i] = defaultRightWeaponSPs[i].sprite;
+            _rightWeaponSPRs = rightWeaponSPRs;
+            _defaultRightWeaponSPs = new Sprite[rightWeaponSPRs.Length];
+            for (int i = 0; i < rightWeaponSPRs.Length; ++i)
+                _defaultRightWeaponSPs[i] = rightWeaponSPRs[i].sprite;
+        }
+
+        public void ChangeDefaultWeaponSprites(SpriteRenderer[] leftWeaponSPRs, SpriteRenderer[] rightWeaponSPRs)
+        {
+            for (int i = 0; i< _leftWeaponSPRs.Length; ++i)
+                _leftWeaponSPRs[i] = null;
+            for (int i = 0; i < _defaultLeftWeaponSPs.Length; ++i)
+                _defaultLeftWeaponSPs[i] = null;
+
+            for (int i = 0; i< _rightWeaponSPRs.Length; ++i)
+                _rightWeaponSPRs[i] = null;
+            for (int i = 0; i < _defaultRightWeaponSPs.Length; ++i)
+                _defaultRightWeaponSPs[i] = null;
+
+            _leftWeaponSPRs = leftWeaponSPRs;
+            _defaultLeftWeaponSPs = new Sprite[leftWeaponSPRs.Length];
+            for (int i = 0; i < leftWeaponSPRs.Length; ++i)
+                _defaultLeftWeaponSPs[i] = leftWeaponSPRs[i].sprite;
+
+            _rightWeaponSPRs = rightWeaponSPRs;
+            _defaultRightWeaponSPs = new Sprite[rightWeaponSPRs.Length];
+            for (int i = 0; i < rightWeaponSPRs.Length; ++i)
+                _defaultRightWeaponSPs[i] = rightWeaponSPRs[i].sprite;
         }
 
         // public void DefaultWeapon()

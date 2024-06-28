@@ -57,6 +57,14 @@ namespace STELLAREST_F1
             if (Owner.Target.ObjectType != EObjectType.Monster)
                 return;
 
+            int dx = Mathf.Abs(Owner.CellPos.x - Owner.Target.CellPos.x);
+            int dy = Mathf.Abs(Owner.CellPos.y - Owner.Target.CellPos.y);
+            if (dx < 1 && dy < 1)
+            {
+                Debug.Log("<color=cyan>TO FAR FROM MONSTER</color>");
+                return;
+            }
+
             Owner.Target.OnDamaged(Owner, this);
             // --- 간헐적으로 한번 더 공격할 때가 있음. 나중에 발생하면 한번 더 체크
             if (Owner.Target.Hp <= 0f)

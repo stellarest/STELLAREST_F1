@@ -462,7 +462,7 @@ namespace STELLAREST_F1
                     if (obj != _leader)
                     {
                         float distSQR = (obj.transform.position - _leader.transform.position).sqrMagnitude;
-                        if (distSQR <= 0.2f * 0.2f)
+                        if (distSQR <= 0.4f * 0.4f)
                             obj.transform.position += Vector3.up * 0.01f;
                     }
                 }

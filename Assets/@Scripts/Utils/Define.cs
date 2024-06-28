@@ -479,7 +479,7 @@ namespace STELLAREST_F1
             {
                 // --- Damage Font
                 public static readonly int DNPID_DamageFont = 109;
-                // --- Heroes
+                // --- Heroes (1차, 포폴용, Elite까지 제작해놓을것)
                 public static readonly int DNPID_Hero_Paladin = 101000;
                 public static readonly int DNPID_Hero_Archer = 101010;
 
@@ -495,8 +495,28 @@ namespace STELLAREST_F1
                 public static readonly int DNPID_Hero_Barbarian = 101080;
                 public static readonly int DNPID_Hero_Ninja = 101090;
 
-                public static readonly int DNPID_Hero_PhantomKnight = 101100;
-                public static readonly int DNPID_Hero_Hunter = 101110;
+                // + Phantom Knight
+                // + FrostWeaver
+
+                // + Queen
+                // + Hunter
+
+                // + Blacksmith
+                // + Priest
+                // ----------------------------------------------------------------------
+
+                // --- 리스트1(미정)
+                // > PhantomKnight - Hunter
+                // > Gladiator - FrostWeaver
+                // > Berserker - Priest
+                // > SkeletonKing - Pirate
+                // > Queen - Mutant // (20 Heroes)
+                // --- 리스트2(미정)
+                // > Thief - Time Traveler
+                // > Guardian - Witcher
+                // > Monk - Alchemist
+                // > Blacksmith - Bard
+                // > DragonKnight(Female) - Gambler (30 Heroes)
 
                 // --- Monsters
                 public static readonly int DNPID_Monster_Chicken = 102000;

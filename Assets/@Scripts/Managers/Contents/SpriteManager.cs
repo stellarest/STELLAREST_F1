@@ -223,38 +223,51 @@ namespace STELLAREST_F1
                     heroBody.Appearance.Add(spr);
                 }
 
-                sprite = Managers.Resource.Load<Sprite>(head.Eyebrows[(int)EHeroEmoji.Idle]);
-                if (sprite != null)
-                {
-                    spr = heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows);
-                    spr.sprite = sprite;
-                    if (ColorUtility.TryParseHtmlString(head.EyebrowsColors[(int)EHeroEmoji.Idle], out color))
-                        spr.color = color;
 
-                    heroBody.Appearance.Add(spr);
-                }
+                // --- HeroFace: Eyebrows
+                spr = heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows);
+                heroBody.Appearance.Add(spr);
+                // sprite = Managers.Resource.Load<Sprite>(head.Eyebrows[(int)EHeroEmoji.Idle]);
+                // if (sprite != null)
+                // {
+                //     spr = heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyebrows);
+                //     spr.sprite = sprite;
+                //     if (ColorUtility.TryParseHtmlString(head.EyebrowsColors[(int)EHeroEmoji.Idle], out color))
+                //         spr.color = color;
 
-                sprite = Managers.Resource.Load<Sprite>(head.Eyes[(int)EHeroEmoji.Idle]);
-                if (sprite != null)
-                {
-                    spr = heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes);
-                    spr.sprite = sprite;
-                    if (ColorUtility.TryParseHtmlString(head.EyesColors[(int)EHeroEmoji.Idle], out color))
-                        spr.color = color;
+                //     heroBody.Appearance.Add(spr);
+                // }
 
-                    heroBody.Appearance.Add(spr);
-                }
 
-                sprite = Managers.Resource.Load<Sprite>(head.Mouth[(int)EHeroEmoji.Idle]);
-                if (sprite != null)
-                {
-                    spr = heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth);
-                    spr.sprite = sprite;
-                    if (ColorUtility.TryParseHtmlString(head.MouthColors[(int)EHeroEmoji.Idle], out color))
-                        spr.color = color;
+                // --- HeroFace: Eyes
+                spr = heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes);
+                heroBody.Appearance.Add(spr);
+                // sprite = Managers.Resource.Load<Sprite>(head.Eyes[(int)EHeroEmoji.Idle]);
+                // if (sprite != null)
+                // {
+                //     spr = heroBody.GetComponent<SpriteRenderer>(EHeroHead.Eyes);
+                //     spr.sprite = sprite;
+                //     if (ColorUtility.TryParseHtmlString(head.EyesColors[(int)EHeroEmoji.Idle], out color))
+                //         spr.color = color;
+
+                //     heroBody.Appearance.Add(spr);
+                // }
+
+
+                // --- HeroFace: Mouth
+                spr = heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth);
+                heroBody.Appearance.Add(spr);
+                // sprite = Managers.Resource.Load<Sprite>(head.Mouth[(int)EHeroEmoji.Idle]);
+                // if (sprite != null)
+                // {
+                //     spr = heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mouth);
+                //     spr.sprite = sprite;
+                //     if (ColorUtility.TryParseHtmlString(head.MouthColors[(int)EHeroEmoji.Idle], out color))
+                //         spr.color = color;
                     
-                    heroBody.Appearance.Add(spr);
-                }
+                //     heroBody.Appearance.Add(spr);
+                // }
+
 
                 sprite = Managers.Resource.Load<Sprite>(head.Beard);
                 if (sprite != null)
@@ -1061,6 +1074,421 @@ namespace STELLAREST_F1
 
                 // 이미 BaseObject의 SortingGroup으로 layer 정렬 중임
                 //spr.sortingOrder = ReadOnly.Numeric.SortingLayer_Projectile;
+            }
+        }
+        #endregion
+
+        #region Change Sprite Set
+        public void ChangeSpriteSet(int newDataID, BaseObject owner)
+        {
+            switch (owner.ObjectType)
+            {
+                case EObjectType.Hero:
+                    Hero hero = owner as Hero;
+                    HeroBody heroBody = hero.HeroBody;
+                    HeroSpriteData heroCurrentSpriteData = Managers.Data.HeroSpriteDataDict[owner.DataTemplateID];
+                    HeroSpriteData heroNewSpriteData = Managers.Data.HeroSpriteDataDict[newDataID];
+
+                    heroBody.Face.ChangeHeroFaceSet(heroNewSpriteData);
+                    ChangeBodyColor(heroBody, heroCurrentSpriteData, heroNewSpriteData);
+                    ChangeBodySprites(heroBody, heroNewSpriteData, EHeroBodyParts.Head);
+                    ChangeBodySprites(heroBody, heroNewSpriteData, EHeroBodyParts.UpperBody);
+                    ChangeBodySprites(heroBody, heroNewSpriteData, EHeroBodyParts.LowerBody);
+                    ChangeBodySprites(heroBody, heroNewSpriteData, EHeroBodyParts.Weapon);
+                    break;
+            }
+        }
+
+        private void ChangeBodyColor(HeroBody heroBody, HeroSpriteData heroCurrentSpriteData, HeroSpriteData heroNewSpriteData)
+        {
+            if (ColorUtility.TryParseHtmlString(heroCurrentSpriteData.SkinColor, out Color currentSkinColor) == false)
+                return;
+
+            if (ColorUtility.TryParseHtmlString(heroNewSpriteData.SkinColor, out Color newSkinColor) == false)
+                return;
+
+            if (currentSkinColor == newSkinColor)
+            {
+                Debug.Log($"<color=yellow>Already Same Skin Color, {currentSkinColor} == {newSkinColor}</color>");
+                return;
+            }
+
+            // --- Change Body Color(BodyType 자체를 바꾸는 것은 제외, ex. Human to Skeleton은 불가능)
+            SpriteRenderer spr = null;
+            spr = heroBody.GetComponent<SpriteRenderer>(EHeroHead.HeadSkin);
+            spr.color = newSkinColor;
+
+            spr = heroBody.GetComponent<SpriteRenderer>(EHeroHead.Ears);
+            spr.color = newSkinColor;
+
+            spr = heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.TorsoSkin);
+            spr.color = newSkinColor;
+
+            spr = heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.ArmLSkin);
+            spr.color = newSkinColor;
+
+            spr = heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.ArmRSkin);
+            spr.color = newSkinColor;
+
+            spr = heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.ForearmLSkin);
+            spr.color = newSkinColor;
+
+            spr = heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.ForearmRSkin);
+            spr.color = newSkinColor;
+
+            spr = heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.HandLSkin);
+            spr.color = newSkinColor;
+
+            spr = heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.HandRSkin);
+            spr.color = newSkinColor;
+
+            spr = heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.FingerSkin);
+            spr.color = newSkinColor;
+
+            spr = heroBody.GetComponent<SpriteRenderer>(EHeroLowerBody.PelvisSkin);
+            spr.color = newSkinColor;
+
+            spr = heroBody.GetComponent<SpriteRenderer>(EHeroLowerBody.ShinLSkin);
+            spr.color = newSkinColor;
+
+            spr = heroBody.GetComponent<SpriteRenderer>(EHeroLowerBody.ShinRSkin);
+            spr.color = newSkinColor;
+
+            spr = heroBody.GetComponent<SpriteRenderer>(EHeroLowerBody.LegLSkin);
+            spr.color = newSkinColor;
+
+            spr = heroBody.GetComponent<SpriteRenderer>(EHeroLowerBody.LegRSkin);
+            spr.color = newSkinColor;
+        }
+
+        private void ChangeBodySprites(HeroBody heroBody, HeroSpriteData heroNewSpriteData, EHeroBodyParts heroBodyParts)
+        {
+            Sprite sprite = null;
+            SpriteRenderer spr = null;
+            Color color = Color.white;
+            if (heroBodyParts == EHeroBodyParts.Head)
+            {
+                HeroSpriteData_Head head = Managers.Data.HeroSpriteDataDict[heroNewSpriteData.DataID].Head;
+                sprite = Managers.Resource.Load<Sprite>(head.Hair);
+                if (sprite != null)
+                {
+                    spr = heroBody.GetComponent<SpriteRenderer>(EHeroHead.Hair);
+                    spr.sprite = sprite;
+                    if (ColorUtility.TryParseHtmlString(head.HairColor, out color))
+                        spr.color = color;
+                }
+
+                sprite = Managers.Resource.Load<Sprite>(head.Beard);
+                if (sprite != null)
+                {
+                    spr = heroBody.GetComponent<SpriteRenderer>(EHeroHead.Beard);
+                    spr.sprite = sprite;
+                    if (ColorUtility.TryParseHtmlString(head.BeardColor, out color))
+                        spr.color = color;
+                }
+
+                sprite = Managers.Resource.Load<Sprite>(head.Earrings);
+                if (sprite != null)
+                {
+                    spr = heroBody.GetComponent<SpriteRenderer>(EHeroHead.Earrings);
+                    spr.sprite = sprite;
+                    if (ColorUtility.TryParseHtmlString(head.EarringsColor, out color))
+                        spr.color = color;
+                }
+
+                sprite = Managers.Resource.Load<Sprite>(head.Mask);
+                if (sprite != null)
+                {
+                    spr = heroBody.GetComponent<SpriteRenderer>(EHeroHead.Mask);
+                    spr.sprite = sprite;
+                    if (ColorUtility.TryParseHtmlString(head.MaskColor, out color))
+                        spr.color = color;
+                }
+
+                sprite = Managers.Resource.Load<Sprite>(head.Glasses);
+                if (sprite != null)
+                {
+                    spr = heroBody.GetComponent<SpriteRenderer>(EHeroHead.Glasses);
+                    spr.sprite = sprite;
+                    if (ColorUtility.TryParseHtmlString(head.GlassesColor, out color))
+                        spr.color = color;
+                }
+
+                sprite = Managers.Resource.Load<Sprite>(head.Helmet);
+                if (sprite != null)
+                {
+                    spr = heroBody.GetComponent<SpriteRenderer>(EHeroHead.Helmet);
+                    spr.sprite = sprite;
+                    if (ColorUtility.TryParseHtmlString(head.HelmetColor, out color))
+                        spr.color = color;
+                }
+            }
+            else if (heroBodyParts == EHeroBodyParts.UpperBody)
+            {
+                HeroSpriteData_UpperBody upperBody = Managers.Data.HeroSpriteDataDict[heroNewSpriteData.DataID].UpperBody;
+                sprite = Managers.Resource.Load<Sprite>(upperBody.Torso);
+                if (sprite != null)
+                {
+                    spr = heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.Torso);
+                    spr.sprite = sprite;
+                    if (ColorUtility.TryParseHtmlString(upperBody.TorsoColor, out color))
+                        spr.color = color;
+                }
+
+                sprite = Managers.Resource.Load<Sprite>(upperBody.Cape);
+                if (sprite != null)
+                {
+                    spr = heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.Cape);
+                    spr.sprite = sprite;
+                    if (ColorUtility.TryParseHtmlString(upperBody.CapeColor, out color))
+                        spr.color = color;
+                }
+
+                sprite = Managers.Resource.Load<Sprite>(upperBody.ArmL);
+                if (sprite != null)
+                {
+                    spr = heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.ArmL);
+                    spr.sprite = sprite;
+                    if (ColorUtility.TryParseHtmlString(upperBody.ArmLColor, out color))
+                        spr.color = color;
+                }
+
+                sprite = Managers.Resource.Load<Sprite>(upperBody.ForearmL);
+                if (sprite != null)
+                {
+                    spr = heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.ForearmL);
+                    spr.sprite = sprite;
+                    if (ColorUtility.TryParseHtmlString(upperBody.ForearmLColor, out color))
+                        spr.color = color;
+                }
+
+                sprite = Managers.Resource.Load<Sprite>(upperBody.HandL);
+                if (sprite != null)
+                {
+                    spr = heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.HandL);
+                    spr.sprite = sprite;
+                    if (ColorUtility.TryParseHtmlString(upperBody.HandLColor, out color))
+                        spr.color = color;
+                }
+
+                sprite = Managers.Resource.Load<Sprite>(upperBody.Finger);
+                if (sprite != null)
+                {
+                    spr = heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.Finger);
+                    spr.sprite = sprite;
+                    if (ColorUtility.TryParseHtmlString(upperBody.FingerColor, out color))
+                        spr.color = color;
+                }
+
+                sprite = Managers.Resource.Load<Sprite>(upperBody.ArmR);
+                if (sprite != null)
+                {
+                    spr = heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.ArmR);
+                    spr.sprite = sprite;
+                    if (ColorUtility.TryParseHtmlString(upperBody.ArmRColor, out color))
+                        spr.color = color;
+                }
+
+                sprite = Managers.Resource.Load<Sprite>(upperBody.ForearmR);
+                if (sprite != null)
+                {
+                    spr = heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.ForearmR);
+                    spr.sprite = sprite;
+                    if (ColorUtility.TryParseHtmlString(upperBody.ForearmRColor, out color))
+                        spr.color = color;
+                }
+
+                sprite = Managers.Resource.Load<Sprite>(upperBody.SleeveR);
+                if (sprite != null)
+                {
+                    spr = heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.SleeveR);
+                    spr.sprite = sprite;
+                    if (ColorUtility.TryParseHtmlString(upperBody.SleeveRColor, out color))
+                        spr.color = color;
+                }
+
+                sprite = Managers.Resource.Load<Sprite>(upperBody.HandR);
+                if (sprite != null)
+                {
+                    spr = heroBody.GetComponent<SpriteRenderer>(EHeroUpperBody.HandR);
+                    spr.sprite = sprite;
+                    if (ColorUtility.TryParseHtmlString(upperBody.HandRColor, out color))
+                        spr.color = color;
+                }
+            }
+            else if (heroBodyParts == EHeroBodyParts.LowerBody)
+            {
+                HeroSpriteData_LowerBody lowerBody = Managers.Data.HeroSpriteDataDict[heroNewSpriteData.DataID].LowerBody;
+                sprite = Managers.Resource.Load<Sprite>(lowerBody.Pelvis);
+                if (sprite != null)
+                {
+                    spr = heroBody.GetComponent<SpriteRenderer>(EHeroLowerBody.Pelvis);
+                    spr.sprite = sprite;
+                    if (ColorUtility.TryParseHtmlString(lowerBody.PelvisColor, out color))
+                        spr.color = color;
+                }
+
+                sprite = Managers.Resource.Load<Sprite>(lowerBody.LegL);
+                if (sprite != null)
+                {
+                    spr = heroBody.GetComponent<SpriteRenderer>(EHeroLowerBody.LegL);
+                    spr.sprite = sprite;
+                    if (ColorUtility.TryParseHtmlString(lowerBody.LegLColor, out color))
+                        spr.color = color;
+                }
+
+                sprite = Managers.Resource.Load<Sprite>(lowerBody.ShinL);
+                if (sprite != null)
+                {
+                    spr = heroBody.GetComponent<SpriteRenderer>(EHeroLowerBody.ShinL);
+                    spr.sprite = sprite;
+                    if (ColorUtility.TryParseHtmlString(lowerBody.ShinLColor, out color))
+                        spr.color = color;
+                }
+
+                sprite = Managers.Resource.Load<Sprite>(lowerBody.LegR);
+                if (sprite != null)
+                {
+                    spr = heroBody.GetComponent<SpriteRenderer>(EHeroLowerBody.LegR);
+                    spr.sprite = sprite;
+                    if (ColorUtility.TryParseHtmlString(lowerBody.LegRColor, out color))
+                        spr.color = color;
+                }
+
+                sprite = Managers.Resource.Load<Sprite>(lowerBody.ShinR);
+                if (sprite != null)
+                {
+                    spr = heroBody.GetComponent<SpriteRenderer>(EHeroLowerBody.ShinR);
+                    spr.sprite = sprite;
+                    if (ColorUtility.TryParseHtmlString(lowerBody.ShinRColor, out color))
+                        spr.color = color;
+                }
+            }
+            else // --- WEAPON
+            {
+                List<SpriteRenderer> leftWeaponSPRs = new List<SpriteRenderer>();
+                List<SpriteRenderer> rightWeaponSPRs = new List<SpriteRenderer>();
+                HeroSpriteData_Weapon weapon = Managers.Data.HeroSpriteDataDict[heroNewSpriteData.DataID].Weapon;
+
+                // --- LEFT WEAPON
+                Transform weaponL = heroBody.GetComponent<Transform>(EHeroWeapon.WeaponL);
+                Transform weaponLTrRoot = heroBody.GetComponent<Transform>(EHeroWeapon.WeaponLChildGroup);
+                sprite = Managers.Resource.Load<Sprite>(weapon.LWeapon);
+                if (sprite != null)
+                {
+                    weaponL.localScale = weapon.LWeaponLocalScale;
+                    spr = heroBody.GetComponent<SpriteRenderer>(EHeroWeapon.WeaponL);
+                    heroBody.SetLeftWeapon(spr.transform, weapon.LWeaponLocalScale);
+                    spr.sprite = sprite;
+                    spr.sortingOrder = weapon.LWeaponSorting;
+                    spr.flipX = weapon.LWeaponFlipX;
+                    spr.flipY = weapon.LWeaponFlipY;
+                    leftWeaponSPRs.Add(spr);
+                    heroBody.GetComponent<Transform>(EHeroWeapon.WeaponLSocket).localPosition = weapon.LWeaponFireSocketLocalPosition;
+
+                    if (weapon.LWeaponChilds.Length != 0)
+                    {
+                        int childLength = weapon.LWeaponChilds.Length;
+                        for (int i = 0; i < childLength; ++i)
+                        {
+                            Sprite childSprite = Managers.Resource.Load<Sprite>(weapon.LWeaponChilds[i]);
+                            if (childSprite != null)
+                            {
+                                Transform childParent = heroBody.GetComponent<Transform>(EHeroWeapon.WeaponLChildGroup); // added
+                                SpriteRenderer childSPR = childParent.GetChild(i).GetComponent<SpriteRenderer>(); // fixed
+
+                                childSPR.sprite = childSprite;
+                                childSPR.transform.localPosition = weapon.LWeaponChildsLocalPositions[i]; // Added
+                                childSPR.sortingOrder = weapon.LWeaponChildSortings[i];
+                                childSPR.flipX = weapon.LWeaponChildFlipXs[i];
+                                childSPR.flipY = weapon.LWeaponChildFlipYs[i];
+                                leftWeaponSPRs.Add(childSPR);
+                            }
+                        }
+
+                        // L: 사용하지 않는 나머지 자식은 비활성화 (애니메이션으로 제어할 경우 제외)
+                        // Archer는 3번 무기를 사용하지 않지만, 나중에 진화할 때 필요할 수도 있어서 애니메이션에서는
+                        // L,R Root 자체를 껏켜하는중(*** 현재 애니메이션 제어에서 동작 안되는중 ***)
+                        for (int i = 0; i < weaponLTrRoot.childCount; ++i)
+                        {
+                            GameObject child = weaponLTrRoot.GetChild(i).gameObject;
+                            if (child.GetComponent<SpriteRenderer>().sprite == null)
+                                child.gameObject.SetActive(false);
+                        }
+                    }
+                    else
+                    {
+                        // L: 자식 무기가 아무것도 없으면 루트 자체를 비활성화
+                        // 비어있는 무기 오브젝트 자체를 비활성화하지 않는다. 맨주먹 소켓을 사용할 수도 있기 때문.
+                        weaponLTrRoot.gameObject.SetActive(false);
+                    }
+                }
+                else
+                {
+                    // L: 만약에 무기가 없는 캐릭터라면.. 전부 비활성화
+                    weaponLTrRoot.gameObject.SetActive(false);
+                }
+
+                // --- WEAPON RIGHT
+                Transform weaponR = heroBody.GetComponent<Transform>(EHeroWeapon.WeaponR);
+                Transform weaponRTrRoot = heroBody.GetComponent<Transform>(EHeroWeapon.WeaponRChildGroup);
+                sprite = Managers.Resource.Load<Sprite>(weapon.RWeapon);
+                if (sprite != null)
+                {
+                    weaponR.localScale = weapon.RWeaponLocalScale;
+                    spr = heroBody.GetComponent<SpriteRenderer>(EHeroWeapon.WeaponR);
+                    heroBody.SetRightWeapon(spr.transform, weapon.RWeaponLocalScale);
+                    spr.sprite = sprite;
+                    spr.sortingOrder = weapon.RWeaponSorting;
+                    spr.flipX = weapon.RWeaponFlipX;
+                    spr.flipY = weapon.RWeaponFlipY;
+                    rightWeaponSPRs.Add(spr);
+                    heroBody.GetComponent<Transform>(EHeroWeapon.WeaponRSocket).localPosition = weapon.RWeaponFireSocketLocalPosition;
+
+                    if (weapon.RWeaponChilds.Length != 0)
+                    {
+                        int childLength = weapon.RWeaponChilds.Length;
+                        for (int i = 0; i < childLength; ++i)
+                        {
+                            Sprite childSprite = Managers.Resource.Load<Sprite>(weapon.RWeaponChilds[i]);
+                            if (childSprite != null)
+                            {
+                                Transform childParent = heroBody.GetComponent<Transform>(EHeroWeapon.WeaponRChildGroup); // added
+                                SpriteRenderer childSPR = childParent.GetChild(i).GetComponent<SpriteRenderer>();
+                                
+                                childSPR.sprite = childSprite;
+                                childSPR.transform.localPosition = weapon.RWeaponChildsLocalPositions[i]; // Added
+                                childSPR.sortingOrder = weapon.RWeaponChildSortings[i];
+                                childSPR.flipX = weapon.RWeaponChildFlipXs[i];
+                                childSPR.flipY = weapon.RWeaponChildFlipYs[i];
+                                rightWeaponSPRs.Add(childSPR);
+                            }
+                        }
+
+                        // R: 사용하지 않는 나머지 자식은 비활성화 (애니메이션으로 제어할 경우 제외)
+                        // Archer는 3번 무기를 사용하지 않지만, 나중에 진화할 때 필요할 수도 있어서 애니메이션에서는
+                        // L,R Root 자체를 껏켜하는중(*** 현재 애니메이션 제어에서 동작 안되는중 ***)
+                        for (int i = 0; i < weaponRTrRoot.childCount; ++i)
+                        {
+                            GameObject child = weaponRTrRoot.GetChild(i).gameObject;
+                            if (child.GetComponent<SpriteRenderer>().sprite == null)
+                                child.gameObject.SetActive(false);
+                        }
+                    }
+                    else
+                    {
+                        // R: 자식 무기가 아무것도 없으면 루트 자체를 비활성화
+                        // 비어있는 무기 오브젝트 자체를 비활성화하지 않는다. 맨주먹 소켓을 사용할 수도 있기 때문.
+                        weaponRTrRoot.gameObject.SetActive(false);
+                    }
+                }
+                else
+                {
+                    // R: 만약에 무기가 없는 캐릭터라면 루트 자체를 비활성화
+                    weaponRTrRoot.gameObject.SetActive(false);
+                }
+
+                heroBody.ChangeDefaultWeaponSprites(leftWeaponSPRs.ToArray(), rightWeaponSPRs.ToArray());
             }
         }
         #endregion
