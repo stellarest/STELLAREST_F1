@@ -15,13 +15,13 @@ namespace STELLAREST_F1
 {
     public class BaseObject : InitBase
     {
-        // private void Update()
-        // {
-        //     if (Input.GetKeyDown("5"))
-        //     {
-        //         LevelUp();
-        //     }    
-        // }
+        private void Update()
+        {
+            if (Input.GetKeyDown("5"))
+            {
+                LevelUp();
+            }    
+        }
 
         public int DataTemplateID { get; protected set; } = -1;
         public EObjectType ObjectType { get; protected set; } = EObjectType.None;
@@ -66,6 +66,21 @@ namespace STELLAREST_F1
                 _level = Mathf.Clamp(_level + 1, DataTemplateID, _maxLevel);
                 if (Managers.Data.StatDataDict.TryGetValue(_level, out Data.StatData statData))
                     StatData = statData; // Refresh
+                else
+                    Debug.LogError($"Faield to refresh stat, input: \"{_level}\"");
+
+                Debug.Log("<color=cyan>==============================</color>");
+                Debug.Log($"<color=cyan>LvUp: {gameObject.name}</color>");
+                Debug.Log($"<color=cyan>Check LvTxt: {StatData.LevelText}</color>");
+                Debug.Log($"<color=cyan>CurrentLv: {Level}</color>");
+                Debug.Log($"<color=cyan>MaxLv: {Level}</color>");
+                Debug.Log("<color=cyan>==============================</color>");
+            }
+            else
+            {
+                Debug.LogWarning("==============================");
+                Debug.LogWarning($"Failed to level up, {gameObject.name}");
+                Debug.LogWarning("==============================");
             }
 
             // Debug.Log($"===== {gameObject.name} =====");
@@ -186,7 +201,6 @@ namespace STELLAREST_F1
 
             MaxHp = MaxHpBase = StatData.MaxHp;
             Atk = AtkBase = StatData.Atk;
-            //AtkRange = AtkRangeBase = StatData.AtkRange;
             CriticalRate = CriticalRateBase = StatData.CriticalRate;
             DodgeRate = DodgeRateBase = StatData.DodgeRate;
             MovementSpeed = MovementSpeedBase = StatData.MovementSpeed;

@@ -759,6 +759,8 @@ namespace STELLAREST_F1
             public static class Numeric
             {
                 // [ INTEGER ]
+                public static readonly int HeroMaxLevel = 5;
+
                 // public static readonly int SortingLayer_Base = 0;
                 // public static readonly int SortingLayer_Projectile = 10;
                 // public static readonly int SortingLayer_VFX = 20;

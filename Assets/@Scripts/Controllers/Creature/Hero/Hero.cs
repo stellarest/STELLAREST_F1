@@ -231,6 +231,18 @@ namespace STELLAREST_F1
             CreatureSkill.SetInfo(owner: this, HeroData);
         }
 
+        protected override void InitStat(int dataID)
+        {
+            base.InitStat(dataID);
+            for (int i = DataTemplateID; i < DataTemplateID + ReadOnly.Numeric.HeroMaxLevel;)
+            {
+                if (Managers.Data.StatDataDict.ContainsKey(i) == false)
+                    break;
+
+                _maxLevel = i++;
+            }
+        }
+
         protected override void EnterInGame()
         {
             // --- Heroes Default Dir

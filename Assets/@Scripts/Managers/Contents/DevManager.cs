@@ -25,6 +25,9 @@ namespace STELLAREST_F1
             if (Input.GetKeyDown(KeyCode.P))
                 ShowCellPosText();
 
+            if (Input.GetKeyDown(KeyCode.O))
+                OnOffTileCollider();
+
             if (Input.GetKeyDown("0"))
             {
                 // --- Check Current Cells Objects
@@ -57,8 +60,8 @@ namespace STELLAREST_F1
                 Debug.Log($"<color=white>ForceFollowToLeader: {Managers.Object.HeroLeaderController.ForceFollowToLeader}</color>");
             }
 
-            if (Input.GetKeyDown("5"))
-                OnOffTileCollider();
+            // if (Input.GetKeyDown("5"))
+            //     OnOffTileCollider();
 
             if (Input.GetKeyDown("9"))
                 Managers.Object.HeroLeaderController.ShuffleMembersPosition();

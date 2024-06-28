@@ -104,6 +104,12 @@ namespace STELLAREST_F1
             CreatureSkill.SetInfo(owner: this, MonsterData);
         }
 
+        protected override void InitStat(int dataID)
+        {
+            base.InitStat(dataID);
+            _maxLevel = dataID;
+        }
+
         protected override void EnterInGame()
         {
             // --- Monsters Default Dir

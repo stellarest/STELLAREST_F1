@@ -289,10 +289,8 @@ namespace STELLAREST_F1
             if (_leader.IsValid() == false)
                 return;
 
-            if (Input.GetKeyDown("5"))
-            {
-                _leader.Dead();
-            }
+            // if (Input.GetKeyDown("5"))
+            //     _leader.Dead();
 
             if (_leader.ForceMove)
             {

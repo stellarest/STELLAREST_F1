@@ -10,7 +10,7 @@ namespace STELLAREST_F1
     public class MonsterAI : CreatureAI
     {
         #region Background
-        public new Monster Owner { get; private set; } = null;
+        public Monster MonsterOwner { get; private set; } = null;
         private float _desiredNextPingPongPatrolDelta = 0f;
 
         private float SetDesiredNextPingPongPatrolDelta(float minSec, float maxSec)
@@ -22,11 +22,11 @@ namespace STELLAREST_F1
         { 
             get
             {
-                if (Owner.IsValid() == false)
+                if (MonsterOwner.IsValid() == false)
                     return base.ChaseCellPos;
 
-                if (Owner.Target.IsValid())
-                    return Owner.Target.CellPos;
+                if (MonsterOwner.Target.IsValid())
+                    return MonsterOwner.Target.CellPos;
                 else
                     return _patrolCellPos;
             }
@@ -45,7 +45,7 @@ namespace STELLAREST_F1
         public override void SetInfo(Creature owner)
         {
             base.SetInfo(owner);
-            Owner = owner as Monster;
+            MonsterOwner = owner as Monster;
         }
         public override void EnterInGame()
         {
@@ -54,20 +54,20 @@ namespace STELLAREST_F1
             StartCoSearchTarget<Creature>(scanRange: ReadOnly.Numeric.MonsterDefaultScanRange,
                              firstTargets: Managers.Object.Heroes,
                              secondTargets: null,
-                             func: Owner.IsValid,
+                             func: MonsterOwner.IsValid,
                              allTargetsCondition: null);
         }
 
         public override void UpdateIdle()
         {
-            if (Owner.IsValid() == false)
+            if (MonsterOwner.IsValid() == false)
                 return;
 
-            Owner.LookAtValidTarget();
-            if (Owner.CanSkill && Owner.LerpToCellPosCompleted)
+            MonsterOwner.LookAtValidTarget();
+            if (MonsterOwner.CanSkill && MonsterOwner.LerpToCellPosCompleted)
             {
                 //Owner.StopCoLerpToCellPos();
-                Owner.CreatureSkill.CurrentSkill.DoSkill();
+                MonsterOwner.CreatureSkill.CurrentSkill.DoSkill();
                 return;
             }
             else if (_coPingPongPatrol == null)
@@ -84,15 +84,15 @@ namespace STELLAREST_F1
 
         public override void UpdateMove()
         {
-            if (Owner.IsValid() == false)
+            if (MonsterOwner.IsValid() == false)
                 return;
 
-            Owner.LookAtValidTarget();
-            EFindPathResult result = Owner.FindPathAndMoveToCellPos(destPos: ChaseCellPos, maxDepth: ReadOnly.Numeric.MonsterDefaultMoveDepth);
+            MonsterOwner.LookAtValidTarget();
+            EFindPathResult result = MonsterOwner.FindPathAndMoveToCellPos(destPos: ChaseCellPos, maxDepth: ReadOnly.Numeric.MonsterDefaultMoveDepth);
             //Vector3 centeredPos = Managers.Map.CenteredCellToWorld(ChaseCellPos);
-            if (Owner.CanSkill || result == EFindPathResult.Fail_NoPath)
+            if (MonsterOwner.CanSkill || result == EFindPathResult.Fail_NoPath)
             {
-                Owner.CreatureAIState = ECreatureAIState.Idle;
+                MonsterOwner.CreatureAIState = ECreatureAIState.Idle;
                 return;
             }
 
@@ -131,25 +131,25 @@ namespace STELLAREST_F1
         {
             int attemptCount = 0;
             int maxAttemptCount = 100;
-            Vector3 _initialSpawnPos = Managers.Map.CenteredCellToWorld(Owner.InitialSpawnedCellPos.Value);
+            Vector3 _initialSpawnPos = Managers.Map.CenteredCellToWorld(MonsterOwner.InitialSpawnedCellPos.Value);
             if (_patrolPingPongFlag == false)
             {
                 float x = _initialSpawnPos.x + UnityEngine.Random.Range(minDistance, maxDistance);
                 float y = _initialSpawnPos.y + UnityEngine.Random.Range(minDistance, maxDistance);
                 _patrolCellPos = Managers.Map.WorldToCell(new Vector3(x, y, 0));
-                bool isShortDist = (Owner.InitialSpawnedCellPos.Value - _patrolCellPos).sqrMagnitude < 9f; // 최소 3칸이상으로 움직여라
+                bool isShortDist = (MonsterOwner.InitialSpawnedCellPos.Value - _patrolCellPos).sqrMagnitude < 9f; // 최소 3칸이상으로 움직여라
                 while (Managers.Map.CanMove(_patrolCellPos) == false || isShortDist)
                 {
                     if (attemptCount++ >= maxAttemptCount) // --- DEFENSE
                     {
-                        _patrolCellPos = Owner.InitialSpawnedCellPos.Value;
+                        _patrolCellPos = MonsterOwner.InitialSpawnedCellPos.Value;
                         break;
                     }
 
                     x = _initialSpawnPos.x + UnityEngine.Random.Range(minDistance, maxDistance);
                     y = _initialSpawnPos.y + UnityEngine.Random.Range(minDistance, maxDistance);
                     _patrolCellPos = Managers.Map.WorldToCell(new Vector3(x, y, 0));
-                    if ((Owner.InitialSpawnedCellPos.Value - _patrolCellPos).sqrMagnitude < 9f)
+                    if ((MonsterOwner.InitialSpawnedCellPos.Value - _patrolCellPos).sqrMagnitude < 9f)
                         isShortDist = true;
                     else
                         isShortDist = false;
@@ -158,16 +158,16 @@ namespace STELLAREST_F1
                 }
             }
             else
-                _patrolCellPos = Owner.InitialSpawnedCellPos.Value;
+                _patrolCellPos = MonsterOwner.InitialSpawnedCellPos.Value;
 
-            Owner.CreatureAIState = ECreatureAIState.Move;
+            MonsterOwner.CreatureAIState = ECreatureAIState.Move;
             _patrolPingPongFlag = !_patrolPingPongFlag;
             StopCoPingPongPatrol();
         }
 
         protected void StartCoPingPongPatrol(float minDistance, float maxDistance)
         {
-            if (Owner.CreatureAIState != ECreatureAIState.Idle) // --- DEFENSE
+            if (MonsterOwner.CreatureAIState != ECreatureAIState.Idle) // --- DEFENSE
             {
                 Debug.LogWarning("Patrol can only run in idle state.");
                 return;

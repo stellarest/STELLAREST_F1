@@ -47,8 +47,9 @@ namespace STELLAREST_F1
 
         #region Coroutines
         private float _delta = 0f;
-        private float _desiredTimeToReach = 0.25f;
-        //private float _desiredTimeToReach = 1.25f; // -- InAtkRange Test
+        // private float _desiredTimeToReach = 0.25f;
+        private float _desiredTimeToReach = 0.35f;
+        // private float _desiredTimeToReach = 1.25f; // -- InAtkRange Test
 
         private float _desiredTimeToReturn = 0.35f;
         //private float _desiredTimeToReturn = 1.35f;

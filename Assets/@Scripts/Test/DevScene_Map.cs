@@ -46,7 +46,7 @@ namespace STELLAREST_F1
                 HeroLeaderController leaderController = Managers.Object.SetHeroLeaderController();
                 CameraController cam = Camera.main.GetComponent<CameraController>();
                 Managers.Object.CameraController = cam;
-                Hero firstHero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.DataAndPoolingID.DNPID_Hero_Gunner);
+                Hero firstHero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.DataAndPoolingID.DNPID_Hero_Paladin);
                 Managers.Map.MoveTo(firstHero, Vector3.zero, stopLerpToCell: true, forceMove: true);
                 firstHero.InitialSpawnedCellPos = Vector3Int.zero;
 
@@ -73,14 +73,14 @@ namespace STELLAREST_F1
                 // leaderController.Leader = firstHero;
 
                 int paladin = 0;
-                int archer = 0;
-                int lancer = 0;
-                int wizard = 0;
-                int assassin = 0;
-                int gunner = 0;
+                int archer = 1;
+                int lancer = 1;
+                int wizard = 1;
+                int assassin = 1;
+                int gunner = 1;
 
                 int current = 0;
-                int total = paladin + archer + wizard + lancer + gunner;
+                int total = paladin + archer + lancer + wizard + assassin + gunner;
                 Hero heroMember = null;
                 while (current < total)
                 {
