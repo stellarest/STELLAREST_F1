@@ -71,21 +71,22 @@ namespace STELLAREST_F1
                 //     hero.InitialSpawnedCellPos = randPos;
                 // }
                 // leaderController.Leader = firstHero;
-
                 int paladin = 0;
-                int archer = 0;
+                int archer = 1;
 
-                int lancer = 0;
-                int wizard = 0;
+                int lancer = 1;
+                int wizard = 1;
 
-                int assassin = 0;
-                int gunner = 0;
+                int assassin = 1;
+                int gunner = 1;
 
-                int trickster = 0;
-                int druid = 0;
+                int trickster = 1;
+                int druid = 1;
+
+                int barbarian = 1;
 
                 int current = 0;
-                int total = paladin + archer + lancer + wizard + assassin + gunner + trickster + druid;
+                int total = paladin + archer + lancer + wizard + assassin + gunner + trickster + druid + barbarian;
                 Hero heroMember = null;
                 while (current < total)
                 {
@@ -132,6 +133,11 @@ namespace STELLAREST_F1
                     {
                         druid--;
                         heroMember = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.DataAndPoolingID.DNPID_Hero_Druid);
+                    }
+                    else if (barbarian > 0)
+                    {
+                        barbarian--;
+                        heroMember = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.DataAndPoolingID.DNPID_Hero_Barbarian);
                     }
 
                     current++;

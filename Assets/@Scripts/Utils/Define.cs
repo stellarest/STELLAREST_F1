@@ -480,6 +480,7 @@ namespace STELLAREST_F1
                 // --- Damage Font
                 public static readonly int DNPID_DamageFont = 109;
                 // --- Heroes (1차, 포폴용, Elite까지 제작해놓을것)
+                // ---> Hero 제작(애니메이션은 대충 세팅만 해놓음) -> Elite 제작 -> 애니메이션은 가장 나중에 정리
                 public static readonly int DNPID_Hero_Paladin = 101000;
                 public static readonly int DNPID_Hero_Archer = 101010;
 
@@ -493,7 +494,7 @@ namespace STELLAREST_F1
                 public static readonly int DNPID_Hero_Druid = 101070;
 
                 public static readonly int DNPID_Hero_Barbarian = 101080;
-                public static readonly int DNPID_Hero_Ninja = 101090;
+                // public static readonly int DNPID_Hero_Ninja = 101090;
 
                 // + Phantom Knight
                 // + FrostWeaver
@@ -645,19 +646,21 @@ namespace STELLAREST_F1
                 public static readonly string WoodcutterAxe_Elite_SP = "WoodcutterAxe_Elite.sprite";
 
                 // Sprite - Hero Human Body Type
-                public static readonly string HBody_HumanType_Head_SP = "Human_Head.sprite";
-                public static readonly string HBody_HumanType_Ears_SP = "Human_Ears.sprite";
-                public static readonly string HBody_HumanType_Torso_SP = "Human_Torso.sprite";
-                public static readonly string HBody_HumanType_ArmL_SP = "Human_ArmL.sprite";
-                public static readonly string HBody_HumanType_ArmR_SP = "Human_ArmR.sprite";
-                public static readonly string HBody_HumanType_ForearmL_SP = "Human_ForearmL.sprite";
-                public static readonly string HBody_HumanType_ForearmR_SP = "Human_ForearmR.sprite";
-                public static readonly string HBody_HumanType_HandL_SP = "Human_HandL.sprite";
-                public static readonly string HBody_HumanType_HandR_SP = "Human_HandR.sprite";
-                public static readonly string HBody_HumanType_Finger_SP = "Human_Finger.sprite";
-                public static readonly string HBody_HumanType_Pelvis_SP = "Human_Pelvis.sprite";
-                public static readonly string HBody_HumanType_Shin_SP = "Human_Shin.sprite";
-                public static readonly string HBody_HumanType_Leg_SP = "Human_Leg.sprite";
+                // public static readonly string HBody_HumanType_Head_SP = "Human_Head.sprite";
+                // public static readonly string HBody_HumanType_Ears_SP = "Human_Ears.sprite";
+                // public static readonly string HBody_HumanType_Torso_SP = "Human_Torso.sprite";
+                // public static readonly string HBody_HumanType_ArmL_SP = "Human_ArmL.sprite";
+                // public static readonly string HBody_HumanType_ForearmL_SP = "Human_ForearmL.sprite";
+                // public static readonly string HBody_HumanType_HandL_SP = "Human_HandL.sprite";
+
+                // public static readonly string HBody_HumanType_ArmR_SP = "Human_ArmR.sprite";
+                // public static readonly string HBody_HumanType_ForearmR_SP = "Human_ForearmR.sprite";
+                // public static readonly string HBody_HumanType_HandR_SP = "Human_HandR.sprite";
+                // public static readonly string HBody_HumanType_Finger_SP = "Human_Finger.sprite";
+
+                // public static readonly string HBody_HumanType_Pelvis_SP = "Human_Pelvis.sprite";
+                // public static readonly string HBody_HumanType_Shin_SP = "Human_Shin.sprite";
+                // public static readonly string HBody_HumanType_Leg_SP = "Human_Leg.sprite";
 
                 // Sprite & Material - Env Rock
                 public static readonly string ERock_Rock_SP = "StoneRock_Rock.sprite";

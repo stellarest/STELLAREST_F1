@@ -52,7 +52,7 @@ namespace STELLAREST_F1
             CellGrid = map.GetComponent<Grid>();
 
             ParseCollisionData(map, mapName);
-            SpawnObjectsByData(map, mapName);
+            // SpawnObjectsByData(map, mapName);
         }
 
         private void ParseCollisionData(GameObject map, string mapName, string tileMap = "Tilemap_Collision")
@@ -131,7 +131,7 @@ namespace STELLAREST_F1
 
                         // --- MORE CHICKEN
                         int current = 0;
-                        int spawnCount = 2;
+                        int spawnCount = 5;
                         int attemptSpawnCount = 0;
                         while (attemptSpawnCount < 100)
                         {

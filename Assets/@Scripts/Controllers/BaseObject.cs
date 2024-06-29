@@ -79,6 +79,10 @@ namespace STELLAREST_F1
                 if (_level == _maxLevel)
                 {
                     Debug.Log("<color=yellow>Try to change new sprite set</color>");
+
+                    // --- 나중에 스킬때문에 히어로 데이터 자체도 바꿔야함(ex. Paladin 101000 -> 101004)
+                    // --- 101000의 경우, 레벨 1때, Skill_A, B까지 ID 주고, 레벨 3때 Skill_C 해금되고
+                    // --- 만렙(Elite)이 되면 Skill_A, B, C가 전부 바뀌어야함.
                     Managers.Sprite.ChangeSpriteSet(newDataID: _maxLevel, owner: this);
                 }
             }

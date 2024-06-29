@@ -51,11 +51,31 @@ namespace STELLAREST_F1.Data
         public int DataID;
         public string Tag;
         public string Type;
-        public string SkinColor;
+        //public string SkinColor;
+        public HeroSpriteData_Skin Skin;
         public HeroSpriteData_Head Head;
         public HeroSpriteData_UpperBody UpperBody;
         public HeroSpriteData_LowerBody LowerBody;
         public HeroSpriteData_Weapon Weapon;
+    }
+
+    [Serializable]
+    public class HeroSpriteData_Skin
+    {
+        public string SkinColor;
+        public string Head;
+        public string Ears;
+        public string Torso;
+        public string ArmL;
+        public string ForearmL;
+        public string HandL;
+        public string ArmR;
+        public string ForearmR;
+        public string HandR;
+        public string Finger;
+        public string Pelvis;
+        public string Shin;
+        public string Leg;
     }
 
     [SerializeField]

@@ -11,6 +11,8 @@ using DG.Tweening;
 // --- 어쌔신 공격 애니메이션 고치는건 조금 급하긴 함
 // --- 리더 히어로 이동시 동료 히어로 무시하는거 변경해보기
 // --- Druid 표정 정해야함
+// --- Trickster Elite 방패 생겨서 애니메이션 고쳐야함. 아니면 나중에 Elite Hero DataSet 만들때 애니메이션까지 Elite 전용으로 새로 파줄수있긴한데
+// --- 노가다가 굉장히 심해질듯. 그래서 안할 것 같지만 만약 기회가 된다면 시도해볼수도 있을듯.
 
 // --- Assassin Upper_Skill_A 수정 필요
 // --- 이제 Tricster, Druid 만들고 Assassin Skill_A 수정하면 됨. 그러면 딱 7명.
