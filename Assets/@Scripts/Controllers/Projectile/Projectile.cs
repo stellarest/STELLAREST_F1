@@ -49,7 +49,7 @@ namespace STELLAREST_F1
             Managers.Sprite.SetInfo(dataID, target: this);
 
             // Set Size
-            EProjectileSize size = Util.GetEnumFromString<EProjectileSize>(projectileData.Size);
+            EProjectileSize size = Util.GetEnumFromString<EProjectileSize>(projectileData.ProjectileSize);
             switch (size)
             {
                 case EProjectileSize.Small:
@@ -76,13 +76,15 @@ namespace STELLAREST_F1
 
             Collider.excludeLayers = excludeLayerMask;
 
-            Type classType = Util.GetTypeFromName(projectileData.Type);
-            ProjectileMotion = gameObject.AddComponent(classType) as ProjectileMotionBase;
-            if (ProjectileMotion == null)
+            switch (projectileData.MotionType)
             {
-                Debug.LogError($"{nameof(Projectile)}, {nameof(SetInfo)}, Input : \"{projectileData.Type}\"");
-                Debug.Break();
-                return false;
+                case EProjectileMotionType.Parabola:
+                    ProjectileMotion = gameObject.AddComponent<ParabolaMotion>();
+                    break;
+
+                case EProjectileMotionType.Straight:
+                    ProjectileMotion = gameObject.AddComponent<StraightMotion>();
+                    break;
             }
 
             SetMotionInfo(owner, dataID);
@@ -114,56 +116,15 @@ namespace STELLAREST_F1
             }
 
             SetMotionInfo(owner, dataID);
-            //ProjectileMotion.SetInfo(owner, dataID);
-            //ProjectileMotion.StartMotion();
         }
-
-        // public void SetSpawnInfo(Creature owner, Vector3 spawnPosition, SkillBase skill, LayerMask excludeLayerMask)
-        // {
-        //     Owner = owner;
-        //     Skill = skill;
-        //     switch(owner.ObjectType)
-        //     {
-        //         case EObjectType.Hero:
-        //             excludeLayerMask.AddLayer(ELayer.Hero);
-        //             break;
-
-        //         case EObjectType.Monster:
-        //             excludeLayerMask.AddLayer(ELayer.Monster);
-        //             break;
-        //     }
-        //     Collider.excludeLayers = excludeLayerMask;
-
-        //     // ### DO PROJECTILE MOTION HERE ###
-        //     switch (ProjectileMotion.MotionType)
-        //     {
-        //         case EProjectileMotionType.StraightMotion:
-        //             (ProjectileMotion as ParabolaMotion).SetMotion(startPos: spawnPosition, targetPos: owner.Target.CenterPosition,
-        //                                                             motionType: EProjectileMotionType.None, animCurveType: EAnimationCurveType.None,
-        //                                                             hasTargetToRotate: true, movementSpeed: 0f, atkRange: 0f, endCallback: () => {
-        //                                                                 Managers.Object.Despawn(this, DataTemplateID);
-        //                                                             });
-        //             break;
-
-        //         case EProjectileMotionType.ParabolaMotion:
-        //             (ProjectileMotion as ParabolaMotion).SetMotion(startPos: spawnPosition, targetPos: owner.Target.CenterPosition,
-        //                                                             motionType: EProjectileMotionType.None, animCurveType: EAnimationCurveType.None,
-        //                                                             hasTargetToRotate: true, movementSpeed: 0f, atkRange: 0f, endCallback: () => {
-        //                                                                 Managers.Object.Despawn(this, DataTemplateID);
-        //                                                             });
-        //             break;
-        //     }
-
-        //     //StartCoroutine(CoLifeTime(ReadOnly.Numeric.ProjectileLifeTime)); // FIXED
-        // }
 
         private void SetMotionInfo(BaseObject owner, int dataID)
         {
-            ProjectileData = Managers.Data.ProjectileDataDict[dataID];
-            ProjectileMotionType = Util.GetEnumFromString<EProjectileMotionType>(ProjectileData.Type);
-            switch (ProjectileMotionType)
+            //ProjectileData = Managers.Data.ProjectileDataDict[dataID];
+            //ProjectileMotionType = Util.GetEnumFromString<EProjectileMotionType>(ProjectileData.MotionType);
+            switch (ProjectileData.MotionType)
             {
-                case EProjectileMotionType.StraightMotion:
+                case EProjectileMotionType.Straight:
                     ProjectileMotion.SetEndCallback(() => 
                     {
                         Managers.Object.Despawn(this, dataID);
@@ -171,7 +132,7 @@ namespace STELLAREST_F1
                     (ProjectileMotion as StraightMotion).SetInfo(owner, dataID);
                     break;
 
-                case EProjectileMotionType.ParabolaMotion:
+                case EProjectileMotionType.Parabola:
                     ProjectileMotion.SetEndCallback(() => 
                     {
                         Managers.Object.Despawn(this, dataID);
@@ -180,7 +141,7 @@ namespace STELLAREST_F1
                     break;
             }
 
-            StartCoroutine(CoLifeTime(ReadOnly.Numeric.ProjectileLifeTime));
+            StartCoroutine(CoLifeTime(ReadOnly.Util.ProjectileLifeTime));
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -203,24 +164,3 @@ namespace STELLAREST_F1
         }
     }
 }
-
-/*
-
-            // // ******************************************************************************************
-            // EProjectileMotionType motionType = Util.GetEnumFromString<EProjectileMotionType>(projectileData.Type);
-            // if (motionType <= EProjectileMotionType.None || ProjectileMotion.MotionType >= EProjectileMotionType.Max)
-            // {
-            //     Debug.LogError($"{nameof(Projectile)}, {nameof(SetInfo)}, Input : \"{ProjectileMotion.MotionType}\"(Invalid motion type)");
-            //     return false;
-            // }
-            // ProjectileMotion.MotionType = motionType;
-
-            // EAnimationCurveType curveType = Util.GetEnumFromString<EAnimationCurveType>(projectileData.MotionCurveType);
-            // if (curveType <= EAnimationCurveType.None || curveType >= EAnimationCurveType.Max)
-            // {
-            //     Debug.LogError($"{nameof(Projectile)}, {nameof(SetInfo)}, Input : \"{curveType}\"(Invalid curve type)");
-            //     return false;
-            // }
-            // ProjectileMotion.MotionCurveType = curveType;
-
-*/

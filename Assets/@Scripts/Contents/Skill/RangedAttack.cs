@@ -37,7 +37,6 @@ namespace STELLAREST_F1
                 return false;
             }
 
-            // Add ProjectileMotion
             return true;
         }
 
@@ -51,38 +50,16 @@ namespace STELLAREST_F1
             if (Owner.IsValid() == false)
                 return;
 
-            // 애니메이션에서 발사하면 무조건 생성하는게 자연스러움.
             Projectile projectile = GenerateProjectile(Owner, GetSpawnPos());
+            projectile.SetInfo(Owner, SkillData.ProjectileID);
+
             if (Owner.Target.IsValid() == false)
                 Owner.CreatureAIState = ECreatureAIState.Move;
-            //projectile.TargetPosition = Owner.Target.CenterPosition;
         }
 
-        public override void OnSkillStateEnter()
-        {
-            // if (Owner.Target.IsValid() == false)
-            //     return;
-        }
-
-        public override void OnSkillStateUpdate()
-        {
-            // if (Owner.IsValid() == false)
-            //     return;
-            // if (Owner.Target.IsValid() == false)
-            //     return;
-            // if (Owner.Target.ObjectType == EObjectType.Env)
-            //     return;
-
-            // GenerateProjectile(Owner, GetSpawnPos());
-        }
-
-        public override void OnSkillStateExit()
-        {
-            if (Owner.IsValid() == false)
-                return;
-
-            //Owner.CreatureAIState = ECreatureAIState.Idle;
-        }
+        public override void OnSkillStateEnter() { }
+        public override void OnSkillStateUpdate() { }
+        public override void OnSkillStateExit() { }
     }
 }
 

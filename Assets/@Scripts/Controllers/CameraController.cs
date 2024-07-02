@@ -42,7 +42,7 @@ namespace STELLAREST_F1
             if (base.Init() == false)
                 return false;
 
-            Camera.main.orthographicSize = ReadOnly.Numeric.CamOrthoSize + 3f;
+            Camera.main.orthographicSize = ReadOnly.Util.CamOrthoSize + 3f;
             return true;
         }
 
@@ -68,7 +68,7 @@ namespace STELLAREST_F1
             while (percent < 1f)
             {
                 delta += Time.deltaTime;
-                percent = Mathf.Clamp01(delta / ReadOnly.Numeric.CamDesiredMoveToTargetTime);
+                percent = Mathf.Clamp01(delta / ReadOnly.Util.CamDesiredMoveToTargetTime);
                 // Debug.Log($"Percent: {percent}"); // 별도로 속도를 곱하지않고 하면 제대로 동작함
                 targetPos = new Vector3(_target.CenterPosition.x, _target.CenterPosition.y, -10f);
                 //Vector3 targetPos = new Vector3(_target.CenterPosition.x, _target.CenterPosition.y, -10f);

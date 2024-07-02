@@ -14,8 +14,8 @@ namespace STELLAREST_F1
         {
             Data.MonsterData monsterData = Managers.Data.MonsterDataDict[dataID];
             this.Tag = monsterData.DescriptionTextID;
-            this.Type = Util.GetEnumFromString<EMonsterType>(monsterData.Type);
-            this.Size = Util.GetEnumFromString<EMonsterSize>(monsterData.Size);
+            this.Type = monsterData.MonsterType;
+            this.Size = Util.GetEnumFromString<EMonsterSize>(monsterData.MonsterSize);
             _heads = new Sprite[(int)EMonsterEmoji.Max];
             InitBody(Type);
         }
@@ -36,33 +36,33 @@ namespace STELLAREST_F1
                     {
                         _birdBodyDict = new Dictionary<EBirdBodyParts, Container>();
 
-                        string tag = ReadOnly.String.AnimationBody;
+                        string tag = ReadOnly.Util.AnimationBody;
                         Transform tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
                         SpriteRenderer spr = tr.GetComponent<SpriteRenderer>();
                         _birdBodyDict.Add(EBirdBodyParts.Body, new Container(tag, tr, spr));
                         
-                        tag = ReadOnly.String.MBody_Head;
-                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.MBody_Head, true, true);
+                        tag = ReadOnly.Util.MBody_Head;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.MBody_Head, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
                         _birdBodyDict.Add(EBirdBodyParts.Head, new Container(tag, tr, spr));
 
-                        tag = ReadOnly.String.MBody_Wing;
-                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.MBody_Wing, true, true);
+                        tag = ReadOnly.Util.MBody_Wing;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.MBody_Wing, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
                         _birdBodyDict.Add(EBirdBodyParts.Wing, new Container(tag, tr, spr));
 
-                        tag = ReadOnly.String.MBody_LegL;
-                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.MBody_LegL, true, true);
+                        tag = ReadOnly.Util.MBody_LegL;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.MBody_LegL, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
                         _birdBodyDict.Add(EBirdBodyParts.LegL, new Container(tag, tr, spr));
 
-                        tag = ReadOnly.String.MBody_LegR;
-                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.MBody_LegR, true, true);
+                        tag = ReadOnly.Util.MBody_LegR;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.MBody_LegR, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
                         _birdBodyDict.Add(EBirdBodyParts.LegR, new Container(tag, tr, spr));
 
-                        tag = ReadOnly.String.MBody_Tail;
-                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.MBody_Tail, true, true);
+                        tag = ReadOnly.Util.MBody_Tail;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.MBody_Tail, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
                         _birdBodyDict.Add(EBirdBodyParts.Tail, new Container(tag, tr, spr));
                     }
@@ -72,38 +72,38 @@ namespace STELLAREST_F1
                     {
                         _quadrupedsBodyDict = new Dictionary<EQuadrupedsParts, Container>();
 
-                        string tag = ReadOnly.String.AnimationBody;
+                        string tag = ReadOnly.Util.AnimationBody;
                         Transform tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
                         SpriteRenderer spr = tr.GetComponent<SpriteRenderer>();
                         _quadrupedsBodyDict.Add(EQuadrupedsParts.Body, new Container(tag, tr, spr));
 
-                        tag = ReadOnly.String.MBody_Head;
-                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.MBody_Head, true, true);
+                        tag = ReadOnly.Util.MBody_Head;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.MBody_Head, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
                         _quadrupedsBodyDict.Add(EQuadrupedsParts.Head, new Container(tag, tr, spr));
 
-                        tag = ReadOnly.String.MBody_LegFrontL;
-                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.MBody_LegFrontL, true, true);
+                        tag = ReadOnly.Util.MBody_LegFrontL;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.MBody_LegFrontL, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
                         _quadrupedsBodyDict.Add(EQuadrupedsParts.LegFrontL, new Container(tag, tr, spr));
 
-                        tag = ReadOnly.String.MBody_LegFrontR;
-                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.MBody_LegFrontR, true, true);
+                        tag = ReadOnly.Util.MBody_LegFrontR;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.MBody_LegFrontR, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
                         _quadrupedsBodyDict.Add(EQuadrupedsParts.LegFrontR, new Container(tag, tr, spr));
 
-                        tag = ReadOnly.String.MBody_LegBackL;
-                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.MBody_LegBackL, true, true);
+                        tag = ReadOnly.Util.MBody_LegBackL;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.MBody_LegBackL, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
                         _quadrupedsBodyDict.Add(EQuadrupedsParts.LegBackL, new Container(tag, tr, spr));
 
-                        tag = ReadOnly.String.MBody_LegBackR;
-                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.MBody_LegBackR, true, true);
+                        tag = ReadOnly.Util.MBody_LegBackR;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.MBody_LegBackR, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
                         _quadrupedsBodyDict.Add(EQuadrupedsParts.LegBackR, new Container(tag, tr, spr));
 
-                        tag = ReadOnly.String.MBody_Tail;
-                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.String.MBody_Tail, true, true);
+                        tag = ReadOnly.Util.MBody_Tail;
+                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.MBody_Tail, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
                         _quadrupedsBodyDict.Add(EQuadrupedsParts.Tail, new Container(tag, tr, spr));
                     }

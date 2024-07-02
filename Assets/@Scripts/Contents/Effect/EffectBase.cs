@@ -7,6 +7,8 @@ using STELLAREST_F1.Data;
 
 namespace STELLAREST_F1
 {
+    // 이펙트는 기본적으로 스킬에 붙어있다. 어떠한 스킬이 묻었을 때 일어나는 효과.
+    // Ex. TickTime: 1, TickCount: 5 -> 1초 마다 5번 실행하겠다. 근데 난 그냥 Duration, Period로
     public class EffectBase : BaseObject
     {
         public Creature Owner { get; protected set; } = null;
@@ -33,17 +35,13 @@ namespace STELLAREST_F1
             EffectSpawnType = effectSpawnType;
             IsLoop = true;
 
-            // ... Effect Sorting 해주고 ... //
-
-            EffectType = Util.GetEnumFromString<EEffectType>(effectData.Type);
+            // ... Effect Sorting 해주고 ... Add Events 등등.. //
+            // EffectType = Util.GetEnumFromString<EEffectType>(effectData.Type);
 
             if (effectSpawnType == EEffectSpawnType.External)
                 Remains = float.MaxValue;
             else
-                Remains = effectData.Duration * effectData.Period; // 이해 안됨...
-
-            // Duration = effectData.TickTime * effectData.TickCount;
-            // Period = effectData.TickTime;
+                Remains = effectData.Duration;
         }
 
         public virtual void ApplyEffect()
@@ -53,11 +51,39 @@ namespace STELLAREST_F1
 
         protected void ShowEffect()
         {
-            
+            // Effect 애니메이션을 보여주는 부분. VFX 매니저로해야할듯.
         }
+
+        // StatModifier 부분은 생략
 
         public virtual bool ClearEffect(EEffectClearType clearType)
         {
+            if (Owner.IsValid() == false)
+                return false;
+
+            switch (clearType)
+            {
+                case EEffectClearType.TimeOut:
+                case EEffectClearType.TriggerOutAoE:
+                case EEffectClearType.EndOfCC:
+                    {
+                        // Managers.Object.Despawn(this, -1);
+                        Owner.CreatureEffect.RemoveEffect(this);
+                        return true;
+                    }
+
+                case EEffectClearType.ClearSkill:
+                {
+                    // Aoe 범위 안에 있는 경우 해제x
+                    if (EffectSpawnType != EEffectSpawnType.External)
+                    {
+                        Managers.Object.Despawn(this, -1);
+                        return true;
+                    }
+                    break;
+                }
+            }
+
             return false;
         }
 
@@ -90,6 +116,20 @@ namespace STELLAREST_F1
             }
             Remains = 0f;
             ClearEffect(EEffectClearType.TimeOut);
+        }
+
+        public bool IsCroudControl()
+        {
+            switch (EffectType)
+            {
+                case EEffectType.Airborne:
+                case EEffectType.Knockback:
+                case EEffectType.Freeze:
+                case EEffectType.Stun:
+                    return true;
+            }
+
+            return false;
         }
     }
 }

@@ -19,13 +19,13 @@ namespace STELLAREST_F1
                 HeroCollectEnvWeaponSpritesDict = new Dictionary<EEnvType, Sprite[]>();
                 Sprite[] envWeaponSprites = new Sprite[(int)ECollectEnvRarity.Max];
                 HeroCollectEnvWeaponSpritesDict.Add(EEnvType.Tree, envWeaponSprites);
-                envWeaponSprites[(int)ECollectEnvRarity.Common] = Managers.Resource.Load<Sprite>(ReadOnly.String.WoodcutterAxe_Common_SP);
-                envWeaponSprites[(int)ECollectEnvRarity.Elite] = Managers.Resource.Load<Sprite>(ReadOnly.String.WoodcutterAxe_Elite_SP);
+                envWeaponSprites[(int)ECollectEnvRarity.Common] = Managers.Resource.Load<Sprite>(ReadOnly.Util.WoodcutterAxe_Common_SP);
+                envWeaponSprites[(int)ECollectEnvRarity.Elite] = Managers.Resource.Load<Sprite>(ReadOnly.Util.WoodcutterAxe_Elite_SP);
 
                 envWeaponSprites = new Sprite[(int)ECollectEnvRarity.Max];
                 HeroCollectEnvWeaponSpritesDict.Add(EEnvType.Rock, envWeaponSprites);
-                envWeaponSprites[(int)ECollectEnvRarity.Common] = Managers.Resource.Load<Sprite>(ReadOnly.String.Pickaxe_Common_SP);
-                envWeaponSprites[(int)ECollectEnvRarity.Elite] = Managers.Resource.Load<Sprite>(ReadOnly.String.Pickaxe_Elite_SP);
+                envWeaponSprites[(int)ECollectEnvRarity.Common] = Managers.Resource.Load<Sprite>(ReadOnly.Util.Pickaxe_Common_SP);
+                envWeaponSprites[(int)ECollectEnvRarity.Elite] = Managers.Resource.Load<Sprite>(ReadOnly.Util.Pickaxe_Elite_SP);
             }
         }
 
@@ -54,12 +54,7 @@ namespace STELLAREST_F1
         #region Init - Hero Sprites
         private void SetSpritesSet(int dataID, HeroBody heroBody)
         {
-            Data.HeroData heroData = Managers.Data.HeroDataDict[dataID];
-            Data.HeroSpriteData heroSpriteData = Managers.Data.HeroSpriteDataDict[dataID];
-            EHeroBodyType bodyType = Util.GetEnumFromString<EHeroBodyType>(heroData.Type);
-
-            //SetBodyType(bodyType, heroSpriteData, heroBody);
-
+            HeroSpriteData heroSpriteData = Managers.Data.HeroSpriteDataDict[dataID];
             SetSkinSprites(heroSpriteData, heroBody);
             SetBodySprites(heroSpriteData, heroBody, EHeroBodyParts.Head);
             SetBodySprites(heroSpriteData, heroBody, EHeroBodyParts.UpperBody);
@@ -638,9 +633,9 @@ namespace STELLAREST_F1
         #region Init - Monster Sprites
         private void SetSpritesSet(int dataID, MonsterBody monsterBody)
         {
-            Data.MonsterData monsterData = Managers.Data.MonsterDataDict[dataID];
-            EMonsterType monsterType = Util.GetEnumFromString<EMonsterType>(monsterData.Type);
-            switch (monsterType)
+            MonsterData monsterData = Managers.Data.MonsterDataDict[dataID];
+            //EMonsterType monsterType = Util.GetEnumFromString<EMonsterType>(monsterData.Type);
+            switch (monsterData.MonsterType)
             {
                 case EMonsterType.Bird:
                     SetBodySprites(dataID, Managers.Data.BirdSpriteDataDict[dataID], monsterBody);
@@ -666,11 +661,11 @@ namespace STELLAREST_F1
                 tr = monsterBody.GetComponent<Transform>(EBirdBodyParts.Body);
                 tr.transform.localPosition = birdSpriteData.BodyPosition;
                 if (monsterBody.Size == EMonsterSize.Small)
-                    monsterBody.GetOwner<Monster>().transform.localScale = new Vector3(ReadOnly.Numeric.MonsterSize_Small, ReadOnly.Numeric.MonsterSize_Small, 1);
+                    monsterBody.GetOwner<Monster>().transform.localScale = new Vector3(ReadOnly.Util.MonsterSize_Small, ReadOnly.Util.MonsterSize_Small, 1);
                 else if (monsterBody.Size == EMonsterSize.Medium)
-                    monsterBody.GetOwner<Monster>().transform.localScale = new Vector3(ReadOnly.Numeric.MonsterSize_Medium, ReadOnly.Numeric.MonsterSize_Medium, 1);
+                    monsterBody.GetOwner<Monster>().transform.localScale = new Vector3(ReadOnly.Util.MonsterSize_Medium, ReadOnly.Util.MonsterSize_Medium, 1);
                 else if (monsterBody.Size == EMonsterSize.Large)
-                    monsterBody.GetOwner<Monster>().transform.localScale = new Vector3(ReadOnly.Numeric.MonsterSize_Large, ReadOnly.Numeric.MonsterSize_Large, 1);
+                    monsterBody.GetOwner<Monster>().transform.localScale = new Vector3(ReadOnly.Util.MonsterSize_Large, ReadOnly.Util.MonsterSize_Large, 1);
 
                 spr = monsterBody.GetComponent<SpriteRenderer>(EBirdBodyParts.Body);
                 spr.sprite = sprite;
@@ -761,11 +756,11 @@ namespace STELLAREST_F1
                 tr = monsterBody.GetComponent<Transform>(EQuadrupedsParts.Body);
                 tr.transform.localPosition = quadrupedsSpriteData.BodyPosition;
                 if (monsterBody.Size == EMonsterSize.Small)
-                    monsterBody.GetOwner<Monster>().transform.localScale = new Vector3(ReadOnly.Numeric.MonsterSize_Small, ReadOnly.Numeric.MonsterSize_Small, 1);
+                    monsterBody.GetOwner<Monster>().transform.localScale = new Vector3(ReadOnly.Util.MonsterSize_Small, ReadOnly.Util.MonsterSize_Small, 1);
                 else if (monsterBody.Size == EMonsterSize.Medium)
-                    monsterBody.GetOwner<Monster>().transform.localScale = new Vector3(ReadOnly.Numeric.MonsterSize_Medium, ReadOnly.Numeric.MonsterSize_Medium, 1);
+                    monsterBody.GetOwner<Monster>().transform.localScale = new Vector3(ReadOnly.Util.MonsterSize_Medium, ReadOnly.Util.MonsterSize_Medium, 1);
                 else if (monsterBody.Size == EMonsterSize.Large)
-                    monsterBody.GetOwner<Monster>().transform.localScale = new Vector3(ReadOnly.Numeric.MonsterSize_Large, ReadOnly.Numeric.MonsterSize_Large, 1);
+                    monsterBody.GetOwner<Monster>().transform.localScale = new Vector3(ReadOnly.Util.MonsterSize_Large, ReadOnly.Util.MonsterSize_Large, 1);
 
                 spr = monsterBody.GetComponent<SpriteRenderer>(EQuadrupedsParts.Body);
                 spr.sprite = sprite;
@@ -855,8 +850,8 @@ namespace STELLAREST_F1
         private void SetSpritesSet(int dataID, Env env)
         {
             Data.EnvData envData = Managers.Data.EnvDataDict[dataID];
-            EEnvType envType = Util.GetEnumFromString<EEnvType>(envData.Type);
-            switch (envType)
+            //EEnvType envType = Util.GetEnumFromString<EEnvType>(envData.Type);
+            switch (envData.EnvType)
             {
                 case EEnvType.Tree:
                     SetBodySprites(dataID, Managers.Data.TreeSpriteDataDict[dataID], env);
@@ -876,7 +871,7 @@ namespace STELLAREST_F1
             Sprite sprite = Managers.Resource.Load<Sprite>(treeSpriteData.Trunk);
             if (sprite != null)
             {
-                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.ETreeBody_Trunk, true, true);
+                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.Util.ETreeBody_Trunk, true, true);
                 tr.localPosition = treeSpriteData.TrunkPosition;
                 spr = tr.GetComponent<SpriteRenderer>();
                 spr.sprite = sprite;
@@ -886,7 +881,7 @@ namespace STELLAREST_F1
             sprite = Managers.Resource.Load<Sprite>(treeSpriteData.Patch);
             if (sprite != null)
             {
-                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.ETreeBody_Patch, true, true);
+                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.Util.ETreeBody_Patch, true, true);
                 tr.localPosition = treeSpriteData.PatchPosition;
                 spr = tr.GetComponent<SpriteRenderer>();
                 spr.sprite = sprite;
@@ -896,14 +891,14 @@ namespace STELLAREST_F1
             sprite = Managers.Resource.Load<Sprite>(treeSpriteData.Stump);
             if (sprite != null)
             {
-                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.ETreeBody_Stump, true, true);
+                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.Util.ETreeBody_Stump, true, true);
                 tr.localPosition = treeSpriteData.StumpPosition;
                 spr = tr.GetComponent<SpriteRenderer>();
                 spr.sprite = sprite;
             }
 
             // EndParticles
-            tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.EBody_EndParticle, true, true);
+            tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.Util.EBody_EndParticle, true, true);
             Material endParticleMat = Managers.Resource.Load<Material>(treeSpriteData.EndParticleMaterial);
             if (endParticleMat != null)
             {
@@ -919,7 +914,7 @@ namespace STELLAREST_F1
             }
             tr.gameObject.SetActive(false);
 
-            tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.ETreeBody_Fruits, true, true);
+            tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.Util.ETreeBody_Fruits, true, true);
             sprite = Managers.Resource.Load<Sprite>(treeSpriteData.Fruits);
             if (sprite != null)
             {
@@ -942,10 +937,10 @@ namespace STELLAREST_F1
             //         tr.GetChild(i).gameObject.SetActive(false);
             // }
 
-            sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.Shadow_SP);
+            sprite = Managers.Resource.Load<Sprite>(ReadOnly.Util.Shadow_SP);
             if (sprite != null)
             {
-                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.EBody_Shadow, true, true);
+                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.Util.EBody_Shadow, true, true);
                 spr = tr.GetComponent<SpriteRenderer>();
                 spr.sprite = sprite;
             }
@@ -958,14 +953,14 @@ namespace STELLAREST_F1
             ParticleSystem ps = null;
             ParticleSystemRenderer pr = null;
 
-            string rock = ReadOnly.String.ERock_Rock_SP;
-            string empty = ReadOnly.String.ERock_Empty_SP;
-            Material rockMat = Managers.Resource.Load<Material>(ReadOnly.String.ERock_Mat);
+            string rock = ReadOnly.Util.ERock_Rock_SP;
+            string empty = ReadOnly.Util.ERock_Empty_SP;
+            Material rockMat = Managers.Resource.Load<Material>(ReadOnly.Util.ERock_Mat);
 
             Sprite sprite = Managers.Resource.Load<Sprite>(rock);
             if (sprite != null)
             {
-                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.ERock_Rock, true, true);
+                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.Util.ERock_Rock, true, true);
                 spr = tr.GetComponent<SpriteRenderer>();
                 spr.sprite = sprite;
                 spr.material = rockMat;
@@ -974,7 +969,7 @@ namespace STELLAREST_F1
             sprite = Managers.Resource.Load<Sprite>(empty);
             if (sprite != null)
             {
-                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.ERock_Empty, true, true);
+                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.Util.ERock_Empty, true, true);
                 spr = tr.GetComponent<SpriteRenderer>();
                 spr.sprite = sprite;
                 spr.material = rockMat;
@@ -984,7 +979,7 @@ namespace STELLAREST_F1
             sprite = Managers.Resource.Load<Sprite>(rockSpriteData.Ore);
             if (sprite != null)
             {
-                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.ERock_Ore, true, true);
+                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.Util.ERock_Ore, true, true);
                 spr = tr.GetComponent<SpriteRenderer>();
                 spr.sprite = sprite;
                 spr.material = rockMat;
@@ -993,19 +988,19 @@ namespace STELLAREST_F1
             sprite = Managers.Resource.Load<Sprite>(rockSpriteData.OreShadow);
             if (sprite != null)
             {
-                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.ERock_OreShadow, true, true);
+                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.Util.ERock_OreShadow, true, true);
                 spr = tr.GetComponent<SpriteRenderer>();
                 spr.sprite = sprite;
                 spr.material = rockMat;
             }
 
             string colorCode = rockSpriteData.OreLightColor;
-            tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.ERock_OreLight, true, true);
+            tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.Util.ERock_OreLight, true, true);
             if (string.IsNullOrEmpty(colorCode) == false)
             {
                 if (ColorUtility.TryParseHtmlString(colorCode, out Color oreLightColor))
                 {
-                    sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.Light_SP);
+                    sprite = Managers.Resource.Load<Sprite>(ReadOnly.Util.Light_SP);
                     spr = tr.GetComponent<SpriteRenderer>();
                     spr.sprite = sprite;
                     spr.color = new Color(oreLightColor.r, oreLightColor.g, oreLightColor.b, spr.color.a);
@@ -1014,7 +1009,7 @@ namespace STELLAREST_F1
             else
                 tr.gameObject.SetActive(false);
 
-            tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.ERock_OreParticle, true, true);
+            tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.Util.ERock_OreParticle, true, true);
             colorCode = rockSpriteData.OreParticleColor;
             if (string.IsNullOrEmpty(colorCode) == false)
             {
@@ -1028,12 +1023,12 @@ namespace STELLAREST_F1
 
                 // *** Rock이 아닌, 다른 객체에서 Glow를 건드리게 되면 복사 생성으로 변경 ***
                 pr = tr.GetComponent<ParticleSystemRenderer>();
-                pr.material =  Managers.Resource.Load<Material>(ReadOnly.String.Glow_Mat);
+                pr.material =  Managers.Resource.Load<Material>(ReadOnly.Util.Glow_Mat);
             }
             else
                 tr.gameObject.SetActive(false);
 
-            tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.EBody_EndParticle, true, true);
+            tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.Util.EBody_EndParticle, true, true);
             pr = tr.GetComponent<ParticleSystemRenderer>();
             pr.material = rockMat;
             tr.gameObject.SetActive(false);
@@ -1041,7 +1036,7 @@ namespace STELLAREST_F1
             // Spots
             for (int i = 0; i < rockSpriteData.Spots.Length; ++i)
             {
-                string name = ReadOnly.String.ERock_Spot + (i + 1).ToString();
+                string name = ReadOnly.Util.ERock_Spot + (i + 1).ToString();
                 tr = Util.FindChild<Transform>(env.gameObject, name, true, true);
                 spr = tr.GetComponent<SpriteRenderer>();
                 spr.sprite = Managers.Resource.Load<Sprite>(rockSpriteData.Spots[i]);
@@ -1051,7 +1046,7 @@ namespace STELLAREST_F1
             // Fragments
             for (int i = 0; i < rockSpriteData.Fragments.Length; ++i)
             {
-                string name = ReadOnly.String.ERock_Fragment + (i + 1).ToString();
+                string name = ReadOnly.Util.ERock_Fragment + (i + 1).ToString();
                 tr = Util.FindChild<Transform>(env.gameObject, name, true, true);
                 spr = tr.GetComponent<SpriteRenderer>();
                 spr.sprite = Managers.Resource.Load<Sprite>(rockSpriteData.Fragments[i]);
@@ -1059,10 +1054,10 @@ namespace STELLAREST_F1
             }
 
             // Shadow
-            sprite = Managers.Resource.Load<Sprite>(ReadOnly.String.Shadow_SP);
+            sprite = Managers.Resource.Load<Sprite>(ReadOnly.Util.Shadow_SP);
             if (sprite != null)
             {
-                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.String.EBody_Shadow, true, true);
+                tr = Util.FindChild<Transform>(env.gameObject, ReadOnly.Util.EBody_Shadow, true, true);
                 spr = tr.GetComponent<SpriteRenderer>();
                 spr.sprite = sprite;
             }

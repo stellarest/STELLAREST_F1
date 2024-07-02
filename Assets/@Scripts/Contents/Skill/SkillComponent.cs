@@ -92,8 +92,8 @@ namespace STELLAREST_F1
             skill.SetInfo(_owner, skillDataID);
             Skills.Add(skill);
 
-            ESkillType skillType = Util.GetEnumFromString<ESkillType>(skillData.Type);
-            switch (skillType)
+            //ESkillType skillType = Util.GetEnumFromString<ESkillType>(skillData.Type);
+            switch (skillData.SkillType)
             {
                 case ESkillType.Skill_A:
                     SkillArray[(int)ESkillType.Skill_A] = skill;

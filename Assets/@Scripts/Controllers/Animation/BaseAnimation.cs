@@ -15,27 +15,27 @@ namespace STELLAREST_F1
         public Animator Animator { get; private set; } = null;
         public AnimationClipCallback AnimClipCallback { get; private set; } = null;
 
-        protected readonly int Play_Idle = Animator.StringToHash(ReadOnly.String.AnimParam_Idle);
-        protected readonly int Play_Move = Animator.StringToHash(ReadOnly.String.AnimParam_Move);
-        // protected readonly int Play_Skill_Attack = Animator.StringToHash(ReadOnly.String.AnimParam_Skill_Attack);
-        protected readonly int Play_Skill_A = Animator.StringToHash(ReadOnly.String.AnimParam_Skill_A);
-        protected readonly int Play_Skill_B = Animator.StringToHash(ReadOnly.String.AnimParam_Skill_B);
-        protected readonly int Play_CollectEnv = Animator.StringToHash(ReadOnly.String.AnimParam_CollectEnv);
-        protected readonly int Play_Dead = Animator.StringToHash(ReadOnly.String.AnimParam_Dead);
+        // protected readonly int Play_Idle = Animator.StringToHash(ReadOnly.String.AnimParam_Idle);
+        // protected readonly int Play_Move = Animator.StringToHash(ReadOnly.String.AnimParam_Move);
+        // // protected readonly int Play_Skill_Attack = Animator.StringToHash(ReadOnly.String.AnimParam_Skill_Attack);
+        // protected readonly int Play_Skill_A = Animator.StringToHash(ReadOnly.String.AnimParam_Skill_A);
+        // protected readonly int Play_Skill_B = Animator.StringToHash(ReadOnly.String.AnimParam_Skill_B);
+        // protected readonly int Play_CollectEnv = Animator.StringToHash(ReadOnly.String.AnimParam_CollectEnv);
+        // protected readonly int Play_Dead = Animator.StringToHash(ReadOnly.String.AnimParam_Dead);
 
 #if UNITY_EDITOR
-        public string GetCurrentStateName()
-        {
-            AnimatorStateInfo stateInfo = Animator.GetCurrentAnimatorStateInfo(0);
-            if (stateInfo.shortNameHash == Play_Idle)
-                return "CurrentAnimState: Play_Idle";
-            if (stateInfo.shortNameHash == Play_Move)
-                return "CurrentAnimState: Play_Move";
-            // if (stateInfo.shortNameHash == Play_Skill_Attack)
-            //     return "CurrentAnimState: Play_Skill_Attack";
+        // public string GetCurrentStateName()
+        // {
+        //     AnimatorStateInfo stateInfo = Animator.GetCurrentAnimatorStateInfo(0);
+        //     if (stateInfo.shortNameHash == Play_Idle)
+        //         return "CurrentAnimState: Play_Idle";
+        //     if (stateInfo.shortNameHash == Play_Move)
+        //         return "CurrentAnimState: Play_Move";
+        //     // if (stateInfo.shortNameHash == Play_Skill_Attack)
+        //     //     return "CurrentAnimState: Play_Skill_Attack";
 
-            return string.Empty;
-        }
+        //     return string.Empty;
+        // }
 #endif
         // public bool IsCurrentAnimationState(ECreatureState creatureState)
         // {
@@ -98,20 +98,20 @@ namespace STELLAREST_F1
 
         public virtual void UpdateAnimation() { }
 
-        protected virtual void Idle()
-             => Animator.Play(Play_Idle);
+        // protected virtual void Idle()
+        //      => Animator.Play(Play_Idle);
 
-        protected virtual void Move()
-            => Animator.Play(Play_Move);
+        // protected virtual void Move()
+        //     => Animator.Play(Play_Move);
 
-        // protected virtual void Skill_Attack()
-        //     => Animator.Play(Play_Skill_Attack);
+        // // protected virtual void Skill_Attack()
+        // //     => Animator.Play(Play_Skill_Attack);
 
-        protected virtual void Skill_A()
-            => Animator.Play(Play_Skill_A);
+        // protected virtual void Skill_A()
+        //     => Animator.Play(Play_Skill_A);
 
-        protected virtual void Skill_B()
-            => Animator.Play(Play_Skill_B);
+        // protected virtual void Skill_B()
+        //     => Animator.Play(Play_Skill_B);
 
         // protected virtual void CollectEnv()
         //     => Animator.Play(Play_CollectEnv);

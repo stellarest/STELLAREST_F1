@@ -36,7 +36,7 @@ namespace STELLAREST_F1
             switch (_owner.EnvState)
             {
                 case EEnvState.Idle:
-                    Idle();
+                    //Idle();
                     break;
 
                 case EEnvState.OnDamaged:

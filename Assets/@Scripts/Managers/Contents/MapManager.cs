@@ -52,7 +52,7 @@ namespace STELLAREST_F1
             CellGrid = map.GetComponent<Grid>();
 
             ParseCollisionData(map, mapName);
-            // SpawnObjectsByData(map, mapName);
+            SpawnObjectsByData(map, mapName);
         }
 
         private void ParseCollisionData(GameObject map, string mapName, string tileMap = "Tilemap_Collision")
@@ -80,15 +80,15 @@ namespace STELLAREST_F1
                 {
                     switch (line[x])
                     {
-                        case ReadOnly.Character.Map_Tool_Block_0:
+                        case ReadOnly.Util.Map_Tool_Block_0:
                             _cellCollisionType[y, x] = ECellCollisionType.Block;
                             break;
 
-                        case ReadOnly.Character.Map_Tool_CanMove_1:
+                        case ReadOnly.Util.Map_Tool_CanMove_1:
                             _cellCollisionType[y, x] = ECellCollisionType.CanMove;
                             break;
 
-                        case ReadOnly.Character.Map_Tool_SemiBlock_2:
+                        case ReadOnly.Util.Map_Tool_SemiBlock_2:
                             _cellCollisionType[y, x] = ECellCollisionType.SemiBlock;
                             break;
                     }
@@ -131,7 +131,7 @@ namespace STELLAREST_F1
 
                         // --- MORE CHICKEN
                         int current = 0;
-                        int spawnCount = 5;
+                        int spawnCount = 2;
                         int attemptSpawnCount = 0;
                         while (attemptSpawnCount < 100)
                         {
@@ -156,7 +156,7 @@ namespace STELLAREST_F1
 
                         // --- TURKEY TEST
                         current = 0;
-                        spawnCount = 0;
+                        spawnCount = 2;
                         attemptSpawnCount = 0;
                         while (attemptSpawnCount < 100)
                         {
@@ -181,7 +181,7 @@ namespace STELLAREST_F1
 
                         // --- BUNNY TEST
                         current = 0;
-                        spawnCount = 0;
+                        spawnCount = 2;
                         attemptSpawnCount = 0;
                         while (attemptSpawnCount < 100)
                         {
@@ -206,7 +206,7 @@ namespace STELLAREST_F1
 
                         // --- PUG TEST
                         current = 0;
-                        spawnCount = 0;
+                        spawnCount = 2;
                         attemptSpawnCount = 0;
                         while (attemptSpawnCount < 100)
                         {
@@ -321,7 +321,7 @@ namespace STELLAREST_F1
 
             if (CanMove(destCellPos) == false)
             {
-                List<Vector3Int> path = FindPath(creature.CellPos, destCellPos: destCellPos, ReadOnly.Numeric.CreatureWarpMoveDepth);
+                List<Vector3Int> path = FindPath(creature.CellPos, destCellPos: destCellPos, ReadOnly.Util.CreatureWarpMoveDepth);
                 path.Reverse();
                 for (int i = 0; i < path.Count; ++i)
                 {

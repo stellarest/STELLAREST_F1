@@ -59,7 +59,8 @@ namespace STELLAREST_F1
             Managers.Sprite.SetInfo(dataID, this);
 
             EnvData = Managers.Data.EnvDataDict[dataID];
-            EnvType = Util.GetEnumFromString<EEnvType>(EnvData.Type);
+            //EnvType = Util.GetEnumFromString<EEnvType>(EnvData.Type);
+            EnvType = EnvData.EnvType;
 
             gameObject.name += $"_{EnvData.DescriptionTextID.Replace(" ", "")}";
         }

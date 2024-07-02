@@ -7,6 +7,16 @@ using UnityEngine;
 using DG.Tweening;
 
 /*
+// --- Skill 관련하여..
+// --- 히어로 레벨1. Skill_A, Skill_B
+// --- 히어로 레벨3. Skill_A, Skill_B, Skill_C(New)
+// --- 히어로 레벌5. Skill_A, Skill_B(강화된 새로운 스킬), Skill_C(강화된 새로운 스킬)
+
+// --- 일단 EnvAnimation 제외(BaseAnimation쪽 손봐야함)
+
+// --- 히어로 20개까지 고정시켜놓고 포폴까지 완성시켜놓은다음
+// --- 나중에 출시할 때, 히어로 10개만 더 만들고 출시할 수 있는 방향으로 만들어놓기.
+
 // --- 애니메이션 디테일한것들은 나중에 고쳐야함(ex. 트릭스터 공격시 왼팔 sprite sorting order)
 // --- 어쌔신 공격 애니메이션 고치는건 조금 급하긴 함
 // --- 리더 히어로 이동시 동료 히어로 무시하는거 변경해보기

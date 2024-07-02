@@ -22,9 +22,9 @@ namespace STELLAREST_F1
         {
             get
             {
-                GameObject root = GameObject.Find(ReadOnly.String.UI_Root);
+                GameObject root = GameObject.Find(ReadOnly.Util.UI_Root);
                 if (root == null)
-                    root = new GameObject { name = ReadOnly.String.UI_Root };
+                    root = new GameObject { name = ReadOnly.Util.UI_Root };
 
                 return root;
             }

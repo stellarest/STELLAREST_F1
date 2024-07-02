@@ -223,7 +223,9 @@ namespace STELLAREST_F1
             CreatureAI.SetInfo(this);  
             HeroAI = CreatureAI as HeroAI;
 
-            CreatureRarity = Util.GetEnumFromString<ECreatureRarity>(HeroData.CreatureRarity);
+            //CreatureRarity = Util.GetEnumFromString<ECreatureRarity>(HeroData.CreatureRarity);
+            CreatureRarity = HeroData.CreatureRarity;
+
             gameObject.name += $"_{HeroData.DescriptionTextID.Replace(" ", "")}";
             Collider.radius = HeroData.ColliderRadius;
 
@@ -234,7 +236,7 @@ namespace STELLAREST_F1
         protected override void InitStat(int dataID)
         {
             base.InitStat(dataID);
-            for (int i = DataTemplateID; i < DataTemplateID + ReadOnly.Numeric.HeroMaxLevel;)
+            for (int i = DataTemplateID; i < DataTemplateID + ReadOnly.Util.HeroMaxLevel;)
             {
                 if (Managers.Data.StatDataDict.ContainsKey(i) == false)
                     break;
@@ -305,7 +307,7 @@ namespace STELLAREST_F1
             if (this.isActiveAndEnabled == false)
                 yield break;
 
-            yield return new WaitForSeconds(ReadOnly.Numeric.StartDeadFadeOutTime);
+            yield return new WaitForSeconds(ReadOnly.Util.StartDeadFadeOutTime);
 
             float delta = 0f;
             float percent = 1f;
@@ -314,7 +316,7 @@ namespace STELLAREST_F1
             while (percent > 0f)
             {
                 delta += Time.deltaTime;
-                percent = 1f - (delta / ReadOnly.Numeric.DesiredDeadFadeOutEndTime);
+                percent = 1f - (delta / ReadOnly.Util.DesiredDeadFadeOutEndTime);
                 for (int i = 0; i < HeroBody.Skin.Count; ++i)
                 {
                     float current = Mathf.Lerp(0f, 1f, curve.Evaluate(percent));
@@ -332,7 +334,7 @@ namespace STELLAREST_F1
             while (percent > 0f)
             {
                 delta += Time.deltaTime;
-                percent = 1f - (delta / ReadOnly.Numeric.DesiredDeadFadeOutEndTime);
+                percent = 1f - (delta / ReadOnly.Util.DesiredDeadFadeOutEndTime);
                 for (int i = 0; i < HeroBody.Appearance.Count; ++i)
                 {
                     float current = Mathf.Lerp(0f, 1f, curve.Evaluate(percent));

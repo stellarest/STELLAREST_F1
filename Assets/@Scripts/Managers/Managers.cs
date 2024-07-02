@@ -18,10 +18,10 @@ namespace STELLAREST_F1
             {
                 if (s_isApplicationQuitting == false && s_instance == null)
                 {
-                    GameObject go = GameObject.Find(ReadOnly.String.Managers);
+                    GameObject go = GameObject.Find(ReadOnly.Util.Managers);
                     if (go == null)
                     {
-                        go = new GameObject { name = ReadOnly.String.Managers };
+                        go = new GameObject { name = ReadOnly.Util.Managers };
                         DontDestroyOnLoad(go);
                     }
 
@@ -33,9 +33,6 @@ namespace STELLAREST_F1
         }
 
         #region Contents
-        // private AnimationManager _animation = new AnimationManager();
-        // public static AnimationManager Animation => Instance?._animation;
-
         private GameManager _game = new GameManager();
         public static GameManager Game => Instance?._game;
 

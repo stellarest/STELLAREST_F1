@@ -21,6 +21,14 @@ namespace STELLAREST_F1
         [MenuItem("Tools/PrintTest %#H")]
         private static void PrintTest()
         {
+            List<int> myNums = new List<int>();
+            for (int i = 1; i <= 5; ++i)
+            {
+                myNums.Add(i);
+            }
+
+            PrintNums(myNums);
+
             // ###
             // int value = 0;
             // int[,] arr = new int[3,5];
@@ -50,6 +58,16 @@ namespace STELLAREST_F1
             //     Debug.Log($"arr[{i}]: {arr[i]}");
         }
 
+        public static void PrintNums(IEnumerable<int> nums)
+        {
+            Debug.Log("PrintNums");
+            foreach (var num in nums)
+            {
+                Debug.Log($"Num: {num}");
+            }
+            Debug.Log("End PrintNums");
+        }
+
         // Mac: %(Command) #(Shift) K
         [MenuItem("Tools/GenerateMap %#K")]
         private static void GenerateMap()
@@ -63,10 +81,10 @@ namespace STELLAREST_F1
 
             foreach (GameObject go in gameObjects)
             {
-                Tilemap tm = Util.FindChild<Tilemap>(go, Define.ReadOnly.String.Tilemap_Collision, true);
+                Tilemap tm = Util.FindChild<Tilemap>(go, ReadOnly.Util.Tilemap_Collision, true);
                 if (tm == null)
                 {
-                    Debug.LogWarning($"Failed to get Tilemap component on \"{Define.ReadOnly.String.Tilemap_Collision}\" object.");
+                    Debug.LogWarning($"Failed to get Tilemap component on \"{ReadOnly.Util.Tilemap_Collision}\" object.");
                     return;
                 }
                 tm.RefreshAllTiles();
@@ -91,12 +109,12 @@ namespace STELLAREST_F1
                             TileBase tile = tm.GetTile(new Vector3Int(x, y, 0));
                             if (tile != null)
                             {
-                                if (tile.name.Contains(Define.ReadOnly.String.Tile_CanMove))
-                                    writer.Write(Define.ReadOnly.Character.Map_Tool_CanMove_1);  // CanGo -> CanMove로 이름 변경할 것
-                                else if (tile.name.Contains(Define.ReadOnly.String.Tile_SemiBlock))
-                                    writer.Write(Define.ReadOnly.Character.Map_Tool_SemiBlock_2);
-                                else if (tile.name.Contains(Define.ReadOnly.String.Tile_Block))
-                                    writer.Write(Define.ReadOnly.Character.Map_Tool_Block_0);
+                                if (tile.name.Contains(ReadOnly.Util.Tile_CanMove))
+                                    writer.Write(ReadOnly.Util.Map_Tool_CanMove_1);  // CanGo -> CanMove로 이름 변경할 것
+                                else if (tile.name.Contains(ReadOnly.Util.Tile_SemiBlock))
+                                    writer.Write(ReadOnly.Util.Map_Tool_SemiBlock_2);
+                                else if (tile.name.Contains(ReadOnly.Util.Tile_Block))
+                                    writer.Write(ReadOnly.Util.Map_Tool_Block_0);
                             }
                         }
                         writer.WriteLine();
@@ -111,7 +129,7 @@ namespace STELLAREST_F1
         public static void CreateObjectTile()
         {
             #region Monster Tile
-            Dictionary<int, MonsterData> monsterDataDict = LoadJson<MonsterDataLoader, int, MonsterData>(ReadOnly.String.MonsterData).MakeDict();
+            Dictionary<int, MonsterData> monsterDataDict = LoadJson<MonsterDataLoader, int, MonsterData>(ReadOnly.DataSet.MonsterData).MakeDict();
             foreach (var data in monsterDataDict.Values)
             {
                 string name = $"{data.DataID}_{data.DescriptionTextID}";;

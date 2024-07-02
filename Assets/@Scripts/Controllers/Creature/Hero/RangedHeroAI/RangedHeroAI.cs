@@ -161,7 +161,7 @@ namespace STELLAREST_F1
                 return;
 
             EFindPathResult result = HeroOwner.FindPathAndMoveToCellPos(destPos: ChaseCellPos,
-               maxDepth: ReadOnly.Numeric.HeroDefaultMoveDepth);
+               maxDepth: ReadOnly.Util.HeroDefaultMoveDepth);
 
             if (HeroOwner.CanSkill || HeroOwner.CanCollectEnv || result == EFindPathResult.Fail_NoPath)
             {

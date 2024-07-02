@@ -65,20 +65,27 @@ namespace STELLAREST_F1
             {
                 _level = Mathf.Clamp(_level + 1, DataTemplateID, _maxLevel);
                 if (Managers.Data.StatDataDict.TryGetValue(_level, out Data.StatData statData))
+                {
                     StatData = statData; // Refresh
-                else
-                    Debug.LogError($"Faield to refresh stat, input: \"{_level}\"");
+                    MaxHp = statData.MaxHp;
+                    Hp = statData.MaxHp;
+                    Atk = AtkBase = statData.Atk;
+                    CriticalRate = CriticalRateBase = statData.CriticalRate;
+                    DodgeRate = DodgeRateBase = statData.DodgeRate;
+                    MovementSpeed = MovementSpeedBase = statData.MovementSpeed;
+                }
 
-                Debug.Log("<color=cyan>==============================</color>");
-                Debug.Log($"<color=cyan>LvUp: {gameObject.name}</color>");
-                Debug.Log($"<color=cyan>Check LvTxt: {StatData.LevelText}</color>");
-                Debug.Log($"<color=cyan>CurrentLv: {Level}</color>");
-                Debug.Log($"<color=cyan>MaxLv: {Level}</color>");
-                Debug.Log("<color=cyan>==============================</color>");
+
+                // Debug.Log("<color=cyan>==============================</color>");
+                // Debug.Log($"<color=cyan>LvUp: {gameObject.name}</color>");
+                // Debug.Log($"<color=cyan>Check LvTxt: {StatData.LevelText}</color>");
+                // Debug.Log($"<color=cyan>CurrentLv: {Level}</color>");
+                // Debug.Log($"<color=cyan>MaxLv: {Level}</color>");
+                // Debug.Log("<color=cyan>==============================</color>");
 
                 if (_level == _maxLevel)
                 {
-                    Debug.Log("<color=yellow>Try to change new sprite set</color>");
+                    //Debug.Log("<color=yellow>Try to change new sprite set</color>");
 
                     // --- 나중에 스킬때문에 히어로 데이터 자체도 바꿔야함(ex. Paladin 101000 -> 101004)
                     // --- 101000의 경우, 레벨 1때, Skill_A, B까지 ID 주고, 레벨 3때 Skill_C 해금되고
@@ -161,7 +168,7 @@ namespace STELLAREST_F1
             if (base.Init() == false)
                 return false;
 
-            BaseAnim = Util.FindChild<BaseAnimation>(gameObject, name: ReadOnly.String.AnimationBody, recursive: false);
+            BaseAnim = Util.FindChild<BaseAnimation>(gameObject, name: ReadOnly.Util.AnimationBody, recursive: false);
             Collider = gameObject.GetOrAddComponent<CircleCollider2D>();
             RigidBody = gameObject.GetOrAddComponent<Rigidbody2D>();
             RigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
@@ -402,7 +409,7 @@ namespace STELLAREST_F1
             if (isActiveAndEnabled == false)
                 yield break;
 
-            yield return new WaitForSeconds(ReadOnly.Numeric.StartDeadFadeOutTime);
+            yield return new WaitForSeconds(ReadOnly.Util.StartDeadFadeOutTime);
 
             float delta = 0f;
             float percent = 1f;
@@ -411,7 +418,7 @@ namespace STELLAREST_F1
             {
                 // Debug.Log($"{gameObject.name}, {percent}");
                 delta += Time.deltaTime;
-                percent = 1f - (delta / ReadOnly.Numeric.DesiredDeadFadeOutEndTime);
+                percent = 1f - (delta / ReadOnly.Util.DesiredDeadFadeOutEndTime);
                 foreach (SpriteRenderer spr in GetComponentsInChildren<SpriteRenderer>())
                 {
                     float current = Mathf.Lerp(0f, 1f, curve.Evaluate(percent));

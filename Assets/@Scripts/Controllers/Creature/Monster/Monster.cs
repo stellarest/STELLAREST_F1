@@ -94,8 +94,8 @@ namespace STELLAREST_F1
             CreatureAI.SetInfo(this);
             MonsterAI = CreatureAI as MonsterAI;
 
-            CreatureRarity = Util.GetEnumFromString<ECreatureRarity>(MonsterData.CreatureRarity);
-            MonsterType = Util.GetEnumFromString<EMonsterType>(MonsterData.Type);
+            // CreatureRarity = Util.GetEnumFromString<ECreatureRarity>(MonsterData.CreatureRarity);
+            // MonsterType = Util.GetEnumFromString<EMonsterType>(MonsterData.Type);
 
             gameObject.name += $"_{MonsterData.DescriptionTextID.Replace(" ", "")}";
             Collider.radius = MonsterData.ColliderRadius;

@@ -213,7 +213,7 @@ namespace STELLAREST_F1
             base.EnterInGame();
 
             // --- First Targets: Monsters, Second Targets: Envs
-            StartCoSearchTarget<BaseObject>(scanRange: ReadOnly.Numeric.HeroDefaultScanRange,
+            StartCoSearchTarget<BaseObject>(scanRange: ReadOnly.Util.HeroDefaultScanRange,
                             firstTargets: Managers.Object.Monsters,
                             secondTargets: Managers.Object.Envs,
                             func: Owner.IsValid);
@@ -231,7 +231,7 @@ namespace STELLAREST_F1
         #region Coroutines
         public void StartSearchTarget(System.Func<bool> allTargetsCondition = null)
         {
-            StartCoSearchTarget<BaseObject>(scanRange: ReadOnly.Numeric.HeroDefaultScanRange,
+            StartCoSearchTarget<BaseObject>(scanRange: ReadOnly.Util.HeroDefaultScanRange,
                             firstTargets: Managers.Object.Monsters,
                             secondTargets: Managers.Object.Envs,
                             func: Owner.IsValid,
@@ -245,8 +245,8 @@ namespace STELLAREST_F1
         private IEnumerator CoIsFarFromLeaderTick()
         {
             // Scan Range 보다 50%이상 멀어졌을 때
-            float farFromLeaderDistSQR = ReadOnly.Numeric.HeroDefaultScanRange * ReadOnly.Numeric.HeroDefaultScanRange + (ReadOnly.Numeric.HeroDefaultScanRange * ReadOnly.Numeric.HeroDefaultScanRange * 0.5f);
-            float canWarpDistSQR = ReadOnly.Numeric.CheckFarFromHeroesLeaderDistanceForWarp * ReadOnly.Numeric.CheckFarFromHeroesLeaderDistanceForWarp;
+            float farFromLeaderDistSQR = ReadOnly.Util.HeroDefaultScanRange * ReadOnly.Util.HeroDefaultScanRange + (ReadOnly.Util.HeroDefaultScanRange * ReadOnly.Util.HeroDefaultScanRange * 0.5f);
+            float canWarpDistSQR = ReadOnly.Util.CheckFarFromHeroesLeaderDistanceForWarp * ReadOnly.Util.CheckFarFromHeroesLeaderDistanceForWarp;
             while (true)
             {
                 Hero leader = Managers.Object.HeroLeaderController.Leader;
@@ -274,7 +274,7 @@ namespace STELLAREST_F1
                     Managers.Map.WarpTo(Owner, Managers.Map.WorldToCell(leaderWorldPos), warpEndCallback: null);
                 }
 
-                yield return new WaitForSeconds(ReadOnly.Numeric.CheckFarFromHeroesLeaderTick);
+                yield return new WaitForSeconds(ReadOnly.Util.CheckFarFromHeroesLeaderTick);
             }
         }
 

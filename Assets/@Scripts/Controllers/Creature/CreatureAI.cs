@@ -169,7 +169,7 @@ namespace STELLAREST_F1
                     {
                         if (IsPingPongAndCantMoveToDest(Owner.CellPos))
                         {
-                            if (_currentPingPongCantMoveCount >= ReadOnly.Numeric.MaxCanPingPongConditionCount && IsForceMovingPingPongObject == false)
+                            if (_currentPingPongCantMoveCount >= ReadOnly.Util.MaxCanPingPongConditionCount && IsForceMovingPingPongObject == false)
                             {
                                 Debug.Log($"<color=magenta>[!]{Owner.gameObject.name}, Start force moving for PingPong Object.</color>");
                                 Owner.StopCoLerpToCellPos();
@@ -249,7 +249,7 @@ namespace STELLAREST_F1
         private IEnumerator CoSearchTarget<T>(float scanRange, IEnumerable<T> firstTargets, IEnumerable<T> secondTargets = null,
                                             System.Func<T, bool> func = null, System.Func<bool> allTargetsCondition = null) where T : BaseObject
         {
-            float tick = ReadOnly.Numeric.SearchFindTargetTick;
+            float tick = ReadOnly.Util.SearchFindTargetTick;
             while (true)
             {
                 if (Owner.IsValid() == false)

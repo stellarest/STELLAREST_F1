@@ -15,12 +15,12 @@ namespace STELLAREST_F1
             SceneType = Define.EScene.GameScene;
             Debug.Log($"ENTERED GAME SCENE !!");
 
-            GameObject map = Managers.Resource.Instantiate(ReadOnly.String.BaseMap);
-            map.transform.position = Vector3.zero;
-            map.name = $"@{ReadOnly.String.BaseMap}";
+            // GameObject map = Managers.Resource.Instantiate(ReadOnly.String.BaseMap);
+            // map.transform.position = Vector3.zero;
+            // map.name = $"@{ReadOnly.String.BaseMap}";
 
-            Hero hero = Managers.Resource.Instantiate(ReadOnly.String.Hero).GetComponent<Hero>();
-            hero.transform.position = Vector3.zero;
+            // Hero hero = Managers.Resource.Instantiate(ReadOnly.String.Hero).GetComponent<Hero>();
+            // hero.transform.position = Vector3.zero;
 
             return true;
         }

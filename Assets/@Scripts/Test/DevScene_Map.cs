@@ -46,7 +46,7 @@ namespace STELLAREST_F1
                 HeroLeaderController leaderController = Managers.Object.SetHeroLeaderController();
                 CameraController cam = Camera.main.GetComponent<CameraController>();
                 Managers.Object.CameraController = cam;
-                Hero firstHero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.DataAndPoolingID.DNPID_Hero_Paladin);
+                Hero firstHero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.DataAndPoolingID.DNPID_Hero_Archer);
                 Managers.Map.MoveTo(firstHero, Vector3.zero, stopLerpToCell: true, forceMove: true);
                 firstHero.InitialSpawnedCellPos = Vector3Int.zero;
 
@@ -72,21 +72,39 @@ namespace STELLAREST_F1
                 // }
                 // leaderController.Leader = firstHero;
                 int paladin = 0;
-                int archer = 1;
+                int archer = 0;
 
-                int lancer = 1;
+                int lancer = 0;
                 int wizard = 1;
 
-                int assassin = 1;
-                int gunner = 1;
+                int assassin = 0;
+                int gunner = 0;
 
-                int trickster = 1;
-                int druid = 1;
+                int trickster = 0;
+                int druid = 0;
 
-                int barbarian = 1;
+                int barbarian = 0;
+                int ninja = 0;
+
+                int phantomKnight = 0;
+                int frostWeaver = 0;
+
+                int queen = 0;
+                int hunter = 0;
+
+                int gladiator = 0;
+                int priest = 0;
+
+                int berserker = 0;
+                int witch = 0;
+
+                int dragonKnight = 0;
+                int alchemist = 0;
 
                 int current = 0;
-                int total = paladin + archer + lancer + wizard + assassin + gunner + trickster + druid + barbarian;
+                int total = paladin + archer + lancer + wizard + assassin + gunner + trickster + druid + barbarian + ninja + phantomKnight + frostWeaver + 
+                            queen + hunter + gladiator + priest + berserker + witch + dragonKnight + alchemist;
+
                 Hero heroMember = null;
                 while (current < total)
                 {
@@ -138,6 +156,61 @@ namespace STELLAREST_F1
                     {
                         barbarian--;
                         heroMember = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.DataAndPoolingID.DNPID_Hero_Barbarian);
+                    }
+                    else if (ninja > 0)
+                    {
+                        ninja--;
+                        heroMember = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.DataAndPoolingID.DNPID_Hero_Ninja);
+                    }
+                    else if (phantomKnight > 0)
+                    {
+                        phantomKnight--;
+                        heroMember = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.DataAndPoolingID.DNPID_Hero_PhantomKnight);
+                    }
+                    else if (frostWeaver > 0)
+                    {
+                        frostWeaver--;
+                        heroMember = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.DataAndPoolingID.DNPID_Hero_FrostWeaver);
+                    }
+                    else if (queen > 0)
+                    {
+                        queen--;
+                        heroMember = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.DataAndPoolingID.DNPID_Hero_Queen);
+                    }
+                    else if (hunter > 0)
+                    {
+                        hunter--;
+                        heroMember = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.DataAndPoolingID.DNPID_Hero_Hunter);
+                    }
+                    else if (gladiator > 0)
+                    {
+                        gladiator--;
+                        heroMember = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.DataAndPoolingID.DNPID_Hero_Gladiator);
+                    }
+                    else if (priest > 0)
+                    {
+                        priest--;
+                        heroMember = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.DataAndPoolingID.DNPID_Hero_Priest);
+                    }
+                    else if (berserker > 0)
+                    {
+                        berserker--;
+                        heroMember = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.DataAndPoolingID.DNPID_Hero_Berserker);
+                    }
+                    else if (witch > 0)
+                    {
+                        witch--;
+                        heroMember = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.DataAndPoolingID.DNPID_Hero_Witch);
+                    }
+                    else if (dragonKnight > 0)
+                    {
+                        dragonKnight--;
+                        heroMember = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.DataAndPoolingID.DNPID_Hero_DragonKnight);
+                    }
+                    else if (alchemist > 0)
+                    {
+                        alchemist--;
+                        heroMember = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.DataAndPoolingID.DNPID_Hero_Alchemist);
                     }
 
                     current++;
@@ -207,13 +280,6 @@ namespace STELLAREST_F1
             }
         }
 
-        // private IEnumerator CoSpawnHero(Vector3 spawnPos)
-        // {
-        //     yield return new WaitForSeconds(2f);
-        //     Hero hero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.Numeric.DataID_Hero_Paladin);
-        //     Managers.Map.MoveTo(hero, spawnPos, true);
-        // }
-
         private int GetRandEnvTree
             => UnityEngine.Random.Range(ReadOnly.DataAndPoolingID.DNPID_Env_AshTree, ReadOnly.DataAndPoolingID.DNPID_Env_YewTree + 1);
 
@@ -222,7 +288,7 @@ namespace STELLAREST_F1
 
         private void LoadAsset()
         {
-            Managers.Resource.LoadAllAsync<Object>(label: ReadOnly.String.PreLoad, callback: delegate (string key, int count, int totalCount)
+            Managers.Resource.LoadAllAsync<Object>(label: ReadOnly.Util.PreLoad, callback: delegate (string key, int count, int totalCount)
             {
                 Debug.Log($"Key Loaded : {key}, Current : {count} / Total : {totalCount}");
                 if (count == totalCount)

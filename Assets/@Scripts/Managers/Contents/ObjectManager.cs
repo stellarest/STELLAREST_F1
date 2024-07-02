@@ -11,17 +11,13 @@ namespace STELLAREST_F1
 {
     public class ObjectManager
     {
-        //public HashSet<Hero> Heroes { get; } = new HashSet<Hero>();
-        // TEMP
         public List<Hero> Heroes { get; } = new List<Hero>();
         public List<Monster> Monsters { get; } = new List<Monster>();
         public HashSet<Env> Envs { get; } = new HashSet<Env>();
-        public HashSet<Projectile> Projectiles { get; } = new HashSet<Projectile>();
-        //public HeroCamp Camp { get; private set; } = null;
+        public HashSet<Projectile> Projectiles { get; } = new HashSet<Projectile>(); // 이것도 안들고있어도 될 것같긴한데
+        
         public CameraController CameraController { get; set; } = null;
         public HeroLeaderController HeroLeaderController { get; private set; } = null;
-        // public Hero HeroLeader => HeroLeaderController.Leader;
-
 
         private Transform _leaderMark = null;
         public Transform LeaderMark
@@ -30,7 +26,7 @@ namespace STELLAREST_F1
             {
                 if (_leaderMark == null)
                 {
-                    _leaderMark = Managers.Resource.Instantiate(ReadOnly.String.LeaderController).transform;
+                    _leaderMark = Managers.Resource.Instantiate(ReadOnly.Prefabs.PFName_LeaderController).transform;
                     _leaderMark.GetComponent<SpriteRenderer>().sortingOrder = 101;
                 }
 
@@ -48,18 +44,19 @@ namespace STELLAREST_F1
             return root.transform;
         }
 
-        public Transform HeroRoot => GetRoot(ReadOnly.String.HeroPoolingRootName);
-        public Transform MonsterRoot => GetRoot(ReadOnly.String.MonsterPoolingRootName);
-        public Transform EnvRoot => GetRoot(ReadOnly.String.EnvPoolingRootName);
-        public Transform ProjectileRoot => GetRoot(ReadOnly.String.ProjectilePoolingRootName);
-        public Transform DamageFontRoot => GetRoot(ReadOnly.String.DamageFontPoolingRootName);
+        public Transform HeroRoot => GetRoot(ReadOnly.Util.HeroPoolingRootName);
+        public Transform MonsterRoot => GetRoot(ReadOnly.Util.MonsterPoolingRootName);
+        public Transform EnvRoot => GetRoot(ReadOnly.Util.EnvPoolingRootName);
+        public Transform ProjectileRoot => GetRoot(ReadOnly.Util.ProjectilePoolingRootName);
+        public Transform DamageFontRoot => GetRoot(ReadOnly.Util.DamageFontPoolingRootName);
+        public Transform EffectRoot => GetRoot(ReadOnly.Util.EffectPoolingRootName);
         #endregion
 
         public HeroLeaderController SetHeroLeaderController()
         {
             if (HeroLeaderController == null)
             {
-                GameObject go = Managers.Resource.Instantiate(ReadOnly.String.LeaderController);
+                GameObject go = Managers.Resource.Instantiate(ReadOnly.Prefabs.PFName_LeaderController);
                 go.name = $"@{go.name}";
                 HeroLeaderController = go.GetComponent<HeroLeaderController>();
             }
@@ -76,7 +73,6 @@ namespace STELLAREST_F1
             dmgFont.SetInfo(position, damage, isCritical);
         }
 
-        // VER2
         public T Spawn<T>(EObjectType objectType, int dataID = -1, BaseObject presetOwner = null) where T : BaseObject
         {
             GameObject go = null;
@@ -127,11 +123,23 @@ namespace STELLAREST_F1
                         return env as T;
                     }
                 case EObjectType.Projectile:
-                    throw new System.NotImplementedException();
+                    {
+                        Data.ProjectileData data = Managers.Data.ProjectileDataDict[dataID];
+                        go = Managers.Resource.Instantiate(data.PrefabLabel, parent: ProjectileRoot, poolingID: data.DataID);
+                        if (go == null)
+                        {
+                            Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{data.PrefabLabel}\"");
+                            return null;
+                        }
+
+                        Projectile projectile = go.GetComponent<Projectile>();
+                        Projectiles.Add(projectile);
+                        return projectile as T;
+                    }
 
                 case EObjectType.LeaderController:
                     {
-                        go = Managers.Resource.Instantiate(ReadOnly.String.LeaderController);
+                        go = Managers.Resource.Instantiate(ReadOnly.Prefabs.PFName_LeaderController);
                         if (go == null)
                         {
                             Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{EObjectType.LeaderController}\"");
@@ -145,85 +153,6 @@ namespace STELLAREST_F1
                 default:
                     return null;
             }
-        }
-
-        // VER1
-        public T Spawn<T>(Vector3 position, EObjectType spawnObjectType, int dataID = -1, BaseObject owner = null) where T : BaseObject
-        {
-            GameObject go = null;
-            switch (spawnObjectType)
-            {
-                case EObjectType.Hero:
-                    {
-                        Data.HeroData data = Managers.Data.HeroDataDict[dataID];
-                        go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: HeroRoot, poolingID: data.DataID);
-                        if (go ==null)
-                        {
-                            Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{data.PrefabLabel}\"");
-                            return null;
-                        }
-
-                        go.transform.position = position;
-                        Hero hero = go.GetComponent<Hero>();
-                        hero.SetInfo(dataID);
-                        Heroes.Add(hero);
-                        return hero as T;
-                    }
-
-                case EObjectType.Monster:
-                    {
-                        Data.MonsterData data = Managers.Data.MonsterDataDict[dataID];
-                        go = Managers.Resource.Instantiate(data.PrefabLabel, parent: MonsterRoot, poolingID: data.DataID);
-                        if (go ==null)
-                        {
-                            Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{data.PrefabLabel}\"");
-                            return null;
-                        }
-
-                        go.transform.position = position;
-                        Monster monster = go.GetComponent<Monster>();
-                        monster.SetInfo(dataID);
-                        Monsters.Add(monster);
-                        return monster as T;
-                    }
-
-                case EObjectType.Env:
-                    {
-                        Data.EnvData data = Managers.Data.EnvDataDict[dataID];
-                        go = Managers.Resource.Instantiate(data.PrefabLabel, parent: EnvRoot, poolingID: data.DataID);
-                        if (go == null)
-                        {
-                            Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{data.PrefabLabel}\"");
-                            return null;
-                        }
-
-                        go.transform.position = position;
-                        Env env = go.GetComponent<Env>();
-                        env.SetInfo(dataID);
-                        Envs.Add(env);
-                        return env as T;
-                    }
-
-                case EObjectType.Projectile:
-                    {
-                        Data.ProjectileData data = Managers.Data.ProjectileDataDict[dataID];
-                        go = Managers.Resource.Instantiate(data.PrefabLabel, parent: ProjectileRoot, poolingID: data.DataID);
-                        if (go == null)
-                        {
-                            Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{data.PrefabLabel}\"");
-                            return null;
-                        }
-
-                        go.transform.position = position;
-                        Projectile projectile = go.GetComponent<Projectile>();
-                        projectile.SetInfo(owner, dataID); // SetInfo(param int[] dataIDs), 또는 List<int>로 받아도 될 것 같긴 한데...
-                        Projectiles.Add(projectile);
-                        //go.SetActive(false);
-                        return projectile as T;
-                    }
-            }
-
-            return null;
         }
 
         public void Despawn<T>(T obj, int poolingID) where T : BaseObject

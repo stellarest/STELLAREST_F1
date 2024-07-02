@@ -11,15 +11,16 @@ namespace STELLAREST_F1.Data
     {
         public int DataID;
         public string PrefabLabel;
+        public string NameTextID;
         public string DescriptionTextID;
-        public string Type;
         public string IconImage;
     }
 
+    // 101000 ~ ...
     public class CreatureData : BaseData
     {
+        public ECreatureRarity CreatureRarity;
         public string AIClassName;
-        public string CreatureRarity;
         public string AnimatorLabel;
         public float ColliderRadius;
         public int Skill_Attack_ID;
@@ -50,8 +51,6 @@ namespace STELLAREST_F1.Data
     {
         public int DataID;
         public string Tag;
-        public string Type;
-        //public string SkinColor;
         public HeroSpriteData_Skin Skin;
         public HeroSpriteData_Head Head;
         public HeroSpriteData_UpperBody UpperBody;
@@ -211,7 +210,8 @@ namespace STELLAREST_F1.Data
     [Serializable]
     public class MonsterData : CreatureData
     {
-        public string Size;
+        public EMonsterType MonsterType;
+        public string MonsterSize;
         public int DropItemID;
     }
 
@@ -328,6 +328,7 @@ namespace STELLAREST_F1.Data
     [Serializable]
     public class EnvData : BaseData
     {
+        public EEnvType EnvType;
         public string AnimatorLabel;
         public int DropItemID;
     }
@@ -444,15 +445,18 @@ namespace STELLAREST_F1.Data
         }
     }
 
+    // 201000 ~ ...
     [Serializable]
     public class SkillData : BaseData
     {
+        public ESkillType SkillType;
 		public string ClassName;
         public string AttachmentPoint;
         public int InvokeRange; // --- 시전 조건
         public int TargetRange; // --- 시전 범위
         public int ProjectileID;
 		public float CoolTime;
+        public List<EffectBase> EffectIDs;
     }
 
     public class SkillDataLoader : ILoader<int, SkillData>
@@ -469,14 +473,16 @@ namespace STELLAREST_F1.Data
         }
     }
 
+    // 201000 ~ ...
     [Serializable]
     public class ProjectileData : BaseData
     {
+        public EProjectileMotionType MotionType;
         public string AnimationCurveType;
         public string Body;
         public string BodyColor;
 		public string ClassName;
-        public string Size;
+        public string ProjectileSize;
         public bool RotateToTarget;
         public float ColliderRadius;
         public float MovementSpeed;
@@ -496,7 +502,8 @@ namespace STELLAREST_F1.Data
         }
     }
 
-    [System.Serializable]
+    // 301000 ~ ...
+    [Serializable]
     public class EffectData : BaseData
     {
         public string ClassName;

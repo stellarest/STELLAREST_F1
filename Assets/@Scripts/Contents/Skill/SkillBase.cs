@@ -42,7 +42,9 @@ namespace STELLAREST_F1
                 return null;
             }
 
-            return Managers.Object.Spawn<Projectile>(spawnPos, EObjectType.Projectile, SkillData.ProjectileID, owner);
+            Projectile projectile = Managers.Object.Spawn<Projectile>(EObjectType.Projectile, SkillData.ProjectileID, owner);
+            projectile.transform.position = spawnPos;
+            return projectile;
         }
 
         private IEnumerator CoActivateSkill()
@@ -105,7 +107,7 @@ namespace STELLAREST_F1
             SkillData = Managers.Data.SkillDataDict[dataID];
             InvokeRange = SkillData.InvokeRange;
             TargetRange = SkillData.TargetRange;
-            SkillType = Util.GetEnumFromString<ESkillType>(SkillData.Type);
+            SkillType = SkillData.SkillType;
             SkillFromPoint = Util.GetEnumFromString<EAttachmentPoint>(SkillData.AttachmentPoint);
 
             EnterInGame(owner, dataID);

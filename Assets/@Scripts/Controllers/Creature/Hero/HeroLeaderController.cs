@@ -15,6 +15,8 @@ namespace STELLAREST_F1
     // 3) Change Formation
     // 4) Shuffle Members
 
+    // --- Default로 AutoTarget Mode로 Setting하고, 히어로 리더는 기본 공격시 콤보 모드를 넣어도 될 것 같긴한데.
+    // --- 리더 효과같은것.
     public class HeroLeaderController : InitBase
     {
         private Transform _pointerPivot = null;
@@ -48,7 +50,7 @@ namespace STELLAREST_F1
                                 continue;
 
                             // --- ForceStop이후 Leader에게 Warp하지 않고, 달려가서 쫓아가도록한다.
-                            heroes[i].HeroAI.StartCoWaitForceStopWarp(ReadOnly.Numeric.WaitHeroesForceStopWarpSeconds);
+                            heroes[i].HeroAI.StartCoWaitForceStopWarp(ReadOnly.Util.WaitHeroesForceStopWarpSeconds);
                             //heroes[i].CreatureAIState = ECreatureAIState.Idle; // --- DEFENSE
                         }
                     }
@@ -358,7 +360,7 @@ namespace STELLAREST_F1
         {
             int depth = 2;
             if (_leader.Target.IsValid() && AutoTarget)
-                depth = ReadOnly.Numeric.HeroDefaultMoveDepth;
+                depth = ReadOnly.Util.HeroDefaultMoveDepth;
 
             List<Vector3Int> path = Managers.Map.FindPath(startCellPos: startCellPos,
                                                         destCellPos: targetCellPos,
@@ -595,8 +597,8 @@ namespace STELLAREST_F1
         private float _randomPingPongDistance = 0f;
         private IEnumerator CoRandomFormation()
         {
-            float min = ReadOnly.Numeric.MinSecPatrolPingPong;
-            float max = ReadOnly.Numeric.MaxSecPatrolPingPong;
+            float min = ReadOnly.Util.MinSecPatrolPingPong;
+            float max = ReadOnly.Util.MaxSecPatrolPingPong;
             List<Hero> members = GetHeroMembers();
             while (true)
             {
@@ -654,7 +656,7 @@ namespace STELLAREST_F1
             while (true)
             {
                 delta += Time.deltaTime;
-                CanChangeLeaderCurrentPercentage = delta / ReadOnly.Numeric.DesiredCanChangeLeaderTime;
+                CanChangeLeaderCurrentPercentage = delta / ReadOnly.Util.DesiredCanChangeLeaderTime;
                 if (CanChangeLeaderCurrentPercentage >= 1f)
                     break;
 

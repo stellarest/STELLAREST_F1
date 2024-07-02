@@ -49,7 +49,7 @@ namespace STELLAREST_F1
 
         private void StartLoadAsset()
         {
-            Managers.Resource.LoadAllAsync<Object>(label: ReadOnly.String.PreLoad, callback: delegate(string key, int count, int totalCount)
+            Managers.Resource.LoadAllAsync<Object>(label: ReadOnly.Util.PreLoad, callback: delegate(string key, int count, int totalCount)
             {
                 Debug.Log($"Key Loaded : {key}, Current : {count} / Total : {totalCount}");
                 if (count == totalCount)

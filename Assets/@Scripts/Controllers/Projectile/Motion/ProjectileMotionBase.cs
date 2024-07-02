@@ -44,7 +44,7 @@ namespace STELLAREST_F1
         {
             DataTemplateID = dataID;
             ProjectileData = Managers.Data.ProjectileDataDict[dataID];
-            MotionType = Util.GetEnumFromString<EProjectileMotionType>(ProjectileData.Type);
+            MotionType = ProjectileData.MotionType;
             AnimCurveType = Util.GetEnumFromString<EAnimationCurveType>(ProjectileData.AnimationCurveType);
             RotateToTarget = ProjectileData.RotateToTarget;
             _movementSpeed = ProjectileData.MovementSpeed;

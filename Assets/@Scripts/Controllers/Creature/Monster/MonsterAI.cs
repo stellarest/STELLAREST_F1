@@ -51,7 +51,7 @@ namespace STELLAREST_F1
         {
             base.EnterInGame();
             _desiredNextPingPongPatrolDelta = UnityEngine.Random.Range(2f, 4f);
-            StartCoSearchTarget<Creature>(scanRange: ReadOnly.Numeric.MonsterDefaultScanRange,
+            StartCoSearchTarget<Creature>(scanRange: ReadOnly.Util.MonsterDefaultScanRange,
                              firstTargets: Managers.Object.Heroes,
                              secondTargets: null,
                              func: MonsterOwner.IsValid,
@@ -88,7 +88,7 @@ namespace STELLAREST_F1
                 return;
 
             MonsterOwner.LookAtValidTarget();
-            EFindPathResult result = MonsterOwner.FindPathAndMoveToCellPos(destPos: ChaseCellPos, maxDepth: ReadOnly.Numeric.MonsterDefaultMoveDepth);
+            EFindPathResult result = MonsterOwner.FindPathAndMoveToCellPos(destPos: ChaseCellPos, maxDepth: ReadOnly.Util.MonsterDefaultMoveDepth);
             //Vector3 centeredPos = Managers.Map.CenteredCellToWorld(ChaseCellPos);
             if (MonsterOwner.CanSkill || result == EFindPathResult.Fail_NoPath)
             {

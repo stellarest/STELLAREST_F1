@@ -117,7 +117,7 @@ namespace STELLAREST_F1
                         ShowFocus(false, GetFocusIndex(GameObjects.BG_FocusRB));
                     }
                     // 좌중앙
-                    else if (dir.y >= ReadOnly.Numeric.JoystickFocusMinDist && dir.y <= ReadOnly.Numeric.JoystickFocusMaxDist)
+                    else if (dir.y >= ReadOnly.Util.JoystickFocusMinDist && dir.y <= ReadOnly.Util.JoystickFocusMaxDist)
                     {
                         ShowFocus(true, GetFocusIndex(GameObjects.BG_FocusLT));
                         ShowFocus(false, GetFocusIndex(GameObjects.BG_FocusRT));
@@ -134,7 +134,7 @@ namespace STELLAREST_F1
                     }
                 }
                 // 중앙
-                else if (dir.x >= ReadOnly.Numeric.JoystickFocusMinDist && dir.x <= ReadOnly.Numeric.JoystickFocusMaxDist)
+                else if (dir.x >= ReadOnly.Util.JoystickFocusMinDist && dir.x <= ReadOnly.Util.JoystickFocusMaxDist)
                 {
                     // 중앙 상단
                     if (y == 1)
@@ -165,7 +165,7 @@ namespace STELLAREST_F1
                         ShowFocus(false, GetFocusIndex(GameObjects.BG_FocusRB));
                     }
                     // 우측 중앙
-                    else if (dir.y >= ReadOnly.Numeric.JoystickFocusMinDist && dir.y <= ReadOnly.Numeric.JoystickFocusMaxDist)
+                    else if (dir.y >= ReadOnly.Util.JoystickFocusMinDist && dir.y <= ReadOnly.Util.JoystickFocusMaxDist)
                     {
                         ShowFocus(false, GetFocusIndex(GameObjects.BG_FocusLT));
                         ShowFocus(true, GetFocusIndex(GameObjects.BG_FocusRT));

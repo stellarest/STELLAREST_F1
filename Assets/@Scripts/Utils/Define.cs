@@ -12,10 +12,9 @@ namespace STELLAREST_F1
     {
         public enum ECreatureRarity
         {
+            None = -1,
             Common,
             Elite,
-            Special,
-            Boss
         }
 
         public enum ECollectEnvRarity
@@ -39,7 +38,7 @@ namespace STELLAREST_F1
             None = -1,
             Bird,
             Quadrupeds,
-            Max = Quadrupeds + 1
+            //Max = Quadrupeds + 1
         }
 
         public enum EMonsterSize
@@ -261,7 +260,6 @@ namespace STELLAREST_F1
             None = -1,
             Tree,
             Rock,
-            Max = Rock + 1
         }
 
         public enum EEnvState
@@ -344,9 +342,8 @@ namespace STELLAREST_F1
         public enum EProjectileMotionType
         {
             None = -1,
-            StraightMotion,
-            ParabolaMotion,
-            Max = ParabolaMotion + 1
+            Parabola,
+            Straight,
         }
 
         public enum EWeaponChildIndex
@@ -391,14 +388,6 @@ namespace STELLAREST_F1
             ForceStop
         }
 
-        // // 제거 예정. FollowLeader 모드만 제대로 만들어놓으면 될듯.
-        // public enum EHeroMemberChaseMode
-        // {
-        //     FollowLeader, // --- Default, Skill_A,B 제외 Drag시 리더 추적, 리더가 공격하면 리더를 따라서 타겟을 찾고 공격. 리더가 채집하면 채집함. 이렇게?
-        //     EngageTarget, // --- 리더가 이동하지 않고 있을 때 타겟 우선 (제거할 수도 있음. 필요 없는듯.)
-        //     // --- 아니면 진짜 극단적으로 리더가 이동해도 타겟만 쫓아가는 방식으로. 이거 고민.
-        // }
-
         public enum EProjectileSize
         {
             Small,
@@ -422,17 +411,17 @@ namespace STELLAREST_F1
         public enum EEffectSpawnType
         {
             None,
-            Skill,// 지속시간이 있는 기본적인 이펙트 
-            External, // 외부(장판스킬)에서 이펙트를 관리(지속시간에 영향을 받지않음
+            Skill,              // 지속시간이 있는 기본적인 이펙트 
+            External,           // 외부(장판스킬)에서 이펙트를 관리(지속시간에 영향을 받지않음)
         }
 
         public enum EEffectClearType
         {
             None,
-            TimeOut,
-            ClearSKill,
-            TriggerOutAoE,
-            EndOfCC,
+            TimeOut,            // 단순 시간초과로 종료
+            ClearSkill,         // 정화 스킬로 인한 종료
+            TriggerOutAoE,      // AoE 스킬을 벗어난 종료
+            EndOfCC,            // CC가 끝났을 때 종료
             Disable,
         }
 
@@ -471,16 +460,34 @@ namespace STELLAREST_F1
         // ####################################################
         public static class ReadOnly
         {
-            // 1. Paladin - 101000
-            // 2. Archer - 101010
-            // 3. Lancer - 101020
+            public static class Prefabs
+            {
+                public static readonly string PFName_LeaderController = "LeaderController";
+                public static readonly string PFName_DamageFont = "DamageFont";
+            }
+
+            public static class DataSet
+            {
+                public static readonly string HeroData = "HeroData";
+                public static readonly string HeroSpriteData = "HeroSpriteData";
+                public static readonly string MonsterData = "MonsterData";
+
+                public static readonly string BirdSpriteData = "BirdSpriteData";
+                public static readonly string QuadrupedsSpriteData = "QuadrupedsSpriteData";
+                public static readonly string EnvData = "EnvData";
+                public static readonly string TreeSpriteData = "TreeSpriteData";
+                public static readonly string RockSpriteData = "RockSpriteData";
+                public static readonly string StatData = "StatData";
+                public static readonly string SkillData = "SkillData";
+                public static readonly string ProjectileData = "ProjectileData";
+                public static readonly string EffectData = "EffectData";
+            }
 
             public static class DataAndPoolingID
             {
                 // --- Damage Font
                 public static readonly int DNPID_DamageFont = 109;
-                // --- Heroes (1차, 포폴용, Elite까지 제작해놓을것)
-                // ---> Hero 제작(애니메이션은 대충 세팅만 해놓음) -> Elite 제작 -> 애니메이션은 가장 나중에 정리
+
                 public static readonly int DNPID_Hero_Paladin = 101000;
                 public static readonly int DNPID_Hero_Archer = 101010;
 
@@ -494,30 +501,38 @@ namespace STELLAREST_F1
                 public static readonly int DNPID_Hero_Druid = 101070;
 
                 public static readonly int DNPID_Hero_Barbarian = 101080;
-                // public static readonly int DNPID_Hero_Ninja = 101090;
+                public static readonly int DNPID_Hero_Ninja = 101090;
 
-                // + Phantom Knight
-                // + FrostWeaver
+                public static readonly int DNPID_Hero_PhantomKnight = 101100;
+                public static readonly int DNPID_Hero_FrostWeaver = 101110;
 
-                // + Queen
-                // + Hunter
+                public static readonly int DNPID_Hero_Queen = 101120;
+                public static readonly int DNPID_Hero_Hunter = 101130;
 
-                // + Blacksmith
-                // + Priest
-                // ----------------------------------------------------------------------
+                public static readonly int DNPID_Hero_Gladiator = 101140;
+                public static readonly int DNPID_Hero_Priest = 101150;
 
-                // --- 리스트1(미정)
-                // > PhantomKnight - Hunter
-                // > Gladiator - FrostWeaver
-                // > Berserker - Priest
-                // > SkeletonKing - Pirate
-                // > Queen - Mutant // (20 Heroes)
-                // --- 리스트2(미정)
-                // > Thief - Time Traveler
-                // > Guardian - Witcher
-                // > Monk - Alchemist
-                // > Blacksmith - Bard
-                // > DragonKnight(Female) - Gambler (30 Heroes)
+                public static readonly int DNPID_Hero_Berserker = 101160;
+                public static readonly int DNPID_Hero_Witch = 101170;
+
+                public static readonly int DNPID_Hero_DragonKnight = 101180;
+                public static readonly int DNPID_Hero_Alchemist = 101190;
+                // ---------------------------------------------------------------------- // 20 Heroes
+                // + Monk
+                // + 
+
+                // + 
+                // + 
+
+                // + 
+                // + 
+
+                // + Skeleton King
+                // + Pirate (Common: Melee, Elite: Ranged)
+
+                // + Mutant
+                // + Necromancer
+                // ---------------------------------------------------------------------- // 30 Heroes
 
                 // --- Monsters
                 public static readonly int DNPID_Monster_Chicken = 102000;
@@ -545,11 +560,6 @@ namespace STELLAREST_F1
                 public static readonly int DNPID_Env_TinRock = 103017;
                 public static readonly int DNPID_Env_WhetstoneRock = 103018;
                 public static readonly int DNPID_Env_ZincRock = 103019;
-            }
-
-            public static class Prefabs
-            {
-                public static readonly string PFName_DamageFont = "DamageFont";
             }
 
             public static class AnimationParams
@@ -596,71 +606,31 @@ namespace STELLAREST_F1
                 public static readonly int SLOrder_UI = 99;
                 public static readonly int SLOrder_DamageFont = 100;
             }
-            
-            public static class Character
+
+            public static class Util
             {
                 public const char Map_Tool_Block_0 = '0';
                 public const char Map_Tool_CanMove_1 = '1';
                 public const char Map_Tool_SemiBlock_2 = '2';
-            }
 
-            public static class String
-            {
-                // Datas
-                public static readonly string HeroData = "HeroData";
-                public static readonly string HeroSpriteData = "HeroSpriteData";
-                public static readonly string MonsterData = "MonsterData";
-
-                public static readonly string BirdSpriteData = "BirdSpriteData";
-                public static readonly string QuadrupedsSpriteData = "QuadrupedsSpriteData";
-                public static readonly string EnvData = "EnvData";
-                public static readonly string TreeSpriteData = "TreeSpriteData";
-                public static readonly string RockSpriteData = "RockSpriteData";
-                public static readonly string StatData = "StatData";
-                public static readonly string SkillData = "SkillData";
-                public static readonly string ProjectileData = "ProjectileData";
-
-                // Others Prefab
                 public static readonly string Managers = "@Managers";
                 public static readonly string UI_Root = "@UI_Root";
                 public static readonly string EventSystem = "@EventSystem";
-                public static readonly string PreLoad = "PreLoad";
-                public static readonly string BaseMap = "BaseMap";
-                public static readonly string Hero = "Hero";
-                public static readonly string AnimBody = "AnimationBody";
                 public static readonly string HeroPoolingRootName = "@Pool_Heroes";
                 public static readonly string MonsterPoolingRootName = "@Pool_Monsters";
                 public static readonly string EnvPoolingRootName = "@Pool_Envs";
                 public static readonly string ProjectilePoolingRootName = "@Pool_Projectiles";
                 public static readonly string DamageFontPoolingRootName = "@Pool_DamageFonts";
-                public static readonly string UI_Joystick = "UI_Joystick";
-                public static readonly string AnimationBody = "AnimationBody";
-                public static readonly string HeroCamp = "HeroCamp";
-                public static readonly string LeaderController = "LeaderController";
-                //public static readonly string SummerForest_Field_Temp = "SummerForest_Field_Temp";
+                public static readonly string EffectPoolingRootName = "@Pool_Effects";
 
-                // Sprite - Collect Equipment
+                public static readonly string PreLoad = "PreLoad";
+                public static readonly string AnimBody = "AnimationBody";
+                public static readonly string AnimationBody = "AnimationBody";
+
                 public static readonly string Pickaxe_Common_SP = "Pickaxe_Common.sprite";
                 public static readonly string Pickaxe_Elite_SP = "Pickaxe_Elite.sprite";
                 public static readonly string WoodcutterAxe_Common_SP = "WoodcutterAxe_Common.sprite";
                 public static readonly string WoodcutterAxe_Elite_SP = "WoodcutterAxe_Elite.sprite";
-
-                // Sprite - Hero Human Body Type
-                // public static readonly string HBody_HumanType_Head_SP = "Human_Head.sprite";
-                // public static readonly string HBody_HumanType_Ears_SP = "Human_Ears.sprite";
-                // public static readonly string HBody_HumanType_Torso_SP = "Human_Torso.sprite";
-                // public static readonly string HBody_HumanType_ArmL_SP = "Human_ArmL.sprite";
-                // public static readonly string HBody_HumanType_ForearmL_SP = "Human_ForearmL.sprite";
-                // public static readonly string HBody_HumanType_HandL_SP = "Human_HandL.sprite";
-
-                // public static readonly string HBody_HumanType_ArmR_SP = "Human_ArmR.sprite";
-                // public static readonly string HBody_HumanType_ForearmR_SP = "Human_ForearmR.sprite";
-                // public static readonly string HBody_HumanType_HandR_SP = "Human_HandR.sprite";
-                // public static readonly string HBody_HumanType_Finger_SP = "Human_Finger.sprite";
-
-                // public static readonly string HBody_HumanType_Pelvis_SP = "Human_Pelvis.sprite";
-                // public static readonly string HBody_HumanType_Shin_SP = "Human_Shin.sprite";
-                // public static readonly string HBody_HumanType_Leg_SP = "Human_Leg.sprite";
 
                 // Sprite & Material - Env Rock
                 public static readonly string ERock_Rock_SP = "StoneRock_Rock.sprite";
@@ -701,11 +671,6 @@ namespace STELLAREST_F1
 
                 // Hero Armored WeaponL
                 public static readonly string HBody_WeaponL = "WeaponL_Armor";
-                // public static readonly string HBody_WeaponLFireSocket = "WeaponL_FireSocket";
-                // public static readonly string HBody_WeaponLChildsGroup = "WeaponL_Armor_Childs";
-                // public static readonly string HBody_WeaponLAttachment1 = "WeaponLAttachment1_Armor";
-                // public static readonly string HBody_WeaponLAttachment2 = "WeaponLAttachment2_Armor";
-                // public static readonly string HBody_WeaponLAttachment3 = "WeaponLAttachment3_Armor";
 
                 public static readonly string HBody_ArmRSkin = "ArmR";
                 public static readonly string HBody_ArmR = "ArmR_Armor";
@@ -717,9 +682,6 @@ namespace STELLAREST_F1
 
                 // Hero Armored WeaponR
                 public static readonly string HBody_WeaponR = "WeaponR_Armor";
-                // public static readonly string HBody_WeaponRAttachment1 = "WeaponRAttachment1_Armor";
-                // public static readonly string HBody_WeaponRAttachment2 = "WeaponRAttachment2_Armor";
-                // public static readonly string HBody_WeaponRAttachment3 = "WeaponRAttachment3_Armor";
 
                 public static readonly string HBody_PelvisSkin = "Pelvis";
                 public static readonly string HBody_Pelvis = "Pelvis_Armor";
@@ -761,15 +723,6 @@ namespace STELLAREST_F1
                 public static readonly string EBody_EndParticle = "EndParticle";
                 public static readonly string EBody_Shadow = "Shadow";
 
-                // Animation Params
-                public static readonly string AnimParam_Idle = "Idle";
-                public static readonly string AnimParam_Move = "Move";
-                public static readonly string AnimParam_Skill_Attack = "Skill_Attack";
-                public static readonly string AnimParam_Skill_A = "Skill_A";
-                public static readonly string AnimParam_Skill_B = "Skill_B";
-                public static readonly string AnimParam_CollectEnv = "CollectEnv";
-                public static readonly string AnimParam_Dead = "Dead";
-
                 // Write Tile
                 public static readonly string Tile_CanMove = "_CanMove";
                 public static readonly string Tile_SemiBlock = "_SemiBlock";
@@ -777,10 +730,7 @@ namespace STELLAREST_F1
 
                 // Map
                 public static readonly string Tilemap_Collision = "Tilemap_Collision";
-            }
 
-            public static class Numeric
-            {
                 // [ INTEGER ]
                 public static readonly int HeroMaxLevel = 5;
 
@@ -788,7 +738,6 @@ namespace STELLAREST_F1
                 // public static readonly int SortingLayer_Projectile = 10;
                 // public static readonly int SortingLayer_VFX = 20;
                 // public static readonly int SortingLayer_HeroCamp = 90;
-
                 // public static readonly int SortingOrder_SpellIndicator = 200;
                 // public static readonly int SortingOrder_Creature = 300;
                 // public static readonly int SortingOrder_Env = 300;
@@ -798,11 +747,6 @@ namespace STELLAREST_F1
                 // //public static readonly int SortingOrder_Weapon = 200;
                 // public static readonly int SortingOrder_Weapon = 320;
 
-                // ID - Monsters
-
-                // ID - Envs Trees & Rocks
-
-                // MISC
                 public static readonly int RockElementsCount = 3;
                 public static readonly int MaxActiveSkillsCount = 2;
                 public static readonly int HeroDefaultMoveDepth = 10; // default: 5 -> 10
@@ -833,7 +777,7 @@ namespace STELLAREST_F1
                 public static readonly float SearchFindTargetTick = 0.25F;
                 //public static readonly float SearchFindTargetTick = 0.5F;
 
-                public static readonly float CamOrthoSize = 12.0F; 
+                public static readonly float CamOrthoSize = 12.0F;
                 public static readonly float JoystickFocusMinDist = -0.18F;
                 public static readonly float JoystickFocusMaxDist = 0.18F;
 
@@ -844,7 +788,7 @@ namespace STELLAREST_F1
                 public static readonly float HeroDefaultScanRange = 8.0F; // 오리지날 6F, 일단 6칸
                 public static readonly float MonsterDefaultScanRange = 6.0F; // 상하좌우 한칸 기준, 대각선X
                 public static readonly float Temp_StopDistance = 1.25F;
-                
+
                 // Dead Fade Out Time
                 public static readonly float StartDeadFadeOutTime = 0.85F;
                 public static readonly float DesiredDeadFadeOutEndTime = 1.0F;
