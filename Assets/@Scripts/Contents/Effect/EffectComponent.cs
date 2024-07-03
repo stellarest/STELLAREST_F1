@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,7 +8,7 @@ namespace STELLAREST_F1
 {
     public class EffectComponent : InitBase
     {
-        public Creature Owner { get; private set; } = null;
+        private Creature _owner = null;
         public List<EffectBase> ActiveEffects = new List<EffectBase>();
 
         public override bool Init()
@@ -18,18 +19,44 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public void SetOwner(Creature owner) => Owner = owner;
+        public void SetInfo(Creature owner) => this._owner = owner;
 
         public List<EffectBase> GenerateEffect(IEnumerable<int> effectIDs, EEffectSpawnType spawnType)
         {
-            return null;
+            List<EffectBase> generatedEffects = new List<EffectBase>();
+
+            foreach (var id in effectIDs)
+            {
+                string className = Managers.Data.EffectDataDict[id].ClassName;
+                System.Type effectType = System.Type.GetType(className);
+                if (effectType == null)
+                {
+                    Debug.LogError($"{nameof(GenerateEffect)}");
+                    return null;
+                }
+
+                GameObject go = Managers.Object.SpawnGameObject(_owner.CenterPosition, ReadOnly.Prefabs.PFName_EffectBase, id);
+                go.name = Managers.Data.EffectDataDict[id].ClassName;
+                
+                EffectBase effect = go.AddComponent(effectType) as EffectBase;
+                effect.transform.parent = _owner.CreatureEffect.transform; // --- 이거를 해야할까??
+                effect.transform.localPosition = Vector3.zero;
+                Managers.Object.Effects.Add(effect); // --- 임시
+
+                ActiveEffects.Add(effect);
+                generatedEffects.Add(effect);
+
+                effect.SetInfo(id, _owner, spawnType);
+                effect.ApplyEffect();
+            }
+
+            return generatedEffects;
         }
 
         public void RemoveEffect(EffectBase effect)
         {
             ActiveEffects.Remove(effect);
-            // Despawn Effect
-            // effect.enabled = false; // Pulling으로 안했나보네
+            Managers.Object.Despawn(effect, effect.DataTemplateID);
         }
 
         public void ClearDebuffsBySkill()
@@ -42,7 +69,5 @@ namespace STELLAREST_F1
                 }
             }
         }
-
-
     }
 }

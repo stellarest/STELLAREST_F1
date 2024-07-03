@@ -456,7 +456,7 @@ namespace STELLAREST_F1.Data
         public int TargetRange; // --- 시전 범위
         public int ProjectileID;
 		public float CoolTime;
-        public List<EffectBase> EffectIDs;
+        public int[] EffectIDs;
     }
 
     public class SkillDataLoader : ILoader<int, SkillData>
@@ -512,6 +512,7 @@ namespace STELLAREST_F1.Data
         public float PercentMulti;
         public float Duration;
         public float Period;
+        public EEffectType EffectType;
     }
 
     public class EffectDataLoader : ILoader<int, EffectData>

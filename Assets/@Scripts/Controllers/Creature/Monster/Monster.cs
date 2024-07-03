@@ -63,6 +63,7 @@ namespace STELLAREST_F1
             if (base.Init() == false)
                 return false;
 
+            MonsterBody = GetComponent<MonsterBody>();
             ObjectType = EObjectType.Monster;
             return true;
         }
@@ -83,7 +84,8 @@ namespace STELLAREST_F1
         protected override void InitialSetInfo(int dataID)
         {
             base.InitialSetInfo(dataID);
-            MonsterBody = new MonsterBody(this, dataID);
+            //MonsterBody = new MonsterBody(this, dataID);
+            MonsterBody.SetInfo(this, dataID);
             MonsterAnim = CreatureAnim as MonsterAnimation;
             MonsterAnim.SetInfo(dataID, this);
             Managers.Sprite.SetInfo(dataID, target: this);
@@ -97,7 +99,7 @@ namespace STELLAREST_F1
             // CreatureRarity = Util.GetEnumFromString<ECreatureRarity>(MonsterData.CreatureRarity);
             // MonsterType = Util.GetEnumFromString<EMonsterType>(MonsterData.Type);
 
-            gameObject.name += $"_{MonsterData.DescriptionTextID.Replace(" ", "")}";
+            gameObject.name += $"_{MonsterData.NameTextID.Replace(" ", "")}";
             Collider.radius = MonsterData.ColliderRadius;
 
             CreatureSkill = gameObject.GetOrAddComponent<SkillComponent>();

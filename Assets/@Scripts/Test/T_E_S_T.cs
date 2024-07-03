@@ -7,10 +7,18 @@ using UnityEngine;
 using DG.Tweening;
 
 /*
+// --- 내일 BodyContainer에서 Default Color Set하기
+// --- Env BaseBody 만들기
+
 // --- Skill 관련하여..
 // --- 히어로 레벨1. Skill_A, Skill_B
 // --- 히어로 레벨3. Skill_A, Skill_B, Skill_C(New)
 // --- 히어로 레벌5. Skill_A, Skill_B(강화된 새로운 스킬), Skill_C(강화된 새로운 스킬)
+// --- Hero Skill ID 독립적으로 준거 고쳐야함. 재활용하는 방식으로 해야함.
+// --- 그리고, 어차피 애니메이션 기반으로 작동하기 때문에 각 크리쳐마다 공격속도 적용하면 됨. 이게 훨씬 타당함.
+// --- 그리고, 리더의 경우 데바데 발전기체크처럼 랜덤으로 강화공격 뜨게해서 하는것도 일단 메모. (리더 스킬)
+// --- 이렇게하면 좋은점이 스킬 아이콘 같은거 배치할 때 전혀 부담이 없음. 각각 독립적이라. 일단은 그대로 진행. Effect 때문에.
+// --- 포터블 모니터 가지고 댕기기
 
 // --- 일단 EnvAnimation 제외(BaseAnimation쪽 손봐야함)
 

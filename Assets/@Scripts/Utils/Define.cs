@@ -86,7 +86,8 @@ namespace STELLAREST_F1
             Env,
             Projectile,
             LeaderController,
-            Max = LeaderController + 1
+            Effect,
+            Max = Effect + 1
         }
 
         public enum ECreatureAIState // -- > ECreatureAnimMachineState
@@ -408,7 +409,7 @@ namespace STELLAREST_F1
             Stun,
         }
 
-        public enum EEffectSpawnType
+        public enum EEffectSpawnType // ???
         {
             None,
             Skill,              // 지속시간이 있는 기본적인 이펙트 
@@ -464,6 +465,14 @@ namespace STELLAREST_F1
             {
                 public static readonly string PFName_LeaderController = "LeaderController";
                 public static readonly string PFName_DamageFont = "DamageFont";
+                public static readonly string PFName_EffectBase = "EffectBase";
+            }
+
+            public static class Materials
+            {
+                public static readonly string Mat_Default = "Default.mat";
+                public static readonly string Mat_EyesPaint = "EyesPaint.mat";
+                public static readonly string Mat_StrongTint = "StrongTint.mat";
             }
 
             public static class DataSet
@@ -519,12 +528,12 @@ namespace STELLAREST_F1
                 public static readonly int DNPID_Hero_Alchemist = 101190;
                 // ---------------------------------------------------------------------- // 20 Heroes
                 // + Monk
-                // + 
+                // + Blood Mage
 
                 // + 
                 // + 
 
-                // + 
+                // + Guardian
                 // + 
 
                 // + Skeleton King
@@ -603,8 +612,9 @@ namespace STELLAREST_F1
                 public static readonly int SLOrder_Deco = 10;
                 public static readonly int SLOrder_BaseObject = 20;
                 public static readonly int SLOrder_Projectile = 30;
-                public static readonly int SLOrder_UI = 99;
-                public static readonly int SLOrder_DamageFont = 100;
+                public static readonly int SLOrder_UI = 90;
+                public static readonly int SLOrder_Effect = 100;
+                public static readonly int SLOrder_DamageFont = 200;
             }
 
             public static class Util

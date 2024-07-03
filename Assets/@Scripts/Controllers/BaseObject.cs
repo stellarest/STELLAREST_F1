@@ -19,13 +19,14 @@ namespace STELLAREST_F1
         {
             if (Input.GetKeyDown("5"))
             {
-                LevelUp();
+                // LevelUp();
+                BaseBody.StartCoHurtFlashEffect();
             }    
         }
 
         public int DataTemplateID { get; protected set; } = -1;
         public EObjectType ObjectType { get; protected set; } = EObjectType.None;
-        //public EObjectRarity ObjectRarity { get; protected set; } = EObjectRarity.Common;
+        public BaseBody BaseBody { get; protected set; } = null;
         public BaseAnimation BaseAnim { get; private set; } = null;
         public CircleCollider2D Collider { get; private set; } = null;
         public Rigidbody2D RigidBody { get; private set; } = null;
@@ -169,6 +170,8 @@ namespace STELLAREST_F1
                 return false;
 
             BaseAnim = Util.FindChild<BaseAnimation>(gameObject, name: ReadOnly.Util.AnimationBody, recursive: false);
+            BaseBody = GetComponent<BaseBody>();
+
             Collider = gameObject.GetOrAddComponent<CircleCollider2D>();
             RigidBody = gameObject.GetOrAddComponent<Rigidbody2D>();
             RigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;

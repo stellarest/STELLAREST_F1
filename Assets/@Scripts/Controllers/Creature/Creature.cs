@@ -13,8 +13,8 @@ namespace STELLAREST_F1
         #region Background
         public CreatureAI CreatureAI { get; protected set; } = null;
         public ECreatureRarity CreatureRarity { get; protected set; } = ECreatureRarity.None;
-        public SkillComponent CreatureSkill { get; protected set; } = null;
-        public EffectComponent CreatureEffect { get; protected set; } = null;
+        public SkillComponent CreatureSkill { get; protected set; } = null; // Skills
+        public EffectComponent CreatureEffect { get; protected set; } = null; // Effects
         public CreatureBody CreatureBody { get; protected set; } = null;
         public CreatureAnimation CreatureAnim { get; private set; } = null;
         public CreatureAnimationCallback CreatureAnimCallback { get; private set; } = null;
@@ -268,6 +268,7 @@ namespace STELLAREST_F1
             if (base.Init() == false)
                 return false;
 
+            CreatureBody = GetComponent<CreatureBody>();
             CreatureAnim = BaseAnim as CreatureAnimation;
             CreatureAnimCallback = CreatureAnim.GetComponent<CreatureAnimationCallback>();
             return true;
@@ -288,6 +289,8 @@ namespace STELLAREST_F1
         protected override void InitialSetInfo(int dataID)
         {
             base.InitialSetInfo(dataID);
+            CreatureEffect = gameObject.GetOrAddComponent<EffectComponent>();
+            CreatureEffect.SetInfo(this);
         }
 
         protected override void EnterInGame()
@@ -330,6 +333,9 @@ namespace STELLAREST_F1
                 Hp = 0f;
                 OnDead(attacker, skillFromAttacker);
             }
+
+            // if (skillFromAttacker.SkillData.EffectIDs != null)
+            //     CreatureEffect.GenerateEffect(skillFromAttacker.SkillData.EffectIDs, EEffectSpawnType.Skill);
         }
 
         public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)

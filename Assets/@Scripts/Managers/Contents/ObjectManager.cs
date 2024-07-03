@@ -14,7 +14,12 @@ namespace STELLAREST_F1
         public List<Hero> Heroes { get; } = new List<Hero>();
         public List<Monster> Monsters { get; } = new List<Monster>();
         public HashSet<Env> Envs { get; } = new HashSet<Env>();
+
+        // --- 프로젝타일 컨테이너 제거 예정
         public HashSet<Projectile> Projectiles { get; } = new HashSet<Projectile>(); // 이것도 안들고있어도 될 것같긴한데
+
+        // --- 임시
+        public HashSet<EffectBase> Effects { get; } = new HashSet<EffectBase>();
         
         public CameraController CameraController { get; set; } = null;
         public HeroLeaderController HeroLeaderController { get; private set; } = null;
@@ -71,6 +76,13 @@ namespace STELLAREST_F1
             GameObject go = Managers.Resource.Instantiate(prefabName, parent: DamageFontRoot, poolingID: poolingID); // 풀링 되려나??
             DamageFont dmgFont = go.GetComponent<DamageFont>();
             dmgFont.SetInfo(position, damage, isCritical);
+        }
+
+        public GameObject SpawnGameObject(Vector3 position, string prefabName, int poolingID)
+        {
+            GameObject go = Managers.Resource.Instantiate(key: prefabName, poolingID: poolingID);
+            go.transform.position = position;
+            return go;
         }
 
         public T Spawn<T>(EObjectType objectType, int dataID = -1, BaseObject presetOwner = null) where T : BaseObject

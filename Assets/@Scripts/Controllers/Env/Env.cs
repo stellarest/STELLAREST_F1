@@ -62,7 +62,7 @@ namespace STELLAREST_F1
             //EnvType = Util.GetEnumFromString<EEnvType>(EnvData.Type);
             EnvType = EnvData.EnvType;
 
-            gameObject.name += $"_{EnvData.DescriptionTextID.Replace(" ", "")}";
+            gameObject.name += $"_{EnvData.NameTextID.Replace(" ", "")}";
         }
 
         protected override void InitStat(int dataID)

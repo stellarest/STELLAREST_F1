@@ -188,6 +188,8 @@ namespace STELLAREST_F1
                 return false;
 
             ObjectType = EObjectType.Hero;
+            HeroBody = GetComponent<HeroBody>();
+
             Collider.isTrigger = true;
             RigidBody.simulated = false;
             return true;
@@ -211,11 +213,13 @@ namespace STELLAREST_F1
         {
             base.InitialSetInfo(dataID);
 
-            HeroBody = new HeroBody(this, dataID);
+            //HeroBody = new HeroBody(this, dataID);
+            HeroBody.SetInfo(this, dataID);
+            WeaponLSocket = HeroBody.GetComponent<Transform>(EHeroWeapon.WeaponLSocket);
+
             HeroAnim = CreatureAnim as HeroAnimation;
             HeroAnim.SetInfo(dataID, this);
             Managers.Sprite.SetInfo(dataID, target: this);
-            WeaponLSocket = HeroBody.GetComponent<Transform>(EHeroWeapon.WeaponLSocket);
 
             HeroData = Managers.Data.HeroDataDict[dataID];
             Type aiClassType = Util.GetTypeFromName(HeroData.AIClassName);
@@ -226,7 +230,7 @@ namespace STELLAREST_F1
             //CreatureRarity = Util.GetEnumFromString<ECreatureRarity>(HeroData.CreatureRarity);
             CreatureRarity = HeroData.CreatureRarity;
 
-            gameObject.name += $"_{HeroData.DescriptionTextID.Replace(" ", "")}";
+            gameObject.name += $"_{HeroData.NameTextID.Replace(" ", "")}";
             Collider.radius = HeroData.ColliderRadius;
 
             CreatureSkill = gameObject.GetOrAddComponent<SkillComponent>();

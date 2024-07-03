@@ -221,20 +221,59 @@ namespace STELLAREST_F1
         }
     }
 
-    [System.Serializable]
     public class HeroBody : CreatureBody
     {
-        public HeroBody(Hero owner, int dataID) : base(owner, dataID)
+        // public HeroBody(Hero owner, int dataID) : base(owner, dataID)
+        // {
+        //     InitBody(EHeroBodyParts.Head, (int)EHeroHead.Max);
+        //     InitBody(EHeroBodyParts.UpperBody, (int)EHeroUpperBody.Max);
+        //     InitBody(EHeroBodyParts.LowerBody, (int)EHeroLowerBody.Max);
+        //     InitBody(EHeroBodyParts.Weapon, (int)EHeroWeapon.Max); // NEED FIX
+        // }
+        public override bool SetInfo(BaseObject owner, int dataID)
         {
+            _matEyes = Managers.Resource.Load<Material>(ReadOnly.Materials.Mat_EyesPaint);
+            this.Owner = owner as Hero;
+            DataTemplateID = dataID;
             InitBody(EHeroBodyParts.Head, (int)EHeroHead.Max);
             InitBody(EHeroBodyParts.UpperBody, (int)EHeroUpperBody.Max);
             InitBody(EHeroBodyParts.LowerBody, (int)EHeroLowerBody.Max);
-            InitBody(EHeroBodyParts.Weapon, (int)EHeroWeapon.Max); // NEED FIX
+            InitBody(EHeroBodyParts.Weapon, (int)EHeroWeapon.Max);
+            Face = new HeroFace(this);
+
+            return true;
         }
 
-        private Dictionary<EHeroBodyParts, Container[]> _bodyDict = new Dictionary<EHeroBodyParts, Container[]>();
+        protected override IEnumerator CoHurtFlashEffect()
+        {
+            Debug.Log("<color=yellow>START</color>");
+
+            for (int i = 0; i < Skin.Count; ++i)
+                Skin[i].material = _matStrongTint;
+
+            for (int i = 0; i < Appearance.Count; ++i)
+                Appearance[i].material = _matStrongTint;
+
+            this.GetComponent<SpriteRenderer>(EHeroHead.Eyes).material = null;
+
+            yield return new WaitForSeconds(20f);
+
+            for (int i = 0; i < Skin.Count; ++i)
+                Skin[i].material = _matDefault;
+
+            for (int i = 0; i < Appearance.Count; ++i)
+                Appearance[i].material = _matDefault;
+
+            this.GetComponent<SpriteRenderer>(EHeroHead.Eyes).material = _matEyes;
+
+            Debug.Log("<color=yellow>END</color>");
+        }
+
+        public Hero Owner { get; private set; } = null;
+        private Dictionary<EHeroBodyParts, BodyContainer[]> _bodyDict = new Dictionary<EHeroBodyParts, BodyContainer[]>();
         [field: SerializeField] public HeroFace Face { get; private set; } = null;
         //public void SetEmoji(EHeroEmoji emoji) => Face?.SetEmoji(emoji);
+        private Material _matEyes = null;
         public EHeroEmoji HeroEmoji
         {
             get => Face.HeroEmoji;
@@ -246,253 +285,307 @@ namespace STELLAREST_F1
 
         private void InitBody(EHeroBodyParts bodyParts, int length)
         {
+            //Material matDefault = Managers.Resource.Load<Material>(ReadOnly.Materials.Mat_Default);
+            //Material matEyesPaint = Managers.Resource.Load<Material>(ReadOnly.Materials.Mat_EyesPaint);
+
             switch (bodyParts)
             {
                 case EHeroBodyParts.Head:
                     {
-                        Container[] containers = new Container[length];
+                        BodyContainer[] containers = new BodyContainer[length];
                         _bodyDict.Add(EHeroBodyParts.Head, containers);
 
                         string tag = ReadOnly.Util.HBody_HeadSkin;
                         Transform tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_HeadSkin, true, true);
                         SpriteRenderer spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroHead.HeadSkin] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroHead.HeadSkin] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_Hair;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_Hair, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroHead.Hair] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroHead.Hair] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_Eyes;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_Eyes, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroHead.Eyes] = new Container(tag, tr, spr);
+                        spr.material = _matEyes;
+                        containers[(int)EHeroHead.Eyes] = new BodyContainer(tag, tr, spr, _matEyes);
 
                         tag = ReadOnly.Util.HBody_Eyebrows;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_Eyebrows, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroHead.Eyebrows] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroHead.Eyebrows] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_Mouth;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_Mouth, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroHead.Mouth] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroHead.Mouth] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_Ears;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_Ears, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroHead.Ears] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroHead.Ears] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_Earrings;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_Earrings, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroHead.Earrings] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroHead.Earrings] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_Beard;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_Beard, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroHead.Beard] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroHead.Beard] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_Mask;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_Mask, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroHead.Mask] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroHead.Mask] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_Glasses;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_Glasses, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroHead.Glasses] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroHead.Glasses] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_Helmet;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_Helmet, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroHead.Helmet] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroHead.Helmet] = new BodyContainer(tag, tr, spr, _matDefault);
                     }
                     break;
 
                 case EHeroBodyParts.UpperBody:
                     {
-                        Container[] containers = new Container[length];
+                        BodyContainer[] containers = new BodyContainer[length];
                         _bodyDict.Add(EHeroBodyParts.UpperBody, containers);
 
                         string tag = ReadOnly.Util.HBody_TorsoSkin;
                         Transform tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_TorsoSkin, true, true);
                         SpriteRenderer spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroUpperBody.TorsoSkin] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroUpperBody.TorsoSkin] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_Torso;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_Torso, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroUpperBody.Torso] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroUpperBody.Torso] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_Cape;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_Cape, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroUpperBody.Cape] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroUpperBody.Cape] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_ArmLSkin;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_ArmLSkin, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroUpperBody.ArmLSkin] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroUpperBody.ArmLSkin] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_ArmL;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_ArmL, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroUpperBody.ArmL] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroUpperBody.ArmL] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_ForearmLSkin;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_ForearmLSkin, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroUpperBody.ForearmLSkin] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroUpperBody.ForearmLSkin] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_ForearmL;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_ForearmL, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroUpperBody.ForearmL] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroUpperBody.ForearmL] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_HandLSkin;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_HandLSkin, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroUpperBody.HandLSkin] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroUpperBody.HandLSkin] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_HandL;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_HandL, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroUpperBody.HandL] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroUpperBody.HandL] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_FingerSkin;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_FingerSkin, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroUpperBody.FingerSkin] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroUpperBody.FingerSkin] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_Finger;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_Finger, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroUpperBody.Finger] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroUpperBody.Finger] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_ArmRSkin;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_ArmRSkin, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroUpperBody.ArmRSkin] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroUpperBody.ArmRSkin] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_ArmR;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_ArmR, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroUpperBody.ArmR] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroUpperBody.ArmR] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_ForearmRSkin;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_ForearmRSkin, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroUpperBody.ForearmRSkin] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroUpperBody.ForearmRSkin] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_ForearmR;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_ForearmR, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroUpperBody.ForearmR] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroUpperBody.ForearmR] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_SleeveR;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_SleeveR, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroUpperBody.SleeveR] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroUpperBody.SleeveR] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_HandRSkin;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_HandRSkin, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroUpperBody.HandRSkin] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroUpperBody.HandRSkin] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_HandR;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_HandR, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroUpperBody.HandR] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroUpperBody.HandR] = new BodyContainer(tag, tr, spr, _matDefault);
                     }
                     break;
 
                 case EHeroBodyParts.LowerBody:
                     {
-                        Container[] containers = new Container[length];
+                        BodyContainer[] containers = new BodyContainer[length];
                         _bodyDict.Add(EHeroBodyParts.LowerBody, containers);
 
                         string tag = ReadOnly.Util.HBody_PelvisSkin;
                         Transform tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_PelvisSkin, true, true);
                         SpriteRenderer spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroLowerBody.PelvisSkin] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroLowerBody.PelvisSkin] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_Pelvis;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_Pelvis, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroLowerBody.Pelvis] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroLowerBody.Pelvis] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_LegLSkin;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_LegLSkin, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroLowerBody.LegLSkin] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroLowerBody.LegLSkin] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_LegL;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_LegL, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroLowerBody.LegL] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroLowerBody.LegL] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_ShinLSkin;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_ShinLSkin, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroLowerBody.ShinLSkin] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroLowerBody.ShinLSkin] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_ShinL;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_ShinL, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroLowerBody.ShinL] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroLowerBody.ShinL] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_LegRSkin;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_LegRSkin, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroLowerBody.LegRSkin] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroLowerBody.LegRSkin] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_LegR;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_LegR, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroLowerBody.LegR] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroLowerBody.LegR] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_ShinRSkin;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_ShinRSkin, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroLowerBody.ShinRSkin] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroLowerBody.ShinRSkin] = new BodyContainer(tag, tr, spr, _matDefault);
 
                         tag = ReadOnly.Util.HBody_ShinR;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_ShinR, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroLowerBody.ShinR] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroLowerBody.ShinR] = new BodyContainer(tag, tr, spr, _matDefault);
                     }
                     break;
                 case EHeroBodyParts.Weapon:
                     {
-                        Container[] containers = new Container[length];
+                        BodyContainer[] containers = new BodyContainer[length];
                         _bodyDict.Add(EHeroBodyParts.Weapon, containers);
 
+                        // --- Left Weapon
                         string tag = ReadOnly.Util.HBody_WeaponL;
                         Transform tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_WeaponL, true, true);
                         SpriteRenderer spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroWeapon.WeaponL] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroWeapon.WeaponL] = new BodyContainer(tag, tr, spr, _matDefault);
 
-                        containers[(int)EHeroWeapon.WeaponLSocket] = new Container(tag: null,
+                        containers[(int)EHeroWeapon.WeaponLSocket] = new BodyContainer(tag: null,
                                                 tr: tr.GetChild((int)EWeaponChildIndex.Socket),
-                                                spr: null);
-
-                        containers[(int)EHeroWeapon.WeaponLChildGroup] = new Container(tag: null,
+                                                spr: null,
+                                                defaultMat: null);
+                        containers[(int)EHeroWeapon.WeaponLChildGroup] = new BodyContainer(tag: null,
                                                 tr: tr.GetChild((int)EWeaponChildIndex.ChildGroup),
-                                                spr: null);
+                                                spr: null,
+                                                defaultMat: null);
+                        Transform childGroup = tr.GetChild((int)EWeaponChildIndex.ChildGroup);
+                        for (int i = 0; i < childGroup.childCount; ++i)
+                            childGroup.GetChild(i).GetComponent<SpriteRenderer>().material = _matDefault;;
 
+                        // --- Right Weapon
                         tag = ReadOnly.Util.HBody_WeaponR;
                         tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.HBody_WeaponR, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
-                        containers[(int)EHeroWeapon.WeaponR] = new Container(tag, tr, spr);
+                        spr.material = _matDefault;
+                        containers[(int)EHeroWeapon.WeaponR] = new BodyContainer(tag, tr, spr, _matDefault);
 
-                        containers[(int)EHeroWeapon.WeaponRSocket] = new Container(tag: null,
+                        containers[(int)EHeroWeapon.WeaponRSocket] = new BodyContainer(tag: null,
                                                 tr: tr.GetChild((int)EWeaponChildIndex.Socket),
-                                                spr: null);
-
-                        containers[(int)EHeroWeapon.WeaponRChildGroup] = new Container(tag: null,
+                                                spr: null,
+                                                defaultMat: null);
+                        containers[(int)EHeroWeapon.WeaponRChildGroup] = new BodyContainer(tag: null,
                                                 tr: tr.GetChild((int)EWeaponChildIndex.ChildGroup),
-                                                spr: null);
+                                                spr: null,
+                                                defaultMat: null);
+                        childGroup = tr.GetChild((int)EWeaponChildIndex.ChildGroup);
+                        for (int i = 0; i < childGroup.childCount; ++i)
+                            childGroup.GetChild(i).GetComponent<SpriteRenderer>().material = _matDefault; ;
                     }
                     break;
             }
@@ -503,7 +596,7 @@ namespace STELLAREST_F1
             if (findTarget == EHeroHead.None || findTarget == EHeroHead.Max)
                 return null;
 
-            if (_bodyDict.TryGetValue(EHeroBodyParts.Head, out Container[] containers) == false)
+            if (_bodyDict.TryGetValue(EHeroBodyParts.Head, out BodyContainer[] containers) == false)
                 return null;
 
             Type type = typeof(T);
@@ -520,7 +613,7 @@ namespace STELLAREST_F1
             if (findTarget == EHeroUpperBody.None || findTarget == EHeroUpperBody.Max)
                 return null;
 
-            if (_bodyDict.TryGetValue(EHeroBodyParts.UpperBody, out Container[] containers) == false)
+            if (_bodyDict.TryGetValue(EHeroBodyParts.UpperBody, out BodyContainer[] containers) == false)
                 return null;
 
             Type type = typeof(T);
@@ -538,7 +631,7 @@ namespace STELLAREST_F1
             if (findTarget == EHeroLowerBody.None || findTarget == EHeroLowerBody.Max)
                 return null;
 
-            if (_bodyDict.TryGetValue(EHeroBodyParts.LowerBody, out Container[] containers) == false)
+            if (_bodyDict.TryGetValue(EHeroBodyParts.LowerBody, out BodyContainer[] containers) == false)
                 return null;
 
             Type type = typeof(T);
@@ -555,7 +648,7 @@ namespace STELLAREST_F1
             if (findTarget == EHeroWeapon.None || findTarget == EHeroWeapon.Max)
                 return null;
 
-            if (_bodyDict.TryGetValue(EHeroBodyParts.Weapon, out Container[] containers) == false)
+            if (_bodyDict.TryGetValue(EHeroBodyParts.Weapon, out BodyContainer[] containers) == false)
                 return null;
 
             Type type = typeof(T);
@@ -567,11 +660,11 @@ namespace STELLAREST_F1
             return null;
         }
 
-        public void SetFace()
-        {
-            if (Face == null)
-                Face = new HeroFace(this);
-        }
+        // public void SetFace()
+        // {
+        //     if (Face == null)
+        //         Face = new HeroFace(this);
+        // }
 
         public Transform LeftWeapon { get; private set; } = null;
         public Vector3 LeftWeaponLocalScale { get; private set; } = Vector3.zero;
@@ -610,12 +703,12 @@ namespace STELLAREST_F1
 
         public void ChangeDefaultWeaponSprites(SpriteRenderer[] leftWeaponSPRs, SpriteRenderer[] rightWeaponSPRs)
         {
-            for (int i = 0; i< _leftWeaponSPRs.Length; ++i)
+            for (int i = 0; i < _leftWeaponSPRs.Length; ++i)
                 _leftWeaponSPRs[i] = null;
             for (int i = 0; i < _defaultLeftWeaponSPs.Length; ++i)
                 _defaultLeftWeaponSPs[i] = null;
 
-            for (int i = 0; i< _rightWeaponSPRs.Length; ++i)
+            for (int i = 0; i < _rightWeaponSPRs.Length; ++i)
                 _rightWeaponSPRs[i] = null;
             for (int i = 0; i < _defaultRightWeaponSPs.Length; ++i)
                 _defaultRightWeaponSPs[i] = null;
@@ -687,9 +780,7 @@ namespace STELLAREST_F1
             }
         }
 
-        public override Vector3 GetFirePosition() // TEMP
-        {
-            return Vector3.zero;
-        }
+        // --- TEMP
+        public override Vector3 GetFirePosition() => base.GetFirePosition();
     }
 }
