@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using JetBrains.Annotations;
+using STELLAREST_F1.Data;
 using Unity.VisualScripting;
 using Unity.VisualScripting.ReorderableList.Element_Adder_Menu;
 using UnityEditor.SceneManagement;
@@ -54,53 +55,65 @@ namespace STELLAREST_F1
         #region Stat
         public Data.StatData StatData { get; private set; } = null;
 
-        [SerializeField] private int _level = 0;
+        [SerializeField] protected int _level = 0; // ---> _levelID로 변경해야함
         public int Level => (_level % DataTemplateID) + 1;
 
-        [SerializeField] protected int _maxLevel = 0;
+        [SerializeField] protected int _maxLevel = 0; // ---> _maxLevelID로 변경해야함
         public int MaxLevel => (_maxLevel % DataTemplateID) + 1;
-        public bool IsMaxLevel => _level == _maxLevel;
-        protected void LevelUp()
+        protected bool IsMaxLevel => _level == _maxLevel;
+
+        protected void SetStat(StatData statData)
         {
-            if (_level < _maxLevel)
-            {
-                _level = Mathf.Clamp(_level + 1, DataTemplateID, _maxLevel);
-                if (Managers.Data.StatDataDict.TryGetValue(_level, out Data.StatData statData))
-                {
-                    StatData = statData; // Refresh
-                    MaxHp = statData.MaxHp;
-                    Hp = statData.MaxHp;
-                    Atk = AtkBase = statData.Atk;
-                    CriticalRate = CriticalRateBase = statData.CriticalRate;
-                    DodgeRate = DodgeRateBase = statData.DodgeRate;
-                    MovementSpeed = MovementSpeedBase = statData.MovementSpeed;
-                }
+            StatData = statData; // Refresh
+            MaxHp = statData.MaxHp;
+            Hp = statData.MaxHp;
+            Atk = AtkBase = statData.Atk;
+            CriticalRate = CriticalRateBase = statData.CriticalRate;
+            DodgeRate = DodgeRateBase = statData.DodgeRate;
+            MovementSpeed = MovementSpeedBase = statData.MovementSpeed;
+        }
+
+        protected virtual void LevelUp()
+        {
+            // if (_level < _maxLevel)
+            // {
+            //     _level = Mathf.Clamp(_level + 1, DataTemplateID, _maxLevel);
+            //     if (Managers.Data.StatDataDict.TryGetValue(_level, out Data.StatData statData))
+            //     {
+            //         StatData = statData; // Refresh
+            //         MaxHp = statData.MaxHp;
+            //         Hp = statData.MaxHp;
+            //         Atk = AtkBase = statData.Atk;
+            //         CriticalRate = CriticalRateBase = statData.CriticalRate;
+            //         DodgeRate = DodgeRateBase = statData.DodgeRate;
+            //         MovementSpeed = MovementSpeedBase = statData.MovementSpeed;
+            //     }
 
 
-                // Debug.Log("<color=cyan>==============================</color>");
-                // Debug.Log($"<color=cyan>LvUp: {gameObject.name}</color>");
-                // Debug.Log($"<color=cyan>Check LvTxt: {StatData.LevelText}</color>");
-                // Debug.Log($"<color=cyan>CurrentLv: {Level}</color>");
-                // Debug.Log($"<color=cyan>MaxLv: {Level}</color>");
-                // Debug.Log("<color=cyan>==============================</color>");
+            //     // Debug.Log("<color=cyan>==============================</color>");
+            //     // Debug.Log($"<color=cyan>LvUp: {gameObject.name}</color>");
+            //     // Debug.Log($"<color=cyan>Check LvTxt: {StatData.LevelText}</color>");
+            //     // Debug.Log($"<color=cyan>CurrentLv: {Level}</color>");
+            //     // Debug.Log($"<color=cyan>MaxLv: {Level}</color>");
+            //     // Debug.Log("<color=cyan>==============================</color>");
 
-                if (_level == _maxLevel)
-                {
-                    //Debug.Log("<color=yellow>Try to change new sprite set</color>");
+            //     if (_level == _maxLevel)
+            //     {
+            //         //Debug.Log("<color=yellow>Try to change new sprite set</color>");
 
-                    // --- 나중에 스킬때문에 히어로 데이터 자체도 바꿔야함(ex. Paladin 101000 -> 101004)
-                    // --- 101000의 경우, 레벨 1때, Skill_A, B까지 ID 주고, 레벨 3때 Skill_C 해금되고
-                    // --- 만렙(Elite)이 되면 Skill_A, B, C가 전부 바뀌어야함.
-                    Managers.Sprite.ChangeSpriteSet(newDataID: _maxLevel, owner: this);
-                }
-            }
-            else if (_level == _maxLevel)
-            {
-                Debug.LogWarning($"Failed to level up, MaxLv: {gameObject.name}");
-                // Debug.LogWarning("==============================");
-                // Debug.LogWarning($"Failed to level up, {gameObject.name}");
-                // Debug.LogWarning("==============================");
-            }
+            //         // --- 나중에 스킬때문에 히어로 데이터 자체도 바꿔야함(ex. Paladin 101000 -> 101004)
+            //         // --- 101000의 경우, 레벨 1때, Skill_A, B까지 ID 주고, 레벨 3때 Skill_C 해금되고
+            //         // --- 만렙(Elite)이 되면 Skill_A, B, C가 전부 바뀌어야함.
+            //         Managers.Sprite.ChangeSpriteSet(newDataID: _maxLevel, owner: this);
+            //     }
+            // }
+            // else if (_level == _maxLevel)
+            // {
+            //     Debug.LogWarning($"Failed to level up, MaxLv: {gameObject.name}");
+            //     // Debug.LogWarning("==============================");
+            //     // Debug.LogWarning($"Failed to level up, {gameObject.name}");
+            //     // Debug.LogWarning("==============================");
+            // }
 
             // Debug.Log($"===== {gameObject.name} =====");
             // Debug.Log($"LevelText: {StatData.LevelText}");

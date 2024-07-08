@@ -248,6 +248,10 @@ namespace STELLAREST_F1
                 return bestShortRange;
             }
         }
+
+        // protected override void LevelUp()
+        // {
+        // }
         #endregion
 
         #region Core

@@ -61,7 +61,7 @@ namespace STELLAREST_F1
             EnvBody.SetInfo(this, dataID);
             EnvAnim = BaseAnim as EnvAnimation;
             EnvAnim.SetInfo(dataID, this);
-            Managers.Sprite.SetInfo(dataID, this);
+            //Managers.Sprite.SetInfo(dataID, this);
 
             EnvData = Managers.Data.EnvDataDict[dataID];
             EnvType = EnvData.EnvType;

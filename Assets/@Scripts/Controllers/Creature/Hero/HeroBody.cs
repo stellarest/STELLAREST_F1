@@ -5,6 +5,7 @@ using STELLAREST_F1.Data;
 using static STELLAREST_F1.Define;
 using Unity.VisualScripting.Dependencies.Sqlite;
 using System;
+using System.Data;
 
 namespace STELLAREST_F1
 {
@@ -201,6 +202,651 @@ namespace STELLAREST_F1
             }
         }
 
+        public void ChangeSpriteSet(HeroSpriteData heroSpriteData)
+        {
+            // --- Release Current
+            ReleaseWeapon();
+            foreach (var containers in _heroBodyDict.Values)
+            {
+                foreach (var container in containers)
+                {
+                    if (container.SPR == null)
+                        continue;
+
+                    container.SPR.sprite = null;
+                }
+            }
+
+            for (int i = 0; i < _defaultHeroWeapons.Length; ++i)
+                _defaultHeroWeapons[i] = null;
+
+            for (int i = 0; i < (int)EHeroEmoji.Max; ++i)
+            {
+                Eyebrows[i] = null;
+                Eyes[i] = null;
+                Mouths[i] = null;
+            }
+
+            // --- Set New
+            HeroSpriteData_Skin skin = heroSpriteData.Skin;
+            if (ColorUtility.TryParseHtmlString(skin.SkinColor, out Color skinColor) == false)
+            {
+                Debug.LogError($"{nameof(ChangeSpriteSet)}, {skin.SkinColor}");
+                Debug.Break();
+                return;
+            }
+
+            // --- Head
+            HeroSpriteData_Head head = heroSpriteData.Head;
+            foreach (var container in _heroBodyDict[EHeroBody.Head])
+            {
+                if (container.SPR == null)
+                    continue;
+
+                // --- Head(skin)
+                if (container == GetContainer(EHeroBody_Head.Head))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(skin.Head);
+                    container.SPR.color = skinColor;
+                    container.ChangeDefaultSPRColor(skinColor);
+                }
+
+                // --- Hair
+                if (container == GetContainer(EHeroBody_Head.Hair))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(head.Hair);
+                    if (ColorUtility.TryParseHtmlString(head.HairColor, out Color hairColor))
+                        container.SPR.color = hairColor;
+                    container.ChangeDefaultSPRColor(hairColor);
+                }
+
+                // --- Eyebrows Emoji(if it has invalid value, error)
+                if (container == GetContainer(EHeroBody_Head.Eyebrows))
+                {
+                    for (int i = 0; i < (int)EHeroEmoji.Max; ++i)
+                    {
+                        Eyebrows[i] = Managers.Resource.Load<Sprite>(head.Eyebrows[i]);
+                        if (Eyebrows[i] == null)
+                        {
+                            Debug.LogError($"{nameof(ChangeSpriteSet)}, {head.Eyebrows[i]}");
+                            Debug.Break();
+                        }
+
+                        string eyebrowsColor = head.EyebrowsColors[i];
+                        if (ColorUtility.TryParseHtmlString(eyebrowsColor, out Color color))
+                            EyebrowsColors[i] = color;
+                        else
+                        {
+                            Debug.LogError($"{nameof(ChangeSpriteSet)}, {head.EyebrowsColors[i]}");
+                            Debug.Break();
+                        }
+                    }
+
+                    container.SPR.sprite = Eyebrows[(int)HeroEmoji];
+                    container.SPR.color = EyebrowsColors[(int)HeroEmoji];
+                    container.ChangeDefaultSPRColor(EyebrowsColors[(int)EHeroEmoji.Idle]);
+                }
+
+                // --- Eyes Emoji(if it has invalid value, error)
+                if (container == GetContainer(EHeroBody_Head.Eyes))
+                {
+                    for (int i = 0; i < (int)EHeroEmoji.Max; ++i)
+                    {
+                        Eyes[i] = Managers.Resource.Load<Sprite>(head.Eyes[i]);
+                        if (Eyes[i] == null)
+                        {
+                            Debug.LogError($"{nameof(ChangeSpriteSet)}, {head.Eyes[i]}");
+                            Debug.Break();
+                        }
+
+                        string eyesColor = head.EyesColors[i];
+                        if (ColorUtility.TryParseHtmlString(eyesColor, out Color color))
+                            EyesColors[i] = color;
+                        else
+                        {
+                            Debug.LogError($"{nameof(ChangeSpriteSet)}, {head.EyesColors[i]}");
+                            Debug.Break();
+                        }
+                    }
+
+                    container.SPR.sprite = Eyes[(int)HeroEmoji];
+                    container.SPR.color = EyesColors[(int)HeroEmoji];
+                    container.ChangeDefaultSPRColor(EyesColors[(int)EHeroEmoji.Idle]);
+                }
+
+                // --- Mouth Emoji(if it has invalid value, error)
+                if (container == GetContainer(EHeroBody_Head.Mouth))
+                {
+                    for (int i = 0; i < (int)EHeroEmoji.Max; ++i)
+                    {
+                        Mouths[i] = Managers.Resource.Load<Sprite>(head.Mouth[i]);
+                        if (Mouths[i] == null)
+                        {
+                            Debug.LogError($"{nameof(ChangeSpriteSet)}, {head.Mouth[i]}");
+                            Debug.Break();
+                        }
+
+                        string mouthColor = head.MouthColors[i];
+                        if (ColorUtility.TryParseHtmlString(mouthColor, out Color color))
+                            MouthsColors[i] = color;
+                        else
+                        {
+                            Debug.LogError($"{nameof(ChangeSpriteSet)}, {head.MouthColors[i]}");
+                            Debug.Break();
+                        }
+                    }
+
+                    container.SPR.sprite = Mouths[(int)HeroEmoji];
+                    container.SPR.color = MouthsColors[(int)HeroEmoji];
+                    container.ChangeDefaultSPRColor(MouthsColors[(int)EHeroEmoji.Idle]);
+                }
+
+                // --- Ears(skin)
+                if (container == GetContainer(EHeroBody_Head.Ears))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(skin.Ears);
+                    container.SPR.color = skinColor;
+                    container.ChangeDefaultSPRColor(skinColor);
+                }
+
+                // --- Beard
+                if (container == GetContainer(EHeroBody_Head.Beard))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(head.Beard);
+                    if (ColorUtility.TryParseHtmlString(head.BeardColor, out Color beardColor))
+                        container.SPR.color = beardColor;
+                    container.ChangeDefaultSPRColor(beardColor);
+                }
+
+                // --- Mask
+                if (container == GetContainer(EHeroBody_Head.Mask))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(head.Mask);
+                    if (ColorUtility.TryParseHtmlString(head.MaskColor, out Color maskColor))
+                        container.SPR.color = maskColor;
+                    container.ChangeDefaultSPRColor(maskColor);
+                }
+
+                // --- Glasses
+                if (container == GetContainer(EHeroBody_Head.Glasses))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(head.Glasses);
+                    if (ColorUtility.TryParseHtmlString(head.GlassesColor, out Color glassesColor))
+                        container.SPR.color = glassesColor;
+                    container.ChangeDefaultSPRColor(glassesColor);
+                }
+
+                // --- Helmet
+                if (container == GetContainer(EHeroBody_Head.Helmet))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(head.Helmet);
+                    if (ColorUtility.TryParseHtmlString(head.HelmetColor, out Color helmetColor))
+                        container.SPR.color = helmetColor;
+                    container.ChangeDefaultSPRColor(helmetColor);
+                }
+            }
+
+            // --- UpperBody
+            HeroSpriteData_UpperBody upperBody = heroSpriteData.UpperBody;
+            foreach (var container in _heroBodyDict[EHeroBody.UpperBody])
+            {
+                // --- Torso(skin)
+                if (container == GetContainer(EHeroBody_Upper.Torso))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(skin.Torso);
+                    container.SPR.color = skinColor;
+                    container.ChangeDefaultSPRColor(skinColor);
+                }
+
+                // --- Torso_Armor
+                if (container == GetContainer(EHeroBody_Upper.Torso_Armor))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(upperBody.Torso);
+                    if (ColorUtility.TryParseHtmlString(upperBody.TorsoColor, out Color torsoColor))
+                        container.SPR.color = torsoColor;
+                    container.ChangeDefaultSPRColor(torsoColor);
+                }
+
+                // --- Cape_Armor
+                if (container == GetContainer(EHeroBody_Upper.Cape_Armor))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(upperBody.Cape);
+                    if (ColorUtility.TryParseHtmlString(upperBody.CapeColor, out Color capeColor))
+                        container.SPR.color = capeColor;
+                    container.ChangeDefaultSPRColor(capeColor);
+                }
+
+                // --- ArmL(skin)
+                if (container == GetContainer(EHeroBody_Upper.ArmL))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(skin.ArmL);
+                    container.SPR.color = skinColor;
+                    container.ChangeDefaultSPRColor(skinColor);
+                }
+
+                // --- ArmL_Armor
+                if (container == GetContainer(EHeroBody_Upper.ArmL_Armor))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(upperBody.ArmL);
+                    if (ColorUtility.TryParseHtmlString(upperBody.ArmLColor, out Color armLColor))
+                        container.SPR.color = armLColor;
+                    container.ChangeDefaultSPRColor(skinColor);
+                }
+
+                // --- ForearmL(skin)
+                if (container == GetContainer(EHeroBody_Upper.ForearmL))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(skin.ForearmL);
+                    container.SPR.color = skinColor;
+                    container.ChangeDefaultSPRColor(skinColor);
+                }
+
+                // --- ForearmL_Armor
+                if (container == GetContainer(EHeroBody_Upper.ForearmL_Armor))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(upperBody.ForearmL);
+                    if (ColorUtility.TryParseHtmlString(upperBody.ForearmLColor, out Color forearmLColor))
+                        container.SPR.color = forearmLColor;
+                    container.ChangeDefaultSPRColor(forearmLColor);
+                }
+
+                // --- HandL(skin)
+                if (container == GetContainer(EHeroBody_Upper.HandL))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(skin.HandL);
+                    container.SPR.color = skinColor;
+                    container.ChangeDefaultSPRColor(skinColor);
+                }
+
+                // --- HandL_Armor
+                if (container == GetContainer(EHeroBody_Upper.HandL_Armor))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(upperBody.HandL);
+                    if (ColorUtility.TryParseHtmlString(upperBody.HandLColor, out Color handLColor))
+                        container.SPR.color = handLColor;
+                    container.ChangeDefaultSPRColor(handLColor);
+                }
+
+                // --- Finger(skin)
+                if (container == GetContainer(EHeroBody_Upper.Finger))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(skin.Finger);
+                    container.SPR.color = skinColor;
+                    container.ChangeDefaultSPRColor(skinColor);
+                }
+
+                // --- Finger_Armor
+                if (container == GetContainer(EHeroBody_Upper.Finger_Armor))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(upperBody.Finger);
+                    if (ColorUtility.TryParseHtmlString(upperBody.FingerColor, out Color fingerColor))
+                        container.SPR.color = fingerColor;
+                    container.ChangeDefaultSPRColor(fingerColor);
+                }
+
+                // --- ArmR(skin)
+                if (container == GetContainer(EHeroBody_Upper.ArmR))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(skin.ArmR);
+                    container.SPR.color = skinColor;
+                    container.ChangeDefaultSPRColor(skinColor);
+                }
+
+                // --- ArmR_Armor
+                if (container == GetContainer(EHeroBody_Upper.ArmR_Armor))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(upperBody.ArmR);
+                    if (ColorUtility.TryParseHtmlString(upperBody.ArmRColor, out Color armRColor))
+                        container.SPR.color = armRColor;
+                    container.ChangeDefaultSPRColor(armRColor);
+                }
+
+                // --- ForearmR(skin)
+                if (container == GetContainer(EHeroBody_Upper.ForearmR))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(skin.ForearmR);
+                    container.SPR.color = skinColor;
+                    container.ChangeDefaultSPRColor(skinColor);
+                }
+
+                // --- ForearmR_Armor
+                if (container == GetContainer(EHeroBody_Upper.ForearmR_Armor))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(upperBody.ForearmR);
+                    if (ColorUtility.TryParseHtmlString(upperBody.ForearmRColor, out Color forearmRColor))
+                        container.SPR.color = forearmRColor;
+                    container.ChangeDefaultSPRColor(forearmRColor);
+                }
+
+                // --- SleeveR_Armor
+                if (container == GetContainer(EHeroBody_Upper.SleeveR_Armor))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(upperBody.SleeveR);
+                    if (ColorUtility.TryParseHtmlString(upperBody.SleeveRColor, out Color sleeveRColor))
+                        container.SPR.color = sleeveRColor;
+                    container.ChangeDefaultSPRColor(sleeveRColor);
+                }
+
+                // --- HandR(skin)
+                if (container == GetContainer(EHeroBody_Upper.HandR))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(skin.HandR);
+                    container.SPR.color = skinColor;
+                    container.ChangeDefaultSPRColor(skinColor);
+                }
+
+                // --- HandR_Armor
+                if (container == GetContainer(EHeroBody_Upper.HandR_Armor))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(upperBody.HandR);
+                    if (ColorUtility.TryParseHtmlString(upperBody.HandRColor, out Color handRColor))
+                        container.SPR.color = handRColor;
+                    container.ChangeDefaultSPRColor(handRColor);
+                }
+            }
+
+            // --- LowerBody
+            HeroSpriteData_LowerBody lowerBody = heroSpriteData.LowerBody;
+            foreach (var container in _heroBodyDict[EHeroBody.LowerBody])
+            {
+                // --- Pelvis(skin)
+                if (container == GetContainer(EHeroBody_Lower.Pelvis))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(skin.Pelvis);
+                    container.SPR.color = skinColor;
+                    container.ChangeDefaultSPRColor(skinColor);
+                }
+
+                // --- Pelvis_Armor
+                if (container == GetContainer(EHeroBody_Lower.Pelvis_Armor))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(lowerBody.Pelvis);
+                    if (ColorUtility.TryParseHtmlString(lowerBody.PelvisColor, out Color pelvisColor))
+                        container.SPR.color = pelvisColor;
+                    container.ChangeDefaultSPRColor(pelvisColor);
+                }
+
+                // --- LegL(skin)
+                if (container == GetContainer(EHeroBody_Lower.LegL))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(skin.Leg);
+                    container.SPR.color = skinColor;
+                    container.ChangeDefaultSPRColor(skinColor);
+                }
+
+                // --- LegL_Armor
+                if (container == GetContainer(EHeroBody_Lower.LegL_Armor))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(lowerBody.LegL);
+                    if (ColorUtility.TryParseHtmlString(lowerBody.LegLColor, out Color legLColor))
+                        container.SPR.color = legLColor;
+                    container.ChangeDefaultSPRColor(legLColor);
+                }
+
+                // --- ShinL(skin)
+                if (container == GetContainer(EHeroBody_Lower.ShinL))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(skin.Shin);
+                    container.SPR.color = skinColor;
+                    container.ChangeDefaultSPRColor(skinColor);
+                }
+
+                // --- ShinL_Armor
+                if (container == GetContainer(EHeroBody_Lower.ShinL_Armor))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(lowerBody.ShinL);
+                    if (ColorUtility.TryParseHtmlString(lowerBody.ShinLColor, out Color shinLColor))
+                        container.SPR.color = shinLColor;
+                    container.ChangeDefaultSPRColor(shinLColor);
+                }
+
+                // --- LegR(skin)
+                if (container == GetContainer(EHeroBody_Lower.LegR))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(skin.Leg);
+                    container.SPR.color = skinColor;
+                    container.ChangeDefaultSPRColor(skinColor);
+                }
+
+                // --- LegR_Armor
+                if (container == GetContainer(EHeroBody_Lower.LegR_Armor))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(lowerBody.LegR);
+                    if (ColorUtility.TryParseHtmlString(lowerBody.LegRColor, out Color legRColor))
+                        container.SPR.color = legRColor;
+                    container.ChangeDefaultSPRColor(legRColor);
+                }
+
+                // --- ShinR(skin)
+                if (container == GetContainer(EHeroBody_Lower.ShinR))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(skin.Shin);
+                    container.SPR.color = skinColor;
+                    container.ChangeDefaultSPRColor(skinColor);
+                }
+
+                // --- ShinR_Armor
+                if (container == GetContainer(EHeroBody_Lower.ShinR_Armor))
+                {
+                    container.SPR.sprite = Managers.Resource.Load<Sprite>(lowerBody.ShinR);
+                    if (ColorUtility.TryParseHtmlString(lowerBody.ShinRColor, out Color shinRColor))
+                        container.SPR.color = shinRColor;
+                    container.ChangeDefaultSPRColor(shinRColor);
+                }
+            }
+
+            // --- Weapon
+            HeroSpriteData_Weapon weapon = heroSpriteData.Weapon;
+            foreach (var container in _heroBodyDict[EHeroBody.Weapon])
+            {
+                // --- WeaponL_Armor
+                if (container == GetContainer(EHeroBody_Weapon.WeaponL_Armor))
+                {
+                    if (string.IsNullOrEmpty(weapon.LWeapon) == false)
+                    {
+                        Sprite sprite = Managers.Resource.Load<Sprite>(weapon.LWeapon);
+                        if (sprite != null)
+                        {
+                            container.SPR.sprite = sprite;
+                            container.TR.localScale = weapon.LWeaponLocalScale;
+                            container.SPR.sortingOrder = weapon.LWeaponSorting;
+                            container.SPR.flipX = weapon.LWeaponFlipX;
+                            container.SPR.flipY = weapon.LWeaponFlipY;
+                            _defaultHeroWeapons[(int)EHeroWeapons.WeaponL_Armor] = sprite;
+
+                            container.TR.gameObject.SetActive(true);
+                        }
+                    }
+                }
+
+                // --- WeaponL_FireSocket(설정만해놓고, WeaponL_Armor가 존재하지 않으면 active false)
+                if (container == GetContainer(EHeroBody_Weapon.WeaponL_FireSocket))
+                    container.TR.localPosition = weapon.LWeaponFireSocketLocalPosition;
+
+                if (weapon.LWeaponChilds.Length != 0)
+                {
+                    // --- WeaponL_Armor_Child01
+                    if (container == GetContainer(EHeroBody_Weapon.WeaponL_Armor_Child01))
+                    {
+                        if (string.IsNullOrEmpty(weapon.LWeaponChilds[0]) == false)
+                        {
+                            Sprite sprite = Managers.Resource.Load<Sprite>(weapon.LWeaponChilds[0]);
+                            if (sprite != null)
+                            {
+                                container.SPR.sprite = sprite;
+                                container.TR.localPosition = weapon.LWeaponChildsLocalPositions[0];
+                                container.TR.localScale = weapon.LWeaponChildsLocalScales[0];
+                                container.SPR.sortingOrder = weapon.LWeaponChildSortings[0];
+                                container.SPR.flipX = weapon.LWeaponChildFlipXs[0];
+                                container.SPR.flipY = weapon.LWeaponChildFlipYs[0];
+                                _defaultHeroWeapons[(int)EHeroWeapons.WeaponL_Armor_Child01] = sprite;
+
+                                container.TR.gameObject.SetActive(true);
+                            }
+                        }
+                    }
+
+                    // --- WeaponL_Armor_Child02
+                    if (container == GetContainer(EHeroBody_Weapon.WeaponL_Armor_Child02))
+                    {
+                        if (string.IsNullOrEmpty(weapon.LWeaponChilds[1]) == false)
+                        {
+                            Sprite sprite = Managers.Resource.Load<Sprite>(weapon.LWeaponChilds[1]);
+                            if (sprite != null)
+                            {
+                                container.SPR.sprite = sprite;
+                                container.TR.localPosition = weapon.LWeaponChildsLocalPositions[1];
+                                container.TR.localScale = weapon.LWeaponChildsLocalScales[1];
+                                container.SPR.sortingOrder = weapon.LWeaponChildSortings[1];
+                                container.SPR.flipX = weapon.LWeaponChildFlipXs[1];
+                                container.SPR.flipY = weapon.LWeaponChildFlipYs[1];
+                                _defaultHeroWeapons[(int)EHeroWeapons.WeaponL_Armor_Child02] = sprite;
+
+                                container.TR.gameObject.SetActive(true);
+                            }
+                        }
+                    }
+
+                    // --- WeaponL_Armor_Child03
+                    if (container == GetContainer(EHeroBody_Weapon.WeaponL_Armor_Child03))
+                    {
+                        if (string.IsNullOrEmpty(weapon.LWeaponChilds[2]) == false)
+                        {
+                            Sprite sprite = Managers.Resource.Load<Sprite>(weapon.LWeaponChilds[2]);
+                            if (sprite != null)
+                            {
+                                container.SPR.sprite = sprite;
+                                container.TR.localPosition = weapon.LWeaponChildsLocalPositions[2];
+                                container.TR.localScale = weapon.LWeaponChildsLocalScales[2];
+                                container.SPR.sortingOrder = weapon.LWeaponChildSortings[2];
+                                container.SPR.flipX = weapon.LWeaponChildFlipXs[2];
+                                container.SPR.flipY = weapon.LWeaponChildFlipYs[2];
+                                _defaultHeroWeapons[(int)EHeroWeapons.WeaponL_Armor_Child03] = sprite;
+
+                                container.TR.gameObject.SetActive(true);
+                            }
+                        }
+                    }
+                }
+
+                // --- WeaponR_Armor
+                if (container == GetContainer(EHeroBody_Weapon.WeaponR_Armor))
+                {
+                    if (string.IsNullOrEmpty(weapon.RWeapon) == false)
+                    {
+                        Sprite sprite = Managers.Resource.Load<Sprite>(weapon.RWeapon);
+                        if (sprite != null)
+                        {
+                            container.SPR.sprite = sprite;
+                            container.TR.localScale = weapon.RWeaponLocalScale;
+                            container.SPR.sortingOrder = weapon.RWeaponSorting;
+                            container.SPR.flipX = weapon.RWeaponFlipX;
+                            container.SPR.flipY = weapon.RWeaponFlipY;
+                            _defaultHeroWeapons[(int)EHeroWeapons.WeaponR_Armor] = sprite;
+
+                            container.TR.gameObject.SetActive(true);
+                        }
+                    }
+                }
+
+                // --- WeaponR_FireSocket(설정만해놓고, WeaponR_Armor가 존재하지 않으면 active false)
+                if (container == GetContainer(EHeroBody_Weapon.WeaponR_FireSocket))
+                    container.TR.localPosition = weapon.RWeaponFireSocketLocalPosition;
+
+                if (weapon.RWeaponChilds.Length != 0)
+                {
+                    // --- WeaponR_Armor_Child01
+                    if (container == GetContainer(EHeroBody_Weapon.WeaponR_Armor_Child01))
+                    {
+                        if (string.IsNullOrEmpty(weapon.RWeaponChilds[0]) == false)
+                        {
+                            Sprite sprite = Managers.Resource.Load<Sprite>(weapon.RWeaponChilds[0]);
+                            if (sprite != null)
+                            {
+                                container.SPR.sprite = sprite;
+                                container.TR.localPosition = weapon.RWeaponChildsLocalPositions[0];
+                                container.TR.localScale = weapon.RWeaponChildsLocalScales[0];
+                                container.SPR.sortingOrder = weapon.RWeaponChildSortings[0];
+                                container.SPR.flipX = weapon.RWeaponChildFlipXs[0];
+                                container.SPR.flipY = weapon.RWeaponChildFlipYs[0];
+                                _defaultHeroWeapons[(int)EHeroWeapons.WeaponR_Armor_Child01] = sprite;
+
+                                container.TR.gameObject.SetActive(true);
+                            }
+                        }
+                    }
+
+                    // --- WeaponR_Armor_Child02
+                    if (container == GetContainer(EHeroBody_Weapon.WeaponR_Armor_Child02))
+                    {
+                        if (string.IsNullOrEmpty(weapon.RWeaponChilds[1]) == false)
+                        {
+                            Sprite sprite = Managers.Resource.Load<Sprite>(weapon.RWeaponChilds[1]);
+                            if (sprite != null)
+                            {
+                                container.SPR.sprite = sprite;
+                                container.TR.localPosition = weapon.RWeaponChildsLocalPositions[1];
+                                container.TR.localScale = weapon.RWeaponChildsLocalScales[1];
+                                container.SPR.sortingOrder = weapon.RWeaponChildSortings[1];
+                                container.SPR.flipX = weapon.RWeaponChildFlipXs[1];
+                                container.SPR.flipY = weapon.RWeaponChildFlipYs[1];
+                                _defaultHeroWeapons[(int)EHeroWeapons.WeaponR_Armor_Child02] = sprite;
+
+                                container.TR.gameObject.SetActive(true);
+                            }
+                        }
+                    }
+
+                    // --- WeaponR_Armor_Child03
+                    if (container == GetContainer(EHeroBody_Weapon.WeaponR_Armor_Child03))
+                    {
+                        if (string.IsNullOrEmpty(weapon.RWeaponChilds[2]) == false)
+                        {
+                            Sprite sprite = Managers.Resource.Load<Sprite>(weapon.RWeaponChilds[2]);
+                            if (sprite != null)
+                            {
+                                container.SPR.sprite = sprite;
+                                container.TR.localPosition = weapon.RWeaponChildsLocalPositions[2];
+                                container.TR.localScale = weapon.RWeaponChildsLocalScales[2];
+                                container.SPR.sortingOrder = weapon.RWeaponChildSortings[2];
+                                container.SPR.flipX = weapon.RWeaponChildFlipXs[2];
+                                container.SPR.flipY = weapon.RWeaponChildFlipYs[2];
+                                _defaultHeroWeapons[(int)EHeroWeapons.WeaponR_Armor_Child03] = sprite;
+
+                                container.TR.gameObject.SetActive(true);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // --- WeaponLs On or Off
+            if (GetContainer(EHeroBody_Weapon.WeaponL_Armor).SPR.sprite == null)
+                GetContainer(EHeroBody_Weapon.WeaponL_Armor).TR.gameObject.SetActive(false);
+            else if (GetContainer(EHeroBody_Weapon.WeaponL_Armor_Child01).SPR.sprite == null)
+                GetContainer(EHeroBody_Weapon.WeaponL_ChildsRoot).TR.gameObject.SetActive(false);
+            else if (GetContainer(EHeroBody_Weapon.WeaponL_Armor_Child02).SPR.sprite == null)
+            {
+                GetContainer(EHeroBody_Weapon.WeaponL_Armor_Child02).TR.gameObject.SetActive(false);
+                GetContainer(EHeroBody_Weapon.WeaponL_Armor_Child03).TR.gameObject.SetActive(false);
+            }
+            else if (GetContainer(EHeroBody_Weapon.WeaponL_Armor_Child03).SPR.sprite == null)
+                GetContainer(EHeroBody_Weapon.WeaponL_Armor_Child03).TR.gameObject.SetActive(false);
+
+            // --- WeaponRs On or Off
+            if (GetContainer(EHeroBody_Weapon.WeaponR_Armor).SPR.sprite == null)
+                GetContainer(EHeroBody_Weapon.WeaponR_Armor).TR.gameObject.SetActive(false);
+            else if (GetContainer(EHeroBody_Weapon.WeaponR_Armor_Child01).SPR.sprite == null)
+                GetContainer(EHeroBody_Weapon.WeaponR_ChildsRoot).TR.gameObject.SetActive(false);
+            else if (GetContainer(EHeroBody_Weapon.WeaponR_Armor_Child02).SPR.sprite == null)
+            {
+                GetContainer(EHeroBody_Weapon.WeaponR_Armor_Child02).TR.gameObject.SetActive(false);
+                GetContainer(EHeroBody_Weapon.WeaponR_Armor_Child03).TR.gameObject.SetActive(false);
+            }
+            else if (GetContainer(EHeroBody_Weapon.WeaponR_Armor_Child03).SPR.sprite == null)
+                GetContainer(EHeroBody_Weapon.WeaponR_Armor_Child03).TR.gameObject.SetActive(false);
+        }
+
         private void ApplyHeroStrongTint(Color desiredColor)
         {
             // --- Head
@@ -392,7 +1038,7 @@ namespace STELLAREST_F1
             if (sprite != null)
                 spr.sprite = sprite;
 
-            if (ColorUtility.TryParseHtmlString(heroSpriteData.Head.HairColor, out Color hairColor))
+            if (ColorUtility.TryParseHtmlString(head.HairColor, out Color hairColor))
                 spr.color = hairColor;
 
             headContainers[(int)EHeroBody_Head.Hair] = new BodyContainer(tag: tag, tr: tr, spr: spr,
@@ -409,14 +1055,14 @@ namespace STELLAREST_F1
             EyebrowsColors = new Color[(int)EHeroEmoji.Max];
             for (int i = 0; i < (int)EHeroEmoji.Max; ++i)
             {
-                Eyebrows[i] = Managers.Resource.Load<Sprite>(heroSpriteData.Head.Eyebrows[i]);
+                Eyebrows[i] = Managers.Resource.Load<Sprite>(head.Eyebrows[i]);
                 if (Eyebrows[i] == null)
                 {
                     Debug.LogError($"{nameof(InitBody)}, {heroSpriteData.Head.Eyebrows[i]}");
                     Debug.Break();
                 }
 
-                string eyebrowsColor = heroSpriteData.Head.EyebrowsColors[i];
+                string eyebrowsColor = head.EyebrowsColors[i];
                 if (ColorUtility.TryParseHtmlString(eyebrowsColor, out Color color))
                     EyebrowsColors[i] = color;
                 else
@@ -448,19 +1094,19 @@ namespace STELLAREST_F1
             EyesColors = new Color[(int)EHeroEmoji.Max];
             for (int i = 0; i < (int)EHeroEmoji.Max; ++i)
             {
-                Eyes[i] = Managers.Resource.Load<Sprite>(heroSpriteData.Head.Eyes[i]);
+                Eyes[i] = Managers.Resource.Load<Sprite>(head.Eyes[i]);
                 if (Eyes[i] == null)
                 {
-                    Debug.LogError($"{nameof(InitBody)}, {heroSpriteData.Head.Eyes[i]}");
+                    Debug.LogError($"{nameof(InitBody)}, {head.Eyes[i]}");
                     Debug.Break();
                 }
 
-                string eyesColors = heroSpriteData.Head.EyesColors[i];
+                string eyesColors = head.EyesColors[i];
                 if (ColorUtility.TryParseHtmlString(eyesColors, out Color color))
                     EyesColors[i] = color;
                 else
                 {
-                    Debug.LogError($"{nameof(InitBody)}, {heroSpriteData.Head.EyesColors[i]}");
+                    Debug.LogError($"{nameof(InitBody)}, {head.EyesColors[i]}");
                     Debug.Break();
                 }
             }
@@ -487,19 +1133,19 @@ namespace STELLAREST_F1
             MouthsColors = new Color[(int)EHeroEmoji.Max];
             for (int i = 0; i < (int)EHeroEmoji.Max; ++i)
             {
-                Mouths[i] = Managers.Resource.Load<Sprite>(heroSpriteData.Head.Mouth[i]);
+                Mouths[i] = Managers.Resource.Load<Sprite>(head.Mouth[i]);
                 if (Mouths[i] == null)
                 {
                     Debug.LogError($"{nameof(InitBody)}, {heroSpriteData.Head.Mouth[i]}");
                     Debug.Break();
                 }
 
-                string mouthColor = heroSpriteData.Head.MouthColors[i];
+                string mouthColor = head.MouthColors[i];
                 if (ColorUtility.TryParseHtmlString(mouthColor, out Color color))
                     MouthsColors[i] = color;
                 else
                 {
-                    Debug.LogError($"{nameof(InitBody)}, {heroSpriteData.Head.MouthColors[i]}");
+                    Debug.LogError($"{nameof(InitBody)}, {head.MouthColors[i]}");
                     Debug.Break();
                 }
             }

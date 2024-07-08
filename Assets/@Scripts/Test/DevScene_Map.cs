@@ -14,17 +14,17 @@ namespace STELLAREST_F1
         public int TestEnvDataID = 0;
         private void Update()
         {
-            if (Input.GetKeyDown("5"))
-            {
-                Env env = Managers.Object.Spawn<Env>(EObjectType.Env, TestEnvDataID);
-                // int x = Managers.Object.Monsters[0].CellPos.x;
-                // int y = Managers.Object.Monsters[0].CellPos.y;
-                //Vector3Int randPos = new Vector3Int(Random.Range(x + 3, x + 5), Random.Range(y + 3, y + 5));
-                Vector3Int randPos = new Vector3Int(-6, 11, 0);
-                env.SetCellPos(cellPos: randPos, stopLerpToCell: true, forceMove: true);
-                env.InitialSpawnedCellPos = randPos;
-                env.UpdateCellPos();
-            }
+            // if (Input.GetKeyDown("5"))
+            // {
+            //     Env env = Managers.Object.Spawn<Env>(EObjectType.Env, TestEnvDataID);
+            //     // int x = Managers.Object.Monsters[0].CellPos.x;
+            //     // int y = Managers.Object.Monsters[0].CellPos.y;
+            //     //Vector3Int randPos = new Vector3Int(Random.Range(x + 3, x + 5), Random.Range(y + 3, y + 5));
+            //     Vector3Int randPos = new Vector3Int(-6, 11, 0);
+            //     env.SetCellPos(cellPos: randPos, stopLerpToCell: true, forceMove: true);
+            //     env.InitialSpawnedCellPos = randPos;
+            //     env.UpdateCellPos();
+            // }
         }
 
         public override bool Init()

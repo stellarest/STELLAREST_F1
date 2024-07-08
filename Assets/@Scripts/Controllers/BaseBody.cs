@@ -28,7 +28,7 @@ namespace STELLAREST_F1
         public MaterialPropertyBlock MatPropertyBlock { get; } = null;
 
         public void ChangeDefaultSPRColor(Color defaultSPRColor) => DefaultSPRColor = defaultSPRColor;
-        public void ChangeDefaultMatColor(Color defaultMatColor) => DefaultMatColor = defaultMatColor;
+        // public void ChangeDefaultMatColor(Color defaultMatColor) => DefaultMatColor = defaultMatColor;
     }
 
     public class BaseBody : InitBase

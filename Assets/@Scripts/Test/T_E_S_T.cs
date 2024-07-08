@@ -8,6 +8,8 @@ using DG.Tweening;
 
 /*
 // --- 제거 예정
+// Hero Upgrade -> CollectEnv까지 바뀌었는지 확인하고 -> Fade Out(BaseBody에서 Material 적용해놓고 Material 수치만 변화시키면 될듯함)
+// ---> SpriteManager 완전 제거 목표, SkillBody(또는 ProjectileBody) 이 부분이 문제이긴한데..
 // public List<SpriteRenderer> Skin { get; } = new List<SpriteRenderer>();
 // public List<SpriteRenderer> Appearance { get; } = new List<SpriteRenderer>();
 // --- UI를 정복했을 때 자신감이 엄청나게 상승한다고 함. 그냥 참고.
@@ -20,6 +22,8 @@ using DG.Tweening;
 // --- 골드 OreLight가 피격되면 이상하게 어두워짐.
 // --- BodyContainer 생성자에서 new MatPropertyBlock 받도록하게 변경해야할듯(안쓰는 것은 굳이 만들 필요 없을것같아서)
 // --- 이거 때문에 Gold Glow가 이상하게 적용 되는 것이었음.
+// --- Arhcer CollectEnv 마치고 무기랑 애니메이션 전환 어색한거 진짜 진짜 엄청 나중에 잡아볼것. 안잡아도 되긴함.
+// --- HeroBody.ChangeSpriteSet 완성했지만 히어로 다 불러와서 제대로 On, Off 되어있는지 확인해볼것
 // --- 제거 얘정
 
 // --- SpriteManager에서 EnvBody SPR.color 따로 셋팅해야될지 고민중. 안해도 될 것 같긴 한데.

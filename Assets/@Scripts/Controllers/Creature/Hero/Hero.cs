@@ -11,6 +11,14 @@ namespace STELLAREST_F1
 {
     public class Hero : Creature
     {
+        private void Update()
+        {
+            if (Input.GetKeyDown("5"))
+            {
+                LevelUp();
+            }
+        }
+
         #region Background
         public HeroData HeroData { get; private set; } = null;
         public HeroAnimation HeroAnim { get; private set; } = null;
@@ -164,6 +172,28 @@ namespace STELLAREST_F1
                     return true;
 
                 return false;
+            }
+        }
+
+        protected override void LevelUp()
+        {
+            if (this.IsValid() == false)
+                return;
+            
+            if (_level < _maxLevel)
+            {
+                _level = Mathf.Clamp(_level + 1, DataTemplateID, _maxLevel);
+                Debug.Log($"<color=white>++LV: {Level}</color>");
+
+                 if (Managers.Data.StatDataDict.TryGetValue(_level, out Data.StatData statData))
+                    SetStat(statData);
+            }
+            
+            if (IsMaxLevel)
+            {
+                Debug.Log("<color=yellow>Try ChangeSpriteSet</color>");
+                CreatureRarity = ECreatureRarity.Elite;
+                HeroBody.ChangeSpriteSet(Managers.Data.HeroSpriteDataDict[_level]);
             }
         }
         #endregion
