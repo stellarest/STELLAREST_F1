@@ -207,6 +207,19 @@ namespace STELLAREST_F1
             Max = WeaponR_Armor_Child03 + 1
         }
 
+        public enum EHeroWeapons
+        {
+            WeaponL_Armor,
+            WeaponL_Armor_Child01,
+            WeaponL_Armor_Child02,
+            WeaponL_Armor_Child03,
+            WeaponR_Armor,
+            WeaponR_Armor_Child01,
+            WeaponR_Armor_Child02,
+            WeaponR_Armor_Child03,
+            Max = WeaponR_Armor_Child03 + 1
+        }
+
         public enum EBirdBody
         {
             Body,
@@ -428,11 +441,11 @@ namespace STELLAREST_F1
             Disable,
         }
 
-        public enum EHeroStateWeaponType
+        public enum EHeroWeaponType
         {
             Default,
-            EnvTree,
-            EnvRock
+            CollectTree,
+            CollectRock
         }
 
         // new

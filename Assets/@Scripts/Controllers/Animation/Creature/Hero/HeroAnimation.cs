@@ -50,9 +50,9 @@ namespace STELLAREST_F1
                 return;
 
             Owner.Target.OnDamaged(attacker: Owner, skillFromAttacker: null);
-            if (Owner.Target.Hp <= 0f && Owner.HeroStateWeaponType != EHeroStateWeaponType.Default)
+            if (Owner.Target.Hp <= 0f && Owner.HeroWeaponType != EHeroWeaponType.Default)
             {
-                Owner.HeroStateWeaponType = EHeroStateWeaponType.Default;
+                Owner.HeroWeaponType = EHeroWeaponType.Default;
                 Owner.CreatureAIState = ECreatureAIState.Move;
             }
         }
@@ -92,13 +92,13 @@ namespace STELLAREST_F1
             // Debug.Log($"<color=white>{nameof(OnUpperIdleToCollectEnvEnter)}</color>");
             if (Owner.Target.IsValid() && Owner.Target.ObjectType == EObjectType.Env)
             {
-                if (Owner.HeroStateWeaponType == EHeroStateWeaponType.Default)
+                if (Owner.HeroWeaponType == EHeroWeaponType.Default)
                 {
                     Env envTarget = Owner.Target as Env;
                     if (envTarget.EnvType == EEnvType.Tree)
-                        Owner.HeroStateWeaponType = EHeroStateWeaponType.EnvTree;
+                        Owner.HeroWeaponType = EHeroWeaponType.CollectTree;
                     else if (envTarget.EnvType == EEnvType.Rock)
-                        Owner.HeroStateWeaponType = EHeroStateWeaponType.EnvRock;
+                        Owner.HeroWeaponType = EHeroWeaponType.CollectRock;
                 }
 
                 Owner.LookAtValidTarget();

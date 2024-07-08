@@ -90,7 +90,7 @@ namespace STELLAREST_F1
                 if (container.SPR == null)
                     continue;
 
-                if (container == GetContainer(ERockBody.Shadow))
+                if (container == GetContainer(ETreeBody.Shadow))
                     continue;
 
                 container.SPR.material = _matDefault;

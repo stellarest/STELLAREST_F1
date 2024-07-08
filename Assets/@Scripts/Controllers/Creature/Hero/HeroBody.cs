@@ -4,6 +4,7 @@ using UnityEngine;
 using STELLAREST_F1.Data;
 using static STELLAREST_F1.Define;
 using Unity.VisualScripting.Dependencies.Sqlite;
+using System;
 
 namespace STELLAREST_F1
 {
@@ -11,6 +12,8 @@ namespace STELLAREST_F1
     {
         #region Background
         private Dictionary<EHeroBody, BodyContainer[]> _heroBodyDict = new Dictionary<EHeroBody, BodyContainer[]>();
+        private Dictionary<EEnvType, Sprite[]> _envHeroWeaponDict = new Dictionary<EEnvType, Sprite[]>();
+        private Sprite[] _defaultHeroWeapons = new Sprite[(int)EHeroWeapons.Max];
 
         public Sprite[] Eyebrows { get; private set; } = null;
         public Color[] EyebrowsColors { get; private set; } = null;
@@ -20,6 +23,7 @@ namespace STELLAREST_F1
 
         public Sprite[] Mouths { get; private set; } = null;
         public Color[] MouthsColors { get; private set; } = null;
+
 
         public Hero Owner { get; private set; } = null;
         private Material _matDefaultEyes = null;
@@ -150,6 +154,50 @@ namespace STELLAREST_F1
                             break;
                     }
                 }
+            }
+        }
+
+        private void ReleaseWeapon()
+        {
+            // --- WeaponL
+            GetContainer(EHeroBody_Weapon.WeaponL_Armor).SPR.sprite = null;
+            GetContainer(EHeroBody_Weapon.WeaponL_Armor_Child01).SPR.sprite = null;
+            GetContainer(EHeroBody_Weapon.WeaponL_Armor_Child02).SPR.sprite = null;
+            GetContainer(EHeroBody_Weapon.WeaponL_Armor_Child03).SPR.sprite = null;
+
+            // --- WeaponR
+            GetContainer(EHeroBody_Weapon.WeaponR_Armor).SPR.sprite = null;
+            GetContainer(EHeroBody_Weapon.WeaponR_Armor_Child01).SPR.sprite = null;
+            GetContainer(EHeroBody_Weapon.WeaponR_Armor_Child02).SPR.sprite = null;
+            GetContainer(EHeroBody_Weapon.WeaponR_Armor_Child03).SPR.sprite = null;
+        }
+
+        public void ChangeWeaponType(EHeroWeaponType weaponType)
+        {
+            ReleaseWeapon();
+            switch (weaponType)
+            {
+                case EHeroWeaponType.Default:
+                    {
+                        GetContainer(EHeroBody_Weapon.WeaponL_Armor).SPR.sprite = _defaultHeroWeapons[(int)EHeroWeapons.WeaponL_Armor];
+                        GetContainer(EHeroBody_Weapon.WeaponL_Armor_Child01).SPR.sprite = _defaultHeroWeapons[(int)EHeroWeapons.WeaponL_Armor_Child01];
+                        GetContainer(EHeroBody_Weapon.WeaponL_Armor_Child02).SPR.sprite = _defaultHeroWeapons[(int)EHeroWeapons.WeaponL_Armor_Child02];
+                        GetContainer(EHeroBody_Weapon.WeaponL_Armor_Child03).SPR.sprite = _defaultHeroWeapons[(int)EHeroWeapons.WeaponL_Armor_Child03];
+
+                        GetContainer(EHeroBody_Weapon.WeaponR_Armor).SPR.sprite = _defaultHeroWeapons[(int)EHeroWeapons.WeaponR_Armor];
+                        GetContainer(EHeroBody_Weapon.WeaponR_Armor_Child01).SPR.sprite = _defaultHeroWeapons[(int)EHeroWeapons.WeaponR_Armor_Child01];
+                        GetContainer(EHeroBody_Weapon.WeaponR_Armor_Child02).SPR.sprite = _defaultHeroWeapons[(int)EHeroWeapons.WeaponR_Armor_Child02];
+                        GetContainer(EHeroBody_Weapon.WeaponR_Armor_Child03).SPR.sprite = _defaultHeroWeapons[(int)EHeroWeapons.WeaponR_Armor_Child03];
+                    }
+                    break;
+
+                case EHeroWeaponType.CollectTree:
+                    GetContainer(EHeroBody_Weapon.WeaponR_Armor).SPR.sprite = _envHeroWeaponDict[EEnvType.Tree][(int)Owner.CreatureRarity];
+                    break;
+
+                case EHeroWeaponType.CollectRock:
+                    GetContainer(EHeroBody_Weapon.WeaponR_Armor).SPR.sprite = _envHeroWeaponDict[EEnvType.Rock][(int)Owner.CreatureRarity];
+                    break;
             }
         }
 
@@ -296,6 +344,7 @@ namespace STELLAREST_F1
 
             _matDefaultEyes = Managers.Resource.Load<Material>(ReadOnly.Materials.Mat_EyesPaint);
             InitBody(Managers.Data.HeroSpriteDataDict[dataID]);
+            InitEnvWeapon();
             return true;
         }
 
@@ -1174,6 +1223,9 @@ namespace STELLAREST_F1
             BodyContainer[] weaponContainers = new BodyContainer[(int)EHeroBody_Weapon.Max];
             _heroBodyDict.Add(EHeroBody.Weapon, weaponContainers);
 
+            for (int i = 0; i < _defaultHeroWeapons.Length; ++i)
+                _defaultHeroWeapons[i] = null;
+
             // --- WeaponL_Armor
             tag = Util.GetStringFromEnum(EHeroBody_Weapon.WeaponL_Armor);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
@@ -1187,6 +1239,7 @@ namespace STELLAREST_F1
                 spr.sortingOrder = weapon.LWeaponSorting;
                 spr.flipX = weapon.LWeaponFlipX;
                 spr.flipY = weapon.LWeaponFlipY;
+                _defaultHeroWeapons[(int)EHeroWeapons.WeaponL_Armor] = sprite;
             }
 
             weaponContainers[(int)EHeroBody_Weapon.WeaponL_Armor] = new BodyContainer(tag: tag, tr: tr, spr: spr,
@@ -1233,6 +1286,7 @@ namespace STELLAREST_F1
                         spr.sortingOrder = weapon.LWeaponChildSortings[0];
                         spr.flipX = weapon.LWeaponChildFlipXs[0];
                         spr.flipY = weapon.LWeaponChildFlipYs[0];
+                        _defaultHeroWeapons[(int)EHeroWeapons.WeaponL_Armor_Child01] = sprite;
 
                         weaponContainers[(int)EHeroBody_Weapon.WeaponL_Armor_Child01] = new BodyContainer(tag: tag, tr: tr, spr: spr,
                                                             defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
@@ -1258,6 +1312,7 @@ namespace STELLAREST_F1
                             spr.sortingOrder = weapon.LWeaponChildSortings[1];
                             spr.flipX = weapon.LWeaponChildFlipXs[1];
                             spr.flipY = weapon.LWeaponChildFlipYs[1];
+                            _defaultHeroWeapons[(int)EHeroWeapons.WeaponL_Armor_Child02] = sprite;
                         }
 
                         weaponContainers[(int)EHeroBody_Weapon.WeaponL_Armor_Child02] = new BodyContainer(tag: tag, tr: tr, spr: spr,
@@ -1287,6 +1342,7 @@ namespace STELLAREST_F1
                             spr.sortingOrder = weapon.LWeaponChildSortings[2];
                             spr.flipX = weapon.LWeaponChildFlipXs[2];
                             spr.flipY = weapon.LWeaponChildFlipYs[2];
+                            _defaultHeroWeapons[(int)EHeroWeapons.WeaponL_Armor_Child03] = sprite;
                         }
 
                         weaponContainers[(int)EHeroBody_Weapon.WeaponL_Armor_Child03] = new BodyContainer(tag: tag, tr: tr, spr: spr,
@@ -1361,6 +1417,7 @@ namespace STELLAREST_F1
                 spr.sortingOrder = weapon.RWeaponSorting;
                 spr.flipX = weapon.RWeaponFlipX;
                 spr.flipY = weapon.RWeaponFlipY;
+                _defaultHeroWeapons[(int)EHeroWeapons.WeaponR_Armor] = sprite;
             }
 
             weaponContainers[(int)EHeroBody_Weapon.WeaponR_Armor] = new BodyContainer(tag: tag, tr: tr, spr: spr,
@@ -1407,6 +1464,7 @@ namespace STELLAREST_F1
                         spr.sortingOrder = weapon.RWeaponChildSortings[0];
                         spr.flipX = weapon.RWeaponChildFlipXs[0];
                         spr.flipY = weapon.RWeaponChildFlipYs[0];
+                        _defaultHeroWeapons[(int)EHeroWeapons.WeaponR_Armor_Child01] = sprite;
 
                         weaponContainers[(int)EHeroBody_Weapon.WeaponR_Armor_Child01] = new BodyContainer(tag: tag, tr: tr, spr: spr,
                                                             defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
@@ -1432,6 +1490,7 @@ namespace STELLAREST_F1
                             spr.sortingOrder = weapon.RWeaponChildSortings[1];
                             spr.flipX = weapon.RWeaponChildFlipXs[1];
                             spr.flipY = weapon.RWeaponChildFlipYs[1];
+                            _defaultHeroWeapons[(int)EHeroWeapons.WeaponR_Armor_Child02] = sprite;
                         }
 
                         weaponContainers[(int)EHeroBody_Weapon.WeaponR_Armor_Child02] = new BodyContainer(tag: tag, tr: tr, spr: spr,
@@ -1461,6 +1520,7 @@ namespace STELLAREST_F1
                             spr.sortingOrder = weapon.RWeaponChildSortings[2];
                             spr.flipX = weapon.RWeaponChildFlipXs[2];
                             spr.flipY = weapon.RWeaponChildFlipYs[2];
+                            _defaultHeroWeapons[(int)EHeroWeapons.WeaponR_Armor_Child03] = sprite;
                         }
 
                         weaponContainers[(int)EHeroBody_Weapon.WeaponR_Armor_Child03] = new BodyContainer(tag: tag, tr: tr, spr: spr,
@@ -1521,6 +1581,19 @@ namespace STELLAREST_F1
 
             if (GetContainer(EHeroBody_Weapon.WeaponR_Armor).SPR.sprite == null)
                 GetContainer(EHeroBody_Weapon.WeaponR_Armor).TR.gameObject.SetActive(false);
+        }
+
+        private void InitEnvWeapon()
+        {
+            Sprite[] envWeapons = new Sprite[(int)ECreatureRarity.Max];
+            envWeapons[(int)ECreatureRarity.Common] = Managers.Resource.Load<Sprite>(ReadOnly.Util.WoodcutterAxe_Common_SP);
+            envWeapons[(int)ECreatureRarity.Elite] = Managers.Resource.Load<Sprite>(ReadOnly.Util.WoodcutterAxe_Elite_SP);
+            _envHeroWeaponDict.Add(EEnvType.Tree, envWeapons);
+
+            envWeapons = new Sprite[(int)ECreatureRarity.Max];
+            envWeapons[(int)ECreatureRarity.Common] = Managers.Resource.Load<Sprite>(ReadOnly.Util.Pickaxe_Common_SP);
+            envWeapons[(int)ECreatureRarity.Elite] = Managers.Resource.Load<Sprite>(ReadOnly.Util.Pickaxe_Elite_SP);
+            _envHeroWeaponDict.Add(EEnvType.Rock, envWeapons);
         }
         #endregion
 
@@ -1600,51 +1673,5 @@ namespace STELLAREST_F1
         //     // for (int i = 0; i < _rightWeaponSPRs.Length; ++i)
         //     //     _rightWeaponSPRs[i].sprite = _defaultRightWeaponSPs[i];
         // }
-
-        private void ReleaseWeapon()
-        {
-            // for (int i = 0; i < _leftWeaponSPRs.Length; ++i)
-            //     _leftWeaponSPRs[i].sprite = null;
-
-            // for (int i = 0; i < _rightWeaponSPRs.Length; ++i)
-            //     _rightWeaponSPRs[i].sprite = null;
-        }
-
-        public void HeroStateWeaponType(EHeroStateWeaponType heroStateWeaponType)
-        {
-            ReleaseWeapon();
-            switch (heroStateWeaponType)
-            {
-                case EHeroStateWeaponType.Default:
-                    {
-                        if (LeftWeapon != null)
-                            LeftWeapon.localScale = LeftWeaponLocalScale;
-                        for (int i = 0; i < _leftWeaponSPRs.Length; ++i)
-                            _leftWeaponSPRs[i].sprite = _defaultLeftWeaponSPs[i];
-
-                        if (RightWeapon != null)
-                            RightWeapon.localScale = RightWeaponLocalScale;
-                        for (int i = 0; i < _rightWeaponSPRs.Length; ++i)
-                            _rightWeaponSPRs[i].sprite = _defaultRightWeaponSPs[i];
-                    }
-                    break;
-
-                case EHeroStateWeaponType.EnvTree:
-                    RightWeapon.localScale = Vector3.one;
-                    if (Owner.CreatureRarity == ECreatureRarity.Common)
-                        _rightWeaponSPRs[0].sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Tree][(int)ECollectEnvRarity.Common];
-                    else
-                        _rightWeaponSPRs[0].sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Tree][(int)ECollectEnvRarity.Elite];
-                    break;
-
-                case EHeroStateWeaponType.EnvRock:
-                    RightWeapon.localScale = Vector3.one;
-                    if (Owner.CreatureRarity == ECreatureRarity.Common)
-                        _rightWeaponSPRs[0].sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Rock][(int)ECollectEnvRarity.Common];
-                    else
-                        _rightWeaponSPRs[0].sprite = Managers.Sprite.HeroCollectEnvWeaponSpritesDict[EEnvType.Rock][(int)ECollectEnvRarity.Elite];
-                    break;
-            }
-        }
     }
 }

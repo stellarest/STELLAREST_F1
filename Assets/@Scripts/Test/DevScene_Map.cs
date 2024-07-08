@@ -240,14 +240,14 @@ namespace STELLAREST_F1
             {   // --- ENV SINGLE TEST
                 // // DNPID_Env_CopperRock
                 // // // // Temp - Spawn Env (스폰 데이터 시트로 빼야함)
-                // Env env = Managers.Object.Spawn<Env>(EObjectType.Env, ReadOnly.DataAndPoolingID.DNPID_Env_GoldRock);
-                // // int x = Managers.Object.Monsters[0].CellPos.x;
-                // // int y = Managers.Object.Monsters[0].CellPos.y;
-                // //Vector3Int randPos = new Vector3Int(Random.Range(x + 3, x + 5), Random.Range(y + 3, y + 5));
-                // Vector3Int randPos = new Vector3Int(-6, 11, 0);
-                // env.SetCellPos(cellPos: randPos, stopLerpToCell: true, forceMove: true);
-                // env.InitialSpawnedCellPos = randPos;
-                // env.UpdateCellPos();
+                Env env = Managers.Object.Spawn<Env>(EObjectType.Env, ReadOnly.DataAndPoolingID.DNPID_Env_AshTree);
+                // int x = Managers.Object.Monsters[0].CellPos.x;
+                // int y = Managers.Object.Monsters[0].CellPos.y;
+                //Vector3Int randPos = new Vector3Int(Random.Range(x + 3, x + 5), Random.Range(y + 3, y + 5));
+                Vector3Int randPos = new Vector3Int(-6, 11, 0);
+                env.SetCellPos(cellPos: randPos, stopLerpToCell: true, forceMove: true);
+                env.InitialSpawnedCellPos = randPos;
+                env.UpdateCellPos();
             }
 
             {

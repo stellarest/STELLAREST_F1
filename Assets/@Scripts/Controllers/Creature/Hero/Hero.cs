@@ -46,30 +46,16 @@ namespace STELLAREST_F1
             }
         }
 
-        [SerializeField] private EHeroStateWeaponType _heroStateWeaponType = EHeroStateWeaponType.Default;
-        public EHeroStateWeaponType HeroStateWeaponType
+        [SerializeField] private EHeroWeaponType _heroWeaponType = EHeroWeaponType.Default;
+        public EHeroWeaponType HeroWeaponType
         {
-            get => _heroStateWeaponType;
+            get => _heroWeaponType;
             set
             {
-                if (_heroStateWeaponType != value)
+                if (_heroWeaponType != value)
                 {
-                    _heroStateWeaponType = value;
-                    // --- 다시 잡아야함
-                    // switch (value)
-                    // {
-                    //     case EHeroStateWeaponType.Default:
-                    //         HeroBody.HeroStateWeaponType(EHeroStateWeaponType.Default);
-                    //         break;
-
-                    //     case EHeroStateWeaponType.EnvTree:
-                    //         HeroBody.HeroStateWeaponType(EHeroStateWeaponType.EnvTree);
-                    //         break;
-
-                    //     case EHeroStateWeaponType.EnvRock:
-                    //         HeroBody.HeroStateWeaponType(EHeroStateWeaponType.EnvRock);
-                    //         break;
-                    // }
+                    _heroWeaponType = value;
+                    HeroBody.ChangeWeaponType(value);
                 }
             }
         }
@@ -112,8 +98,8 @@ namespace STELLAREST_F1
             set
             {
                 base.Moving = value;
-                if (value && HeroStateWeaponType != EHeroStateWeaponType.Default)
-                    HeroStateWeaponType = EHeroStateWeaponType.Default;
+                if (value && HeroWeaponType != EHeroWeaponType.Default)
+                    HeroWeaponType = EHeroWeaponType.Default;
             }
         }
 
@@ -135,39 +121,39 @@ namespace STELLAREST_F1
 
                 if (Moving)
                 {
-                    if (HeroStateWeaponType != EHeroStateWeaponType.Default)
-                        HeroStateWeaponType = EHeroStateWeaponType.Default;
+                    if (HeroWeaponType != EHeroWeaponType.Default)
+                        HeroWeaponType = EHeroWeaponType.Default;
                     return false;
                 }
 
                 if (this.IsValid() == false)
                 {
-                    if (HeroStateWeaponType != EHeroStateWeaponType.Default)
-                        HeroStateWeaponType = EHeroStateWeaponType.Default;
+                    if (HeroWeaponType != EHeroWeaponType.Default)
+                        HeroWeaponType = EHeroWeaponType.Default;
 
                     return false;
                 }
 
                 if (Target.IsValid() == false)
                 {
-                    if (HeroStateWeaponType != EHeroStateWeaponType.Default)
-                        HeroStateWeaponType = EHeroStateWeaponType.Default;
+                    if (HeroWeaponType != EHeroWeaponType.Default)
+                        HeroWeaponType = EHeroWeaponType.Default;
 
                     return false;
                 }
 
                 if (Target.IsValid() && Target.ObjectType != EObjectType.Env)
                 {
-                    if (HeroStateWeaponType != EHeroStateWeaponType.Default)
-                        HeroStateWeaponType = EHeroStateWeaponType.Default;
+                    if (HeroWeaponType != EHeroWeaponType.Default)
+                        HeroWeaponType = EHeroWeaponType.Default;
 
                     return false;
                 }
 
                 if (ForceMove)
                 {
-                    if (HeroStateWeaponType != EHeroStateWeaponType.Default)
-                        HeroStateWeaponType = EHeroStateWeaponType.Default;
+                    if (HeroWeaponType != EHeroWeaponType.Default)
+                        HeroWeaponType = EHeroWeaponType.Default;
 
                     return false;
                 }

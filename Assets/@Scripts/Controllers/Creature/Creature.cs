@@ -12,7 +12,7 @@ namespace STELLAREST_F1
     {
         #region Background
         public CreatureAI CreatureAI { get; protected set; } = null;
-        public ECreatureRarity CreatureRarity { get; protected set; } = ECreatureRarity.None;
+        [field: SerializeField] public ECreatureRarity CreatureRarity { get; protected set; } = ECreatureRarity.None;
         public SkillComponent CreatureSkill { get; protected set; } = null; // Skills
         public EffectComponent CreatureEffect { get; protected set; } = null; // Effects
         public CreatureBody CreatureBody { get; protected set; } = null;
