@@ -51,7 +51,6 @@ namespace STELLAREST_F1
         protected readonly int OnSkill_B = Animator.StringToHash(ReadOnly.AnimationParams.OnSkill_B);
         protected readonly int OnSkill_C = Animator.StringToHash(ReadOnly.AnimationParams.OnSkill_C);
         protected readonly int OnCollectEnv = Animator.StringToHash(ReadOnly.AnimationParams.OnCollectEnv);
-        protected readonly int OnDead = Animator.StringToHash(ReadOnly.AnimationParams.OnDead);
 
         public bool Moving
         {
@@ -109,7 +108,9 @@ namespace STELLAREST_F1
             Animator.SetTrigger(OnCollectEnv);
         }
 
-        public void Dead() => Animator.SetTrigger(OnDead);
+        // --- BaseAnimation으로 옮김
+        //public void Dead() => Animator.SetTrigger(OnDead);
+       
         #endregion
 
         #region Core

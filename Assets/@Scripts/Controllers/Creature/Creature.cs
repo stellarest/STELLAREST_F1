@@ -134,18 +134,6 @@ namespace STELLAREST_F1
             }
         }
 
-        // protected override void InitStat(int dataID)
-        // {
-        //     base.InitStat(dataID);
-        //     for (int i = DataTemplateID; i < DataTemplateID + 10;)
-        //     {
-        //         if (Managers.Data.StatDataDict.ContainsKey(i) == false)
-        //             break;
-
-        //         _maxLevel = i++;
-        //     }
-        // }
-
         public bool IsValid(BaseObject bo) => bo.IsValid();
 
         public EFindPathResult FindPathAndMoveToCellPos(Vector3 destPos, int maxDepth, EObjectType ignoreObjectType = EObjectType.None)
@@ -332,8 +320,9 @@ namespace STELLAREST_F1
             {
                 Hp = 0f;
                 OnDead(attacker, skillFromAttacker);
+                return;
             }
-
+            CreatureBody.StartCoHurtFlashEffect();
             // if (skillFromAttacker.SkillData.EffectIDs != null)
             //     CreatureEffect.GenerateEffect(skillFromAttacker.SkillData.EffectIDs, EEffectSpawnType.Skill);
         }

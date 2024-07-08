@@ -63,8 +63,9 @@ namespace STELLAREST_F1
             if (base.Init() == false)
                 return false;
 
-            MonsterBody = GetComponent<MonsterBody>();
             ObjectType = EObjectType.Monster;
+            MonsterAnim = CreatureAnim as MonsterAnimation;
+            MonsterBody = GetComponent<MonsterBody>();
             return true;
         }
 
@@ -84,21 +85,19 @@ namespace STELLAREST_F1
         protected override void InitialSetInfo(int dataID)
         {
             base.InitialSetInfo(dataID);
-            //MonsterBody = new MonsterBody(this, dataID);
-            MonsterBody.SetInfo(this, dataID);
-            MonsterAnim = CreatureAnim as MonsterAnimation;
-            MonsterAnim.SetInfo(dataID, this);
-            Managers.Sprite.SetInfo(dataID, target: this);
-
             MonsterData = Managers.Data.MonsterDataDict[dataID];
+            MonsterAnim.SetInfo(dataID, this);
+            MonsterBody.SetInfo(this, dataID);
+            //MonsterAnim = CreatureAnim as MonsterAnimation;
+            //Managers.Sprite.SetInfo(dataID, target: this);
+
             Type aiClassType = Util.GetTypeFromName(MonsterData.AIClassName);
             CreatureAI = gameObject.AddComponent(aiClassType) as CreatureAI;
             CreatureAI.SetInfo(this);
             MonsterAI = CreatureAI as MonsterAI;
+            MonsterType = MonsterData.MonsterType;
 
-            // CreatureRarity = Util.GetEnumFromString<ECreatureRarity>(MonsterData.CreatureRarity);
-            // MonsterType = Util.GetEnumFromString<EMonsterType>(MonsterData.Type);
-
+            CreatureRarity = MonsterData.CreatureRarity;
             gameObject.name += $"_{MonsterData.NameTextID.Replace(" ", "")}";
             Collider.radius = MonsterData.ColliderRadius;
 
@@ -114,7 +113,7 @@ namespace STELLAREST_F1
 
         protected override void EnterInGame()
         {
-            // --- Monsters Default Dir
+            // --- Default Monsters Dir: Left
             LookAtDir = ELookAtDirection.Left;
             base.EnterInGame();
             CreatureAIState = ECreatureAIState.Idle;
@@ -123,22 +122,11 @@ namespace STELLAREST_F1
         public override void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
         {
             base.OnDamaged(attacker, skillFromAttacker);
-            // Debug.Log($"<color=white>{gameObject.name}: ({Hp}/{MaxHp})</color>");
-            
-            // 어그로 시스템 일단 중지
-            // if (Target.IsValid() == false && attacker.IsValid())
-            // {
-            //     float minSec = ReadOnly.Numeric.MinSecWaitSearchTargetForSettingAggroFromRange;
-            //     float maxSec = ReadOnly.Numeric.MaxSecWaitSearchTargetForSettingAggroFromRange;
-            //     StartCoWaitSearchTarget(UnityEngine.Random.Range(minSec, maxSec));
-            //     Target = attacker;
-            // }
-            // else
-            //     StopCoWaitSearchTarget();
         }
 
         public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
         {
+            MonsterBody.ResetMonsterMaterialsAndColors(MonsterType);
             base.OnDead(attacker, skillFromAttacker);
         }
         protected override void OnDisable()

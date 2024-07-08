@@ -62,11 +62,11 @@ namespace STELLAREST_F1
             {
                 case EObjectType.Hero:
                     {
-                        HeroBody heroBody = (Owner as Hero).HeroBody;
-                        if (SkillFromPoint == EAttachmentPoint.WeaponL)
-                            return heroBody.GetComponent<Transform>(EHeroWeapon.WeaponL).position;
-                        else if (SkillFromPoint == EAttachmentPoint.WeaponLSocket)
-                            return heroBody.GetComponent<Transform>(EHeroWeapon.WeaponLSocket).position;
+                        // HeroBody heroBody = (Owner as Hero).HeroBody;
+                        // if (SkillFromPoint == EAttachmentPoint.WeaponL)
+                        //     return heroBody.GetComponent<Transform>(EHeroWeapon.WeaponL).position;
+                        // else if (SkillFromPoint == EAttachmentPoint.WeaponLSocket)
+                        //     return heroBody.GetComponent<Transform>(EHeroWeapon.WeaponLSocket).position;
                     }
                     break;
             }

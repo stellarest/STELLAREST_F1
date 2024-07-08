@@ -7,8 +7,39 @@ using UnityEngine;
 using DG.Tweening;
 
 /*
+// --- 제거 예정
+// public List<SpriteRenderer> Skin { get; } = new List<SpriteRenderer>();
+// public List<SpriteRenderer> Appearance { get; } = new List<SpriteRenderer>();
+// --- UI를 정복했을 때 자신감이 엄청나게 상승한다고 함. 그냥 참고.
+// --- ((Env Tree, Rock)), 내일 --> Change Sprite Set, Fade Out
+// --- + ProjectileBodyBase ?? 추가 ?? SkillBodyBase ??
+// --- HeroStateWeaponType, EnvWeapon 다시 잡아야함.
+// --- EnvTree Fruits Pos, Rot, Scale 생성 될때마다 Min, Max사이로 배치되도록 수정해야할듯.
+// --- this.DefaultMat = defaultMat; // ---> Name 변경 필요: DefaultSPRMat
+// --- OreLight SPR Alpha가 1로 되어있음... (고침, BaseObject ShowBody 부분 고쳐야함)
+// --- 골드 OreLight가 피격되면 이상하게 어두워짐.
+// --- BodyContainer 생성자에서 new MatPropertyBlock 받도록하게 변경해야할듯(안쓰는 것은 굳이 만들 필요 없을것같아서)
+// --- 이거 때문에 Gold Glow가 이상하게 적용 되는 것이었음.
+// --- 제거 얘정
+
+// --- SpriteManager에서 EnvBody SPR.color 따로 셋팅해야될지 고민중. 안해도 될 것 같긴 한데.
+// --- 동일한 이유로, 몬스터도 SkinColor를 제외하고는 SPR.color를 안줘도 될 것 같음. 어차피 하얀색이 디폴트라.
+// --- 어쨋든 Env부분 Color 세팅하는거 안해도 될 것 같고, 몬스터도 SkinColor 안해도 될듯.
+// --- MonsterBody도 foreach 루프로 돌려서 하면 될 것 같고. 이후 EnvRockBody 제작할것.
+// --- MonsterBody부터 테스트. 아니면 몬스터 SkinColor 없애도 상관없을 것 같긴 함. 디폴트는 모두 하얀색으로.
+// --- BodyContainer의 DefaultColor는 모두 있어야함. 단, 몬스터, Env의 SPR default color는 white로.
+
+// --- Arhcer Hero Dead에서 Fade할 때, 다리부터 없어짐. 고쳐야함. 스킨부터 없애서 그런듯.
+// --- 일반 EnvBody부터.
+
+// --- Hero 죽을 때 전부 Reset해버려서 EyesColor까지 기본색깔로 바뀌어버림. 이거 파란색 고정해야함.
+// --- ResetToDead 메서드를 만들던지, Eyes, Mouth, Eyebrows Container를 추가하던지. ---> OnDead FadeOut도 Body로 처리하면 될듯.
+// --- Body와 관련도니 모든 이펙트는 Body에서 처리.
+// --- Env Body 만들어야함.
+
 // --- 내일 BodyContainer에서 Default Color Set하기
-// --- Env BaseBody 만들기
+// --- Env BaseBody 만들기 + 캐싱, Monster Body Container도 미리 캐싱
+// --- 미리 캐싱한걸로 Material Set
 
 // --- Skill 관련하여..
 // --- 히어로 레벨1. Skill_A, Skill_B

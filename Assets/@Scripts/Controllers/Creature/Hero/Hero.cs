@@ -26,8 +26,8 @@ namespace STELLAREST_F1
                     CreatureBody = value;
             }
         }
-        public Transform WeaponLSocket { get; private set; } = null;
-        public Transform WeaponRFireSocket { get; private set; } = null;
+        public Transform WeaponLFireSocket => HeroBody.GetContainer(EHeroBody_Weapon.WeaponL_FireSocket).TR;
+        public Transform WeaponRFireSocket => HeroBody.GetContainer(EHeroBody_Weapon.WeaponR_FireSocket).TR;
 
         [SerializeField] private bool _isLeader = false;
         public bool IsLeader
@@ -55,20 +55,21 @@ namespace STELLAREST_F1
                 if (_heroStateWeaponType != value)
                 {
                     _heroStateWeaponType = value;
-                    switch (value)
-                    {
-                        case EHeroStateWeaponType.Default:
-                            HeroBody.HeroStateWeaponType(EHeroStateWeaponType.Default);
-                            break;
+                    // --- 다시 잡아야함
+                    // switch (value)
+                    // {
+                    //     case EHeroStateWeaponType.Default:
+                    //         HeroBody.HeroStateWeaponType(EHeroStateWeaponType.Default);
+                    //         break;
 
-                        case EHeroStateWeaponType.EnvTree:
-                            HeroBody.HeroStateWeaponType(EHeroStateWeaponType.EnvTree);
-                            break;
+                    //     case EHeroStateWeaponType.EnvTree:
+                    //         HeroBody.HeroStateWeaponType(EHeroStateWeaponType.EnvTree);
+                    //         break;
 
-                        case EHeroStateWeaponType.EnvRock:
-                            HeroBody.HeroStateWeaponType(EHeroStateWeaponType.EnvRock);
-                            break;
-                    }
+                    //     case EHeroStateWeaponType.EnvRock:
+                    //         HeroBody.HeroStateWeaponType(EHeroStateWeaponType.EnvRock);
+                    //         break;
+                    // }
                 }
             }
         }
@@ -212,24 +213,18 @@ namespace STELLAREST_F1
         protected override void InitialSetInfo(int dataID)
         {
             base.InitialSetInfo(dataID);
-
-            //HeroBody = new HeroBody(this, dataID);
+            HeroData = Managers.Data.HeroDataDict[dataID];
             HeroBody.SetInfo(this, dataID);
-            WeaponLSocket = HeroBody.GetComponent<Transform>(EHeroWeapon.WeaponLSocket);
 
             HeroAnim = CreatureAnim as HeroAnimation;
             HeroAnim.SetInfo(dataID, this);
-            Managers.Sprite.SetInfo(dataID, target: this);
 
-            HeroData = Managers.Data.HeroDataDict[dataID];
             Type aiClassType = Util.GetTypeFromName(HeroData.AIClassName);
             CreatureAI = gameObject.AddComponent(aiClassType) as CreatureAI;          
             CreatureAI.SetInfo(this);  
             HeroAI = CreatureAI as HeroAI;
 
-            //CreatureRarity = Util.GetEnumFromString<ECreatureRarity>(HeroData.CreatureRarity);
             CreatureRarity = HeroData.CreatureRarity;
-
             gameObject.name += $"_{HeroData.NameTextID.Replace(" ", "")}";
             Collider.radius = HeroData.ColliderRadius;
 
@@ -251,7 +246,7 @@ namespace STELLAREST_F1
 
         protected override void EnterInGame()
         {
-            // --- Heroes Default Dir
+            // --- Default Heroes Dir: Right
             LookAtDir = ELookAtDirection.Right;
             base.EnterInGame();
             CreatureAIState = ECreatureAIState.Move;
@@ -263,7 +258,6 @@ namespace STELLAREST_F1
         public override void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
         {
             base.OnDamaged(attacker, skillFromAttacker);
-            //Debug.Log($"{gameObject.name}: ({Hp}/{MaxHp})");
         }
 
         public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
@@ -274,6 +268,7 @@ namespace STELLAREST_F1
                 Managers.Object.HeroLeaderController.EnablePointer(false);
             }
 
+            HeroBody.ResetHeroMaterialsAndColors();
             base.OnDead(attacker, skillFromAttacker);
         }
 
@@ -355,6 +350,10 @@ namespace STELLAREST_F1
 
         private IEnumerator CoInitialReleaseLeaderAI()
         {
+            // 여기서 하면 안됨... Leader랑 관련 있는듯.
+            // Debug.Log($"1 - Inactive: {HeroBody.GetContainer(EHeroWeapon.WeaponL_Armor).TR.gameObject.name}");
+            // HeroBody.GetContainer(EHeroWeapon.WeaponL_Armor).TR.gameObject.SetActive(false);
+
             yield return new WaitUntil(() => 
             {
                 bool allStartedHeroAI = true;
@@ -375,6 +374,10 @@ namespace STELLAREST_F1
             {
                 StopCoUpdateAI();
                 Debug.Log("<color=white>Initial Release Leader Hero's AI</color>");
+
+                // 여기서 하니까 됨.. 이거 때문인가??
+                // Debug.Log($"1 - Inactive: {HeroBody.GetContainer(EHeroWeapon.WeaponL_Armor).TR.gameObject.name}");
+                // HeroBody.GetContainer(EHeroWeapon.WeaponL_Armor).TR.gameObject.SetActive(false);
             }
         }
         #endregion

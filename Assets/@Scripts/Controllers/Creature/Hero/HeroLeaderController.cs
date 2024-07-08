@@ -808,7 +808,6 @@ namespace STELLAREST_F1
 #endif
         #endregion
     }
-
 }
 
 /*

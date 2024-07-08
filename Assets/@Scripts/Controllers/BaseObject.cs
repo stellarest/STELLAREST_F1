@@ -17,11 +17,11 @@ namespace STELLAREST_F1
     {
         private void Update()
         {
-            if (Input.GetKeyDown("5"))
-            {
-                // LevelUp();
-                BaseBody.StartCoHurtFlashEffect();
-            }    
+            // if (Input.GetKeyDown("5"))
+            // {
+            //     LevelUp();
+            //     //BaseBody.StartCoHurtFlashEffect();
+            // }    
         }
 
         public int DataTemplateID { get; protected set; } = -1;
@@ -252,11 +252,6 @@ namespace STELLAREST_F1
         public static Vector3 GetLookAtRotation(Vector3 dir)
             => new Vector3(0, 0, Mathf.Atan2(-dir.x, dir.y) * Mathf.Rad2Deg);
 
-        #region Animation
-        public void UpdateAnimation()
-            => BaseAnim.UpdateAnimation();
-        #endregion
-
         #region Events
         protected virtual void OnDeadFadeOutEnded()
         {
@@ -270,6 +265,8 @@ namespace STELLAREST_F1
         public virtual void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
         {
             RigidBody.simulated = false;
+
+            // 모두 BaseBody에서 처리해야함. (ex) 더불어 FruitsTree의 경우에도 Fruits가 나타났다가 사라지는등 이러한 문제들도 있기 때문.
             StartCoroutine(CoDeadFadeOut(this.OnDeadFadeOutEndHandler));
         }
 
@@ -322,9 +319,10 @@ namespace STELLAREST_F1
             foreach (SpriteRenderer spr in GetComponentsInChildren<SpriteRenderer>(includeInactive: true))
             {
                 spr.enabled = show;
-                if (show)
+                if (show && spr.sprite != null)
                 {
-                    spr.color = new Color(spr.color.r, spr.color.g, spr.color.b, 1f);
+                    //spr.color = new Color(spr.color.r, spr.color.g, spr.color.b, 1f);
+                    spr.color = new Color(spr.color.r, spr.color.g, spr.color.b, spr.color.a);
                     spr.gameObject.SetActive(true);
                 }
             }
@@ -412,30 +410,34 @@ namespace STELLAREST_F1
             if (isActiveAndEnabled == false)
                 yield break;
 
-            yield return new WaitForSeconds(ReadOnly.Util.StartDeadFadeOutTime);
-
-            float delta = 0f;
-            float percent = 1f;
-            AnimationCurve curve = Managers.Contents.Curve(EAnimationCurveType.Ease_In);
-            while (percent > 0f)
-            {
-                // Debug.Log($"{gameObject.name}, {percent}");
-                delta += Time.deltaTime;
-                percent = 1f - (delta / ReadOnly.Util.DesiredDeadFadeOutEndTime);
-                foreach (SpriteRenderer spr in GetComponentsInChildren<SpriteRenderer>())
-                {
-                    float current = Mathf.Lerp(0f, 1f, curve.Evaluate(percent));
-                    spr.color = new Color(spr.color.r, spr.color.g, spr.color.b, current);
-                }
-
-                yield return null;
-            }
-
-            //Debug.Log($"{gameObject.name} is dead.");
-            endFadeOutCallback?.Invoke();
-
+            yield return new WaitForSeconds(2f);
             Managers.Object.Despawn(this, DataTemplateID);
             _initialSpawnedCellPos = null;
+
+            // yield return new WaitForSeconds(ReadOnly.Util.StartDeadFadeOutTime);
+
+            // float delta = 0f;
+            // float percent = 1f;
+            // AnimationCurve curve = Managers.Contents.Curve(EAnimationCurveType.Ease_In);
+            // while (percent > 0f)
+            // {
+            //     // Debug.Log($"{gameObject.name}, {percent}");
+            //     delta += Time.deltaTime;
+            //     percent = 1f - (delta / ReadOnly.Util.DesiredDeadFadeOutEndTime);
+            //     foreach (SpriteRenderer spr in GetComponentsInChildren<SpriteRenderer>())
+            //     {
+            //         float current = Mathf.Lerp(0f, 1f, curve.Evaluate(percent));
+            //         spr.color = new Color(spr.color.r, spr.color.g, spr.color.b, current);
+            //     }
+
+            //     yield return null;
+            // }
+
+            // //Debug.Log($"{gameObject.name} is dead.");
+            // endFadeOutCallback?.Invoke();
+
+            // Managers.Object.Despawn(this, DataTemplateID);
+            // _initialSpawnedCellPos = null;
         }
 
         

@@ -1,8 +1,7 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
+using STELLAREST_F1.Data;
 using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
@@ -10,135 +9,12 @@ namespace STELLAREST_F1
     [System.Serializable]
     public class MonsterBody : CreatureBody
     {
-        // public MonsterBody(Monster owner, int dataID) : base(owner, dataID)
-        // {
-        //     Data.MonsterData monsterData = Managers.Data.MonsterDataDict[dataID];
-        //     this.Tag = monsterData.DescriptionTextID;
-        //     this.Type = monsterData.MonsterType;
-        //     this.Size = Util.GetEnumFromString<EMonsterSize>(monsterData.MonsterSize);
-        //     _heads = new Sprite[(int)EMonsterEmoji.Max];
-        //     InitBody(Type);
-        // }
-        public override bool SetInfo(BaseObject owner, int dataID)
-        {
-            Owner = owner as Monster;
-            DataTemplateID = dataID;
-            Data.MonsterData monsterData = Managers.Data.MonsterDataDict[dataID];
-            this.Tag = monsterData.DescriptionTextID;
-            this.Type = monsterData.MonsterType;
-            this.Size = Util.GetEnumFromString<EMonsterSize>(monsterData.MonsterSize);
-            _heads = new Sprite[(int)EMonsterEmoji.Max];
-            InitBody(Type);
-
-            return true;
-        }
-
+        #region Background
         public Monster Owner { get; private set; } = null;
-        public string Tag { get; private set; } = string.Empty;
-        public EMonsterType Type { get; private set; } = EMonsterType.None;
-        public EMonsterSize Size { get; private set; } = EMonsterSize.None;
-
+        public EMonsterType MonsterType { get; private set; } = EMonsterType.None;
         private Sprite[] _heads = null;
-        private Dictionary<EBirdBodyParts, BodyContainer> _birdBodyDict = null;
-        private Dictionary<EQuadrupedsParts, BodyContainer> _quadrupedsBodyDict = null; // TODO : 추가해볼것
-
-        private void InitBody(EMonsterType monsterType)
-        {
-            //Material matDefault = Managers.Resource.Load<Material>(ReadOnly.Materials.Mat_Default);
-
-            switch (monsterType)
-            {
-                case EMonsterType.Bird:
-                    {
-                        _birdBodyDict = new Dictionary<EBirdBodyParts, BodyContainer>();
-
-                        string tag = ReadOnly.Util.AnimationBody;
-                        Transform tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
-                        SpriteRenderer spr = tr.GetComponent<SpriteRenderer>();
-                        spr.material = _matDefault;
-                        _birdBodyDict.Add(EBirdBodyParts.Body, new BodyContainer(tag, tr, spr, _matDefault));
-                        
-                        tag = ReadOnly.Util.MBody_Head;
-                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.MBody_Head, true, true);
-                        spr = tr.GetComponent<SpriteRenderer>();
-                        spr.material = _matDefault;
-                        _birdBodyDict.Add(EBirdBodyParts.Head, new BodyContainer(tag, tr, spr, _matDefault));
-
-                        tag = ReadOnly.Util.MBody_Wing;
-                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.MBody_Wing, true, true);
-                        spr = tr.GetComponent<SpriteRenderer>();
-                        spr.material = _matDefault;
-                        _birdBodyDict.Add(EBirdBodyParts.Wing, new BodyContainer(tag, tr, spr, _matDefault));
-
-                        tag = ReadOnly.Util.MBody_LegL;
-                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.MBody_LegL, true, true);
-                        spr = tr.GetComponent<SpriteRenderer>();
-                        spr.material = _matDefault;
-                        _birdBodyDict.Add(EBirdBodyParts.LegL, new BodyContainer(tag, tr, spr, _matDefault));
-
-                        tag = ReadOnly.Util.MBody_LegR;
-                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.MBody_LegR, true, true);
-                        spr = tr.GetComponent<SpriteRenderer>();
-                        spr.material = _matDefault;
-                        _birdBodyDict.Add(EBirdBodyParts.LegR, new BodyContainer(tag, tr, spr, _matDefault));
-
-                        tag = ReadOnly.Util.MBody_Tail;
-                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.MBody_Tail, true, true);
-                        spr = tr.GetComponent<SpriteRenderer>();
-                        spr.material = _matDefault;
-                        _birdBodyDict.Add(EBirdBodyParts.Tail, new BodyContainer(tag, tr, spr, _matDefault));
-                    }
-                    break;
-
-                case EMonsterType.Quadrupeds:
-                    {
-                        _quadrupedsBodyDict = new Dictionary<EQuadrupedsParts, BodyContainer>();
-
-                        string tag = ReadOnly.Util.AnimationBody;
-                        Transform tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
-                        SpriteRenderer spr = tr.GetComponent<SpriteRenderer>();
-                        spr.material = _matDefault;
-                        _quadrupedsBodyDict.Add(EQuadrupedsParts.Body, new BodyContainer(tag, tr, spr, _matDefault));
-
-                        tag = ReadOnly.Util.MBody_Head;
-                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.MBody_Head, true, true);
-                        spr = tr.GetComponent<SpriteRenderer>();
-                        spr.material = _matDefault;
-                        _quadrupedsBodyDict.Add(EQuadrupedsParts.Head, new BodyContainer(tag, tr, spr, _matDefault));
-
-                        tag = ReadOnly.Util.MBody_LegFrontL;
-                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.MBody_LegFrontL, true, true);
-                        spr = tr.GetComponent<SpriteRenderer>();
-                        spr.material = _matDefault;
-                        _quadrupedsBodyDict.Add(EQuadrupedsParts.LegFrontL, new BodyContainer(tag, tr, spr, _matDefault));
-
-                        tag = ReadOnly.Util.MBody_LegFrontR;
-                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.MBody_LegFrontR, true, true);
-                        spr = tr.GetComponent<SpriteRenderer>();
-                        spr.material = _matDefault;
-                        _quadrupedsBodyDict.Add(EQuadrupedsParts.LegFrontR, new BodyContainer(tag, tr, spr, _matDefault));
-
-                        tag = ReadOnly.Util.MBody_LegBackL;
-                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.MBody_LegBackL, true, true);
-                        spr = tr.GetComponent<SpriteRenderer>();
-                        spr.material = _matDefault;
-                        _quadrupedsBodyDict.Add(EQuadrupedsParts.LegBackL, new BodyContainer(tag, tr, spr, _matDefault));
-
-                        tag = ReadOnly.Util.MBody_LegBackR;
-                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.MBody_LegBackR, true, true);
-                        spr = tr.GetComponent<SpriteRenderer>();
-                        spr.material = _matDefault;
-                        _quadrupedsBodyDict.Add(EQuadrupedsParts.LegBackR, new BodyContainer(tag, tr, spr, _matDefault));
-
-                        tag = ReadOnly.Util.MBody_Tail;
-                        tr = Util.FindChild<Transform>(Owner.gameObject, ReadOnly.Util.MBody_Tail, true, true);
-                        spr = tr.GetComponent<SpriteRenderer>();
-                        spr.material = _matDefault;
-                        _quadrupedsBodyDict.Add(EQuadrupedsParts.Tail, new BodyContainer(tag, tr, spr, _matDefault));
-                    }
-                    break;
-            }
-        }
+        private Dictionary<EBirdBody, BodyContainer> _birdBodyDict = null;
+        private Dictionary<EQuadrupedsBody, BodyContainer> _quadrupedsBodyDict = null;
 
         [SerializeField] private EMonsterEmoji _monsterEmoji = EMonsterEmoji.None;
         public EMonsterEmoji MonsterEmoji
@@ -151,30 +27,30 @@ namespace STELLAREST_F1
                     _monsterEmoji = value;
                     switch (value)
                     {
-                        case EMonsterEmoji.Default:
+                        case EMonsterEmoji.Normal:
                             {
-                                if (Type == EMonsterType.Bird)
-                                    _birdBodyDict[EBirdBodyParts.Head].SPR.sprite = _heads[(int)EMonsterEmoji.Default];
-                                else if (Type == EMonsterType.Quadrupeds)
-                                    _quadrupedsBodyDict[EQuadrupedsParts.Head].SPR.sprite = _heads[(int)EMonsterEmoji.Default];
+                                if (MonsterType == EMonsterType.Bird)
+                                    _birdBodyDict[EBirdBody.Head].SPR.sprite = _heads[(int)EMonsterEmoji.Normal];
+                                else if (MonsterType == EMonsterType.Quadrupeds)
+                                    _quadrupedsBodyDict[EQuadrupedsBody.Head].SPR.sprite = _heads[(int)EMonsterEmoji.Normal];
                             }
                             break;
 
                         case EMonsterEmoji.Angry:
                             {
-                                if (Type == EMonsterType.Bird)
-                                    _birdBodyDict[EBirdBodyParts.Head].SPR.sprite = _heads[(int)EMonsterEmoji.Angry];
-                                else if (Type == EMonsterType.Quadrupeds)
-                                    _quadrupedsBodyDict[EQuadrupedsParts.Head].SPR.sprite = _heads[(int)EMonsterEmoji.Angry];
+                                if (MonsterType == EMonsterType.Bird)
+                                    _birdBodyDict[EBirdBody.Head].SPR.sprite = _heads[(int)EMonsterEmoji.Angry];
+                                else if (MonsterType == EMonsterType.Quadrupeds)
+                                    _quadrupedsBodyDict[EQuadrupedsBody.Head].SPR.sprite = _heads[(int)EMonsterEmoji.Angry];
                             }
                             break;
 
                         case EMonsterEmoji.Dead:
                             {
-                                if (Type == EMonsterType.Bird)
-                                    _birdBodyDict[EBirdBodyParts.Head].SPR.sprite = _heads[(int)EMonsterEmoji.Dead];
-                                else if (Type == EMonsterType.Quadrupeds)
-                                    _quadrupedsBodyDict[EQuadrupedsParts.Head].SPR.sprite = _heads[(int)EMonsterEmoji.Dead];
+                                if (MonsterType == EMonsterType.Bird)
+                                    _birdBodyDict[EBirdBody.Head].SPR.sprite = _heads[(int)EMonsterEmoji.Dead];
+                                else if (MonsterType == EMonsterType.Quadrupeds)
+                                    _quadrupedsBodyDict[EQuadrupedsBody.Head].SPR.sprite = _heads[(int)EMonsterEmoji.Dead];
                             }
                             break;
                     }
@@ -182,78 +58,455 @@ namespace STELLAREST_F1
             }
         }
 
-        // TODO : 개선 필요, 타입에 따라 분기하도록
-        public void SetEmoji(EMonsterEmoji emoji)
+        public BodyContainer GetContainer(EBirdBody bodyParts) => _birdBodyDict[bodyParts];
+        public BodyContainer GetContainer(EQuadrupedsBody bodyParts) => _quadrupedsBodyDict[bodyParts];
+
+        private void ApplyMonsterStrongTint(EMonsterType monsterType, Color desiredColor)
         {
-            switch (emoji)
+            switch (monsterType)
             {
-                case EMonsterEmoji.Default:
-                    {
-                        if (Type == EMonsterType.Bird)
-                            _birdBodyDict[EBirdBodyParts.Head].SPR.sprite = _heads[(int)EMonsterEmoji.Default];
-                        else if (Type == EMonsterType.Quadrupeds)
-                            _quadrupedsBodyDict[EQuadrupedsParts.Head].SPR.sprite = _heads[(int)EMonsterEmoji.Default];
-                    }
+                case EMonsterType.Bird:
+                    ApplyBirdStrongTint(desiredColor);
                     break;
 
-                case EMonsterEmoji.Angry:
-                    {
-                        if (Type == EMonsterType.Bird)
-                            _birdBodyDict[EBirdBodyParts.Head].SPR.sprite = _heads[(int)EMonsterEmoji.Angry];
-                        else if (Type == EMonsterType.Quadrupeds)
-                            _quadrupedsBodyDict[EQuadrupedsParts.Head].SPR.sprite = _heads[(int)EMonsterEmoji.Angry];
-                    }
-                    break;
-
-                case EMonsterEmoji.Dead:
-                    {
-                        if (Type == EMonsterType.Bird)
-                            _birdBodyDict[EBirdBodyParts.Head].SPR.sprite = _heads[(int)EMonsterEmoji.Dead];
-                        else if (Type == EMonsterType.Quadrupeds)
-                            _quadrupedsBodyDict[EQuadrupedsParts.Head].SPR.sprite = _heads[(int)EMonsterEmoji.Dead];
-                    }
+                case EMonsterType.Quadrupeds:
+                    ApplyQuadrupedsBaseStrongTint(desiredColor);
                     break;
             }
         }
 
-        public void SetFace(EMonsterEmoji emoji, string spriteLabel)
-            => _heads[(int)emoji] = Managers.Resource.Load<Sprite>(spriteLabel);
-            
-        public T GetComponent<T>(EBirdBodyParts findTarget) where T : UnityEngine.Component
+        private void ApplyBirdStrongTint(Color desiredColor)
         {
-            if (findTarget == EBirdBodyParts.None || findTarget == EBirdBodyParts.Max)
-                return null;
+            foreach (var container in _birdBodyDict.Values)
+            {
+                if (container.SPR == null)
+                    continue;
 
-            if (_birdBodyDict.TryGetValue(findTarget, out BodyContainer container) == false)
-                return null;
-
-            Type type = typeof(T);
-            if (type == typeof(Transform))
-                return container.TR as T;
-            else if (type == typeof(SpriteRenderer))
-                return container.SPR as T;
-
-            return null;
+                container.SPR.material = _matStrongTint;
+                container.SPR.color = desiredColor;
+                container.SPR.GetPropertyBlock(container.MatPropertyBlock);
+                container.MatPropertyBlock.SetColor(_matStrongTintColor, desiredColor);
+                container.SPR.SetPropertyBlock(container.MatPropertyBlock);
+            }
         }
 
-        public T GetComponent<T>(EQuadrupedsParts findTarget) where T : UnityEngine.Component
+        private void ApplyQuadrupedsBaseStrongTint(Color desiredColor)
         {
-            if (findTarget == EQuadrupedsParts.None || findTarget == EQuadrupedsParts.Max)
-                return null;
+            foreach (var container in _quadrupedsBodyDict.Values)
+            {
+                if (container.SPR == null)
+                    continue;
 
-            if (_quadrupedsBodyDict.TryGetValue(findTarget, out BodyContainer container) == false)
-                return null;
-
-            Type type = typeof(T);
-            if (type == typeof(Transform))
-                return container.TR as T;
-            else if (type == typeof(SpriteRenderer))
-                return container.SPR as T;
-
-            return null;
+                container.SPR.material = _matStrongTint;
+                container.SPR.color = desiredColor;
+                container.SPR.GetPropertyBlock(container.MatPropertyBlock);
+                container.MatPropertyBlock.SetColor(_matStrongTintColor, desiredColor);
+                container.SPR.SetPropertyBlock(container.MatPropertyBlock);
+            }
         }
 
-        // --- TEMP
-        public override Vector3 GetFirePosition() => base.GetFirePosition();
+        public void ResetMonsterMaterialsAndColors(EMonsterType monsterType)
+        {
+            switch (monsterType)
+            {
+                case EMonsterType.Bird:
+                    ResetBirdMaterialsAndColors();
+                    break;
+
+                case EMonsterType.Quadrupeds:
+                    ResetQuadrupedsMaterialsAndColors();
+                    break;
+            }
+        }
+
+        private void ResetBirdMaterialsAndColors()
+        {
+            foreach (var container in _birdBodyDict.Values)
+            {
+                if (container.SPR == null)
+                    continue;
+
+                container.SPR.material = _matDefault;
+                container.SPR.color = container.DefaultSPRColor;
+                container.SPR.GetPropertyBlock(container.MatPropertyBlock);
+                container.MatPropertyBlock.SetColor(_matStrongTintColor, container.DefaultMatColor);
+                container.SPR.SetPropertyBlock(container.MatPropertyBlock);
+            }
+        }
+
+        private void ResetQuadrupedsMaterialsAndColors()
+        {
+            foreach (var container in _quadrupedsBodyDict.Values)
+            {
+                if (container.SPR == null)
+                    continue;
+
+                container.SPR.material = _matDefault;
+                container.SPR.color = container.DefaultSPRColor;
+                container.SPR.GetPropertyBlock(container.MatPropertyBlock);
+                container.MatPropertyBlock.SetColor(_matStrongTintColor, container.DefaultMatColor);
+                container.SPR.SetPropertyBlock(container.MatPropertyBlock);
+            }
+        }
+        #endregion
+
+        #region Core
+        public override bool SetInfo(BaseObject owner, int dataID)
+        {
+            Owner = owner as Monster;
+            if (Owner == null)
+                return false;
+
+            MonsterData monsterData = Managers.Data.MonsterDataDict[dataID];
+            MonsterType = monsterData.MonsterType;
+            _heads = new Sprite[(int)EMonsterEmoji.Max];
+            InitBody(Managers.Data.MonsterDataDict[dataID], dataID);
+
+            return true;
+        }
+
+        private void InitBody(MonsterData monsterData, int dataID)
+        {
+            switch (monsterData.MonsterType)
+            {
+                case EMonsterType.Bird:
+                    {
+                        // --- Bird
+                        _birdBodyDict = new Dictionary<EBirdBody, BodyContainer>();
+                        BirdSpriteData bird = Managers.Data.BirdSpriteDataDict[dataID];
+
+                        // --- Body
+                        string tag = Util.GetStringFromEnum(EBirdBody.Body);
+                        Transform tr = Owner.MonsterAnim.transform;
+                        tr.transform.localPosition = bird.BodyPosition;
+                        if (monsterData.MonsterSize == EMonsterSize.Small)
+                            Owner.transform.localScale = new Vector3(ReadOnly.Util.MonsterSize_Small, ReadOnly.Util.MonsterSize_Small, 1);
+                        else if (monsterData.MonsterSize == EMonsterSize.Medium)
+                            Owner.transform.localScale = new Vector3(ReadOnly.Util.MonsterSize_Medium, ReadOnly.Util.MonsterSize_Medium, 1);
+                        else if (monsterData.MonsterSize == EMonsterSize.Large)
+                            Owner.transform.localScale = new Vector3(ReadOnly.Util.MonsterSize_Large, ReadOnly.Util.MonsterSize_Large, 1);
+                        SpriteRenderer spr = tr.GetComponent<SpriteRenderer>();
+                        spr.material = _matDefault;
+                        Sprite sprite = Managers.Resource.Load<Sprite>(bird.Body);
+                        if (sprite != null)
+                            spr.sprite = sprite;
+
+                        _birdBodyDict[EBirdBody.Body] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                                                defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
+                                                defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
+
+                        MaterialPropertyBlock matPB = _birdBodyDict[EBirdBody.Body].MatPropertyBlock;
+                        spr.GetPropertyBlock(matPB);
+                        matPB.SetColor(_matDefaultColor, _birdBodyDict[EBirdBody.Body].DefaultMatColor);
+                        spr.SetPropertyBlock(matPB);
+
+                        // --- Heads Emoji(if it has invalid value, error)
+                        _heads = new Sprite[(int)EMonsterEmoji.Max];
+                        for (int i = 0; i < _heads.Length; ++i)
+                        {
+                            _heads[i] = Managers.Resource.Load<Sprite>(bird.Heads[i]);
+                            if (_heads[i] == null)
+                            {
+                                Debug.LogError($"{nameof(InitBody)}, {bird.Heads[i]}");
+                                Debug.Break();
+                            }
+                        }
+
+                        tag = Util.GetStringFromEnum(EBirdBody.Head);
+                        tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        spr.material = _matDefault;
+                        if (_heads[(int)EMonsterEmoji.Normal] != null)
+                        {
+                            tr.localPosition = bird.HeadPosition;
+                            spr.sprite = _heads[(int)EMonsterEmoji.Normal];
+                            spr.sortingOrder = bird.HeadSortingOrder;
+                        }
+
+                        _birdBodyDict[EBirdBody.Head] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                                                defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
+                                                defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
+
+                        matPB = _birdBodyDict[EBirdBody.Head].MatPropertyBlock;
+                        spr.GetPropertyBlock(matPB);
+                        matPB.SetColor(_matDefaultColor, _birdBodyDict[EBirdBody.Head].DefaultMatColor);
+                        spr.SetPropertyBlock(matPB);
+
+                        // --- Wing
+                        tag = Util.GetStringFromEnum(EBirdBody.Wing);
+                        tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        spr.material = _matDefault;
+                        sprite = Managers.Resource.Load<Sprite>(bird.Wing);
+                        if (sprite != null)
+                        {
+                            tr.localPosition = bird.WingPosition;
+                            spr.sprite = sprite;
+                            spr.sortingOrder = bird.WingSortingOrder;
+                        }
+
+                        _birdBodyDict[EBirdBody.Wing] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                                                defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
+                                                defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
+
+                        matPB = _birdBodyDict[EBirdBody.Wing].MatPropertyBlock;
+                        spr.GetPropertyBlock(matPB);
+                        matPB.SetColor(_matDefaultColor, _birdBodyDict[EBirdBody.Wing].DefaultMatColor);
+                        spr.SetPropertyBlock(matPB);
+
+                        // --- LegL
+                        tag = Util.GetStringFromEnum(EBirdBody.LegL);
+                        tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        spr.material = _matDefault;
+                        sprite = Managers.Resource.Load<Sprite>(bird.LegL);
+                        if (sprite != null)
+                        {
+                            tr.localPosition = bird.LegLPosition;
+                            spr.sprite = sprite;
+                            spr.sortingOrder = bird.LegLSortingOrder;
+                        }
+
+                        _birdBodyDict[EBirdBody.LegL] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                                                defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
+                                                defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
+
+                        matPB = _birdBodyDict[EBirdBody.LegL].MatPropertyBlock;
+                        spr.GetPropertyBlock(matPB);
+                        matPB.SetColor(_matDefaultColor, _birdBodyDict[EBirdBody.LegL].DefaultMatColor);
+                        spr.SetPropertyBlock(matPB);
+
+                        // --- LegR
+                        tag = Util.GetStringFromEnum(EBirdBody.LegR);
+                        tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        spr.material = _matDefault;
+                        sprite = Managers.Resource.Load<Sprite>(bird.LegR);
+                        if (sprite != null)
+                        {
+                            tr.localPosition = bird.LegRPosition;
+                            spr.sprite = sprite;
+                            spr.sortingOrder = bird.LegRSortingOrder;
+                        }
+
+                        _birdBodyDict[EBirdBody.LegR] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                                                defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
+                                                defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
+
+                        matPB = _birdBodyDict[EBirdBody.LegR].MatPropertyBlock;
+                        spr.GetPropertyBlock(matPB);
+                        matPB.SetColor(_matDefaultColor, _birdBodyDict[EBirdBody.LegR].DefaultMatColor);
+                        spr.SetPropertyBlock(matPB);
+
+                        // --- Tail
+                        tag = Util.GetStringFromEnum(EBirdBody.Tail);
+                        tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        spr.material = _matDefault;
+                        sprite = Managers.Resource.Load<Sprite>(bird.Tail);
+                        if (sprite != null)
+                        {
+                            tr.localPosition = bird.TailPosition;
+                            spr.sprite = sprite;
+                            spr.sortingOrder = bird.TailSortingOrder;
+                        }
+
+                        _birdBodyDict[EBirdBody.Tail] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                                                defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
+                                                defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
+
+                        matPB = _birdBodyDict[EBirdBody.Tail].MatPropertyBlock;
+                        spr.GetPropertyBlock(matPB);
+                        matPB.SetColor(_matDefaultColor, _birdBodyDict[EBirdBody.Tail].DefaultMatColor);
+                        spr.SetPropertyBlock(matPB);
+                    }
+                    break;
+
+                case EMonsterType.Quadrupeds:
+                    {
+                        // --- Quadrupeds
+                        _quadrupedsBodyDict = new Dictionary<EQuadrupedsBody, BodyContainer>();
+                        QuadrupedsSpriteData quadrupeds = Managers.Data.QuadrupedsSpriteDataDict[dataID];
+
+                        // --- Body
+                        string tag = Util.GetStringFromEnum(EQuadrupedsBody.Body);
+                        Transform tr = Owner.MonsterAnim.transform;
+                        tr.localPosition = quadrupeds.BodyPosition;
+                        if (monsterData.MonsterSize == EMonsterSize.Small)
+                            Owner.transform.localScale = new Vector3(ReadOnly.Util.MonsterSize_Small, ReadOnly.Util.MonsterSize_Small, 1);
+                        else if (monsterData.MonsterSize == EMonsterSize.Medium)
+                            Owner.transform.localScale = new Vector3(ReadOnly.Util.MonsterSize_Medium, ReadOnly.Util.MonsterSize_Medium, 1);
+                        else if (monsterData.MonsterSize == EMonsterSize.Large)
+                            Owner.transform.localScale = new Vector3(ReadOnly.Util.MonsterSize_Large, ReadOnly.Util.MonsterSize_Large, 1);
+                        SpriteRenderer spr = tr.GetComponent<SpriteRenderer>();
+                        spr.material = _matDefault;
+                        Sprite sprite = Managers.Resource.Load<Sprite>(quadrupeds.Body);
+                        if (sprite != null)
+                            spr.sprite = sprite;
+
+                        _quadrupedsBodyDict[EQuadrupedsBody.Body] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                                                defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
+                                                defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
+
+                        MaterialPropertyBlock matPB = _quadrupedsBodyDict[EQuadrupedsBody.Body].MatPropertyBlock;
+                        spr.GetPropertyBlock(matPB);
+                        matPB.SetColor(_matDefaultColor, _quadrupedsBodyDict[EQuadrupedsBody.Body].DefaultMatColor);
+                        spr.SetPropertyBlock(matPB);
+
+                        // --- Heads Emoji(if it has invalid value, error)
+                        _heads = new Sprite[(int)EMonsterEmoji.Max];
+                        for (int i = 0; i < _heads.Length; ++i)
+                        {
+                            _heads[i] = Managers.Resource.Load<Sprite>(quadrupeds.Heads[i]);
+                            if (_heads[i] == null)
+                            {
+                                Debug.LogError($"{nameof(InitBody)}, {quadrupeds.Heads[i]}");
+                                Debug.Break();
+                            }
+                        }
+
+                        tag = Util.GetStringFromEnum(EQuadrupedsBody.Head);
+                        tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        spr.material = _matDefault;
+                        if (_heads[(int)EMonsterEmoji.Normal] != null)
+                        {
+                            tr.localPosition = quadrupeds.HeadPosition;
+                            spr.sprite = _heads[(int)EMonsterEmoji.Normal];
+                            spr.sortingOrder = quadrupeds.HeadSortingOrder;
+                        }
+
+                        _quadrupedsBodyDict[EQuadrupedsBody.Head] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                                                defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
+                                                defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
+
+                        matPB = _quadrupedsBodyDict[EQuadrupedsBody.Head].MatPropertyBlock;
+                        spr.GetPropertyBlock(matPB);
+                        matPB.SetColor(_matDefaultColor, _quadrupedsBodyDict[EQuadrupedsBody.Head].DefaultMatColor);
+                        spr.SetPropertyBlock(matPB);
+
+                        // --- LegFrontL
+                        tag = Util.GetStringFromEnum(EQuadrupedsBody.LegFrontL);
+                        tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        spr.material = _matDefault;
+                        sprite = Managers.Resource.Load<Sprite>(quadrupeds.LegFrontL);
+                        if (sprite != null)
+                        {
+                            tr.localPosition = quadrupeds.LegFrontLPosition;
+                            spr.sprite = sprite;
+                            spr.sortingOrder = quadrupeds.LegFrontLSortingOrder;
+                        }
+
+                        _quadrupedsBodyDict[EQuadrupedsBody.LegFrontL] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                                                defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
+                                                defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
+
+                        matPB = _quadrupedsBodyDict[EQuadrupedsBody.LegFrontL].MatPropertyBlock;
+                        spr.GetPropertyBlock(matPB);
+                        matPB.SetColor(_matDefaultColor, _quadrupedsBodyDict[EQuadrupedsBody.LegFrontL].DefaultMatColor);
+                        spr.SetPropertyBlock(matPB);
+
+                        // --- LegFrontR
+                        tag = Util.GetStringFromEnum(EQuadrupedsBody.LegFrontR);
+                        tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        spr.material = _matDefault;
+                        sprite = Managers.Resource.Load<Sprite>(quadrupeds.LegFrontR);
+                        if (sprite != null)
+                        {
+                            tr.localPosition = quadrupeds.LegFrontRPosition;
+                            spr.sprite = sprite;
+                            spr.sortingOrder = quadrupeds.LegFrontRSortingOrder;
+                        }
+
+                        _quadrupedsBodyDict[EQuadrupedsBody.LegFrontR] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                                                defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
+                                                defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
+
+                        matPB = _quadrupedsBodyDict[EQuadrupedsBody.LegFrontR].MatPropertyBlock;
+                        spr.GetPropertyBlock(matPB);
+                        matPB.SetColor(_matDefaultColor, _quadrupedsBodyDict[EQuadrupedsBody.LegFrontR].DefaultMatColor);
+                        spr.SetPropertyBlock(matPB);
+
+                        // --- LegBackL
+                        tag = Util.GetStringFromEnum(EQuadrupedsBody.LegBackL);
+                        tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        spr.material = _matDefault;
+                        sprite = Managers.Resource.Load<Sprite>(quadrupeds.LegBackL);
+                        if (sprite != null)
+                        {
+                            tr.localPosition = quadrupeds.LegBackLPosition;
+                            spr.sprite = sprite;
+                            spr.sortingOrder = quadrupeds.LegBackLSortingOrder;
+                        }
+
+                        _quadrupedsBodyDict[EQuadrupedsBody.LegBackL] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                                                defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
+                                                defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
+
+                        matPB = _quadrupedsBodyDict[EQuadrupedsBody.LegBackL].MatPropertyBlock;
+                        spr.GetPropertyBlock(matPB);
+                        matPB.SetColor(_matDefaultColor, _quadrupedsBodyDict[EQuadrupedsBody.LegBackL].DefaultMatColor);
+                        spr.SetPropertyBlock(matPB);
+
+                        // --- LegBackR
+                        tag = Util.GetStringFromEnum(EQuadrupedsBody.LegBackR);
+                        tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        spr.material = _matDefault;
+                        sprite = Managers.Resource.Load<Sprite>(quadrupeds.LegBackR);
+                        if (sprite != null)
+                        {
+                            tr.localPosition = quadrupeds.LegBackRPosition;
+                            spr.sprite = sprite;
+                            spr.sortingOrder = quadrupeds.LegBackRSortingOrder;
+                        }
+
+                        _quadrupedsBodyDict[EQuadrupedsBody.LegBackR] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                                                defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
+                                                defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
+
+                        matPB = _quadrupedsBodyDict[EQuadrupedsBody.LegBackR].MatPropertyBlock;
+                        spr.GetPropertyBlock(matPB);
+                        matPB.SetColor(_matDefaultColor, _quadrupedsBodyDict[EQuadrupedsBody.LegBackR].DefaultMatColor);
+                        spr.SetPropertyBlock(matPB);
+
+                        // --- Tail
+                        tag = Util.GetStringFromEnum(EQuadrupedsBody.Tail);
+                        tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
+                        spr = tr.GetComponent<SpriteRenderer>();
+                        spr.material = _matDefault;
+                        sprite = Managers.Resource.Load<Sprite>(quadrupeds.Tail);
+                        if (sprite != null)
+                        {
+                            tr.localPosition = quadrupeds.TailPosition;
+                            spr.sprite = sprite;
+                            spr.sortingOrder = quadrupeds.TailSortingOrder;
+                        }
+
+                        _quadrupedsBodyDict[EQuadrupedsBody.Tail] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                                                defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
+                                                defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
+
+                        matPB = _quadrupedsBodyDict[EQuadrupedsBody.Tail].MatPropertyBlock;
+                        spr.GetPropertyBlock(matPB);
+                        matPB.SetColor(_matDefaultColor, _quadrupedsBodyDict[EQuadrupedsBody.Tail].DefaultMatColor);
+                        spr.SetPropertyBlock(matPB);
+                    }
+                    break;
+            }
+        }
+        #endregion
+
+        #region Coroutines
+        protected override IEnumerator CoHurtFlashEffect()
+        {
+            ApplyMonsterStrongTint(Owner.MonsterType, Color.white);
+            yield return new WaitForSeconds(0.1f);
+            ResetMonsterMaterialsAndColors(Owner.MonsterType);
+        }
+        #endregion
     }
 }

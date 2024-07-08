@@ -6,10 +6,8 @@ using static STELLAREST_F1.Define;
 namespace STELLAREST_F1
 {
     /*
-        Hero Idle : 60 frame
-        hero Move : 25 frame
-        // 공속 나중에 따로 조정
-        Paladin Attack : 30 frame
+        Hero Idle : 60 frame,  hero Move : 25 frame        
+        Paladin Attack : 30 frame // 공속 나중에 따로 조정
         Archer Attack : 50 frame
         Wizard Attack : 60 frame
     */
@@ -28,56 +26,6 @@ namespace STELLAREST_F1
 
             _heroOwner = owner as Hero;
         }
-
-        // public override void UpdateAnimation()
-        // {
-        //     if (Owner == null)
-        //         return;
-
-        //     // 일단 Emoji만 설정
-        //     switch (Owner.CreatureAIState)
-        //     {
-        //         case ECreatureAIState.Idle:
-        //             Owner.HeroBody.SetEmoji(EHeroEmoji.Idle);
-        //             break;
-
-        //         case ECreatureAIState.Move:
-        //             Owner.HeroBody.SetEmoji(EHeroEmoji.Move);
-        //             break;
-
-        //         case ECreatureAIState.Skill_Attack:
-        //             {
-        //                 // --- 이미 쿨타임은 돌아가고 있는 상태. 타겟은 없더라도 스킬은 실행되었기 때문에 쿨타임만 돌림.
-        //                 if (Owner.Target.IsValid() == false)
-        //                     return;
-
-        //                 Owner.HeroBody.SetEmoji(EHeroEmoji.Skill_Attack);
-        //             }
-        //             break;
-
-        //         case ECreatureAIState.Skill_A:
-        //             Owner.HeroBody.SetEmoji(EHeroEmoji.Skill_Attack);
-        //             break;
-
-        //         case ECreatureAIState.Skill_B:
-        //             Owner.HeroBody.SetEmoji(EHeroEmoji.Skill_Attack);
-        //             break;
-
-        //         case ECreatureAIState.CollectEnv:
-        //             // if (_heroOwner.DataTemplateID == ReadOnly.Numeric.DataID_Hero_Wizard)
-        //             //     _heroOwner.HeroBody.SetEmoji(EHeroEmoji.Move);
-        //             // else
-        //             // 캐릭터마다 Emoji를 어떻게 설정할지 고민해볼것
-        //             _heroOwner.HeroBody.SetEmoji(EHeroEmoji.Idle);
-        //             break;
-
-        //         case ECreatureAIState.Dead:
-        //             _heroOwner.HeroBody.SetEmoji(EHeroEmoji.Dead);
-        //             break;
-        //     }
-
-        //     //PlayCreatureAnimation(_heroOwner.CreatureState);
-        // }
 
         public override void Flip(ELookAtDirection lookAtDir)
         {

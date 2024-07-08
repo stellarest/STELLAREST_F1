@@ -18,13 +18,15 @@ namespace STELLAREST_F1
                 if (_envState != value)
                 {
                     _envState = value;
-                    EnvAnim.UpdateAnimation();
+                    if (_envState == EEnvState.Dead)
+                        EnvAnim.Dead();
                 }
             }
         }
 
         public EnvAnimation EnvAnim { get; private set; } = null;
         public EEnvType EnvType { get; private set; } = EEnvType.None;
+        public EnvBody EnvBody { get; private set; } = null;
 
         public override bool Init()
         {
@@ -34,6 +36,7 @@ namespace STELLAREST_F1
             ObjectType = EObjectType.Env;
             RigidBody.bodyType = RigidbodyType2D.Static;
             Collider.isTrigger = true;
+            EnvBody = GetComponent<EnvBody>();
 
             return true;
         }
@@ -42,7 +45,8 @@ namespace STELLAREST_F1
         {
             if (base.SetInfo(dataID) == false)
             {
-                EnterInGame();
+                // --- BaseObject에서 호출하는중!
+                //EnterInGame();
                 return false;
             }
         
@@ -54,12 +58,12 @@ namespace STELLAREST_F1
         protected override void InitialSetInfo(int dataID)
         {
             base.InitialSetInfo(dataID);
+            EnvBody.SetInfo(this, dataID);
             EnvAnim = BaseAnim as EnvAnimation;
             EnvAnim.SetInfo(dataID, this);
             Managers.Sprite.SetInfo(dataID, this);
 
             EnvData = Managers.Data.EnvDataDict[dataID];
-            //EnvType = Util.GetEnumFromString<EEnvType>(EnvData.Type);
             EnvType = EnvData.EnvType;
 
             gameObject.name += $"_{EnvData.NameTextID.Replace(" ", "")}";
@@ -76,6 +80,7 @@ namespace STELLAREST_F1
             base.EnterInGame();
             ShowBody(true);            
             EnvState = EEnvState.Idle;
+            Debug.Log($"<color=white>EnterInGame, {gameObject.name}, {EnvState}</color>");
         }
 
         public override void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
@@ -84,34 +89,27 @@ namespace STELLAREST_F1
                 return;
 
             float finalDamage = 1f;
-            //if (attacker.ObjectRarity == EObjectRarity.Elite)
             if ((attacker as Hero).CreatureRarity == ECreatureRarity.Elite) // TEMP
                 finalDamage++;
 
-            EnvState = EEnvState.OnDamaged;
-
             // TODO : Show UI
             Hp = UnityEngine.Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
-            // Debug.Log($"{gameObject.name}: {Hp}/{MaxHp}");
-
             Managers.Object.ShowDamageFont(position: this.CenterPosition, damage: finalDamage, isCritical: false);
-            //Debug.Log($"{gameObject.name} is damaged. ({Hp} / {MaxHp})");
-
             if (Hp <= 0f)
             {
                 Hp = 0f;
                 OnDead(attacker, skillFromAttacker);
+                return;
             }
+            EnvBody.StartCoHurtFlashEffect();
         }
 
         public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
         {
-            // (attacker as Creature).StartCoPauseSearchTarget(0.5f); // TEST
+            EnvBody.ResetEnvMaterialsAndColors(EnvType);
             EnvState = EEnvState.Dead;
             base.OnDead(attacker, skillFromAttacker);
-
             // --- TODO : Drop Item
-            // Managers.Object.Despawn(this);
         }
     }
 }

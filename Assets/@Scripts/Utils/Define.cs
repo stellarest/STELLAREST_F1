@@ -15,6 +15,7 @@ namespace STELLAREST_F1
             None = -1,
             Common,
             Elite,
+            Max = Elite + 1
         }
 
         public enum ECollectEnvRarity
@@ -98,33 +99,6 @@ namespace STELLAREST_F1
             Max = Dead + 1
         }
 
-        // public enum ECreatureUpperAnimState // --> ECreatureUpperAnimState
-        // {
-        //     None = -1,
-        //     UA_Idle,
-        //     UA_MoveStart,
-        //     UA_Move,
-        //     UA_MoveEnd,
-        //     UA_Skill_Attack,
-        //     Max
-        // }
-
-        // public enum ECreatureLowerAnimState // --> ECreatureLowerAnimState
-        // {
-        //     None = -1,
-        //     LA_Idle,
-        //     LA_Move,
-        //     Max
-        // }
-
-        // public enum ECreatureMoveState
-        // {
-        //     None,
-        //     //MoveToTarget,
-        //     Move,
-        //     ForceMove,
-        // }
-
         public enum ELookAtDirection
         {
             Left = -1,
@@ -148,13 +122,13 @@ namespace STELLAREST_F1
         public enum EMonsterEmoji
         {
             None = -1,
-            Default,
+            Normal,
             Angry,
             Dead,
             Max = Dead + 1
         }
 
-        public enum EHeroBodyParts
+        public enum EHeroBody
         {
             Head,
             UpperBody,
@@ -162,13 +136,12 @@ namespace STELLAREST_F1
             Weapon,
         }
 
-        public enum EHeroHead
+        public enum EHeroBody_Head
         {
-            None = -1,
-            HeadSkin,
+            Head,
             Hair,
-            Eyes,
             Eyebrows,
+            Eyes,
             Mouth,
             Ears,
             Earrings,
@@ -179,73 +152,73 @@ namespace STELLAREST_F1
             Max = Helmet + 1
         }
 
-        public enum EHeroUpperBody
+        public enum EHeroBody_Upper
         {
-            None = -1,
-            TorsoSkin,
             Torso,
-            Cape,
-            ArmLSkin,
+            Torso_Armor,
+            Cape_Armor,
             ArmL,
-            ForearmLSkin,
+            ArmL_Armor,
             ForearmL,
-            HandLSkin,
+            ForearmL_Armor,
             HandL,
-            FingerSkin,
+            HandL_Armor,
             Finger,
-            ArmRSkin,
+            Finger_Armor,
             ArmR,
-            ForearmRSkin,
+            ArmR_Armor,
             ForearmR,
-            SleeveR,
-            HandRSkin,
+            ForearmR_Armor,
+            SleeveR_Armor,
             HandR,
-            Max = HandR + 1
+            HandR_Armor,
+            Max = HandR_Armor + 1
         }
 
-        public enum EHeroLowerBody
+        public enum EHeroBody_Lower
         {
-            None = -1,
-            PelvisSkin,
             Pelvis,
-            LegLSkin,
+            Pelvis_Armor,
             LegL,
-            ShinLSkin,
+            LegL_Armor,
             ShinL,
-            LegRSkin,
+            ShinL_Armor,
             LegR,
-            ShinRSkin,
+            LegR_Armor,
             ShinR,
-            Max = ShinR + 1
+            ShinR_Armor,
+            Max = ShinR_Armor + 1
         }
 
-        public enum EHeroWeapon
+        public enum EHeroBody_Weapon
         {
-            None = -1,
-            WeaponL,
-            WeaponLSocket,
-            WeaponLChildGroup,
-            WeaponR,
-            WeaponRSocket,
-            WeaponRChildGroup,
-            Max = WeaponRChildGroup + 1
+            WeaponL_Armor,
+            WeaponL_FireSocket,
+            WeaponL_ChildsRoot,
+            WeaponL_Armor_Child01,
+            WeaponL_Armor_Child02,
+            WeaponL_Armor_Child03,
+            WeaponR_Armor,
+            WeaponR_FireSocket,
+            WeaponR_ChildsRoot,
+            WeaponR_Armor_Child01,
+            WeaponR_Armor_Child02,
+            WeaponR_Armor_Child03,
+            Max = WeaponR_Armor_Child03 + 1
         }
 
-        public enum EBirdBodyParts
+        public enum EBirdBody
         {
-            None = -1,
             Body,
             Head,
             Wing,
             LegL,
             LegR,
             Tail,
-            Max = Tail + 1
         }
 
-        public enum EQuadrupedsParts
+        public enum EQuadrupedsBody
         {
-            None = -1,
             Body,
             Head,
             LegFrontL,
@@ -253,7 +226,37 @@ namespace STELLAREST_F1
             LegBackL,
             LegBackR,
             Tail,
-            Max = Tail + 1
+        }
+
+        public enum ETreeBody
+        {
+            Trunk,
+            Patch,
+            Stump,
+            EndParticle,
+            Fruits_ChildsRoot,
+            Fruits_Child_01,
+            Fruits_Child_02,
+            Fruits_Child_03,
+            Shadow,
+        }
+
+        public enum ERockBody
+        {
+            Rock, 
+            Empty,
+            Ore,
+            OreShadow,
+            OreLight,
+            OreParticle,
+            EndParticle,
+            Spot1,
+            Spot2,
+            Spot3,
+            Fragment1,
+            Fragment2,
+            Fragment3,
+            Shadow,
         }
 
         public enum EEnvType
@@ -267,7 +270,6 @@ namespace STELLAREST_F1
         {
             None,
             Idle,
-            OnDamaged,
             Dead,
         }
 
@@ -473,6 +475,9 @@ namespace STELLAREST_F1
                 public static readonly string Mat_Default = "Default.mat";
                 public static readonly string Mat_EyesPaint = "EyesPaint.mat";
                 public static readonly string Mat_StrongTint = "StrongTint.mat";
+
+                public static readonly string Mat_RockFragments = "RockFragments.mat";
+                public static readonly string Mat_Glow = "Glow.mat";
             }
 
             public static class DataSet
@@ -530,8 +535,8 @@ namespace STELLAREST_F1
                 // + Monk
                 // + Blood Mage
 
-                // + 
-                // + 
+                // + Black Smith
+                // + Elemental Master
 
                 // + Guardian
                 // + 
@@ -637,83 +642,80 @@ namespace STELLAREST_F1
                 public static readonly string AnimBody = "AnimationBody";
                 public static readonly string AnimationBody = "AnimationBody";
 
+                // --- Sprites
                 public static readonly string Pickaxe_Common_SP = "Pickaxe_Common.sprite";
                 public static readonly string Pickaxe_Elite_SP = "Pickaxe_Elite.sprite";
                 public static readonly string WoodcutterAxe_Common_SP = "WoodcutterAxe_Common.sprite";
                 public static readonly string WoodcutterAxe_Elite_SP = "WoodcutterAxe_Elite.sprite";
-
-                // Sprite & Material - Env Rock
-                public static readonly string ERock_Rock_SP = "StoneRock_Rock.sprite";
-                public static readonly string ERock_Empty_SP = "StoneRock_Empty.sprite";
-                public static readonly string ERock_Mat = "RockFragments";
-
-                // Sprite - Common
                 public static readonly string Shadow_SP = "Shadow.sprite";
+
+                public static readonly string EnvRock_Rock_SP = "StoneRock_Rock.sprite";
+                public static readonly string EnvRoc_Empty_SP = "StoneRock_Empty.sprite";
+
                 public static readonly string Light_SP = "Light.sprite";
 
                 // Material - Common
-                public static readonly string Glow_Mat = "Glow";
 
-                // Hero Armored Body
-                public static readonly string HBody_HeadSkin = "Head";
-                public static readonly string HBody_Hair = "Hair";
-                public static readonly string HBody_Eyes = "Eyes";
-                public static readonly string HBody_Eyebrows = "Eyebrows";
-                public static readonly string HBody_Mouth = "Mouth";
-                public static readonly string HBody_Ears = "Ears";
-                public static readonly string HBody_Earrings = "Earrings";
-                public static readonly string HBody_Beard = "Beard";
-                public static readonly string HBody_Mask = "Mask";
-                public static readonly string HBody_Glasses = "Glasses";
-                public static readonly string HBody_Helmet = "Helmet";
+                // --- Hero: Head
+                // public static readonly string HBody_HeadSkin = "Head";
+                // public static readonly string HBody_Hair = "Hair";
+                // public static readonly string HBody_Eyes = "Eyes";
+                // public static readonly string HBody_Eyebrows = "Eyebrows";
+                // public static readonly string HBody_Mouth = "Mouth";
+                // public static readonly string HBody_EarsSkin = "Ears";
+                // public static readonly string HBody_Earrings = "Earrings";
+                // public static readonly string HBody_Beard = "Beard";
+                // public static readonly string HBody_Mask = "Mask";
+                // public static readonly string HBody_Glasses = "Glasses";
+                // public static readonly string HBody_Helmet = "Helmet";
 
-                public static readonly string HBody_TorsoSkin = "Torso";
-                public static readonly string HBody_Torso = "Torso_Armor";
-                public static readonly string HBody_Cape = "Cape_Armor";
-                public static readonly string HBody_ArmLSkin = "ArmL";
-                public static readonly string HBody_ArmL = "ArmL_Armor";
-                public static readonly string HBody_ForearmLSkin = "ForearmL";
-                public static readonly string HBody_ForearmL = "ForearmL_Armor";
-                public static readonly string HBody_HandLSkin = "HandL";
-                public static readonly string HBody_HandL = "HandL_Armor";
-                public static readonly string HBody_FingerSkin = "Finger";
-                public static readonly string HBody_Finger = "Finger_Armor";
+                // --- Hero: UpperBody
+                // public static readonly string HBody_TorsoSkin = "Torso";
+                // public static readonly string HBody_Torso = "Torso_Armor";
+                // public static readonly string HBody_Cape = "Cape_Armor";
+                // public static readonly string HBody_ArmLSkin = "ArmL";
+                // public static readonly string HBody_ArmL = "ArmL_Armor";
+                // public static readonly string HBody_ForearmLSkin = "ForearmL";
+                // public static readonly string HBody_ForearmL = "ForearmL_Armor";
+                // public static readonly string HBody_HandLSkin = "HandL";
+                // public static readonly string HBody_HandL = "HandL_Armor";
+                // public static readonly string HBody_FingerSkin = "Finger";
+                // public static readonly string HBody_Finger = "Finger_Armor";
 
-                // Hero Armored WeaponL
-                public static readonly string HBody_WeaponL = "WeaponL_Armor";
+                // public static readonly string HBody_ArmRSkin = "ArmR";
+                // public static readonly string HBody_ArmR = "ArmR_Armor";
+                // public static readonly string HBody_ForearmRSkin = "ForearmR";
+                // public static readonly string HBody_ForearmR = "ForearmR_Armor";
+                // public static readonly string HBody_SleeveR = "SleeveR_Armor";
+                // public static readonly string HBody_HandRSkin = "HandR";
+                // public static readonly string HBody_HandR = "HandR_Armor";
 
-                public static readonly string HBody_ArmRSkin = "ArmR";
-                public static readonly string HBody_ArmR = "ArmR_Armor";
-                public static readonly string HBody_ForearmRSkin = "ForearmR";
-                public static readonly string HBody_ForearmR = "ForearmR_Armor";
-                public static readonly string HBody_SleeveR = "SleeveR_Armor";
-                public static readonly string HBody_HandRSkin = "HandR";
-                public static readonly string HBody_HandR = "HandR_Armor";
+                // --- Hero: LowerBody
+                // public static readonly string HBody_PelvisSkin = "Pelvis";
+                // public static readonly string HBody_Pelvis = "Pelvis_Armor";
+                // public static readonly string HBody_LegLSkin = "LegL";
+                // public static readonly string HBody_LegL = "LegL_Armor";
+                // public static readonly string HBody_ShinLSkin = "ShinL";
+                // public static readonly string HBody_ShinL = "ShinL_Armor";
+                // public static readonly string HBody_LegRSkin = "LegR";
+                // public static readonly string HBody_LegR = "LegR_Armor";
+                // public static readonly string HBody_ShinRSkin = "ShinR";
+                // public static readonly string HBody_ShinR = "ShinR_Armor";
 
-                // Hero Armored WeaponR
-                public static readonly string HBody_WeaponR = "WeaponR_Armor";
+                // --- Hero: Weapon
+                // public static readonly string HBody_WeaponL = "WeaponL_Armor";
+                // public static readonly string HBody_WeaponR = "WeaponR_Armor";
 
-                public static readonly string HBody_PelvisSkin = "Pelvis";
-                public static readonly string HBody_Pelvis = "Pelvis_Armor";
-                public static readonly string HBody_LegLSkin = "LegL";
-                public static readonly string HBody_LegL = "LegL_Armor";
-                public static readonly string HBody_ShinLSkin = "ShinL";
-                public static readonly string HBody_ShinL = "ShinL_Armor";
-                public static readonly string HBody_LegRSkin = "LegR";
-                public static readonly string HBody_LegR = "LegR_Armor";
-                public static readonly string HBody_ShinRSkin = "ShinR";
-                public static readonly string HBody_ShinR = "ShinR_Armor";
-
-                // Monster Body
-                public static readonly string MBody_Head = "Head";
-                public static readonly string MBody_Wing = "Wing";
-                public static readonly string MBody_LegL = "LegL";
-                public static readonly string MBody_LegFrontL = "LegFrontL";
-                public static readonly string MBody_LegBackL = "LegBackL";
-                public static readonly string MBody_LegR = "LegR";
-                public static readonly string MBody_LegFrontR = "LegFrontR";
-                public static readonly string MBody_LegBackR = "LegBackR";
-                public static readonly string MBody_Tail = "Tail";
+                // --- Monster
+                // public static readonly string MBody_Head = "Head";
+                // public static readonly string MBody_Wing = "Wing";
+                // public static readonly string MBody_LegL = "LegL";
+                // public static readonly string MBody_LegFrontL = "LegFrontL";
+                // public static readonly string MBody_LegBackL = "LegBackL";
+                // public static readonly string MBody_LegR = "LegR";
+                // public static readonly string MBody_LegFrontR = "LegFrontR";
+                // public static readonly string MBody_LegBackR = "LegBackR";
+                // public static readonly string MBody_Tail = "Tail";
 
                 // Env Body
                 public static readonly string ETreeBody_Trunk = "Trunk";

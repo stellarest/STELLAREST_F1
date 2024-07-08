@@ -68,6 +68,9 @@ namespace STELLAREST_F1
             return default(T);
         }
 
+        public static string GetStringFromEnum<T>(T enumValue) where T : struct, Enum
+            => enumValue.ToString();
+
         public static System.Type GetTypeFromName(string className)
         {
             EClassName eClassName = GetEnumFromString<EClassName>(className);

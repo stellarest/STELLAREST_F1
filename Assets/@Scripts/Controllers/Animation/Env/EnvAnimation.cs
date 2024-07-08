@@ -27,25 +27,5 @@ namespace STELLAREST_F1
 
             _owner = owner as Env;
         }
-
-        public override void UpdateAnimation()
-        {
-            if (_owner == null)
-                return;
-
-            switch (_owner.EnvState)
-            {
-                case EEnvState.Idle:
-                    //Idle();
-                    break;
-
-                case EEnvState.OnDamaged:
-                    break;
-
-                case EEnvState.Dead:
-                    // Dead();
-                    break;
-            }
-        }
     }
 }

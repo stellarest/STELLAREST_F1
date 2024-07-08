@@ -89,9 +89,9 @@ namespace STELLAREST_F1.Data
         public string[] Eyes;
         public string[] EyesColors;
 
-        public string[] Mouth;
-        public string[] MouthColors;
-
+        public string[] Mouth; // --> Mouths
+        public string[] MouthColors; // --> MouthsColors
+ 
         public string Beard;
         public string BeardColor;
 
@@ -211,7 +211,7 @@ namespace STELLAREST_F1.Data
     public class MonsterData : CreatureData
     {
         public EMonsterType MonsterType;
-        public string MonsterSize;
+        public EMonsterSize MonsterSize;
         public int DropItemID;
     }
 
@@ -233,7 +233,6 @@ namespace STELLAREST_F1.Data
     [Serializable]
     public class MonsterSpriteData : BaseData
     {
-        public string SkinColor;
     }
 
     [Serializable]

@@ -28,39 +28,6 @@ namespace STELLAREST_F1
             _monsterOwner = owner as Monster;
         }
 
-        // public override void UpdateAnimation()
-        // {
-        //     if (_monsterOwner == null)
-        //         return;
-
-        //     switch (_monsterOwner.CreatureAIState)
-        //     {
-        //         case ECreatureAIState.Idle:
-        //             _monsterOwner.MonsterBody.SetEmoji(EMonsterEmoji.Default);
-        //             break;
-
-        //         case ECreatureAIState.Move:
-        //             _monsterOwner.MonsterBody.SetEmoji(EMonsterEmoji.Default);
-        //             break;
-
-        //         case ECreatureAIState.Skill_Attack:
-        //             {
-        //                 // --- 이미 쿨타임은 돌아가고 있는 상태. 타겟은 없더라도 스킬은 실행되었기 때문에 쿨타임만 돌림.
-        //                 if (_monsterOwner.Target.IsValid() == false)
-        //                     return;
-
-        //                 _monsterOwner.MonsterBody.SetEmoji(EMonsterEmoji.Angry);
-        //             }
-        //             break;
-
-        //         case ECreatureAIState.Dead:
-        //             _monsterOwner.MonsterBody.SetEmoji(EMonsterEmoji.Dead);
-        //             break;
-        //     }
-
-        //     PlayCreatureAnimation(_monsterOwner.CreatureAIState);
-        // }
-
         public override void Flip(ELookAtDirection lookAtDir)
         {
             // Monster LookAtDir Default Sprite : Left
@@ -75,7 +42,7 @@ namespace STELLAREST_F1
         public override void OnUpperIdleEnter()
         {
             if (Owner.Target.IsValid() == false)
-                Owner.MonsterBody.MonsterEmoji = EMonsterEmoji.Default;
+                Owner.MonsterBody.MonsterEmoji = EMonsterEmoji.Normal;
             else
                 Owner.MonsterBody.MonsterEmoji = EMonsterEmoji.Angry;
             
@@ -101,7 +68,7 @@ namespace STELLAREST_F1
 
         public override void OnUpperMoveEnter()
         {
-            Owner.MonsterBody.MonsterEmoji = EMonsterEmoji.Default;
+            Owner.MonsterBody.MonsterEmoji = EMonsterEmoji.Normal;
             base.OnUpperMoveEnter();
             if (Owner.IsValid() == false)
                 return;
