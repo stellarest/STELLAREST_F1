@@ -1,8 +1,5 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using STELLAREST_F1.Data;
-using Unity.VisualScripting;
 using UnityEngine;
 using static STELLAREST_F1.Define;
 
@@ -12,7 +9,7 @@ namespace STELLAREST_F1
     {
         public Creature Owner { get; private set; } = null;
         public SkillBase Skill { get; private set; } = null;
-        public Data.ProjectileData ProjectileData { get; private set; } = null;
+        public ProjectileData ProjectileData { get; private set; } = null;
         public ProjectileMotionBase ProjectileMotion { get; private set; } = null;
         public EProjectileMotionType ProjectileMotionType { get; private set; } = EProjectileMotionType.None;
 
@@ -46,7 +43,17 @@ namespace STELLAREST_F1
             ProjectileData = projectileData;
             Owner = owner as Creature;
             Skill = Owner.CreatureSkill.FindSkill(dataID);
-            Managers.Sprite.SetInfo(dataID, target: this);
+
+            SpriteRenderer spr = GetComponent<SpriteRenderer>();
+            Sprite sprite = Managers.Resource.Load<Sprite>(projectileData.Body);
+            if (sprite != null)
+            {
+                spr.sprite = sprite;
+                if (ColorUtility.TryParseHtmlString(projectileData.BodyColor, out Color bodyColor))
+                    spr.color = bodyColor;
+                // 이미 BaseObject의 SortingGroup으로 layer 정렬 중임
+                //spr.sortingOrder = ReadOnly.Numeric.SortingLayer_Projectile;
+            }
 
             // Set Size
             EProjectileSize size = Util.GetEnumFromString<EProjectileSize>(projectileData.ProjectileSize);

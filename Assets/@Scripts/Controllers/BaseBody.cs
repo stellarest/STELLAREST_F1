@@ -33,8 +33,6 @@ namespace STELLAREST_F1
 
     public class BaseBody : InitBase
     {
-        //public int DataTemplateID { get; protected set; } = -1;
-
         protected Material _matDefault = null;
         protected const string _matDefaultColor = "_Color";
 
@@ -54,12 +52,50 @@ namespace STELLAREST_F1
 
             return true;
         }
+        
+        // --- Mat: Default
+        protected virtual void ApplyDefaultMat_Alpha(float alphaValue){ }
 
-        public void StartCoHurtFlashEffect()
+        // --- Mat: Strong Tint
+        protected virtual void ApplyStrongTintMat_Color(Color desiredColor) { }
+
+        // --- Reset
+        public virtual void ResetMaterialsAndColors() { }
+
+        // --- Effect: Hurt Flash
+        public void StartCoHurtFlashEffect(bool isCritical = false) => StartCoroutine(CoHurtFlashEffect(isCritical));
+        protected virtual IEnumerator CoHurtFlashEffect(bool isCritical = false)
         {
-            StartCoroutine(CoHurtFlashEffect());
+            if (isCritical == false)
+                ApplyStrongTintMat_Color(Color.white);
+            else
+                ApplyStrongTintMat_Color(Color.red);
+            yield return new WaitForSeconds(0.1f);
+            ResetMaterialsAndColors();
         }
 
-        protected virtual IEnumerator CoHurtFlashEffect() { yield return null; }
+        // --- Effect: Fade Out
+        public void StartCoFadeOutEffect(System.Action endCallback = null)
+        {
+            ResetMaterialsAndColors();
+            StartCoroutine(CoFadeOutEffect(endCallback));
+        }
+        protected virtual IEnumerator CoFadeOutEffect(System.Action endCallback = null)
+        {
+            yield return new WaitForSeconds(ReadOnly.Util.DesiredStartFadeOutTime);
+
+            float delta = 0f;
+            float percent = 1f;
+            while (percent >= 0f)
+            {
+                delta += Time.deltaTime;
+                percent = 1f - (delta / ReadOnly.Util.DesiredEndFadeOutTime);
+                ApplyDefaultMat_Alpha(percent);
+                yield return null;
+            }
+
+            ApplyDefaultMat_Alpha(0f);
+            endCallback?.Invoke();
+        }
     }
 }

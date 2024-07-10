@@ -114,6 +114,7 @@ namespace STELLAREST_F1
         protected override void EnterInGame()
         {
             // --- Default Monsters Dir: Left
+            MonsterBody.MonsterEmoji = EMonsterEmoji.Normal;
             LookAtDir = ELookAtDirection.Left;
             base.EnterInGame();
             CreatureAIState = ECreatureAIState.Idle;
@@ -126,7 +127,6 @@ namespace STELLAREST_F1
 
         public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
         {
-            MonsterBody.ResetMonsterMaterialsAndColors(MonsterType);
             base.OnDead(attacker, skillFromAttacker);
         }
         protected override void OnDisable()

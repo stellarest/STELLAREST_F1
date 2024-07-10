@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using STELLAREST_F1.Data;
 using static STELLAREST_F1.Define;
+using System;
 
 namespace STELLAREST_F1
 {
@@ -61,91 +62,132 @@ namespace STELLAREST_F1
         public BodyContainer GetContainer(EBirdBody bodyParts) => _birdBodyDict[bodyParts];
         public BodyContainer GetContainer(EQuadrupedsBody bodyParts) => _quadrupedsBodyDict[bodyParts];
 
-        private void ApplyMonsterStrongTint(EMonsterType monsterType, Color desiredColor)
+        protected override void ApplyDefaultMat_Alpha(float alphaValue)
+        {
+            ApplyDefaultMat_Alpha(MonsterType, alphaValue);
+        }
+
+        private void ApplyDefaultMat_Alpha(EMonsterType monsterType, float alphaValue)
         {
             switch (monsterType)
             {
                 case EMonsterType.Bird:
-                    ApplyBirdStrongTint(desiredColor);
+                    {
+                        foreach (var container in _birdBodyDict.Values)
+                        {
+                            if (container.SPR == null)
+                                continue;
+
+                            container.SPR.GetPropertyBlock(container.MatPropertyBlock);
+                            Color matColor = container.MatPropertyBlock.GetColor(_matDefaultColor);
+                            matColor = new Color(matColor.r, matColor.g, matColor.b, alphaValue);
+                            container.MatPropertyBlock.SetColor(_matStrongTintColor, matColor);
+                            container.SPR.SetPropertyBlock(container.MatPropertyBlock);
+                        }
+                    }
                     break;
 
                 case EMonsterType.Quadrupeds:
-                    ApplyQuadrupedsBaseStrongTint(desiredColor);
+                    {
+                        foreach (var container in _quadrupedsBodyDict.Values)
+                        {
+                            if (container.SPR == null)
+                                continue;
+
+                            container.SPR.GetPropertyBlock(container.MatPropertyBlock);
+                            Color matColor = container.MatPropertyBlock.GetColor(_matDefaultColor);
+                            matColor = new Color(matColor.r, matColor.g, matColor.b, alphaValue);        
+                            container.MatPropertyBlock.SetColor(_matStrongTintColor, matColor);
+                            container.SPR.SetPropertyBlock(container.MatPropertyBlock);
+                        }
+                    }
                     break;
             }
         }
 
-        private void ApplyBirdStrongTint(Color desiredColor)
+        protected override void ApplyStrongTintMat_Color(Color desiredColor)
         {
-            foreach (var container in _birdBodyDict.Values)
-            {
-                if (container.SPR == null)
-                    continue;
-
-                container.SPR.material = _matStrongTint;
-                container.SPR.color = desiredColor;
-                container.SPR.GetPropertyBlock(container.MatPropertyBlock);
-                container.MatPropertyBlock.SetColor(_matStrongTintColor, desiredColor);
-                container.SPR.SetPropertyBlock(container.MatPropertyBlock);
-            }
+            ApplyStrongTintMat_Color(MonsterType, desiredColor);
         }
 
-        private void ApplyQuadrupedsBaseStrongTint(Color desiredColor)
-        {
-            foreach (var container in _quadrupedsBodyDict.Values)
-            {
-                if (container.SPR == null)
-                    continue;
-
-                container.SPR.material = _matStrongTint;
-                container.SPR.color = desiredColor;
-                container.SPR.GetPropertyBlock(container.MatPropertyBlock);
-                container.MatPropertyBlock.SetColor(_matStrongTintColor, desiredColor);
-                container.SPR.SetPropertyBlock(container.MatPropertyBlock);
-            }
-        }
-
-        public void ResetMonsterMaterialsAndColors(EMonsterType monsterType)
+        private void ApplyStrongTintMat_Color(EMonsterType monsterType, Color desiredColor)
         {
             switch (monsterType)
             {
                 case EMonsterType.Bird:
-                    ResetBirdMaterialsAndColors();
+                    {
+                        foreach (var container in _birdBodyDict.Values)
+                        {
+                            if (container.SPR == null)
+                                continue;
+
+                            container.SPR.material = _matStrongTint;
+                            container.SPR.color = desiredColor;
+                            container.SPR.GetPropertyBlock(container.MatPropertyBlock);
+                            container.MatPropertyBlock.SetColor(_matStrongTintColor, desiredColor);
+                            container.SPR.SetPropertyBlock(container.MatPropertyBlock);
+                        }
+                    }
                     break;
 
                 case EMonsterType.Quadrupeds:
-                    ResetQuadrupedsMaterialsAndColors();
+                    {
+                        foreach (var container in _quadrupedsBodyDict.Values)
+                        {
+                            if (container.SPR == null)
+                                continue;
+
+                            container.SPR.material = _matStrongTint;
+                            container.SPR.color = desiredColor;
+                            container.SPR.GetPropertyBlock(container.MatPropertyBlock);
+                            container.MatPropertyBlock.SetColor(_matStrongTintColor, desiredColor);
+                            container.SPR.SetPropertyBlock(container.MatPropertyBlock);
+                        }
+                    }
                     break;
             }
         }
 
-        private void ResetBirdMaterialsAndColors()
+        public override void ResetMaterialsAndColors()
         {
-            foreach (var container in _birdBodyDict.Values)
-            {
-                if (container.SPR == null)
-                    continue;
-
-                container.SPR.material = _matDefault;
-                container.SPR.color = container.DefaultSPRColor;
-                container.SPR.GetPropertyBlock(container.MatPropertyBlock);
-                container.MatPropertyBlock.SetColor(_matStrongTintColor, container.DefaultMatColor);
-                container.SPR.SetPropertyBlock(container.MatPropertyBlock);
-            }
+            ResetMaterialsAndColors(MonsterType);
         }
 
-        private void ResetQuadrupedsMaterialsAndColors()
+        private void ResetMaterialsAndColors(EMonsterType monsterType)
         {
-            foreach (var container in _quadrupedsBodyDict.Values)
+            switch (monsterType)
             {
-                if (container.SPR == null)
-                    continue;
+                case EMonsterType.Bird:
+                    {
+                        foreach (var container in _birdBodyDict.Values)
+                        {
+                            if (container.SPR == null)
+                                continue;
 
-                container.SPR.material = _matDefault;
-                container.SPR.color = container.DefaultSPRColor;
-                container.SPR.GetPropertyBlock(container.MatPropertyBlock);
-                container.MatPropertyBlock.SetColor(_matStrongTintColor, container.DefaultMatColor);
-                container.SPR.SetPropertyBlock(container.MatPropertyBlock);
+                            container.SPR.material = _matDefault;
+                            container.SPR.color = container.DefaultSPRColor;
+                            container.SPR.GetPropertyBlock(container.MatPropertyBlock);
+                            container.MatPropertyBlock.SetColor(_matStrongTintColor, container.DefaultMatColor);
+                            container.SPR.SetPropertyBlock(container.MatPropertyBlock);
+                        }
+                    }
+                    break;
+
+                case EMonsterType.Quadrupeds:
+                    {
+                        foreach (var container in _quadrupedsBodyDict.Values)
+                        {
+                            if (container.SPR == null)
+                                continue;
+
+                            container.SPR.material = _matDefault;
+                            container.SPR.color = container.DefaultSPRColor;
+                            container.SPR.GetPropertyBlock(container.MatPropertyBlock);
+                            container.MatPropertyBlock.SetColor(_matStrongTintColor, container.DefaultMatColor);
+                            container.SPR.SetPropertyBlock(container.MatPropertyBlock);
+                        }
+                    }
+                    break;
             }
         }
         #endregion
@@ -501,12 +543,15 @@ namespace STELLAREST_F1
         #endregion
 
         #region Coroutines
-        protected override IEnumerator CoHurtFlashEffect()
-        {
-            ApplyMonsterStrongTint(Owner.MonsterType, Color.white);
-            yield return new WaitForSeconds(0.1f);
-            ResetMonsterMaterialsAndColors(Owner.MonsterType);
-        }
+        // protected override IEnumerator CoHurtFlashEffect(bool isCritical = false)
+        // {
+        //     if (isCritical == false)
+        //         ApplyStrongTintMat_Color(Color.white);
+        //     else
+        //         ApplyStrongTintMat_Color(Color.red);
+        //     yield return new WaitForSeconds(0.1f);
+        //     ResetMaterialsAndColors();
+        // }
         #endregion
     }
 }

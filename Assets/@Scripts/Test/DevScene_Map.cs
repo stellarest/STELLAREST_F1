@@ -12,20 +12,24 @@ namespace STELLAREST_F1
     public class DevScene_Map : BaseScene
     {
         public int TestEnvDataID = 0;
-        private void Update()
-        {
-            // if (Input.GetKeyDown("5"))
-            // {
-            //     Env env = Managers.Object.Spawn<Env>(EObjectType.Env, TestEnvDataID);
-            //     // int x = Managers.Object.Monsters[0].CellPos.x;
-            //     // int y = Managers.Object.Monsters[0].CellPos.y;
-            //     //Vector3Int randPos = new Vector3Int(Random.Range(x + 3, x + 5), Random.Range(y + 3, y + 5));
-            //     Vector3Int randPos = new Vector3Int(-6, 11, 0);
-            //     env.SetCellPos(cellPos: randPos, stopLerpToCell: true, forceMove: true);
-            //     env.InitialSpawnedCellPos = randPos;
-            //     env.UpdateCellPos();
-            // }
-        }
+        // private void Update()
+        // {
+        //     if (Input.GetKeyDown("6"))
+        //     {
+        //         // Env env = Managers.Object.Spawn<Env>(EObjectType.Env, TestEnvDataID);
+        //         // // int x = Managers.Object.Monsters[0].CellPos.x;
+        //         // // int y = Managers.Object.Monsters[0].CellPos.y;
+        //         // //Vector3Int randPos = new Vector3Int(Random.Range(x + 3, x + 5), Random.Range(y + 3, y + 5));
+        //         // Vector3Int randPos = new Vector3Int(-6, 11, 0);
+        //         // env.SetCellPos(cellPos: randPos, stopLerpToCell: true, forceMove: true);
+        //         // env.InitialSpawnedCellPos = randPos;
+        //         // env.UpdateCellPos();
+
+        //         // Hero hero = Managers.Object.Spawn<Hero>(EObjectType.Hero, ReadOnly.DataAndPoolingID.DNPID_Hero_Paladin);
+        //         // Managers.Map.MoveTo(hero, Vector3.zero, stopLerpToCell: true, forceMove: true);
+        //         // hero.InitialSpawnedCellPos = Vector3Int.zero;
+        //     }
+        // }
 
         public override bool Init()
         {
@@ -90,7 +94,7 @@ namespace STELLAREST_F1
                 int archer = 0;
 
                 int lancer = 0;
-                int wizard = 0;
+                int wizard = 1;
 
                 int assassin = 0;
                 int gunner = 0;
@@ -310,7 +314,7 @@ namespace STELLAREST_F1
                 if (count == totalCount)
                 {
                     Managers.Data.Init();
-                    Managers.Sprite.Init();
+                    //Managers.Sprite.Init();
                     //Managers.Animation.Init();
                     Test();
                 }

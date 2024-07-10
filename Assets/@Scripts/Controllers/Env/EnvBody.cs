@@ -5,6 +5,7 @@ using STELLAREST_F1.Data;
 using static STELLAREST_F1.Define;
 using System.ComponentModel;
 using UnityEditor;
+using System;
 
 namespace STELLAREST_F1
 {
@@ -19,106 +20,146 @@ namespace STELLAREST_F1
         public BodyContainer GetContainer(ETreeBody treeBody) => _treeBodyDict[treeBody];
         public BodyContainer GetContainer(ERockBody rockBody) => _rockBodyDict[rockBody];
 
-        private void ApplyEnvStrongTint(EEnvType envType, Color desiredColor)
+        protected override void ApplyDefaultMat_Alpha(float alphaValue)
+        {
+            ApplyDefaultMat_Alpha(EnvType, alphaValue);
+        }
+
+        private void ApplyDefaultMat_Alpha(EEnvType envType, float alphaValue)
         {
             switch (envType)
             {
                 case EEnvType.Tree:
-                    ApplyTreeStrongTint(desiredColor);
+                    {
+                        foreach (var container in _treeBodyDict.Values)
+                        {
+                            if (container.SPR == null)
+                                continue;
+
+                            container.SPR.GetPropertyBlock(container.MatPropertyBlock);
+                            Color matColor = container.MatPropertyBlock.GetColor(_matDefaultColor);
+                            matColor = new Color(matColor.r, matColor.g, matColor.b, alphaValue);
+                            container.MatPropertyBlock.SetColor(_matStrongTintColor, matColor);
+                            container.SPR.SetPropertyBlock(container.MatPropertyBlock);
+                        }
+                    }
                     break;
 
                 case EEnvType.Rock:
-                    ApplyRockStrongTint(desiredColor);
+                    {
+                        foreach (var container in _rockBodyDict.Values)
+                        {
+                            if (container.SPR == null)
+                                continue;
+
+                            container.SPR.GetPropertyBlock(container.MatPropertyBlock);
+                            Color matColor = container.MatPropertyBlock.GetColor(_matDefaultColor);
+                            matColor = new Color(matColor.r, matColor.g, matColor.b, alphaValue);
+                            container.MatPropertyBlock.SetColor(_matStrongTintColor, matColor);
+                            container.SPR.SetPropertyBlock(container.MatPropertyBlock);
+                        }
+                    }
                     break;
             }
         }
 
-        private void ApplyTreeStrongTint(Color desiredColor)
+        protected override void ApplyStrongTintMat_Color(Color desiredColor)
         {
-            foreach (var container in _treeBodyDict.Values)
-            {
-                if (container.SPR == null)
-                    continue;
-
-                if (container == GetContainer(ETreeBody.Shadow))
-                    continue;
-
-                container.SPR.material = _matStrongTint;
-                container.SPR.color = desiredColor;
-                container.SPR.GetPropertyBlock(container.MatPropertyBlock);
-                container.MatPropertyBlock.SetColor(_matStrongTintColor, desiredColor);
-                container.SPR.SetPropertyBlock(container.MatPropertyBlock);
-            }
+           ApplyStrongTintMat_Color(EnvType, desiredColor);
         }
 
-        private void ApplyRockStrongTint(Color desiredColor)
-        {
-            foreach (var container in _rockBodyDict.Values)
-            {
-                if (container.SPR == null)
-                    continue;
-
-                if (container == GetContainer(ERockBody.Shadow))
-                    continue;
-
-                container.SPR.material = _matStrongTint;
-                container.SPR.color = desiredColor;
-                container.SPR.GetPropertyBlock(container.MatPropertyBlock);
-                container.MatPropertyBlock.SetColor(_matStrongTintColor, desiredColor);
-                container.SPR.SetPropertyBlock(container.MatPropertyBlock);
-            }
-        }
-
-        public void ResetEnvMaterialsAndColors(EEnvType envType)
+        private void ApplyStrongTintMat_Color(EEnvType envType, Color desiredColor)
         {
             switch (envType)
             {
                 case EEnvType.Tree:
-                    ResetTreeMaterialsAndColors();
+                    {
+                        foreach (var container in _treeBodyDict.Values)
+                        {
+                            if (container.SPR == null)
+                                continue;
+
+                            if (container == GetContainer(ETreeBody.Shadow))
+                                continue;
+
+                            container.SPR.material = _matStrongTint;
+                            container.SPR.color = desiredColor;
+                            container.SPR.GetPropertyBlock(container.MatPropertyBlock);
+                            container.MatPropertyBlock.SetColor(_matStrongTintColor, desiredColor);
+                            container.SPR.SetPropertyBlock(container.MatPropertyBlock);
+                        }
+                    }
                     break;
 
                 case EEnvType.Rock:
-                    ResetRockMaterialsAndColors();
+                    {
+                        foreach (var container in _rockBodyDict.Values)
+                        {
+                            if (container.SPR == null)
+                                continue;
+
+                            if (container == GetContainer(ERockBody.Shadow))
+                                continue;
+
+                            container.SPR.material = _matStrongTint;
+                            container.SPR.color = desiredColor;
+                            container.SPR.GetPropertyBlock(container.MatPropertyBlock);
+                            container.MatPropertyBlock.SetColor(_matStrongTintColor, desiredColor);
+                            container.SPR.SetPropertyBlock(container.MatPropertyBlock);
+                        }
+                    }
                     break;
             }
         }
 
-        private void ResetTreeMaterialsAndColors()
+        public override void ResetMaterialsAndColors()
         {
-            foreach (var container in _treeBodyDict.Values)
-            {
-                if (container.SPR == null)
-                    continue;
-
-                if (container == GetContainer(ETreeBody.Shadow))
-                    continue;
-
-                container.SPR.material = _matDefault;
-                container.SPR.color = container.DefaultSPRColor;
-                container.SPR.GetPropertyBlock(container.MatPropertyBlock);
-                container.MatPropertyBlock.SetColor(_matDefaultColor, container.DefaultMatColor);
-                container.SPR.SetPropertyBlock(container.MatPropertyBlock);
-            }
+            ResetMaterialsAndColors(EnvType);
         }
 
-        private void ResetRockMaterialsAndColors()
+        private void ResetMaterialsAndColors(EEnvType envType)
         {
-            foreach (var container in _rockBodyDict.Values)
+            switch (envType)
             {
-                if (container.SPR == null)
-                    continue;
+                case EEnvType.Tree:
+                    {
+                        foreach (var container in _treeBodyDict.Values)
+                        {
+                            if (container.SPR == null)
+                                continue;
 
-                if (container == GetContainer(ERockBody.Shadow))
-                    continue;
+                            if (container == GetContainer(ETreeBody.Shadow))
+                                continue;
 
-                container.SPR.material = _matDefault;
-                container.SPR.color = container.DefaultSPRColor;
-                container.SPR.GetPropertyBlock(container.MatPropertyBlock);
-                container.MatPropertyBlock.SetColor(_matDefaultColor, container.DefaultMatColor);
-                container.SPR.SetPropertyBlock(container.MatPropertyBlock);
+                            container.SPR.material = _matDefault;
+                            container.SPR.color = container.DefaultSPRColor;
+                            container.SPR.GetPropertyBlock(container.MatPropertyBlock);
+                            container.MatPropertyBlock.SetColor(_matDefaultColor, container.DefaultMatColor);
+                            container.SPR.SetPropertyBlock(container.MatPropertyBlock);
+                        }
+                    }
+                    break;
+
+                case EEnvType.Rock:
+                    {
+                        foreach (var container in _rockBodyDict.Values)
+                        {
+                            if (container.SPR == null)
+                                continue;
+
+                            if (container == GetContainer(ERockBody.Shadow))
+                                continue;
+
+                            container.SPR.material = _matDefault;
+                            container.SPR.color = container.DefaultSPRColor;
+                            container.SPR.GetPropertyBlock(container.MatPropertyBlock);
+                            container.MatPropertyBlock.SetColor(_matDefaultColor, container.DefaultMatColor);
+                            container.SPR.SetPropertyBlock(container.MatPropertyBlock);
+                        }
+                    }
+                    break;
             }
         }
-
         #endregion
 
         #region Core
@@ -625,15 +666,6 @@ namespace STELLAREST_F1
                     }
                     break;
             }
-        }
-        #endregion
-
-        #region  Coroutines
-        protected override IEnumerator CoHurtFlashEffect()
-        {
-            ApplyEnvStrongTint(Owner.EnvType, Color.white);
-            yield return new WaitForSeconds(0.1f);
-            ResetEnvMaterialsAndColors(Owner.EnvType);
         }
         #endregion
     }

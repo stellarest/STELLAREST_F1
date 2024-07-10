@@ -43,9 +43,6 @@ namespace STELLAREST_F1
 
         private ObjectManager _object = new ObjectManager();
         public static ObjectManager Object => Instance?._object;
-
-        private SpriteManager _sprite = new SpriteManager();
-        public static SpriteManager Sprite => Instance?._sprite;
         #endregion
 
         #region Core

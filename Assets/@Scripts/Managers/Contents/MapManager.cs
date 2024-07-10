@@ -52,7 +52,7 @@ namespace STELLAREST_F1
             CellGrid = map.GetComponent<Grid>();
 
             ParseCollisionData(map, mapName);
-            // SpawnObjectsByData(map, mapName);
+            SpawnObjectsByData(map, mapName);
         }
 
         private void ParseCollisionData(GameObject map, string mapName, string tileMap = "Tilemap_Collision")
@@ -106,7 +106,6 @@ namespace STELLAREST_F1
             // Debug.Log($"xMax: {tm.cellBounds.xMax}");
             // Debug.Log($"yMin: {tm.cellBounds.yMin}");
             // Debug.Log($"yMax: {tm.cellBounds.yMax}");
-            // DBDBD
 
             for (int y = tm.cellBounds.yMax; y >= tm.cellBounds.yMin; --y)
             {
@@ -131,7 +130,7 @@ namespace STELLAREST_F1
 
                         // --- MORE CHICKEN
                         int current = 0;
-                        int spawnCount = 2;
+                        int spawnCount = 5;
                         int attemptSpawnCount = 0;
                         while (attemptSpawnCount < 100)
                         {
@@ -156,7 +155,7 @@ namespace STELLAREST_F1
 
                         // --- TURKEY TEST
                         current = 0;
-                        spawnCount = 1;
+                        spawnCount = 0;
                         attemptSpawnCount = 0;
                         while (attemptSpawnCount < 100)
                         {
@@ -181,7 +180,7 @@ namespace STELLAREST_F1
 
                         // --- BUNNY TEST
                         current = 0;
-                        spawnCount = 1;
+                        spawnCount = 0;
                         attemptSpawnCount = 0;
                         while (attemptSpawnCount < 100)
                         {
@@ -206,7 +205,7 @@ namespace STELLAREST_F1
 
                         // --- PUG TEST
                         current = 0;
-                        spawnCount = 1;
+                        spawnCount = 0;
                         attemptSpawnCount = 0;
                         while (attemptSpawnCount < 100)
                         {

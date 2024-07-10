@@ -815,8 +815,13 @@ namespace STELLAREST_F1
                 public static readonly float Temp_StopDistance = 1.25F;
 
                 // Dead Fade Out Time
-                public static readonly float StartDeadFadeOutTime = 0.85F;
-                public static readonly float DesiredDeadFadeOutEndTime = 1.0F;
+                public static readonly float StartDeadFadeOutTime = 0.85F; // --- PREV
+                public static readonly float DesiredDeadFadeOutEndTime = 1.0F; // --- PREV
+
+
+                public static readonly float DesiredStartFadeOutTime = 2.0F;
+                public static readonly float DesiredEndFadeOutTime = 1.0F;
+
 
                 public static readonly float MaxMovementSpeedMultiplier = 2.0F;
                 public static readonly float MaxDistanceForMovementSpeed = 8.0F;

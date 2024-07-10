@@ -175,7 +175,7 @@ namespace STELLAREST_F1
             }
         }
 
-        protected override void LevelUp()
+        public void LevelUp()
         {
             if (this.IsValid() == false)
                 return;
@@ -231,6 +231,7 @@ namespace STELLAREST_F1
             base.InitialSetInfo(dataID);
             HeroData = Managers.Data.HeroDataDict[dataID];
             HeroBody.SetInfo(this, dataID);
+            HeroBody.HeroEmoji = EHeroEmoji.Idle;
 
             HeroAnim = CreatureAnim as HeroAnimation;
             HeroAnim.SetInfo(dataID, this);
@@ -263,6 +264,7 @@ namespace STELLAREST_F1
         protected override void EnterInGame()
         {
             // --- Default Heroes Dir: Right
+            HeroBody.HeroEmoji = EHeroEmoji.Idle;
             LookAtDir = ELookAtDirection.Right;
             base.EnterInGame();
             CreatureAIState = ECreatureAIState.Move;
@@ -284,7 +286,6 @@ namespace STELLAREST_F1
                 Managers.Object.HeroLeaderController.EnablePointer(false);
             }
 
-            HeroBody.ResetHeroMaterialsAndColors();
             base.OnDead(attacker, skillFromAttacker);
         }
 
@@ -317,53 +318,6 @@ namespace STELLAREST_F1
         #endregion
 
         #region Coroutines
-        protected override IEnumerator CoDeadFadeOut(System.Action callback = null)
-        {
-            if (this.isActiveAndEnabled == false)
-                yield break;
-
-            yield return new WaitForSeconds(ReadOnly.Util.StartDeadFadeOutTime);
-
-            float delta = 0f;
-            float percent = 1f;
-            AnimationCurve curve = Managers.Contents.Curve(EAnimationCurveType.Ease_In);
-            // --- 1. Fade Out - Skin
-            while (percent > 0f)
-            {
-                delta += Time.deltaTime;
-                percent = 1f - (delta / ReadOnly.Util.DesiredDeadFadeOutEndTime);
-                for (int i = 0; i < HeroBody.Skin.Count; ++i)
-                {
-                    float current = Mathf.Lerp(0f, 1f, curve.Evaluate(percent));
-                    HeroBody.Skin[i].color = new Color(HeroBody.Skin[i].color.r,
-                                                       HeroBody.Skin[i].color.g,
-                                                       HeroBody.Skin[i].color.b, current);
-                }
-
-                yield return null;
-            }
-
-            // --- 2. Fade Out - Appearance
-            delta = 0f;
-            percent = 1f;
-            while (percent > 0f)
-            {
-                delta += Time.deltaTime;
-                percent = 1f - (delta / ReadOnly.Util.DesiredDeadFadeOutEndTime);
-                for (int i = 0; i < HeroBody.Appearance.Count; ++i)
-                {
-                    float current = Mathf.Lerp(0f, 1f, curve.Evaluate(percent));
-                    HeroBody.Appearance[i].color = new Color(HeroBody.Appearance[i].color.r,
-                                                             HeroBody.Appearance[i].color.g,
-                                                             HeroBody.Appearance[i].color.b, current);
-                }
-
-                yield return null;
-            }
-
-            callback?.Invoke();
-        }
-
         private IEnumerator CoInitialReleaseLeaderAI()
         {
             // 여기서 하면 안됨... Leader랑 관련 있는듯.
@@ -1209,5 +1163,52 @@ namespace STELLAREST_F1
         //     }
 
         //     _canHandleSkill = true;
+        // }
+
+         // protected override IEnumerator CoDeadFadeOut(System.Action callback = null)
+        // {
+        //     if (this.isActiveAndEnabled == false)
+        //         yield break;
+
+        //     yield return new WaitForSeconds(ReadOnly.Util.StartDeadFadeOutTime);
+
+        //     float delta = 0f;
+        //     float percent = 1f;
+        //     AnimationCurve curve = Managers.Contents.Curve(EAnimationCurveType.Ease_In);
+        //     // --- 1. Fade Out - Skin
+        //     while (percent > 0f)
+        //     {
+        //         delta += Time.deltaTime;
+        //         percent = 1f - (delta / ReadOnly.Util.DesiredDeadFadeOutEndTime);
+        //         for (int i = 0; i < HeroBody.Skin.Count; ++i)
+        //         {
+        //             float current = Mathf.Lerp(0f, 1f, curve.Evaluate(percent));
+        //             HeroBody.Skin[i].color = new Color(HeroBody.Skin[i].color.r,
+        //                                                HeroBody.Skin[i].color.g,
+        //                                                HeroBody.Skin[i].color.b, current);
+        //         }
+
+        //         yield return null;
+        //     }
+
+        //     // --- 2. Fade Out - Appearance
+        //     delta = 0f;
+        //     percent = 1f;
+        //     while (percent > 0f)
+        //     {
+        //         delta += Time.deltaTime;
+        //         percent = 1f - (delta / ReadOnly.Util.DesiredDeadFadeOutEndTime);
+        //         for (int i = 0; i < HeroBody.Appearance.Count; ++i)
+        //         {
+        //             float current = Mathf.Lerp(0f, 1f, curve.Evaluate(percent));
+        //             HeroBody.Appearance[i].color = new Color(HeroBody.Appearance[i].color.r,
+        //                                                      HeroBody.Appearance[i].color.g,
+        //                                                      HeroBody.Appearance[i].color.b, current);
+        //         }
+
+        //         yield return null;
+        //     }
+
+        //     callback?.Invoke();
         // }
 */

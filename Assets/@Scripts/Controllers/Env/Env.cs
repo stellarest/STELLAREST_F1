@@ -78,7 +78,7 @@ namespace STELLAREST_F1
         protected override void EnterInGame()
         {
             base.EnterInGame();
-            ShowBody(true);            
+            //ShowBody(true);            
             EnvState = EEnvState.Idle;
             Debug.Log($"<color=white>EnterInGame, {gameObject.name}, {EnvState}</color>");
         }
@@ -92,8 +92,7 @@ namespace STELLAREST_F1
             if ((attacker as Hero).CreatureRarity == ECreatureRarity.Elite) // TEMP
                 finalDamage++;
 
-            // TODO : Show UI
-            Hp = UnityEngine.Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
+            Hp = Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
             Managers.Object.ShowDamageFont(position: this.CenterPosition, damage: finalDamage, isCritical: false);
             if (Hp <= 0f)
             {
@@ -101,12 +100,12 @@ namespace STELLAREST_F1
                 OnDead(attacker, skillFromAttacker);
                 return;
             }
-            EnvBody.StartCoHurtFlashEffect();
+            EnvBody.StartCoHurtFlashEffect(isCritical: false);
         }
 
         public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
         {
-            EnvBody.ResetEnvMaterialsAndColors(EnvType);
+            EnvBody.ResetMaterialsAndColors();
             EnvState = EEnvState.Dead;
             base.OnDead(attacker, skillFromAttacker);
             // --- TODO : Drop Item

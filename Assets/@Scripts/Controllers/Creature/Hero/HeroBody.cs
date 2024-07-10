@@ -30,8 +30,8 @@ namespace STELLAREST_F1
         private Material _matDefaultEyes = null;
 
         // --- 제거 예정
-        public List<SpriteRenderer> Skin { get; } = new List<SpriteRenderer>();
-        public List<SpriteRenderer> Appearance { get; } = new List<SpriteRenderer>();
+        // public List<SpriteRenderer> Skin { get; } = new List<SpriteRenderer>();
+        // public List<SpriteRenderer> Appearance { get; } = new List<SpriteRenderer>();
         // --- 제거 얘정
 
         public BodyContainer GetContainer(EHeroBody_Head head) => _heroBodyDict[EHeroBody.Head][(int)head];
@@ -847,7 +847,68 @@ namespace STELLAREST_F1
                 GetContainer(EHeroBody_Weapon.WeaponR_Armor_Child03).TR.gameObject.SetActive(false);
         }
 
-        private void ApplyHeroStrongTint(Color desiredColor)
+        protected override void ApplyDefaultMat_Alpha(float alphaValue)
+        {
+            // --- Head
+            foreach (var container in _heroBodyDict[EHeroBody.Head])
+            {
+                if (container.SPR == null)
+                    continue;
+
+                if (container == GetContainer(EHeroBody_Head.Eyes))
+                    container.SPR.color = new Color(container.SPR.color.r, container.SPR.color.g, container.SPR.color.b,
+                                    alphaValue);
+                else
+                {
+                    container.SPR.GetPropertyBlock(container.MatPropertyBlock);
+                    Color matColor = container.MatPropertyBlock.GetColor(_matDefaultColor);
+                    matColor = new Color(matColor.r, matColor.g, matColor.b, alphaValue);
+                    container.MatPropertyBlock.SetColor(_matDefaultColor, matColor);
+                    container.SPR.SetPropertyBlock(container.MatPropertyBlock);
+                }
+            }
+
+            // --- UpperBody
+            foreach (var container in _heroBodyDict[EHeroBody.UpperBody])
+            {
+                if (container.SPR == null)
+                    continue;
+
+                container.SPR.GetPropertyBlock(container.MatPropertyBlock);
+                Color matColor = container.MatPropertyBlock.GetColor(_matDefaultColor);
+                matColor = new Color(matColor.r, matColor.g, matColor.b, alphaValue);
+                container.MatPropertyBlock.SetColor(_matDefaultColor, matColor);
+                container.SPR.SetPropertyBlock(container.MatPropertyBlock);
+            }
+
+            // --- LowerBody
+            foreach (var container in _heroBodyDict[EHeroBody.LowerBody])
+            {
+                if (container.SPR == null)
+                    continue;
+
+                container.SPR.GetPropertyBlock(container.MatPropertyBlock);
+                Color matColor = container.MatPropertyBlock.GetColor(_matDefaultColor);
+                matColor = new Color(matColor.r, matColor.g, matColor.b, alphaValue);
+                container.MatPropertyBlock.SetColor(_matDefaultColor, matColor);
+                container.SPR.SetPropertyBlock(container.MatPropertyBlock);
+            }
+
+            // --- Weapon
+            foreach (var container in _heroBodyDict[EHeroBody.Weapon])
+            {
+                if (container.SPR == null)
+                    continue;
+
+                container.SPR.GetPropertyBlock(container.MatPropertyBlock);
+                Color matColor = container.MatPropertyBlock.GetColor(_matDefaultColor);
+                matColor = new Color(matColor.r, matColor.g, matColor.b, alphaValue);
+                container.MatPropertyBlock.SetColor(_matDefaultColor, matColor);
+                container.SPR.SetPropertyBlock(container.MatPropertyBlock);
+            }
+        }
+
+        protected override void ApplyStrongTintMat_Color(Color desiredColor)
         {
             // --- Head
             foreach (var container in _heroBodyDict[EHeroBody.Head])
@@ -906,7 +967,7 @@ namespace STELLAREST_F1
             }
         }
 
-        public void ResetHeroMaterialsAndColors()
+        public override void ResetMaterialsAndColors()
         {
             // --- Head
             foreach (var container in _heroBodyDict[EHeroBody.Head])
@@ -978,6 +1039,11 @@ namespace STELLAREST_F1
                 container.MatPropertyBlock.SetColor(_matDefaultColor, container.DefaultMatColor);
                 container.SPR.SetPropertyBlock(container.MatPropertyBlock);
             }
+        }
+
+        public override void ShowBody(bool show)
+        {
+            
         }
         #endregion
 
@@ -1120,7 +1186,7 @@ namespace STELLAREST_F1
             spr.color = EyesColors[(int)EHeroEmoji.Idle];
 
             headContainers[(int)EHeroBody_Head.Eyes] = new BodyContainer(tag: tag, tr: tr, spr: spr,
-                                                defaultSPRMat: _matDefault, defaultSPRColor: EyesColors[(int)EHeroEmoji.Idle],
+                                                defaultSPRMat: _matDefaultEyes, defaultSPRColor: EyesColors[(int)EHeroEmoji.Idle],
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
             matPB = headContainers[(int)EHeroBody_Head.Eyes].MatPropertyBlock;
@@ -2242,82 +2308,5 @@ namespace STELLAREST_F1
             _envHeroWeaponDict.Add(EEnvType.Rock, envWeapons);
         }
         #endregion
-
-        #region Coroutines
-        protected override IEnumerator CoHurtFlashEffect()
-        {
-            ApplyHeroStrongTint(Color.white);
-            yield return new WaitForSeconds(0.1f);
-            ResetHeroMaterialsAndColors();
-        }
-        #endregion
-
-        public Transform LeftWeapon { get; private set; } = null;
-        public Vector3 LeftWeaponLocalScale { get; private set; } = Vector3.zero;
-        public void SetLeftWeapon(Transform leftWeapon, Vector3 leftWeaponLocalScale)
-        {
-            LeftWeapon = leftWeapon;
-            LeftWeaponLocalScale = leftWeaponLocalScale;
-        }
-
-        public Transform RightWeapon { get; private set; } = null;
-        public Vector3 RightWeaponLocalScale { get; private set; } = Vector3.zero;
-        public void SetRightWeapon(Transform rightWeapon, Vector3 rightWeaponLocalScale)
-        {
-            RightWeapon = rightWeapon;
-            RightWeaponLocalScale = rightWeaponLocalScale;
-        }
-
-        private SpriteRenderer[] _leftWeaponSPRs = null;
-        private Sprite[] _defaultLeftWeaponSPs = null;
-
-        private SpriteRenderer[] _rightWeaponSPRs = null;
-        private Sprite[] _defaultRightWeaponSPs = null;
-
-        public void SetDefaultWeaponSprites(SpriteRenderer[] leftWeaponSPRs, SpriteRenderer[] rightWeaponSPRs)
-        {
-            _leftWeaponSPRs = leftWeaponSPRs;
-            _defaultLeftWeaponSPs = new Sprite[leftWeaponSPRs.Length];
-            for (int i = 0; i < leftWeaponSPRs.Length; ++i)
-                _defaultLeftWeaponSPs[i] = leftWeaponSPRs[i].sprite;
-
-            _rightWeaponSPRs = rightWeaponSPRs;
-            _defaultRightWeaponSPs = new Sprite[rightWeaponSPRs.Length];
-            for (int i = 0; i < rightWeaponSPRs.Length; ++i)
-                _defaultRightWeaponSPs[i] = rightWeaponSPRs[i].sprite;
-        }
-
-        public void ChangeDefaultWeaponSprites(SpriteRenderer[] leftWeaponSPRs, SpriteRenderer[] rightWeaponSPRs)
-        {
-            for (int i = 0; i < _leftWeaponSPRs.Length; ++i)
-                _leftWeaponSPRs[i] = null;
-            for (int i = 0; i < _defaultLeftWeaponSPs.Length; ++i)
-                _defaultLeftWeaponSPs[i] = null;
-
-            for (int i = 0; i < _rightWeaponSPRs.Length; ++i)
-                _rightWeaponSPRs[i] = null;
-            for (int i = 0; i < _defaultRightWeaponSPs.Length; ++i)
-                _defaultRightWeaponSPs[i] = null;
-
-            _leftWeaponSPRs = leftWeaponSPRs;
-            _defaultLeftWeaponSPs = new Sprite[leftWeaponSPRs.Length];
-            for (int i = 0; i < leftWeaponSPRs.Length; ++i)
-                _defaultLeftWeaponSPs[i] = leftWeaponSPRs[i].sprite;
-
-            _rightWeaponSPRs = rightWeaponSPRs;
-            _defaultRightWeaponSPs = new Sprite[rightWeaponSPRs.Length];
-            for (int i = 0; i < rightWeaponSPRs.Length; ++i)
-                _defaultRightWeaponSPs[i] = rightWeaponSPRs[i].sprite;
-        }
-
-        // public void DefaultWeapon()
-        // {
-        //     //ReleaseWeapon();
-        //     // for (int i = 0; i < _leftWeaponSPRs.Length; ++i)
-        //     //     _leftWeaponSPRs[i].sprite = _defaultLeftWeaponSPs[i];
-
-        //     // for (int i = 0; i < _rightWeaponSPRs.Length; ++i)
-        //     //     _rightWeaponSPRs[i].sprite = _defaultRightWeaponSPs[i];
-        // }
     }
 }

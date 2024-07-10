@@ -248,10 +248,6 @@ namespace STELLAREST_F1
                 return bestShortRange;
             }
         }
-
-        // protected override void LevelUp()
-        // {
-        // }
         #endregion
 
         #region Core
@@ -291,12 +287,11 @@ namespace STELLAREST_F1
             RigidBody.simulated = false;
             Target = null;
 
-            ShowBody(false);
             CreatureAI.EnterInGame();
             StartCoWait(waitCondition: () => BaseAnim.IsPlay() == false,
                       callbackWaitCompleted: () =>
                       {
-                          ShowBody(true);
+                          CreatureBody.ResetMaterialsAndColors();
                           RigidBody.simulated = true;
                           Target = null;
                 #region Events
@@ -311,28 +306,33 @@ namespace STELLAREST_F1
 
         public override void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
         {
-            Creature creature = attacker as Creature;
-            if (creature.IsValid() == false)
+            if (CreatureAIState == ECreatureAIState.Dead)
                 return;
 
-            float finalDamage = creature.Atk;
-            Hp = UnityEngine.Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
-            Managers.Object.ShowDamageFont(position: this.CenterPosition, damage: finalDamage, isCritical: false);
-            //Debug.Log($"<color=white>{gameObject.name}: ({Hp}/{MaxHp})</color>");
+            base.OnDamaged(attacker, skillFromAttacker);
+            // Creature creature = attacker as Creature;
+            // if (creature.IsValid() == false)
+            //     return;
 
-            if (Hp <= 0f)
-            {
-                Hp = 0f;
-                OnDead(attacker, skillFromAttacker);
-                return;
-            }
-            CreatureBody.StartCoHurtFlashEffect();
+            // float finalDamage = creature.Atk;
+            // Hp = UnityEngine.Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
+            // Managers.Object.ShowDamageFont(position: this.CenterPosition, damage: finalDamage, isCritical: false);
+            // //Debug.Log($"<color=white>{gameObject.name}: ({Hp}/{MaxHp})</color>");
+
+            // if (Hp <= 0f)
+            // {
+            //     Hp = 0f;
+            //     OnDead(attacker, skillFromAttacker);
+            //     return;
+            // }
+            // CreatureBody.StartCoHurtFlashEffect();
             // if (skillFromAttacker.SkillData.EffectIDs != null)
             //     CreatureEffect.GenerateEffect(skillFromAttacker.SkillData.EffectIDs, EEffectSpawnType.Skill);
         }
 
         public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
         {
+            CreatureBody.ResetMaterialsAndColors();
             StopCoLerpToCellPos(); // 길찾기 움직임 중이었다면 멈춘다.
             CreatureAIState = ECreatureAIState.Dead;
             base.OnDead(attacker, skillFromAttacker);
@@ -379,7 +379,7 @@ namespace STELLAREST_F1
         }
 
         protected Coroutine _coWait = null;
-        private IEnumerator CoWait(System.Func<bool> waitCondition, System.Action waitCompleted = null)
+        private IEnumerator CoWait(Func<bool> waitCondition, Action waitCompleted = null)
         {
             yield return new WaitUntil(waitCondition);
             _coWait = null;
@@ -391,7 +391,7 @@ namespace STELLAREST_F1
             _coWait = null;
         }
 
-        protected void StartCoWait(System.Func<bool> waitCondition, System.Action callbackWaitCompleted = null)
+        protected void StartCoWait(Func<bool> waitCondition, Action callbackWaitCompleted = null)
         {
             StopCoWait();
             _coWait = StartCoroutine(CoWait(waitCondition, callbackWaitCompleted));

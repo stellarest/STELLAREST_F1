@@ -73,58 +73,6 @@ namespace STELLAREST_F1
             MovementSpeed = MovementSpeedBase = statData.MovementSpeed;
         }
 
-        protected virtual void LevelUp()
-        {
-            // if (_level < _maxLevel)
-            // {
-            //     _level = Mathf.Clamp(_level + 1, DataTemplateID, _maxLevel);
-            //     if (Managers.Data.StatDataDict.TryGetValue(_level, out Data.StatData statData))
-            //     {
-            //         StatData = statData; // Refresh
-            //         MaxHp = statData.MaxHp;
-            //         Hp = statData.MaxHp;
-            //         Atk = AtkBase = statData.Atk;
-            //         CriticalRate = CriticalRateBase = statData.CriticalRate;
-            //         DodgeRate = DodgeRateBase = statData.DodgeRate;
-            //         MovementSpeed = MovementSpeedBase = statData.MovementSpeed;
-            //     }
-
-
-            //     // Debug.Log("<color=cyan>==============================</color>");
-            //     // Debug.Log($"<color=cyan>LvUp: {gameObject.name}</color>");
-            //     // Debug.Log($"<color=cyan>Check LvTxt: {StatData.LevelText}</color>");
-            //     // Debug.Log($"<color=cyan>CurrentLv: {Level}</color>");
-            //     // Debug.Log($"<color=cyan>MaxLv: {Level}</color>");
-            //     // Debug.Log("<color=cyan>==============================</color>");
-
-            //     if (_level == _maxLevel)
-            //     {
-            //         //Debug.Log("<color=yellow>Try to change new sprite set</color>");
-
-            //         // --- 나중에 스킬때문에 히어로 데이터 자체도 바꿔야함(ex. Paladin 101000 -> 101004)
-            //         // --- 101000의 경우, 레벨 1때, Skill_A, B까지 ID 주고, 레벨 3때 Skill_C 해금되고
-            //         // --- 만렙(Elite)이 되면 Skill_A, B, C가 전부 바뀌어야함.
-            //         Managers.Sprite.ChangeSpriteSet(newDataID: _maxLevel, owner: this);
-            //     }
-            // }
-            // else if (_level == _maxLevel)
-            // {
-            //     Debug.LogWarning($"Failed to level up, MaxLv: {gameObject.name}");
-            //     // Debug.LogWarning("==============================");
-            //     // Debug.LogWarning($"Failed to level up, {gameObject.name}");
-            //     // Debug.LogWarning("==============================");
-            // }
-
-            // Debug.Log($"===== {gameObject.name} =====");
-            // Debug.Log($"LevelText: {StatData.LevelText}");
-            // Debug.Log($"MaxHp: {StatData.MaxHp}");
-            // Debug.Log($"Atk: {StatData.Atk}");
-            // Debug.Log($"AtkRange: {StatData.AtkRange}");
-            // Debug.Log($"CriticalRate: {StatData.CriticalRate}");
-            // Debug.Log($"DodgeRate: {StatData.DodgeRate}");
-            // Debug.Log($"MovementSpeed: {StatData.MovementSpeed}");
-        }
-
         [SerializeField] private float _hp = 0f;
         public float Hp
         {
@@ -273,55 +221,36 @@ namespace STELLAREST_F1
         }
         #endregion
 
-        #region Battle
-        public virtual void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker) { }
+        public virtual void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
+        { 
+            if (attacker.IsValid() == false)
+                return;
+
+            float finalDamage = attacker.Atk;
+            Hp = Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
+            bool isCritical = false;
+            Managers.Object.ShowDamageFont(position: this.CenterPosition, damage: finalDamage, isCritical: isCritical);
+
+            if (UnityEngine.Random.Range(0f, 100f) >= 50f)
+                isCritical = true;
+
+            if (Hp <= 0f)
+            {
+                Hp = 0f;
+                OnDead(attacker, skillFromAttacker);
+            }
+            else
+                BaseBody.StartCoHurtFlashEffect(isCritical: isCritical);
+        }
+
         public virtual void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
         {
             RigidBody.simulated = false;
-
-            // 모두 BaseBody에서 처리해야함. (ex) 더불어 FruitsTree의 경우에도 Fruits가 나타났다가 사라지는등 이러한 문제들도 있기 때문.
-            StartCoroutine(CoDeadFadeOut(this.OnDeadFadeOutEndHandler));
+            BaseBody.StartCoFadeOutEffect(() => OnDeadFadeOutEnded());
         }
 
         // 오~ 되는구나
-        protected virtual void OnDisable()
-        {
-            // Debug.Log("BaseObject::OnDisable!!");
-        }
-
-        // Pass
-        // private Coroutine _coPauseSearchTarget = null;
-        // private IEnumerator CoPauseSearchTarget(float seconds)
-        // {
-        //     Target = null;
-        //     PauseSearchTarget = true;
-        //     yield return new WaitForSeconds(seconds);
-        //     PauseSearchTarget = false;
-        //     _coPauseSearchTarget = null;
-        // }
-
-        // public void StartCoPauseSearchTarget(float seconds)
-        // {
-        //     if (_coPauseSearchTarget != null)
-        //         return;
-
-        //     _coPauseSearchTarget = StartCoroutine(CoPauseSearchTarget(seconds));
-        // }
-        #endregion
-
-        // protected void ShowBody(bool show)
-        // {
-        //     // includeInactive: true (임시, 나중에 개선 필요)
-        //     foreach (SpriteRenderer spr in GetComponentsInChildren<SpriteRenderer>(includeInactive: true))
-        //     {
-        //         spr.enabled = show;
-        //         if (show)
-        //         {
-        //             spr.color = new Color(spr.color.r, spr.color.g, spr.color.b, 1f);
-        //             spr.gameObject.SetActive(true);
-        //         }
-        //     }
-        // }
+        protected virtual void OnDisable() { }
 
         public void ShowBody(bool show)
         {

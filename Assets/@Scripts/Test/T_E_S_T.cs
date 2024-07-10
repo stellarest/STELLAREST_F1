@@ -8,8 +8,11 @@ using DG.Tweening;
 
 /*
 // --- 제거 예정
-// Hero Upgrade -> CollectEnv까지 바뀌었는지 확인하고 -> Fade Out(BaseBody에서 Material 적용해놓고 Material 수치만 변화시키면 될듯함)
-// ---> SpriteManager 완전 제거 목표, SkillBody(또는 ProjectileBody) 이 부분이 문제이긴한데..
+// ---> BaseBody Material 부분 정리하고, ProjectileBody, SkillBody 어떻게 해야할지.
+// ---> Env 피격할 떄 좌우로 엄청 빠르게 와리가리하는거(쉐이킹) 적용할지. --- Env 좌우 셰이킹 ---.
+// ---> SkillBody ... -> SpriteManager 제거
+
+
 // public List<SpriteRenderer> Skin { get; } = new List<SpriteRenderer>();
 // public List<SpriteRenderer> Appearance { get; } = new List<SpriteRenderer>();
 // --- UI를 정복했을 때 자신감이 엄청나게 상승한다고 함. 그냥 참고.
