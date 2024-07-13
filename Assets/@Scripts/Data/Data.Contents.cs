@@ -211,7 +211,7 @@ namespace STELLAREST_F1.Data
     public class MonsterData : CreatureData
     {
         public EMonsterType MonsterType;
-        public EMonsterSize MonsterSize;
+        public EObjectSize MonsterSize;
         public int DropItemID;
     }
 
@@ -452,7 +452,8 @@ namespace STELLAREST_F1.Data
 		public string ClassName;
         public string AttachmentPoint;
         public int InvokeRange; // --- 시전 조건
-        public int TargetRange; // --- 시전 범위
+        public ESkillTargetRange TargetRange; // --- 시전 범위
+        public int SkillDistance;
         public int ProjectileID;
 		public float CoolTime;
         public int[] EffectIDs;
@@ -476,15 +477,16 @@ namespace STELLAREST_F1.Data
     [Serializable]
     public class ProjectileData : BaseData
     {
-        public EProjectileMotionType MotionType;
-        public string AnimationCurveType;
         public string Body;
         public string BodyColor;
 		public string ClassName;
-        public string ProjectileSize;
         public bool RotateToTarget;
         public float ColliderRadius;
         public float MovementSpeed;
+
+        public string AnimationCurveType;
+        public EProjectileMotionType MotionType;
+        public EObjectSize ProjectileSize;
     }
 
     public class ProjectileDataLoader : ILoader<int, ProjectileData>
@@ -505,13 +507,15 @@ namespace STELLAREST_F1.Data
     [Serializable]
     public class EffectData : BaseData
     {
-        public string ClassName;
+        public bool IsLoop;
         public float Amount;
         public float PercentAdd;
         public float PercentMulti;
         public float Duration;
         public float Period;
         public EEffectType EffectType;
+        public EObjectSize EffectSize;
+        public EEffectSpawnType EffectSpawnType;
     }
 
     public class EffectDataLoader : ILoader<int, EffectData>

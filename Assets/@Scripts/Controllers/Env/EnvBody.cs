@@ -163,7 +163,7 @@ namespace STELLAREST_F1
         #endregion
 
         #region Core
-        public override bool SetInfo(BaseObject owner, int dataID)
+        public override bool SetInfo(int dataID, BaseObject owner)
         {
             this.Owner = owner as Env;
             if (Owner == null)

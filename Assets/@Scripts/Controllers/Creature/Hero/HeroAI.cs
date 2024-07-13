@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static STELLAREST_F1.Define;
 
@@ -211,32 +212,26 @@ namespace STELLAREST_F1
         public override void EnterInGame()
         {
             base.EnterInGame();
-
             // --- First Targets: Monsters, Second Targets: Envs
-            StartCoSearchTarget<BaseObject>(scanRange: ReadOnly.Util.HeroDefaultScanRange,
-                            firstTargets: Managers.Object.Monsters,
-                            secondTargets: Managers.Object.Envs,
-                            func: Owner.IsValid);
+            // StartCoSearchTarget<BaseObject>(scanRange: ReadOnly.Util.HeroDefaultScanRange,
+            //                 firstTargets: Managers.Object.Monsters,
+            //                 secondTargets: Managers.Object.Envs,
+            //                 func: Owner.IsValid);
         }
 
         public override void UpdateIdle() { }
         public override void UpdateMove() { }
         public override void OnDead()
         {
-            StopCoIsFarFromLeaderTick();
+            //StopCoIsFarFromLeaderTick(); // --- 일단 생략
             base.OnDead();
+
         }
         #endregion
 
         #region Coroutines
-        public void StartSearchTarget(System.Func<bool> allTargetsCondition = null)
+        public void StartSearchTarget(Func<bool> allTargetsCondition = null)
         {
-            StartCoSearchTarget<BaseObject>(scanRange: ReadOnly.Util.HeroDefaultScanRange,
-                            firstTargets: Managers.Object.Monsters,
-                            secondTargets: Managers.Object.Envs,
-                            func: Owner.IsValid,
-                            allTargetsCondition: allTargetsCondition);
-
             StartCoIsFarFromLeaderTick();
         }
 
@@ -245,37 +240,40 @@ namespace STELLAREST_F1
         private IEnumerator CoIsFarFromLeaderTick()
         {
             // Scan Range 보다 50%이상 멀어졌을 때
-            float farFromLeaderDistSQR = ReadOnly.Util.HeroDefaultScanRange * ReadOnly.Util.HeroDefaultScanRange + (ReadOnly.Util.HeroDefaultScanRange * ReadOnly.Util.HeroDefaultScanRange * 0.5f);
-            float canWarpDistSQR = ReadOnly.Util.CheckFarFromHeroesLeaderDistanceForWarp * ReadOnly.Util.CheckFarFromHeroesLeaderDistanceForWarp;
-            while (true)
-            {
-                Hero leader = Managers.Object.HeroLeaderController.Leader;
-                if (leader.IsValid() == false) // --- DEFENSE
-                {
-                    yield return null;
-                    continue;
-                }
+            // float farFromLeaderDistSQR = ReadOnly.Util.HeroDefaultScanRange * ReadOnly.Util.HeroDefaultScanRange + (ReadOnly.Util.HeroDefaultScanRange * ReadOnly.Util.HeroDefaultScanRange * 0.5f);
+            // float canWarpDistSQR = ReadOnly.Util.CheckFarFromHeroesLeaderDistanceForWarp * ReadOnly.Util.CheckFarFromHeroesLeaderDistanceForWarp;
+            // while (true)
+            // {
+            //     Hero leader = Managers.Object.HeroLeaderController.Leader;
+            //     if (leader.IsValid() == false) // --- DEFENSE
+            //     {
+            //         yield return null;
+            //         continue;
+            //     }
 
-                if ((leader.CellPos - Owner.CellPos).sqrMagnitude > farFromLeaderDistSQR)
-                {
-                    _isFarFromLeader = true;
-                    PauseSearchTarget = true;
-                }
-                else
-                {
-                    _isFarFromLeader = false;
-                    PauseSearchTarget = false;
-                }
+            //     if ((leader.CellPos - Owner.CellPos).sqrMagnitude > farFromLeaderDistSQR)
+            //     {
+            //         _isFarFromLeader = true;
+            //         PauseSearchTarget = true;
+            //     }
+            //     else
+            //     {
+            //         _isFarFromLeader = false;
+            //         PauseSearchTarget = false;
+            //     }
 
-                // 15칸(225) 이상일 때, 어차피 로그 함수 이동속도로 금방 따라오긴하지만 알수 없는 이유로 히어로가 막혀있을 때
-                if ((leader.CellPos - Owner.CellPos).sqrMagnitude > canWarpDistSQR && _coWaitForceStopWarp == null && IsForceStopMode() == false)
-                {
-                    Vector3 leaderWorldPos = Managers.Object.HeroLeaderController.Leader.transform.position;
-                    Managers.Map.WarpTo(Owner, Managers.Map.WorldToCell(leaderWorldPos), warpEndCallback: null);
-                }
+            //     // 15칸(225) 이상일 때, 어차피 로그 함수 이동속도로 금방 따라오긴하지만 알수 없는 이유로 히어로가 막혀있을 때
+            //     if ((leader.CellPos - Owner.CellPos).sqrMagnitude > canWarpDistSQR && _coWaitForceStopWarp == null && IsForceStopMode() == false)
+            //     {
+            //         Vector3 leaderWorldPos = Managers.Object.HeroLeaderController.Leader.transform.position;
+            //         Managers.Map.WarpTo(Owner, Managers.Map.WorldToCell(leaderWorldPos), warpEndCallback: null);
+            //     }
 
-                yield return new WaitForSeconds(ReadOnly.Util.CheckFarFromHeroesLeaderTick);
-            }
+            //     yield return new WaitForSeconds(ReadOnly.Util.CheckFarFromHeroesLeaderTick);
+            // }
+
+            yield return new WaitForSeconds(ReadOnly.Util.CheckFarFromHeroesLeaderTick);
+
         }
 
         private void StartCoIsFarFromLeaderTick()

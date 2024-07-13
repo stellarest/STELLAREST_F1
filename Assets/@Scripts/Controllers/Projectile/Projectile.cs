@@ -24,9 +24,9 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public override bool SetInfo(BaseObject owner, int dataID)
+        public override bool SetInfo(int dataID, BaseObject owner)
         {
-            if (base.SetInfo(owner, dataID) == false)
+            if (base.SetInfo(dataID, owner) == false)
             {
                 EnterInGame(owner, dataID);
                 return false;
@@ -55,16 +55,25 @@ namespace STELLAREST_F1
                 //spr.sortingOrder = ReadOnly.Numeric.SortingLayer_Projectile;
             }
 
-            // Set Size
-            EProjectileSize size = Util.GetEnumFromString<EProjectileSize>(projectileData.ProjectileSize);
-            switch (size)
+            switch (projectileData.ProjectileSize)
             {
-                case EProjectileSize.Small:
+                case EObjectSize.None:
+                    break;
+
+                case EObjectSize.VerySmall:
+                    break;
+
+                case EObjectSize.Small:
                     transform.localScale *= 0.5f;
                     break;
 
-                case EProjectileSize.Medium:
-                case EProjectileSize.Large:
+                case EObjectSize.Medium:
+                    break;
+
+                case EObjectSize.Large:
+                    break;
+
+                case EObjectSize.VeryLarge:
                     break;
             }
 
@@ -136,7 +145,7 @@ namespace STELLAREST_F1
                     {
                         Managers.Object.Despawn(this, dataID);
                     });
-                    (ProjectileMotion as StraightMotion).SetInfo(owner, dataID);
+                    (ProjectileMotion as StraightMotion).SetInfo(dataID, owner);
                     break;
 
                 case EProjectileMotionType.Parabola:
@@ -144,7 +153,7 @@ namespace STELLAREST_F1
                     {
                         Managers.Object.Despawn(this, dataID);
                     });
-                    (ProjectileMotion as ParabolaMotion).SetInfo(owner, dataID);
+                    (ProjectileMotion as ParabolaMotion).SetInfo(dataID, owner);
                     break;
             }
 

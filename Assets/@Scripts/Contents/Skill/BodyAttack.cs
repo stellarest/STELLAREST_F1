@@ -28,22 +28,22 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public override bool SetInfo(BaseObject owner, int dataID)
-        {
-            if (base.SetInfo(owner, dataID) == false)
-            {
-                EnterInGame(owner, dataID);
-                return false;
-            }
+        // public override bool SetInfo(int dataID, BaseObject owner)
+        // {
+        //     if (base.SetInfo(dataID, owner) == false)
+        //     {
+        //         EnterInGame(dataID, owner);
+        //         return false;
+        //     }
 
-            EnterInGame(owner, dataID);
-            return true;
-        }
+        //     EnterInGame(dataID, owner);
+        //     return true;
+        // }
 
-        protected override void EnterInGame(BaseObject owner, int dataID) // dataID 왜 받았지??
-        {
-            base.EnterInGame(owner, dataID);
-        }
+        // protected override void EnterInGame(int dataID, BaseObject owner) // dataID 왜 받았지??
+        // {
+        //     base.EnterInGame(dataID, owner);
+        // }
 
         #region Coroutines
         private float _delta = 0f;

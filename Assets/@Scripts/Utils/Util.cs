@@ -60,6 +60,16 @@ namespace STELLAREST_F1
             return null;
         }
 
+        public static EObjectType GetTargetType(EObjectType ownerType, bool isAlly)
+        {
+            if (ownerType == EObjectType.Hero)
+                return isAlly ? EObjectType.Hero : EObjectType.Monster;
+            else if (ownerType == EObjectType.Monster)
+                return isAlly ? EObjectType.Monster : EObjectType.Hero;
+
+            return EObjectType.None;
+        }
+
         public static T GetEnumFromString<T>(string value) where T : struct, Enum
         {
             if (System.Enum.TryParse<T>(value, out T enumValue))
@@ -71,16 +81,13 @@ namespace STELLAREST_F1
         public static string GetStringFromEnum<T>(T enumValue) where T : struct, Enum
             => enumValue.ToString();
 
-        public static System.Type GetTypeFromName(string className)
+        public static Type GetTypeFromName(string className)
         {
             EClassName eClassName = GetEnumFromString<EClassName>(className);
             switch (eClassName)
             {
-                case EClassName.MeleeAttack:
-                    return typeof(MeleeAttack);
-
-                case EClassName.RangedAttack:
-                    return typeof(RangedAttack);
+                case EClassName.DefaultSkill:
+                    return typeof(DefaultSkill);
 
                 case EClassName.Projectile:
                     return typeof(Projectile);

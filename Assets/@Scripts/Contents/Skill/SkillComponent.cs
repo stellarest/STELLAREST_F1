@@ -89,7 +89,7 @@ namespace STELLAREST_F1
             if (skill == null)
                 return;
 
-            skill.SetInfo(_owner, skillDataID);
+            skill.SetInfo(skillDataID, _owner);
             Skills.Add(skill);
 
             //ESkillType skillType = Util.GetEnumFromString<ESkillType>(skillData.Type);

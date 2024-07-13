@@ -40,7 +40,7 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public override bool SetInfo(BaseObject owner, int dataID)
+        public override bool SetInfo(int dataID, BaseObject owner)
         {
             DataTemplateID = dataID;
             ProjectileData = Managers.Data.ProjectileDataDict[dataID];
@@ -48,10 +48,7 @@ namespace STELLAREST_F1
             AnimCurveType = Util.GetEnumFromString<EAnimationCurveType>(ProjectileData.AnimationCurveType);
             RotateToTarget = ProjectileData.RotateToTarget;
             _movementSpeed = ProjectileData.MovementSpeed;
-
             StartPosition = transform.position;
-            // TargetPosition = owner.Target.CenterPosition; // 이동하면서 중간에 사정거리에서 아웃되면 null crash
-            TargetPosition = owner.TargetPosition;
 
             if (_coLaunchProjectile != null)
                 StopCoroutine(_coLaunchProjectile);

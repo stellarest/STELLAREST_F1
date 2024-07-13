@@ -20,14 +20,21 @@ namespace STELLAREST_F1
             Instance = this;
         }
 
+        // private IEnumerator Start()
+        // {
+        //     while (true)
+        //     {
+        //         yield return new WaitForSeconds(1f);
+        //         foreach (var pair in Managers.Map.Cells)
+        //         {
+        //             if (pair.Value != null)
+        //                 Debug.Log($"({pair.Key}, {pair.Value.gameObject.name}");
+        //         }
+        //     }
+        // }
+
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.P))
-                ShowCellPosText();
-
-            if (Input.GetKeyDown(KeyCode.O))
-                OnOffTileCollider();
-
             if (Input.GetKeyDown("0"))
             {
                 // --- Check Current Cells Objects
@@ -60,11 +67,14 @@ namespace STELLAREST_F1
                 Debug.Log($"<color=white>ForceFollowToLeader: {Managers.Object.HeroLeaderController.ForceFollowToLeader}</color>");
             }
 
-            // if (Input.GetKeyDown("5"))
-            //     OnOffTileCollider();
-
             if (Input.GetKeyDown("9"))
                 Managers.Object.HeroLeaderController.ShuffleMembersPosition();
+
+            if (Input.GetKeyDown(KeyCode.P))
+                ShowCellPosText();
+
+            if (Input.GetKeyDown(KeyCode.O))
+                OnOffTileCollider();
         }
 
         private void ShowCellPosText()

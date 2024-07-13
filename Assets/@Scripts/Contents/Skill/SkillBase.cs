@@ -13,7 +13,8 @@ namespace STELLAREST_F1
         public Creature Owner { get; private set; } = null;
         public SkillData SkillData { get; private set; } = null;
         public int InvokeRange { get; private set; } = -1;
-        public int TargetRange { get; private set; } = -1;
+        public ESkillTargetRange TargetRange { get; private set; } = ESkillTargetRange.None;
+        public int SkillDistance { get; private set; } = -1;
         public int DataTemplateID { get; private set; } = -1;
         public ESkillType SkillType { get; private set; } = ESkillType.None;
         public EAttachmentPoint SkillFromPoint { get; private set; } = EAttachmentPoint.None;
@@ -42,7 +43,7 @@ namespace STELLAREST_F1
                 return null;
             }
 
-            Projectile projectile = Managers.Object.Spawn<Projectile>(EObjectType.Projectile, SkillData.ProjectileID, owner);
+            Projectile projectile = Managers.Object.Spawn<Projectile>(EObjectType.Projectile, SkillData.ProjectileID);
             projectile.transform.position = spawnPos;
             return projectile;
         }
@@ -56,7 +57,7 @@ namespace STELLAREST_F1
                 Owner.CreatureSkill.ActiveSkills.Add(this);
         }
 
-        protected Vector3 GetSpawnPos()
+        protected Vector3 GetSpawnPos() // --- Ref: Fire Socket
         {
             switch (Owner.ObjectType)
             {
@@ -94,11 +95,11 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public override bool SetInfo(BaseObject owner, int dataID)
+        public override bool SetInfo(int dataID, BaseObject owner)
         {
-            if (base.SetInfo(owner, dataID) == false)
+            if (base.SetInfo(dataID, owner) == false)
             {
-                EnterInGame(owner, dataID);
+                EnterInGame(dataID, owner);
                 return false;
             }
 
@@ -107,14 +108,15 @@ namespace STELLAREST_F1
             SkillData = Managers.Data.SkillDataDict[dataID];
             InvokeRange = SkillData.InvokeRange;
             TargetRange = SkillData.TargetRange;
+            SkillDistance = SkillData.SkillDistance;
             SkillType = SkillData.SkillType;
             SkillFromPoint = Util.GetEnumFromString<EAttachmentPoint>(SkillData.AttachmentPoint);
 
-            EnterInGame(owner, dataID);
+            EnterInGame(dataID, owner);
             return true;
         }
 
-        protected virtual void EnterInGame(BaseObject owner, int dataID)
+        protected virtual void EnterInGame(int dataID, BaseObject owner)
         {
             RemainCoolTime = 0.0f;
             Owner.CreatureAnim.ReadySkill = true;

@@ -43,22 +43,20 @@ namespace STELLAREST_F1
 
         public override bool SetInfo(int dataID)
         {
+            // --- EnterInGame from BaseObject
             if (base.SetInfo(dataID) == false)
-            {
-                // --- BaseObject에서 호출하는중!
-                //EnterInGame();
                 return false;
-            }
         
             InitialSetInfo(dataID);
-            EnterInGame();
             return true;
         }
 
         protected override void InitialSetInfo(int dataID)
         {
             base.InitialSetInfo(dataID);
-            EnvBody.SetInfo(this, dataID);
+            _maxLevel = dataID;
+
+            EnvBody.SetInfo(dataID, this);
             EnvAnim = BaseAnim as EnvAnimation;
             EnvAnim.SetInfo(dataID, this);
             //Managers.Sprite.SetInfo(dataID, this);
@@ -67,12 +65,7 @@ namespace STELLAREST_F1
             EnvType = EnvData.EnvType;
 
             gameObject.name += $"_{EnvData.NameTextID.Replace(" ", "")}";
-        }
-
-        protected override void InitStat(int dataID)
-        {
-            base.InitStat(dataID);
-            _maxLevel = dataID;
+            EnterInGame();
         }
 
         protected override void EnterInGame()
@@ -100,7 +93,11 @@ namespace STELLAREST_F1
                 OnDead(attacker, skillFromAttacker);
                 return;
             }
-            EnvBody.StartCoHurtFlashEffect(isCritical: false);
+            else
+            {
+                HitShakeMovement(duration: 0.1f, power: 0.5f, vibrato: 20);
+                EnvBody.StartCoHurtFlashEffect(isCritical: false);
+            }
         }
 
         public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)

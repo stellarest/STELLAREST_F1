@@ -71,11 +71,9 @@ namespace STELLAREST_F1
 
         public override bool SetInfo(int dataID)
         {
+            // --- EnterInGame from BaseObject
             if (base.SetInfo(dataID) == false)
-            {
-                EnterInGame();
                 return false;
-            }
 
             InitialSetInfo(dataID);
             EnterInGame();
@@ -85,9 +83,11 @@ namespace STELLAREST_F1
         protected override void InitialSetInfo(int dataID)
         {
             base.InitialSetInfo(dataID);
+            _maxLevel = dataID;
+
             MonsterData = Managers.Data.MonsterDataDict[dataID];
             MonsterAnim.SetInfo(dataID, this);
-            MonsterBody.SetInfo(this, dataID);
+            MonsterBody.SetInfo(dataID, this);
             //MonsterAnim = CreatureAnim as MonsterAnimation;
             //Managers.Sprite.SetInfo(dataID, target: this);
 
@@ -105,16 +105,10 @@ namespace STELLAREST_F1
             CreatureSkill.SetInfo(owner: this, MonsterData);
         }
 
-        protected override void InitStat(int dataID)
-        {
-            base.InitStat(dataID);
-            _maxLevel = dataID;
-        }
-
         protected override void EnterInGame()
         {
-            // --- Default Monsters Dir: Left
             MonsterBody.MonsterEmoji = EMonsterEmoji.Normal;
+            // --- Default Monsters Dir: Left
             LookAtDir = ELookAtDirection.Left;
             base.EnterInGame();
             CreatureAIState = ECreatureAIState.Idle;
@@ -136,98 +130,3 @@ namespace STELLAREST_F1
         #endregion
     }
 }
-
-/*
-    [Prev Ref]
-  // protected override void UpdateIdle()
-        // {
-        //     LookAtValidTarget();
-
-        //     if (CanSkill(ESkillType.Skill_Attack) == false)
-        //         return;
-
-        //     if (Target.IsValid())
-        //     {
-        //         if (IsInAttackRange() && CanSkill(ESkillType.Skill_Attack))
-        //         {
-        //             Debug.Log("<color=yellow>Do BodyAttack</color>");
-        //             StopCoLerpToCellPos();
-        //             CreatureSkill.CurrentSkill.DoSkill();
-        //             return;
-        //         }
-
-        //         StopCoPingPongPatrol(); // ---> 패트롤은 아이들에서만 실행하기 때문에 여기서만 체크해주면 됨.
-        //         CreatureAIState = ECreatureAIState.Move;
-        //         return;
-        //     }
-        //     else if (_coPingPongPatrol == null)
-        //     {
-        //         _waitPingPongPatrolDelta += Time.deltaTime;
-        //         if (_waitPingPongPatrolDelta >= _desiredNextPingPongPatrolDelta)
-        //         {
-        //             _waitPingPongPatrolDelta = 0f;
-        //             _desiredNextPingPongPatrolDelta = SetDesiredNextPingPongPatrolDelta(2f, 4f);
-        //             StartCoPingPongPatrol(-5f, 5f);
-        //         }
-        //     }
-        // }
-
-        // // ##### TargetToEnemy였는데 Idle로 되어 있어서 가만히 있었던 버그 있었던 것 같기도... 확인 필요 #####
-        // protected override void UpdateMove()
-        // {
-        //     LookAtValidTarget();
-        //     EFindPathResult result = FindPathAndMoveToCellPos(destPos: ChaseCellPos, maxDepth: ReadOnly.Numeric.MonsterDefaultMoveDepth);
-        //     Vector3 centeredPos = Managers.Map.CenteredCellToWorld(ChaseCellPos);
-
-        //     if (Target.IsValid() == false)
-        //     {
-        //         if ((transform.position - centeredPos).sqrMagnitude < 0.01f || result == EFindPathResult.Fail_NoPath)
-        //         {
-        //             CreatureAIState = ECreatureAIState.Idle;
-        //             return;
-        //         }
-        //     }
-        //     // 치킨 모습 전에 업데이트가 되고나서 스킬을 사용해서 이꼴나는 것임.
-        //     if (Target.IsValid() && IsInAttackRange())
-        //     {
-        //         CreatureAIState = ECreatureAIState.Idle;
-        //         return;
-
-        //         // if (CanSkill(ESkillType.Skill_Attack))
-        //         // {
-        //         //     CreatureAIState = ECreatureAIState.Skill;
-        //         //     CreatureSkill.CurrentSkill.DoSkill();
-        //         //     return;
-        //         // }
-
-        //         // if (IsInAttackRange() && CanSkill(ESkillType.Skill_Attack))
-        //         // {
-        //         //      CreatureAIState = ECreatureAIState.Idle;
-        //         //      CreatureSkill?.CurrentSkill.DoSkill();
-        //         // }
-        //     }
-
-        //     // result == EFindPathResult.Fail_NoPath 근처로 갔으면 멈추거라
-        //     // if ((transform.position - centeredPos).sqrMagnitude < 0.01f || result == EFindPathResult.Fail_NoPath)
-        //     // {
-        //     //     if (Target.IsValid() == false)
-        //     //     {
-        //     //         CreatureAIState = ECreatureAIState.Idle;
-        //     //         return;
-        //     //     }
-        //     //     // else if (CanSkill(ESkillType.Skill_Attack))
-        //     //     // {
-        //     //     //     CreatureAIState = ECreatureAIState.Idle;
-        //     //     //     CreatureSkill?.CurrentSkill.DoSkill();
-        //     //     //     return;
-        //     //     // }
-
-        //     //     // 일단 되긴 함... 그리고 Chicken StateMachine 붙어있는지도 확인하고 ForceExit를 통해서 호출되는지도 확인하고
-        //     //     // else if (CreatureSkill.IsRemainingCoolTime((int)ESkillType.Skill_Attack) == false)
-        //     //     // {
-        //     //     //     CreatureSkill?.CurrentSkill.DoSkill();
-        //     //     //     return;
-        //     //     // }
-        //     // }
-        // }
-*/

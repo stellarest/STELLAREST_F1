@@ -15,6 +15,9 @@ namespace STELLAREST_F1
         private Dictionary<EHeroBody, BodyContainer[]> _heroBodyDict = new Dictionary<EHeroBody, BodyContainer[]>();
         private Dictionary<EEnvType, Sprite[]> _envHeroWeaponDict = new Dictionary<EEnvType, Sprite[]>();
         private Sprite[] _defaultHeroWeapons = new Sprite[(int)EHeroWeapons.Max];
+        public Vector3[] _defaultHeroWeaponsLocalScales = new Vector3[(int)EHeroWeapons.Max];
+        private Vector3 GetWeaponLocalScale(EHeroWeapons weapon)
+            => _defaultHeroWeaponsLocalScales[(int)weapon] != null ? _defaultHeroWeaponsLocalScales[(int)weapon] : Vector3.zero;
 
         public Sprite[] Eyebrows { get; private set; } = null;
         public Color[] EyebrowsColors { get; private set; } = null;
@@ -180,23 +183,39 @@ namespace STELLAREST_F1
             {
                 case EHeroWeaponType.Default:
                     {
+                        GetContainer(EHeroBody_Weapon.WeaponL_Armor).TR.localScale = GetWeaponLocalScale(EHeroWeapons.WeaponL_Armor);
                         GetContainer(EHeroBody_Weapon.WeaponL_Armor).SPR.sprite = _defaultHeroWeapons[(int)EHeroWeapons.WeaponL_Armor];
+
+                        GetContainer(EHeroBody_Weapon.WeaponL_Armor_Child01).TR.localScale = GetWeaponLocalScale(EHeroWeapons.WeaponL_Armor_Child01);
                         GetContainer(EHeroBody_Weapon.WeaponL_Armor_Child01).SPR.sprite = _defaultHeroWeapons[(int)EHeroWeapons.WeaponL_Armor_Child01];
+
+                        GetContainer(EHeroBody_Weapon.WeaponL_Armor_Child02).TR.localScale = GetWeaponLocalScale(EHeroWeapons.WeaponL_Armor_Child02);
                         GetContainer(EHeroBody_Weapon.WeaponL_Armor_Child02).SPR.sprite = _defaultHeroWeapons[(int)EHeroWeapons.WeaponL_Armor_Child02];
+
+                        GetContainer(EHeroBody_Weapon.WeaponL_Armor_Child03).TR.localScale = GetWeaponLocalScale(EHeroWeapons.WeaponL_Armor_Child03);
                         GetContainer(EHeroBody_Weapon.WeaponL_Armor_Child03).SPR.sprite = _defaultHeroWeapons[(int)EHeroWeapons.WeaponL_Armor_Child03];
 
+                        GetContainer(EHeroBody_Weapon.WeaponR_Armor).TR.localScale = GetWeaponLocalScale(EHeroWeapons.WeaponR_Armor);
                         GetContainer(EHeroBody_Weapon.WeaponR_Armor).SPR.sprite = _defaultHeroWeapons[(int)EHeroWeapons.WeaponR_Armor];
+
+                        GetContainer(EHeroBody_Weapon.WeaponR_Armor_Child01).TR.localScale = GetWeaponLocalScale(EHeroWeapons.WeaponR_Armor_Child01);
                         GetContainer(EHeroBody_Weapon.WeaponR_Armor_Child01).SPR.sprite = _defaultHeroWeapons[(int)EHeroWeapons.WeaponR_Armor_Child01];
+
+                        GetContainer(EHeroBody_Weapon.WeaponR_Armor_Child02).TR.localScale = GetWeaponLocalScale(EHeroWeapons.WeaponR_Armor_Child02);
                         GetContainer(EHeroBody_Weapon.WeaponR_Armor_Child02).SPR.sprite = _defaultHeroWeapons[(int)EHeroWeapons.WeaponR_Armor_Child02];
+
+                        GetContainer(EHeroBody_Weapon.WeaponR_Armor_Child03).TR.localScale = GetWeaponLocalScale(EHeroWeapons.WeaponR_Armor_Child03);
                         GetContainer(EHeroBody_Weapon.WeaponR_Armor_Child03).SPR.sprite = _defaultHeroWeapons[(int)EHeroWeapons.WeaponR_Armor_Child03];
                     }
                     break;
 
                 case EHeroWeaponType.CollectTree:
+                    GetContainer(EHeroBody_Weapon.WeaponR_Armor).TR.localScale = Vector3.one;
                     GetContainer(EHeroBody_Weapon.WeaponR_Armor).SPR.sprite = _envHeroWeaponDict[EEnvType.Tree][(int)Owner.CreatureRarity];
                     break;
 
                 case EHeroWeaponType.CollectRock:
+                    GetContainer(EHeroBody_Weapon.WeaponR_Armor).TR.localScale = Vector3.one;
                     GetContainer(EHeroBody_Weapon.WeaponR_Armor).SPR.sprite = _envHeroWeaponDict[EEnvType.Rock][(int)Owner.CreatureRarity];
                     break;
             }
@@ -649,6 +668,8 @@ namespace STELLAREST_F1
                         {
                             container.SPR.sprite = sprite;
                             container.TR.localScale = weapon.LWeaponLocalScale;
+                            _defaultHeroWeaponsLocalScales[(int)EHeroWeapons.WeaponL_Armor] = weapon.LWeaponLocalScale;
+
                             container.SPR.sortingOrder = weapon.LWeaponSorting;
                             container.SPR.flipX = weapon.LWeaponFlipX;
                             container.SPR.flipY = weapon.LWeaponFlipY;
@@ -676,6 +697,8 @@ namespace STELLAREST_F1
                                 container.SPR.sprite = sprite;
                                 container.TR.localPosition = weapon.LWeaponChildsLocalPositions[0];
                                 container.TR.localScale = weapon.LWeaponChildsLocalScales[0];
+                                _defaultHeroWeaponsLocalScales[(int)EHeroWeapons.WeaponL_Armor_Child01] = weapon.LWeaponChildsLocalScales[0];
+
                                 container.SPR.sortingOrder = weapon.LWeaponChildSortings[0];
                                 container.SPR.flipX = weapon.LWeaponChildFlipXs[0];
                                 container.SPR.flipY = weapon.LWeaponChildFlipYs[0];
@@ -697,6 +720,8 @@ namespace STELLAREST_F1
                                 container.SPR.sprite = sprite;
                                 container.TR.localPosition = weapon.LWeaponChildsLocalPositions[1];
                                 container.TR.localScale = weapon.LWeaponChildsLocalScales[1];
+                                _defaultHeroWeaponsLocalScales[(int)EHeroWeapons.WeaponL_Armor_Child02] = weapon.LWeaponChildsLocalScales[1];
+
                                 container.SPR.sortingOrder = weapon.LWeaponChildSortings[1];
                                 container.SPR.flipX = weapon.LWeaponChildFlipXs[1];
                                 container.SPR.flipY = weapon.LWeaponChildFlipYs[1];
@@ -718,6 +743,8 @@ namespace STELLAREST_F1
                                 container.SPR.sprite = sprite;
                                 container.TR.localPosition = weapon.LWeaponChildsLocalPositions[2];
                                 container.TR.localScale = weapon.LWeaponChildsLocalScales[2];
+                                _defaultHeroWeaponsLocalScales[(int)EHeroWeapons.WeaponL_Armor_Child03] = weapon.LWeaponChildsLocalScales[2];
+
                                 container.SPR.sortingOrder = weapon.LWeaponChildSortings[2];
                                 container.SPR.flipX = weapon.LWeaponChildFlipXs[2];
                                 container.SPR.flipY = weapon.LWeaponChildFlipYs[2];
@@ -739,6 +766,8 @@ namespace STELLAREST_F1
                         {
                             container.SPR.sprite = sprite;
                             container.TR.localScale = weapon.RWeaponLocalScale;
+                            _defaultHeroWeaponsLocalScales[(int)EHeroWeapons.WeaponR_Armor] = weapon.RWeaponLocalScale;
+
                             container.SPR.sortingOrder = weapon.RWeaponSorting;
                             container.SPR.flipX = weapon.RWeaponFlipX;
                             container.SPR.flipY = weapon.RWeaponFlipY;
@@ -766,6 +795,8 @@ namespace STELLAREST_F1
                                 container.SPR.sprite = sprite;
                                 container.TR.localPosition = weapon.RWeaponChildsLocalPositions[0];
                                 container.TR.localScale = weapon.RWeaponChildsLocalScales[0];
+                                _defaultHeroWeaponsLocalScales[(int)EHeroWeapons.WeaponR_Armor_Child01] = weapon.RWeaponChildsLocalScales[0];
+
                                 container.SPR.sortingOrder = weapon.RWeaponChildSortings[0];
                                 container.SPR.flipX = weapon.RWeaponChildFlipXs[0];
                                 container.SPR.flipY = weapon.RWeaponChildFlipYs[0];
@@ -787,6 +818,8 @@ namespace STELLAREST_F1
                                 container.SPR.sprite = sprite;
                                 container.TR.localPosition = weapon.RWeaponChildsLocalPositions[1];
                                 container.TR.localScale = weapon.RWeaponChildsLocalScales[1];
+                                _defaultHeroWeaponsLocalScales[(int)EHeroWeapons.WeaponR_Armor_Child02] = weapon.RWeaponChildsLocalScales[1];
+
                                 container.SPR.sortingOrder = weapon.RWeaponChildSortings[1];
                                 container.SPR.flipX = weapon.RWeaponChildFlipXs[1];
                                 container.SPR.flipY = weapon.RWeaponChildFlipYs[1];
@@ -808,6 +841,8 @@ namespace STELLAREST_F1
                                 container.SPR.sprite = sprite;
                                 container.TR.localPosition = weapon.RWeaponChildsLocalPositions[2];
                                 container.TR.localScale = weapon.RWeaponChildsLocalScales[2];
+                                _defaultHeroWeaponsLocalScales[(int)EHeroWeapons.WeaponR_Armor_Child03] = weapon.RWeaponChildsLocalScales[2];
+
                                 container.SPR.sortingOrder = weapon.RWeaponChildSortings[2];
                                 container.SPR.flipX = weapon.RWeaponChildFlipXs[2];
                                 container.SPR.flipY = weapon.RWeaponChildFlipYs[2];
@@ -1040,15 +1075,10 @@ namespace STELLAREST_F1
                 container.SPR.SetPropertyBlock(container.MatPropertyBlock);
             }
         }
-
-        public override void ShowBody(bool show)
-        {
-            
-        }
         #endregion
 
         #region Core
-        public override bool SetInfo(BaseObject owner, int dataID)
+        public override bool SetInfo(int dataID, BaseObject owner)
         {
             Owner = owner as Hero;
             if (Owner == null)
@@ -1948,6 +1978,8 @@ namespace STELLAREST_F1
             {
                 spr.sprite = sprite;
                 tr.localScale = weapon.LWeaponLocalScale;
+                _defaultHeroWeaponsLocalScales[(int)EHeroWeapons.WeaponL_Armor] = weapon.LWeaponLocalScale;
+
                 spr.sortingOrder = weapon.LWeaponSorting;
                 spr.flipX = weapon.LWeaponFlipX;
                 spr.flipY = weapon.LWeaponFlipY;
@@ -1995,6 +2027,8 @@ namespace STELLAREST_F1
                         spr.sprite = sprite;
                         tr.localPosition = weapon.LWeaponChildsLocalPositions[0];
                         tr.localScale = weapon.LWeaponChildsLocalScales[0];
+                        _defaultHeroWeaponsLocalScales[(int)EHeroWeapons.WeaponL_Armor_Child01] = weapon.LWeaponChildsLocalScales[0];
+
                         spr.sortingOrder = weapon.LWeaponChildSortings[0];
                         spr.flipX = weapon.LWeaponChildFlipXs[0];
                         spr.flipY = weapon.LWeaponChildFlipYs[0];
@@ -2021,6 +2055,8 @@ namespace STELLAREST_F1
                             spr.sprite = sprite;
                             tr.localPosition = weapon.LWeaponChildsLocalPositions[1];
                             tr.localScale = weapon.LWeaponChildsLocalScales[1];
+                            _defaultHeroWeaponsLocalScales[(int)EHeroWeapons.WeaponL_Armor_Child02] = weapon.LWeaponChildsLocalScales[1];
+
                             spr.sortingOrder = weapon.LWeaponChildSortings[1];
                             spr.flipX = weapon.LWeaponChildFlipXs[1];
                             spr.flipY = weapon.LWeaponChildFlipYs[1];
@@ -2051,6 +2087,8 @@ namespace STELLAREST_F1
                             spr.sprite = sprite;
                             tr.localPosition = weapon.LWeaponChildsLocalPositions[2];
                             tr.localScale = weapon.LWeaponChildsLocalScales[2];
+                            _defaultHeroWeaponsLocalScales[(int)EHeroWeapons.WeaponL_Armor_Child03] = weapon.LWeaponChildsLocalScales[2];
+
                             spr.sortingOrder = weapon.LWeaponChildSortings[2];
                             spr.flipX = weapon.LWeaponChildFlipXs[2];
                             spr.flipY = weapon.LWeaponChildFlipYs[2];
@@ -2126,6 +2164,8 @@ namespace STELLAREST_F1
             {
                 spr.sprite = sprite;
                 tr.localScale = weapon.RWeaponLocalScale;
+                _defaultHeroWeaponsLocalScales[(int)EHeroWeapons.WeaponR_Armor] = weapon.RWeaponLocalScale;
+
                 spr.sortingOrder = weapon.RWeaponSorting;
                 spr.flipX = weapon.RWeaponFlipX;
                 spr.flipY = weapon.RWeaponFlipY;
@@ -2173,6 +2213,8 @@ namespace STELLAREST_F1
                         spr.sprite = sprite;
                         tr.localPosition = weapon.RWeaponChildsLocalPositions[0];
                         tr.localScale = weapon.RWeaponChildsLocalScales[0];
+                        _defaultHeroWeaponsLocalScales[(int)EHeroWeapons.WeaponR_Armor_Child01] = weapon.RWeaponChildsLocalScales[0];
+
                         spr.sortingOrder = weapon.RWeaponChildSortings[0];
                         spr.flipX = weapon.RWeaponChildFlipXs[0];
                         spr.flipY = weapon.RWeaponChildFlipYs[0];
@@ -2199,6 +2241,8 @@ namespace STELLAREST_F1
                             spr.sprite = sprite;
                             tr.localPosition = weapon.RWeaponChildsLocalPositions[1];
                             tr.localScale = weapon.RWeaponChildsLocalScales[1];
+                            _defaultHeroWeaponsLocalScales[(int)EHeroWeapons.WeaponR_Armor_Child02] = weapon.RWeaponChildsLocalScales[1];
+
                             spr.sortingOrder = weapon.RWeaponChildSortings[1];
                             spr.flipX = weapon.RWeaponChildFlipXs[1];
                             spr.flipY = weapon.RWeaponChildFlipYs[1];
@@ -2229,6 +2273,8 @@ namespace STELLAREST_F1
                             spr.sprite = sprite;
                             tr.localPosition = weapon.RWeaponChildsLocalPositions[2];
                             tr.localScale = weapon.RWeaponChildsLocalScales[2];
+                            _defaultHeroWeaponsLocalScales[(int)EHeroWeapons.WeaponR_Armor_Child03] = weapon.RWeaponChildsLocalScales[2];
+
                             spr.sortingOrder = weapon.RWeaponChildSortings[2];
                             spr.flipX = weapon.RWeaponChildFlipXs[2];
                             spr.flipY = weapon.RWeaponChildFlipYs[2];

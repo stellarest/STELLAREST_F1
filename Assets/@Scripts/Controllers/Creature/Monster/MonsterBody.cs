@@ -193,7 +193,7 @@ namespace STELLAREST_F1
         #endregion
 
         #region Core
-        public override bool SetInfo(BaseObject owner, int dataID)
+        public override bool SetInfo(int dataID, BaseObject owner)
         {
             Owner = owner as Monster;
             if (Owner == null)
@@ -221,12 +221,33 @@ namespace STELLAREST_F1
                         string tag = Util.GetStringFromEnum(EBirdBody.Body);
                         Transform tr = Owner.MonsterAnim.transform;
                         tr.transform.localPosition = bird.BodyPosition;
-                        if (monsterData.MonsterSize == EMonsterSize.Small)
-                            Owner.transform.localScale = new Vector3(ReadOnly.Util.MonsterSize_Small, ReadOnly.Util.MonsterSize_Small, 1);
-                        else if (monsterData.MonsterSize == EMonsterSize.Medium)
-                            Owner.transform.localScale = new Vector3(ReadOnly.Util.MonsterSize_Medium, ReadOnly.Util.MonsterSize_Medium, 1);
-                        else if (monsterData.MonsterSize == EMonsterSize.Large)
-                            Owner.transform.localScale = new Vector3(ReadOnly.Util.MonsterSize_Large, ReadOnly.Util.MonsterSize_Large, 1);
+                        switch (monsterData.MonsterSize)
+                        {
+                            // --- Use Preset Size
+                            case EObjectSize.None:
+                                break;
+
+                            case EObjectSize.VerySmall:
+                                Owner.transform.localScale = new Vector3(0.25F, 0.25F, 1);
+                                break;
+
+                            case EObjectSize.Small:
+                                Owner.transform.localScale = new Vector3(0.5F, 0.5F, 1);
+                                break;
+
+                            case EObjectSize.Medium:
+                                Owner.transform.localScale = new Vector3(1F, 1F, 1);
+                                break;
+
+                            case EObjectSize.Large:
+                                Owner.transform.localScale = new Vector3(2F, 2F, 1);
+                                break;
+
+                            case EObjectSize.VeryLarge:
+                                Owner.transform.localScale = new Vector3(3F, 3F, 1);
+                                break;
+                        }
+
                         SpriteRenderer spr = tr.GetComponent<SpriteRenderer>();
                         spr.material = _matDefault;
                         Sprite sprite = Managers.Resource.Load<Sprite>(bird.Body);
@@ -374,12 +395,33 @@ namespace STELLAREST_F1
                         string tag = Util.GetStringFromEnum(EQuadrupedsBody.Body);
                         Transform tr = Owner.MonsterAnim.transform;
                         tr.localPosition = quadrupeds.BodyPosition;
-                        if (monsterData.MonsterSize == EMonsterSize.Small)
-                            Owner.transform.localScale = new Vector3(ReadOnly.Util.MonsterSize_Small, ReadOnly.Util.MonsterSize_Small, 1);
-                        else if (monsterData.MonsterSize == EMonsterSize.Medium)
-                            Owner.transform.localScale = new Vector3(ReadOnly.Util.MonsterSize_Medium, ReadOnly.Util.MonsterSize_Medium, 1);
-                        else if (monsterData.MonsterSize == EMonsterSize.Large)
-                            Owner.transform.localScale = new Vector3(ReadOnly.Util.MonsterSize_Large, ReadOnly.Util.MonsterSize_Large, 1);
+                        switch (monsterData.MonsterSize)
+                        {
+                            // --- Use Preset Size
+                            case EObjectSize.None:
+                                break;
+
+                            case EObjectSize.VerySmall:
+                                Owner.transform.localScale = new Vector3(0.25F, 0.25F, 1);
+                                break;
+
+                            case EObjectSize.Small:
+                                Owner.transform.localScale = new Vector3(0.5F, 0.5F, 1);
+                                break;
+
+                            case EObjectSize.Medium:
+                                Owner.transform.localScale = new Vector3(1F, 1F, 1);
+                                break;
+
+                            case EObjectSize.Large:
+                                Owner.transform.localScale = new Vector3(2F, 2F, 1);
+                                break;
+
+                            case EObjectSize.VeryLarge:
+                                Owner.transform.localScale = new Vector3(3F, 3F, 1);
+                                break;
+                        }
+
                         SpriteRenderer spr = tr.GetComponent<SpriteRenderer>();
                         spr.material = _matDefault;
                         Sprite sprite = Managers.Resource.Load<Sprite>(quadrupeds.Body);

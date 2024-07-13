@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices.WindowsRuntime;
+using STELLAREST_F1.Data;
 using Unity.Profiling;
 using UnityEditor;
 using UnityEngine;
@@ -78,14 +80,65 @@ namespace STELLAREST_F1
             dmgFont.SetInfo(position, damage, isCritical);
         }
 
-        public GameObject SpawnGameObject(Vector3 position, string prefabName, int poolingID)
+        public List<T> FindTargets<T>(BaseObject owner, int range, bool isAlly = false) where T : BaseObject
         {
-            GameObject go = Managers.Resource.Instantiate(key: prefabName, poolingID: poolingID);
-            go.transform.position = position;
-            return go;
-        }
+            List<T> targets = new List<T>();
+            //List<T> rets = new List<T>();
 
-        public T Spawn<T>(EObjectType objectType, int dataID = -1, BaseObject presetOwner = null) where T : BaseObject
+            EObjectType ownerType = owner.ObjectType;
+            Vector3 from = owner.transform.position;
+
+            EObjectType targetType = Util.GetTargetType(ownerType, isAlly);
+            if (targetType == EObjectType.Monster)
+            {
+                List<Monster> monsters = Managers.Map.GatherObjects<Monster>(from, range, range);
+                for (int i = 0; i < monsters.Count; ++i)
+                    targets.Add(monsters[i] as T); 
+            }
+            else if (targetType == EObjectType.Hero)
+            {
+                List<Hero> heroes = Managers.Map.GatherObjects<Hero>(from, range, range);
+                for (int i = 0; i < heroes.Count; ++i)
+                    targets.Add(heroes[i] as T);
+            }
+
+            return targets;
+        }
+        
+
+        // public List<T> FindCircleRangeTargets<T>(Vector3 from, float range, EObjectType ownerType, bool isAlly = false) where T : BaseObject
+        // {
+        //     List<T> targets = new List<T>();
+        //     List<T> rets = new List<T>();
+
+        //     EObjectType targetType = Util.GetTargetType(ownerType, isAlly);
+        //     if (targetType == EObjectType.Monster)
+        //     {
+        //         List<Monster> monsters = Managers.Map.GatherObjects<Monster>(from, range, range);
+        //         for (int i = 0; i < monsters.Count; ++i)
+        //             targets.Add(monsters[i] as T); 
+        //     }
+        //     else if (targetType == EObjectType.Hero)
+        //     {
+        //         List<Hero> heroes = Managers.Map.GatherObjects<Hero>(from, range, range);
+        //         for (int i = 0; i < heroes.Count; ++i)
+        //             targets.Add(heroes[i] as T);
+        //     }
+
+        //     for (int i = 0; i < targets.Count; ++i)
+        //     {
+        //         Vector3 targetPos = targets[i].transform.position;
+        //         float distSQR = (targetPos - from).sqrMagnitude;
+        //         if (distSQR < range * range)
+        //             rets.Add(targets[i]);
+        //     }
+
+        //     return rets;
+        // }
+
+
+
+        public T Spawn<T>(EObjectType objectType, int dataID = -1) where T : BaseObject
         {
             GameObject go = null;
             switch (objectType)
@@ -125,7 +178,7 @@ namespace STELLAREST_F1
                         go = Managers.Resource.Instantiate(data.PrefabLabel, parent: EnvRoot, poolingID: dataID);
                         if (go == null)
                         {
-                            Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{dataID}\"");
+                            Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input: \"{dataID}\"");
                             return null;
                         }
 
@@ -140,7 +193,7 @@ namespace STELLAREST_F1
                         go = Managers.Resource.Instantiate(data.PrefabLabel, parent: ProjectileRoot, poolingID: data.DataID);
                         if (go == null)
                         {
-                            Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{data.PrefabLabel}\"");
+                            Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input: \"{data.PrefabLabel}\"");
                             return null;
                         }
 
@@ -154,12 +207,25 @@ namespace STELLAREST_F1
                         go = Managers.Resource.Instantiate(ReadOnly.Prefabs.PFName_LeaderController);
                         if (go == null)
                         {
-                            Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input : \"{EObjectType.LeaderController}\"");
+                            Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input: \"{EObjectType.LeaderController}\"");
                             return null;
                         }
                         go.name = $"@{go.name}";
                         HeroLeaderController = go.GetComponent<HeroLeaderController>();
                         return HeroLeaderController as T;
+                    }
+
+                case EObjectType.Effect:
+                {
+                        EffectData data = Managers.Data.EffectDataDict[dataID];
+                        go = Managers.Resource.Instantiate(data.PrefabLabel, parent: EffectRoot, poolingID: dataID);
+                        if (go == null)
+                        {
+                            Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input: \"{data.PrefabLabel}\"");
+                            return null;
+                        }
+
+                        return go.GetComponent<EffectBase>() as T;                        
                     }
 
                 default:

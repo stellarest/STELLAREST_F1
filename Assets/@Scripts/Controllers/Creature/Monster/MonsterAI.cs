@@ -50,12 +50,14 @@ namespace STELLAREST_F1
         public override void EnterInGame()
         {
             base.EnterInGame();
-            _desiredNextPingPongPatrolDelta = UnityEngine.Random.Range(2f, 4f);
-            StartCoSearchTarget<Creature>(scanRange: ReadOnly.Util.MonsterDefaultScanRange,
-                             firstTargets: Managers.Object.Heroes,
-                             secondTargets: null,
-                             func: MonsterOwner.IsValid,
-                             allTargetsCondition: null);
+            _desiredNextPingPongPatrolDelta = Random.Range(2f, 4f);
+            StartCoFindEnemies();
+
+            // StartCoSearchTarget<Creature>(scanRange: ReadOnly.Util.MonsterDefaultScanRange,
+            //                  firstTargets: Managers.Object.Heroes,
+            //                  secondTargets: null,
+            //                  func: MonsterOwner.IsValid,
+            //                  allTargetsCondition: null);
         }
 
         public override void UpdateIdle()

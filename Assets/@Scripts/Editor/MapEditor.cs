@@ -21,13 +21,15 @@ namespace STELLAREST_F1
         [MenuItem("Tools/PrintTest %#H")]
         private static void PrintTest()
         {
-            List<int> myNums = new List<int>();
-            for (int i = 1; i <= 5; ++i)
-            {
-                myNums.Add(i);
-            }
+            Debug.Log(Mathf.Acos(0.99f) * Mathf.Rad2Deg);
 
-            PrintNums(myNums);
+            // List<int> myNums = new List<int>();
+            // for (int i = 1; i <= 5; ++i)
+            // {
+            //     myNums.Add(i);
+            // }
+
+            // PrintNums(myNums);
 
             // ###
             // int value = 0;

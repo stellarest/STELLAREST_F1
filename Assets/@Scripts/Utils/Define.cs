@@ -42,12 +42,14 @@ namespace STELLAREST_F1
             //Max = Quadrupeds + 1
         }
 
-        public enum EMonsterSize
+        public enum EObjectSize
         {
-            None = -1,
+            None = -1, // --- Use Preset
+            VerySmall,
             Small,
             Medium,
-            Large
+            Large,
+            VeryLarge
         }
 
         public enum EScene
@@ -312,13 +314,6 @@ namespace STELLAREST_F1
             Max
         }
 
-        public enum EColliderSize
-        {
-            Small,
-            Default,
-            Large
-        }
-
         public enum EAnimationCurveType
         {
             None = -1,
@@ -338,12 +333,20 @@ namespace STELLAREST_F1
             Max = Skill_C + 1
         }
 
+        public enum ESkillTargetRange
+        {
+            None = -1,
+            Self,
+            Single,
+            Half,
+            AllAround
+        }
+
         // ####################################################
         // Util.GetTypeFromClassName에 반드시 타입 추가
         public enum EClassName
         {
-            MeleeAttack,
-            RangedAttack,
+            DefaultSkill,
             Projectile,
             StraightMotion,
             ParabolaMotion,
@@ -404,17 +407,11 @@ namespace STELLAREST_F1
             ForceStop
         }
 
-        public enum EProjectileSize
-        {
-            Small,
-            Medium,
-            Large
-        }
-
         public enum EEffectType
         {
-            None,
+            None = -1,
             Instant,
+            Infinite,
             Buff,
             DeBuff,
             Dot,
@@ -422,6 +419,7 @@ namespace STELLAREST_F1
             Knockback,
             Freeze,
             Stun,
+            Pull,
         }
 
         public enum EEffectSpawnType // ???
@@ -667,86 +665,23 @@ namespace STELLAREST_F1
 
                 public static readonly string Light_SP = "Light.sprite";
 
-                // Material - Common
+                // // Env Body
+                // public static readonly string ETreeBody_Trunk = "Trunk";
+                // public static readonly string ETreeBody_Patch = "Patch";
+                // public static readonly string ETreeBody_Stump = "Stump";
+                // public static readonly string ETreeBody_Fruits = "Fruits";
 
-                // --- Hero: Head
-                // public static readonly string HBody_HeadSkin = "Head";
-                // public static readonly string HBody_Hair = "Hair";
-                // public static readonly string HBody_Eyes = "Eyes";
-                // public static readonly string HBody_Eyebrows = "Eyebrows";
-                // public static readonly string HBody_Mouth = "Mouth";
-                // public static readonly string HBody_EarsSkin = "Ears";
-                // public static readonly string HBody_Earrings = "Earrings";
-                // public static readonly string HBody_Beard = "Beard";
-                // public static readonly string HBody_Mask = "Mask";
-                // public static readonly string HBody_Glasses = "Glasses";
-                // public static readonly string HBody_Helmet = "Helmet";
+                // public static readonly string ERock_Rock = "Rock";
+                // public static readonly string ERock_Empty = "Empty";
+                // public static readonly string ERock_Ore = "Ore";
+                // public static readonly string ERock_OreShadow = "OreShadow";
+                // public static readonly string ERock_OreLight = "OreLight";
+                // public static readonly string ERock_OreParticle = "OreParticle";
+                // public static readonly string ERock_Spot = "Spot";
+                // public static readonly string ERock_Fragment = "Fragment";
 
-                // --- Hero: UpperBody
-                // public static readonly string HBody_TorsoSkin = "Torso";
-                // public static readonly string HBody_Torso = "Torso_Armor";
-                // public static readonly string HBody_Cape = "Cape_Armor";
-                // public static readonly string HBody_ArmLSkin = "ArmL";
-                // public static readonly string HBody_ArmL = "ArmL_Armor";
-                // public static readonly string HBody_ForearmLSkin = "ForearmL";
-                // public static readonly string HBody_ForearmL = "ForearmL_Armor";
-                // public static readonly string HBody_HandLSkin = "HandL";
-                // public static readonly string HBody_HandL = "HandL_Armor";
-                // public static readonly string HBody_FingerSkin = "Finger";
-                // public static readonly string HBody_Finger = "Finger_Armor";
-
-                // public static readonly string HBody_ArmRSkin = "ArmR";
-                // public static readonly string HBody_ArmR = "ArmR_Armor";
-                // public static readonly string HBody_ForearmRSkin = "ForearmR";
-                // public static readonly string HBody_ForearmR = "ForearmR_Armor";
-                // public static readonly string HBody_SleeveR = "SleeveR_Armor";
-                // public static readonly string HBody_HandRSkin = "HandR";
-                // public static readonly string HBody_HandR = "HandR_Armor";
-
-                // --- Hero: LowerBody
-                // public static readonly string HBody_PelvisSkin = "Pelvis";
-                // public static readonly string HBody_Pelvis = "Pelvis_Armor";
-                // public static readonly string HBody_LegLSkin = "LegL";
-                // public static readonly string HBody_LegL = "LegL_Armor";
-                // public static readonly string HBody_ShinLSkin = "ShinL";
-                // public static readonly string HBody_ShinL = "ShinL_Armor";
-                // public static readonly string HBody_LegRSkin = "LegR";
-                // public static readonly string HBody_LegR = "LegR_Armor";
-                // public static readonly string HBody_ShinRSkin = "ShinR";
-                // public static readonly string HBody_ShinR = "ShinR_Armor";
-
-                // --- Hero: Weapon
-                // public static readonly string HBody_WeaponL = "WeaponL_Armor";
-                // public static readonly string HBody_WeaponR = "WeaponR_Armor";
-
-                // --- Monster
-                // public static readonly string MBody_Head = "Head";
-                // public static readonly string MBody_Wing = "Wing";
-                // public static readonly string MBody_LegL = "LegL";
-                // public static readonly string MBody_LegFrontL = "LegFrontL";
-                // public static readonly string MBody_LegBackL = "LegBackL";
-                // public static readonly string MBody_LegR = "LegR";
-                // public static readonly string MBody_LegFrontR = "LegFrontR";
-                // public static readonly string MBody_LegBackR = "LegBackR";
-                // public static readonly string MBody_Tail = "Tail";
-
-                // Env Body
-                public static readonly string ETreeBody_Trunk = "Trunk";
-                public static readonly string ETreeBody_Patch = "Patch";
-                public static readonly string ETreeBody_Stump = "Stump";
-                public static readonly string ETreeBody_Fruits = "Fruits";
-
-                public static readonly string ERock_Rock = "Rock";
-                public static readonly string ERock_Empty = "Empty";
-                public static readonly string ERock_Ore = "Ore";
-                public static readonly string ERock_OreShadow = "OreShadow";
-                public static readonly string ERock_OreLight = "OreLight";
-                public static readonly string ERock_OreParticle = "OreParticle";
-                public static readonly string ERock_Spot = "Spot";
-                public static readonly string ERock_Fragment = "Fragment";
-
-                public static readonly string EBody_EndParticle = "EndParticle";
-                public static readonly string EBody_Shadow = "Shadow";
+                // public static readonly string EBody_EndParticle = "EndParticle";
+                // public static readonly string EBody_Shadow = "Shadow";
 
                 // Write Tile
                 public static readonly string Tile_CanMove = "_CanMove";
@@ -780,6 +715,8 @@ namespace STELLAREST_F1
                 public static readonly int MonsterDefaultMoveDepth = 5; // default: 3 -> 5       
                 public static readonly int MaxCanPingPongConditionCount = 20;
 
+                public static readonly int ObjectScanRange = 6; // --- 대각선 상관없이 6칸
+
                 // --- [ FLOATING ]
                 // -- [ HERO ]
                 public static readonly float CheckFarFromHeroesLeaderTick = 1.0F;
@@ -799,29 +736,25 @@ namespace STELLAREST_F1
                 public static readonly float MaxSecWaitSearchTargetForSettingAggroFromRange = 2.0F;
 
                 // -- [ MISC ]
-                public static readonly float SearchFindTargetTick = 0.25F;
+                public static readonly float ObjectScanTick = 0.1F;
+                //public static readonly float FindTargetTick = 0.5F;
                 //public static readonly float SearchFindTargetTick = 0.5F;
 
                 public static readonly float CamOrthoSize = 12.0F;
                 public static readonly float JoystickFocusMinDist = -0.18F;
                 public static readonly float JoystickFocusMaxDist = 0.18F;
 
-                public static readonly float MonsterSize_Small = 0.5F;
-                public static readonly float MonsterSize_Medium = 0.8F;
-                public static readonly float MonsterSize_Large = 1.2F;
-
                 public static readonly float HeroDefaultScanRange = 8.0F; // 오리지날 6F, 일단 6칸
                 public static readonly float MonsterDefaultScanRange = 6.0F; // 상하좌우 한칸 기준, 대각선X
+                
                 public static readonly float Temp_StopDistance = 1.25F;
 
                 // Dead Fade Out Time
                 public static readonly float StartDeadFadeOutTime = 0.85F; // --- PREV
                 public static readonly float DesiredDeadFadeOutEndTime = 1.0F; // --- PREV
 
-
                 public static readonly float DesiredStartFadeOutTime = 2.0F;
                 public static readonly float DesiredEndFadeOutTime = 1.0F;
-
 
                 public static readonly float MaxMovementSpeedMultiplier = 2.0F;
                 public static readonly float MaxDistanceForMovementSpeed = 8.0F;

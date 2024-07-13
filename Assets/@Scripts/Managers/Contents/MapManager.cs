@@ -2,9 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.Experimental.AI;
-using UnityEngine.ResourceManagement.Util;
 using UnityEngine.Tilemaps;
 using static STELLAREST_F1.Define;
 
@@ -130,7 +129,7 @@ namespace STELLAREST_F1
 
                         // --- MORE CHICKEN
                         int current = 0;
-                        int spawnCount = 5;
+                        int spawnCount = 0;
                         int attemptSpawnCount = 0;
                         while (attemptSpawnCount < 100)
                         {
@@ -299,6 +298,54 @@ namespace STELLAREST_F1
         {
         }
 
+        /*
+            public List<Vector3Int> DeltaPos { get; }= new List<Vector3Int>()
+        {
+            // U기준, 시계 방향
+            new Vector3Int(0, 1, 0), // U
+            new Vector3Int(1, 1, 0), // UR
+            new Vector3Int(1, 0, 0), // R
+            new Vector3Int(1, -1, 0), // DR
+            new Vector3Int(0, -1, 0), // D
+            new Vector3Int(-1, -1, 0), // LD
+            new Vector3Int(-1, 0, 0), // L
+            new Vector3Int(-1, 1, 0) // LU
+        };
+        */
+
+        public List<T> GatherObjects<T>(Vector3 from, int rangeX, int rangeY) where T : BaseObject
+        {
+            HashSet<T> objects = new HashSet<T>();
+
+            Vector3Int left = WorldToCell(from + new Vector3(-rangeX, 0, 0));
+            Vector3Int right = WorldToCell(from + new Vector3(+rangeX, 0, 0));
+            Vector3Int bottom = WorldToCell(from + new Vector3(0, -rangeY, 0));
+            Vector3Int top = WorldToCell(from + new Vector3(0, +rangeY, 0));
+            int minX = left.x;
+            int maxX = right.x;
+            int minY = bottom.y;
+            int maxY = top.y;
+
+            for (int x = minX; x <= maxX; ++x)
+            {
+                for (int y = minY; y <= maxY; ++y)
+                {
+                    Vector3Int tilePos = new Vector3Int(x, y, 0);
+                    // Vector3 centeredTilePos = CenteredCellToWorld(tilePos);
+                    // if ((from - centeredTilePos).sqrMagnitude > ReadOnly.Util.ObjectScanRange * ReadOnly.Util.ObjectScanRange)
+                    //     continue;
+
+                    T obj = GetObject(tilePos) as T;
+                    if (obj == null)
+                        continue;
+                    else
+                        objects.Add(obj);
+                }
+            }
+
+            return objects.ToList();
+        }
+
         public bool MoveTo(Creature creature, Vector3 position, bool stopLerpToCell = false, bool forceMove = false, EObjectType ignoreObjectType = EObjectType.None)
             => MoveTo(creature: creature, cellPos: Managers.Map.WorldToCell(position), stopLerpToCell: stopLerpToCell, forceMove: forceMove, ignoreObjectType);
 
@@ -315,28 +362,28 @@ namespace STELLAREST_F1
 
         public void WarpTo(Creature creature, Vector3Int destCellPos, Action warpEndCallback = null)
         {
-            if (creature.Target.IsValid())
-                return;
+            // if (creature.Target.IsValid())
+            //     return;
 
-            if (CanMove(destCellPos) == false)
-            {
-                List<Vector3Int> path = FindPath(creature.CellPos, destCellPos: destCellPos, ReadOnly.Util.CreatureWarpMoveDepth);
-                path.Reverse();
-                for (int i = 0; i < path.Count; ++i)
-                {
-                    if (CanMove(path[i]) == false)
-                        continue;
+            // if (CanMove(destCellPos) == false)
+            // {
+            //     List<Vector3Int> path = FindPath(creature.CellPos, destCellPos: destCellPos, ReadOnly.Util.CreatureWarpMoveDepth);
+            //     path.Reverse();
+            //     for (int i = 0; i < path.Count; ++i)
+            //     {
+            //         if (CanMove(path[i]) == false)
+            //             continue;
 
-                    destCellPos = path[i]; // Leader 근처에 가장 가까운 위치를 찾는다.
-                    break;
-                }
-            }
+            //         destCellPos = path[i]; // Leader 근처에 가장 가까운 위치를 찾는다.
+            //         break;
+            //     }
+            // }
 
-            creature.Target = null;
-            RemoveObject(creature);
-            AddObject(creature, destCellPos);
-            creature.SetCellPos(destCellPos, stopLerpToCell: true, forceMove: true);
-            warpEndCallback?.Invoke(); // 나중에 이펙트추가되면 여기다가 설정하면 됨.
+            // creature.Target = null;
+            // RemoveObject(creature);
+            // AddObject(creature, destCellPos);
+            // creature.SetCellPos(destCellPos, stopLerpToCell: true, forceMove: true);
+            // warpEndCallback?.Invoke(); // 나중에 이펙트추가되면 여기다가 설정하면 됨.
         }
 
         public void MoveLeader(Hero leader, Vector3 targetPosition)

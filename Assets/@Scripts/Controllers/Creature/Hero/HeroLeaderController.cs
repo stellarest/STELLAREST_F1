@@ -7,6 +7,7 @@ using UnityEngine.Rendering;
 using static STELLAREST_F1.Define;
 using System.Linq;
 using UnityEngine.Analytics;
+using UnityEditor;
 
 namespace STELLAREST_F1
 {
@@ -412,7 +413,9 @@ namespace STELLAREST_F1
             {
                 // --- Release Prev Leader
                 _leader.StartCoUpdateAI();
-                _leader.HeroAI.StartSearchTarget(allTargetsCondition: null);
+                //_leader.HeroAI.StartSearchTarget(allTargetsCondition: null);
+                _leader.HeroAI.StartCoFindEnemies();
+
                 _leader.IsLeader = false;
                 _leader.NextCenteredCellPos = Managers.Map.CenteredCellPos(_leader.CellPos);
                 // --- Set New Leader
@@ -422,7 +425,8 @@ namespace STELLAREST_F1
 
             newLeader.StopCoUpdateAI();
             newLeader.NextCenteredCellPos = null;
-            newLeader.HeroAI.StartSearchTarget(allTargetsCondition: () => (_leader.IsLeader && _leader.ForceMove) || AutoTarget == false);
+            //newLeader.HeroAI.StartSearchTarget(allTargetsCondition: () => (_leader.IsLeader && _leader.ForceMove) || AutoTarget == false);
+            newLeader.HeroAI.StartCoFindEnemies();
 
             // Leader Hero는 항상 0번 인덱스로 변경
             List<Hero> heroes = Managers.Object.Heroes;
@@ -775,35 +779,58 @@ namespace STELLAREST_F1
 
         #region Debug
 #if UNITY_EDITOR
+        public float ScanRange = 1f;
         private void OnDrawGizmos()
         {
             if (_leader == null)
                 return;
 
-            if (_heroMemberFormationMode == EHeroMemberFormationMode.FollowLeaderClosely)
-                return;
+            // --- Check Dist
+            // -- center to center: 1.5
+            // -- center to edge: 2
+            // Gizmos.color = Color.red;
 
-            if (_heroMemberFormationMode == EHeroMemberFormationMode.RandomFormation)
-                return;
+            // Vector3 leaderPos = _leader.transform.position;
+            // Vector3 target = Managers.Map.CenteredCellToWorld(new Vector3Int(1, 0, 0));
+            // //Vector3 target = leaderPos + new Vector3((int)_leader.LookAtDir, 0, 0);
+            // target = new Vector3(target.x * ScanRange, target.y, 0);
 
-            if (_heroMemberFormationMode == EHeroMemberFormationMode.ForceStop)
-                return;
+            // Gizmos.DrawLine(leaderPos, target);
+            // GUIStyle style = new GUIStyle();
+            // style.normal.textColor = Color.white;
+            // Handles.Label(leaderPos + (Vector3.up * 3f), $"mag: {(leaderPos - target).magnitude:F2}", style);
+            // style.normal.textColor = Color.blue;
+            // Handles.Label(leaderPos + (Vector3.up * 5f), $"sqrMag: {(leaderPos - target).sqrMagnitude:F2}", style);
 
-            float distance = (float)_heroMemberFormationMode;
-            int memberCount = Managers.Object.Heroes.Count - 1;
-            for (int i = 0; i < memberCount; ++i)
-            {
-                float degree = 360f * i / memberCount;
-                degree = Mathf.PI / 180f * degree;
-                float x = Leader.transform.position.x + Mathf.Cos(degree) * distance;
-                float y = Leader.transform.position.y + Mathf.Sin(degree) * distance;
 
-                Vector3Int cellPos = Managers.Map.WorldToCell(new Vector3(x, y, 0));
-                Vector3 worldCenterPos = Managers.Map.CenteredCellToWorld(cellPos);
+            // --- Draw Formation Point
+            // if (_leader == null)
+            //     return;
 
-                Gizmos.color = Color.red;
-                Gizmos.DrawSphere(worldCenterPos, radius: 0.5f);
-            }
+            // if (_heroMemberFormationMode == EHeroMemberFormationMode.FollowLeaderClosely)
+            //     return;
+
+            // if (_heroMemberFormationMode == EHeroMemberFormationMode.RandomFormation)
+            //     return;
+
+            // if (_heroMemberFormationMode == EHeroMemberFormationMode.ForceStop)
+            //     return;
+
+            // float distance = (float)_heroMemberFormationMode;
+            // int memberCount = Managers.Object.Heroes.Count - 1;
+            // for (int i = 0; i < memberCount; ++i)
+            // {
+            //     float degree = 360f * i / memberCount;
+            //     degree = Mathf.PI / 180f * degree;
+            //     float x = Leader.transform.position.x + Mathf.Cos(degree) * distance;
+            //     float y = Leader.transform.position.y + Mathf.Sin(degree) * distance;
+
+            //     Vector3Int cellPos = Managers.Map.WorldToCell(new Vector3(x, y, 0));
+            //     Vector3 worldCenterPos = Managers.Map.CenteredCellToWorld(cellPos);
+
+            //     Gizmos.color = Color.red;
+            //     Gizmos.DrawSphere(worldCenterPos, radius: 0.5f);
+            // }
         }
 #endif
         #endregion

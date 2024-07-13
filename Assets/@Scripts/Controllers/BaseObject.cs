@@ -1,30 +1,18 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using JetBrains.Annotations;
+using System.Linq;
 using STELLAREST_F1.Data;
-using Unity.VisualScripting;
-using Unity.VisualScripting.ReorderableList.Element_Adder_Menu;
-using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.AI;
 using UnityEngine.Rendering;
-using UnityEngine.UIElements;
+using DG.Tweening;
 using static STELLAREST_F1.Define;
+using System.Collections.Generic;
 
 namespace STELLAREST_F1
 {
     public class BaseObject : InitBase
     {
-        private void Update()
-        {
-            // if (Input.GetKeyDown("5"))
-            // {
-            //     LevelUp();
-            //     //BaseBody.StartCoHurtFlashEffect();
-            // }    
-        }
-
+        #region Background
         public int DataTemplateID { get; protected set; } = -1;
         public EObjectType ObjectType { get; protected set; } = EObjectType.None;
         public BaseBody BaseBody { get; protected set; } = null;
@@ -49,11 +37,8 @@ namespace STELLAREST_F1
                 }
             }
         }
-        
-        protected event System.Action OnDeadFadeOutEndHandler = null;
 
-        #region Stat
-        public Data.StatData StatData { get; private set; } = null;
+        public StatData StatData { get; private set; } = null;
 
         [SerializeField] protected int _level = 0; // ---> _levelID로 변경해야함
         public int Level => (_level % DataTemplateID) + 1;
@@ -86,7 +71,7 @@ namespace STELLAREST_F1
         public float CriticalRateBase { get; set; } = 0f;
         public float DodgeRateBase { get; set; } = 0f;
         public float MovementSpeedBase { get; set; } = 0f;
-        
+
         [field: SerializeField] public float MaxHp { get; set; } = 0f;
         [field: SerializeField] public float Atk { get; set; } = 0f;
         [field: SerializeField] public int AtkRange { get; set; } = 0;
@@ -94,109 +79,22 @@ namespace STELLAREST_F1
         [field: SerializeField] public float DodgeRate { get; set; } = 0f;
         [field: SerializeField] public float MovementSpeed { get; set; } = 0f;
 
-        // Modifier를 밖에다가 빼기
-        private bool _statDirtyFlag = false;
-        private void RecalculateStat()
+        [field: SerializeField] public List<BaseObject> Targets { get; set; } = new List<BaseObject>();
+        public virtual BaseObject Target
         {
-            if (_statDirtyFlag == false)
-                return;
-
-            _statDirtyFlag = true;
-            // TODO Recalc
-            // ITEM
-            // BUFFS
-            // ...
-        }
-        #endregion
-
-        public bool PauseSearchTarget { get; protected set; } = false;
-        [field: SerializeField] private BaseObject _target = null;
-         public virtual BaseObject Target 
-         { 
-            get => _target;
-            set
+            get
             {
-                _target = value;
-                if (_target.IsValid() && _target.ObjectType == EObjectType.Monster)
-                    TargetPosition = _target.CenterPosition;
+                if (Targets.Count > 0)
+                {
+                    if (Targets[0].IsValid())
+                        return Targets[0];
+                }
+
+                return null;
             }
         }
 
-        public Vector3 TargetPosition { get; private set; } = Vector3.zero;        
         [field: SerializeField] public Vector3? NextCenteredCellPos { get; set; } = Vector3.zero;
-
-        public override bool Init()
-        {
-            if (base.Init() == false)
-                return false;
-
-            BaseAnim = Util.FindChild<BaseAnimation>(gameObject, name: ReadOnly.Util.AnimationBody, recursive: false);
-            BaseBody = GetComponent<BaseBody>();
-
-            Collider = gameObject.GetOrAddComponent<CircleCollider2D>();
-            RigidBody = gameObject.GetOrAddComponent<Rigidbody2D>();
-            RigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
-            RigidBody.gravityScale = 0f;
-            RigidBody.mass = 0f;
-            RigidBody.drag = 0f;
-            // RigidbodyType2D - Dynamic: 물리 완전 제어, 높은 비용, 충돌 감지
-            // RigidbodyType2D - Kinematic: 물리 회전, 위치를 업데이트 하지 않음, 비교적 낮은 비용, 충돌 감지
-            // RigidbodyType2D - Static: 절대적으로 움직이지 않는 상태에서만 충돌 감지.
-            RigidBody.bodyType = RigidbodyType2D.Kinematic;
-
-            SortingGroup = gameObject.GetOrAddComponent<SortingGroup>();
-            SortingGroup.sortingLayerName = ReadOnly.SortingLayers.SLName_BaseObject;
-            SortingGroup.sortingOrder = ReadOnly.SortingLayers.SLOrder_BaseObject;
-
-            return true;
-        }
-
-        public override bool SetInfo(int dataID)
-        {
-            if (base.SetInfo(dataID) == false)
-            {
-                EnterInGame();
-                return false;
-            }
-
-            return true;
-        }
-
-        protected virtual void InitialSetInfo(int dataID)
-        {
-            DataTemplateID = dataID;
-            InitStat(dataID);
-
-            OnDeadFadeOutEndHandler -= OnDeadFadeOutEnded;
-            OnDeadFadeOutEndHandler += OnDeadFadeOutEnded;
-        }
-
-        protected virtual void InitStat(int dataID)
-        {
-            if (Managers.Data.StatDataDict.TryGetValue(dataID, out Data.StatData statData) == false)
-                return;
-
-            StatData = statData;
-
-            _level = DataTemplateID;
-            Hp = StatData.MaxHp;
-
-            MaxHp = MaxHpBase = StatData.MaxHp;
-            Atk = AtkBase = StatData.Atk;
-            CriticalRate = CriticalRateBase = StatData.CriticalRate;
-            DodgeRate = DodgeRateBase = StatData.DodgeRate;
-            MovementSpeed = MovementSpeedBase = StatData.MovementSpeed;
-        }
-
-        protected virtual void EnterInGame()
-        {
-            if (ObjectType == EObjectType.Projectile)
-                return;
-
-            // Reset Stat
-            MaxHp = StatData.MaxHp;
-            Hp = StatData.MaxHp;
-        }
 
         public void LookAtValidTarget()
         {
@@ -213,69 +111,16 @@ namespace STELLAREST_F1
         public static Vector3 GetLookAtRotation(Vector3 dir)
             => new Vector3(0, 0, Mathf.Atan2(-dir.x, dir.y) * Mathf.Rad2Deg);
 
-        #region Events
-        protected virtual void OnDeadFadeOutEnded()
+        protected virtual void OnDeadFadeOutCompleted()
         {
             Managers.Object.Despawn(this, DataTemplateID);
             _initialSpawnedCellPos = null;
-        }
-        #endregion
-
-        public virtual void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
-        { 
-            if (attacker.IsValid() == false)
-                return;
-
-            float finalDamage = attacker.Atk;
-            Hp = Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
-            bool isCritical = false;
-            Managers.Object.ShowDamageFont(position: this.CenterPosition, damage: finalDamage, isCritical: isCritical);
-
-            if (UnityEngine.Random.Range(0f, 100f) >= 50f)
-                isCritical = true;
-
-            if (Hp <= 0f)
-            {
-                Hp = 0f;
-                OnDead(attacker, skillFromAttacker);
-            }
-            else
-                BaseBody.StartCoHurtFlashEffect(isCritical: isCritical);
-        }
-
-        public virtual void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
-        {
-            RigidBody.simulated = false;
-            BaseBody.StartCoFadeOutEffect(() => OnDeadFadeOutEnded());
-        }
-
-        // 오~ 되는구나
-        protected virtual void OnDisable() { }
-
-        public void ShowBody(bool show)
-        {
-            if (show == false)
-                Collider.enabled = false;
-
-            // includeInactive: true (임시, 나중에 개선 필요)
-            foreach (SpriteRenderer spr in GetComponentsInChildren<SpriteRenderer>(includeInactive: true))
-            {
-                spr.enabled = show;
-                if (show && spr.sprite != null)
-                {
-                    //spr.color = new Color(spr.color.r, spr.color.g, spr.color.b, 1f);
-                    spr.color = new Color(spr.color.r, spr.color.g, spr.color.b, spr.color.a);
-                    spr.gameObject.SetActive(true);
-                }
-            }
-
-            if (show)
-                Collider.enabled = true;
         }
 
         [field: SerializeField] public bool LerpToCellPosCompleted { get; protected set; } = false;
 
         [field: SerializeField] public Vector3Int CellPos { get; protected set; } = Vector3Int.zero;
+        public Vector3 CellCenteredWorldPos => Managers.Map.CenteredCellToWorld(CellPos);
 
         private Vector3Int? _initialSpawnedCellPos = null;
         public Vector3Int? InitialSpawnedCellPos
@@ -297,8 +142,25 @@ namespace STELLAREST_F1
         public void SetCellPos(Vector3 position, bool forceMove = false)
             => SetCellPos(Managers.Map.WorldToCell(position), forceMove);
 
+        private float _centerToCellThreshHoldSQR = 0.01f;
         public void UpdateCellPos()
         {
+             /*
+                    // REF -- Center To Cell
+                    // Vector3Int currentCellPos = Managers.Map.WorldToCell(transform.position);
+                    // Vector3 cellCenteredWorldPos = Managers.Map.CenteredCellToWorld(currentCellPos);
+                    // float distToCellCenterSQR = (transform.position - cellCenteredWorldPos).sqrMagnitude;
+                    // if (distToCellCenterSQR <= _centerToCellThreshHoldSQR)
+                    // {
+                    //     if (currentCellPos != CellPos)
+                    //     {
+                    //         Managers.Map.RemoveObject(this);
+                    //         Managers.Map.AddObject(this, currentCellPos);
+                    //         CellPos = currentCellPos;
+                    //     }
+                    // }
+            */
+
             Vector3Int currentCellPos = Managers.Map.WorldToCell(transform.position);
             Managers.Map.RemoveObject(this);
             Managers.Map.AddObject(this, currentCellPos);
@@ -346,72 +208,118 @@ namespace STELLAREST_F1
             transform.position += dir.normalized * moveDist;
         }
 
-        #region Coroutines
-        protected virtual IEnumerator CoDeadFadeOut(Action endFadeOutCallback = null)
+        protected void HitShakeMovement(float duration, float power, int vibrato)
         {
-            if (isActiveAndEnabled == false)
-                yield break;
+            Vector3 startPos = transform.position;
+            Sequence seq = DOTween.Sequence();
+            seq.Append(transform.DOShakePosition(duration, new Vector3(power, 0f, 0f), vibrato).SetEase(Ease.InBounce))
+               .OnComplete(() => {
+                if (this.IsValid())
+                       transform.position = startPos;
+               });
+        }
+        #endregion
 
-            yield return new WaitForSeconds(2f);
-            Managers.Object.Despawn(this, DataTemplateID);
-            _initialSpawnedCellPos = null;
+        #region Core
+        public override bool Init()
+        {
+            if (base.Init() == false)
+                return false;
 
-            // yield return new WaitForSeconds(ReadOnly.Util.StartDeadFadeOutTime);
+            BaseAnim = Util.FindChild<BaseAnimation>(gameObject, name: ReadOnly.Util.AnimationBody, recursive: false);
+            BaseBody = GetComponent<BaseBody>();
 
-            // float delta = 0f;
-            // float percent = 1f;
-            // AnimationCurve curve = Managers.Contents.Curve(EAnimationCurveType.Ease_In);
-            // while (percent > 0f)
-            // {
-            //     // Debug.Log($"{gameObject.name}, {percent}");
-            //     delta += Time.deltaTime;
-            //     percent = 1f - (delta / ReadOnly.Util.DesiredDeadFadeOutEndTime);
-            //     foreach (SpriteRenderer spr in GetComponentsInChildren<SpriteRenderer>())
-            //     {
-            //         float current = Mathf.Lerp(0f, 1f, curve.Evaluate(percent));
-            //         spr.color = new Color(spr.color.r, spr.color.g, spr.color.b, current);
-            //     }
+            Collider = gameObject.GetOrAddComponent<CircleCollider2D>();
+            RigidBody = gameObject.GetOrAddComponent<Rigidbody2D>();
+            RigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
+            RigidBody.gravityScale = 0f;
+            RigidBody.mass = 0f;
+            RigidBody.drag = 0f;
 
-            //     yield return null;
-            // }
+            // RigidbodyType2D - Dynamic: 물리 완전 제어, 높은 비용, 충돌 감지
+            // RigidbodyType2D - Kinematic: 물리 회전, 위치를 업데이트 하지 않음, 비교적 낮은 비용, 충돌 감지
+            // RigidbodyType2D - Static: 절대적으로 움직이지 않는 상태에서만 충돌 감지.
+            RigidBody.bodyType = RigidbodyType2D.Kinematic;
 
-            // //Debug.Log($"{gameObject.name} is dead.");
-            // endFadeOutCallback?.Invoke();
+            SortingGroup = gameObject.GetOrAddComponent<SortingGroup>();
+            SortingGroup.sortingLayerName = ReadOnly.SortingLayers.SLName_BaseObject;
+            SortingGroup.sortingOrder = ReadOnly.SortingLayers.SLOrder_BaseObject;
 
-            // Managers.Object.Despawn(this, DataTemplateID);
-            // _initialSpawnedCellPos = null;
+            return true;
         }
 
-        
+        public override bool SetInfo(int dataID)
+        {
+            if (base.SetInfo(dataID) == false)
+            {
+                EnterInGame();
+                return false;
+            }
+
+            return true;
+        }
+
+        protected virtual void InitialSetInfo(int dataID)
+        {
+            DataTemplateID = dataID;
+
+            // --- InitStat
+            if (Managers.Data.StatDataDict.TryGetValue(dataID, out Data.StatData statData) == false)
+                return;
+
+            StatData = statData;
+
+            _level = DataTemplateID;
+            Hp = StatData.MaxHp;
+
+            MaxHp = MaxHpBase = StatData.MaxHp;
+            Atk = AtkBase = StatData.Atk;
+            CriticalRate = CriticalRateBase = StatData.CriticalRate;
+            DodgeRate = DodgeRateBase = StatData.DodgeRate;
+            MovementSpeed = MovementSpeedBase = StatData.MovementSpeed;
+        }
+
+        protected virtual void EnterInGame()
+        {
+            if (ObjectType == EObjectType.Projectile)
+                return;
+
+            // --- Reset Stat
+            MaxHp = StatData.MaxHp;
+            Hp = StatData.MaxHp;
+        }
+
+        public virtual void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
+        {
+            if (attacker.IsValid() == false)
+                return;
+
+            float finalDamage = attacker.Atk;
+            Hp = Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
+            bool isCritical = false;
+            // Managers.Object.ShowDamageFont(position: this.CenterPosition, damage: finalDamage, isCritical: isCritical);
+            // if (UnityEngine.Random.Range(0f, 100f) >= 50f)
+            //     isCritical = true;
+
+            if (Hp <= 0f)
+            {
+                Hp = 0f;
+                OnDead(attacker, skillFromAttacker);
+            }
+            else
+            {
+                if (ObjectType != EObjectType.Hero)
+                    BaseBody.StartCoHurtFlashEffect(isCritical: isCritical);
+            }
+        }
+
+        public virtual void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
+        {
+            RigidBody.simulated = false;
+            BaseBody.StartCoFadeOutEffect(() => OnDeadFadeOutCompleted());
+        }
+
+        protected virtual void OnDisable() { }
         #endregion
     }
 }
-
-/*
-        Collider.includeLayers = 1 << (int)ELayer.Obstacle;
-        Collider.excludeLayers = 1 << (int)ELayer.Monster | (1 << (int)ELayer.Hero);
-
-        // protected float DistanceToTargetSQR
-        // {
-        //     get
-        //     {
-        //         if (Target.IsValid() == false)
-        //             return 0.0f;
-
-        //         Vector3 toTargetDir = Target.transform.position - transform.position;
-        //         return UnityEngine.Mathf.Max(0.0f, toTargetDir.sqrMagnitude); // ??? 의미 없는데 어차피 무조건 양수 나오는데
-        //     }
-        // }
-
-        // protected float AttackDistance // TEMP
-        // {
-        //     get
-        //     {
-        //         float threshold = 2.2f;
-        //         if (Target.IsValid() && Target.ObjectType == EObjectType.Env)
-        //             return UnityEngine.Mathf.Max(threshold, Collider.radius + Target.Collider.radius);
-
-        //         return AtkRange + Collider.radius + Target.ColliderRadius;
-        //     }
-        // }
-*/

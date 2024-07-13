@@ -50,11 +50,28 @@ namespace STELLAREST_F1
                 return;
 
             Owner.Target.OnDamaged(attacker: Owner, skillFromAttacker: null);
-            if (Owner.Target.Hp <= 0f && Owner.HeroWeaponType != EHeroWeaponType.Default)
+            if (Owner.Target.IsValid() == false && Owner.HeroWeaponType != EHeroWeaponType.Default)
             {
                 Owner.HeroWeaponType = EHeroWeaponType.Default;
                 Owner.CreatureAIState = ECreatureAIState.Move;
             }
+
+            // --- Prev
+            // if (Owner.IsValid() == false)
+            //     return;
+
+            // if (Owner.Target.IsValid() == false)
+            //     return;
+
+            // if (Owner.Target.ObjectType != EObjectType.Env)
+            //     return;
+
+            // Owner.Target.OnDamaged(attacker: Owner, skillFromAttacker: null);
+            // if (Owner.Target.Hp <= 0f && Owner.HeroWeaponType != EHeroWeaponType.Default)
+            // {
+            //     Owner.HeroWeaponType = EHeroWeaponType.Default;
+            //     Owner.CreatureAIState = ECreatureAIState.Move;
+            // }
         }
         #endregion
 

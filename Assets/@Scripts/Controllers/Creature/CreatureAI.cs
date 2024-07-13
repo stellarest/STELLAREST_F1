@@ -1,7 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using UnityEngine;
+using UnityEditor;
 using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
@@ -24,17 +27,19 @@ namespace STELLAREST_F1
             foreach (T obj in firstTargets)
             {
                 Vector3Int dir = obj.CellPos - Owner.CellPos;
-                float distToTargetSQR = dir.sqrMagnitude;
-                if (scanRangeSQR < distToTargetSQR)
+                
+                float mag = dir.magnitude;
+                float sqrMag = dir.sqrMagnitude;
+                if (scanRangeSQR < sqrMag)
                     continue;
 
-                if (bestDistSQR < distToTargetSQR)
+                if (bestDistSQR < sqrMag)
                     continue;
 
                 if (func?.Invoke(obj) == false)
                     continue;
 
-                bestDistSQR = distToTargetSQR;
+                bestDistSQR = sqrMag;
                 firstTarget = obj;
             }
 
@@ -225,61 +230,88 @@ namespace STELLAREST_F1
         }
 
         public virtual void SetInfo(Creature owner) => Owner = owner;
-        public virtual void EnterInGame()
-        {
-        }
-
-        public virtual void UpdateIdle()
-        {
-        }
-
-        public virtual void UpdateMove()
-        {
-        }
-
+        public virtual void EnterInGame() { }
+        public virtual void UpdateIdle() { }
+        public virtual void UpdateMove() { }
         public virtual void OnDead()
         {
-            StopCoSearchTarget();
+            StopCoFindEnemies();
         }
         #endregion
 
         #region Coroutines
-        public bool PauseSearchTarget { get; protected set; } = false;
-        protected Coroutine _coSearchTarget = null;
-        private IEnumerator CoSearchTarget<T>(float scanRange, IEnumerable<T> firstTargets, IEnumerable<T> secondTargets = null,
-                                            System.Func<T, bool> func = null, System.Func<bool> allTargetsCondition = null) where T : BaseObject
+        public bool PauseFindEnemies { get; protected set; } = false;
+        private Coroutine _coFindEnemies = null;
+        private IEnumerator CoFindEnemies()
         {
-            float tick = ReadOnly.Util.SearchFindTargetTick;
+            int scanRange = ReadOnly.Util.ObjectScanRange; // --- 6칸
+            float scanTick = ReadOnly.Util.ObjectScanTick;
             while (true)
             {
+                Owner.Targets.Clear();
                 if (Owner.IsValid() == false)
                     yield break;
 
-                yield return new WaitForSeconds(tick);
-                if (PauseSearchTarget)
+                if (PauseFindEnemies)
                 {
-                    Owner.Target = null;
+                    Owner.Targets.Clear();
                     yield return null;
                     continue;
                 }
 
-                Owner.Target = SearchClosestInRange(scanRange, firstTargets: firstTargets, secondTargets: secondTargets, func: func, allTargetsCondition: allTargetsCondition);
+                EObjectType ownerType = Owner.ObjectType;
+                EObjectType targetType = Util.GetTargetType(ownerType, isAlly: false);
+                if (targetType == EObjectType.Monster)
+                {
+                    List<Monster> monsters = Managers.Map.GatherObjects<Monster>(Owner.transform.position, scanRange, scanRange);
+                    for (int i = 0; i < monsters.Count; ++i)
+                    {
+                        if (monsters[i].IsValid() == false)
+                            continue;
+
+                        Owner.Targets.Add(monsters[i]);
+                    }
+
+                    List<Env> Envs = Managers.Map.GatherObjects<Env>(Owner.transform.position, scanRange, scanRange);
+                    for (int i = 0; i < Envs.Count; ++i)
+                    {
+                        if (Envs[i].IsValid() == false)
+                            continue;
+
+                        Owner.Targets.Add(Envs[i]);
+                    }
+
+                    (Owner as Hero).SortTargets();
+                }
+                else if (targetType == EObjectType.Hero)
+                {
+                    List<Hero> heroes = Managers.Map.GatherObjects<Hero>(Owner.transform.position, scanRange, scanRange);
+                    for (int i = 0; i < heroes.Count; ++i)
+                    {
+                        if (heroes[i].IsValid() == false)
+                            continue;
+                        
+                        Owner.Targets.Add(heroes[i]);
+                    }
+                }
+
+                yield return new WaitForSeconds(scanTick);
             }
         }
 
-        protected void StartCoSearchTarget<T>(float scanRange, IEnumerable<T> firstTargets, IEnumerable<T> secondTargets = null, System.Func<T, bool> func = null, System.Func<bool> allTargetsCondition = null) where T : BaseObject
+        public void StartCoFindEnemies()
         {
-            StopCoSearchTarget();
-            _coSearchTarget = StartCoroutine(CoSearchTarget<T>(scanRange, firstTargets: firstTargets, secondTargets: secondTargets, func: func, allTargetsCondition: allTargetsCondition));
+            StopCoFindEnemies();
+            _coFindEnemies = StartCoroutine(CoFindEnemies());
         }
 
-        protected void StopCoSearchTarget()
+        private void StopCoFindEnemies()
         {
-            if (_coSearchTarget != null)
-                StopCoroutine(_coSearchTarget);
-
-            Owner.Target = null;
-            _coSearchTarget = null;
+            if (_coFindEnemies != null)
+                StopCoroutine(_coFindEnemies);
+            
+            Owner.Targets.Clear();
+            _coFindEnemies = null;
         }
 
         private Coroutine _coForceMovePingPongObject = null;

@@ -10,9 +10,12 @@ namespace STELLAREST_F1
     // 이펙트는 기본적으로 스킬에 붙어있다. 어떠한 스킬이 묻었을 때 일어나는 효과.
     // Ex. TickTime: 1, TickCount: 5 -> 1초 마다 5번 실행하겠다. 근데 난 그냥 Duration, Period로
     // Monster와 다르게 Effect 여러가지 상속 구조로 가기 위해 베이스 클래스가 이렇게 구성되어 있음. Effect의 핵심은 "상속"
+
+    // --- 단순 VFX, Buff/DeBuff, Dot, CC
     public class EffectBase : BaseObject
     {
         public Creature Owner { get; protected set; } = null;
+        public BaseObject Source { get; set; } = null;
         public EffectData EffectData { get; private set; } = null;
         public EEffectType EffectType { get; private set; } = EEffectType.None;
 
@@ -27,41 +30,50 @@ namespace STELLAREST_F1
 
             ObjectType = EObjectType.Effect;
             SortingGroup.sortingOrder = ReadOnly.SortingLayers.SLOrder_Effect;
+            gameObject.SetActive(false);
+
             return true;
         }
 
-        public virtual void SetInfo(int effectDataID, Creature owner, EEffectSpawnType effectSpawnType)
+        public override bool SetInfo(int dataID, BaseObject owner, BaseObject source)
         {
-            Owner = owner;
-            EffectData = Managers.Data.EffectDataDict[effectDataID];
-            DataTemplateID = effectDataID;
+            if (base.SetInfo(dataID, owner, source))
+            {
+                gameObject.name = $"@{gameObject.name}";
+                Owner = owner as Creature;
+                Source = source;
+                EffectData = Managers.Data.EffectDataDict[dataID];
+                DataTemplateID = dataID;
 
-            EffectType = EffectData.EffectType;
-            EffectSpawnType = effectSpawnType;
-            IsLoop = true;
+                IsLoop = EffectData.IsLoop;
+                EffectType = EffectData.EffectType;
+                switch (EffectData.EffectSize)
+                {
+                    case EObjectSize.None:
+                        break;
+                    case EObjectSize.VerySmall:
+                        break;
+                    case EObjectSize.Small:
+                        transform.localScale = new Vector3(0.4F, 0.4F, 1F);
+                        break;
+                    case EObjectSize.Medium:
+                        break;
+                    case EObjectSize.Large:
+                        break;
+                    case EObjectSize.VeryLarge:
+                        break;
+                }
 
-            // ... DO SOMETHING ... Add Events 등 //
+                EffectSpawnType = EffectData.EffectSpawnType;
+                if (EffectSpawnType == EEffectSpawnType.External)
+                    Remains = float.MaxValue;
+                else
+                    Remains = EffectData.Duration;
+                return false;
+            }
 
-            if (effectSpawnType == EEffectSpawnType.External)
-                Remains = float.MaxValue;
-            else
-                Remains = EffectData.Duration;
-        }
-
-        public virtual void SetInfo(EffectData effectData, Creature owner, EEffectSpawnType effectSpawnType)
-        {
-            Owner = owner;
-            EffectData = effectData;
-            DataTemplateID = effectData.DataID;
-            EffectSpawnType = effectSpawnType;
-            IsLoop = true;
-
-            // ... DO SOMETHING ... //
-
-            if (effectSpawnType == EEffectSpawnType.External)
-                Remains = float.MaxValue;
-            else
-                Remains = effectData.Duration;
+            Source = source;
+            return true;
         }
 
         public virtual void ApplyEffect()
@@ -74,13 +86,16 @@ namespace STELLAREST_F1
 
         protected void ShowEffect()
         {
-            // ... SHOW VFX ... // 
-            // (ex) PlaySeletonAnimation(EffectState.Idle, ..., Loop)
+            if (Source.IsValid() == false)
+                return;
+
+            if (Source.ObjectType == EObjectType.Hero || Source.ObjectType == EObjectType.Monster)
+                transform.position = Source.CenterPosition;
         }
 
         protected virtual void ProcessDot() { }
 
-        private IEnumerator CoStartTimer()
+        protected IEnumerator CoStartTimer()
         {
             if (EffectType == EEffectType.Airborne || EffectType == EEffectType.Knockback)
                 yield break;
