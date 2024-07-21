@@ -34,7 +34,7 @@ namespace STELLAREST_F1
                 // transform.position = Vector3.Lerp(StartPosition, TargetPosition, normalizedTime);
                 transform.position = Vector3.Lerp(StartPosition, TargetPosition, curve.Evaluate(normalizedTime));
 
-                if (RotateToTarget)
+                if (IsRotateToTarget)
                     Rotation2D(TargetPosition - transform.position);                
 
                 yield return null;

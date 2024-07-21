@@ -23,5 +23,23 @@ namespace STELLAREST_F1
         {
             Instance = this;
         }
+
+        private int _trySpawnCount = 0;
+        private const int _tryMaxSpawnCount = 999;
+        public Vector3Int Spawn(Vector3 spawnPos)
+        {
+            Vector3Int cellSpawnPos = Managers.Map.WorldToCell(spawnPos);
+
+            int randMin = 0;
+            int randMax = 0;
+            while (Managers.Map.CanMove(cellSpawnPos) == false)
+            {
+                int x = Random.Range(--randMin, ++randMax);
+                int y = Random.Range(--randMin, ++randMax);
+                //cellSpawnPos = Managers.Map.WorldToCell()
+            }
+
+            return cellSpawnPos;
+        }
     }
 }

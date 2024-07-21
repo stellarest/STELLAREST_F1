@@ -7,7 +7,7 @@ namespace STELLAREST_F1
 {
     public class Projectile : BaseObject
     {
-        public Creature Owner { get; private set; } = null;
+        public Creature Owner { get; set; } = null;
         public SkillBase Skill { get; private set; } = null;
         public ProjectileData ProjectileData { get; private set; } = null;
         public ProjectileMotionBase ProjectileMotion { get; private set; } = null;
@@ -24,26 +24,19 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public override bool SetInfo(int dataID, BaseObject owner)
+        protected override void InitialSetInfo(int dataID)
         {
-            if (base.SetInfo(dataID, owner) == false)
+            if (Managers.Data.ProjectileDataDict.TryGetValue(dataID, out ProjectileData projectileData) == false)
             {
-                EnterInGame(owner, dataID);
-                return false;
-            }
-
-            if (Managers.Data.ProjectileDataDict.TryGetValue(dataID, out Data.ProjectileData projectileData) == false)
-            {
-                Debug.LogError($"{nameof(Projectile)}, {nameof(SetInfo)}, Input : \"{dataID}\"");
+                Debug.LogError($"{nameof(Projectile)}, Input : \"{dataID}\"");
                 Debug.Break();
-                return false;
+                return;
             }
 
             DataTemplateID = dataID;
             ProjectileData = projectileData;
-            Owner = owner as Creature;
-            Skill = Owner.CreatureSkill.FindSkill(dataID);
 
+            // --- Make ProjectileBody And Set,, Maybe. or Prefab Load like effect
             SpriteRenderer spr = GetComponent<SpriteRenderer>();
             Sprite sprite = Managers.Resource.Load<Sprite>(projectileData.Body);
             if (sprite != null)
@@ -51,8 +44,6 @@ namespace STELLAREST_F1
                 spr.sprite = sprite;
                 if (ColorUtility.TryParseHtmlString(projectileData.BodyColor, out Color bodyColor))
                     spr.color = bodyColor;
-                // 이미 BaseObject의 SortingGroup으로 layer 정렬 중임
-                //spr.sortingOrder = ReadOnly.Numeric.SortingLayer_Projectile;
             }
 
             switch (projectileData.ProjectileSize)
@@ -78,20 +69,6 @@ namespace STELLAREST_F1
             }
 
             Collider.radius = projectileData.ColliderRadius;
-            
-            LayerMask excludeLayerMask = 0;
-            excludeLayerMask.AddLayer(ELayer.Default);
-            excludeLayerMask.AddLayer(ELayer.Projectile);
-            excludeLayerMask.AddLayer(ELayer.Env);
-            excludeLayerMask.AddLayer(ELayer.Obstacle);
-
-            if (Owner.ObjectType == EObjectType.Hero)
-                excludeLayerMask.AddLayer(ELayer.Hero);
-            else if (Owner.ObjectType == EObjectType.Monster)
-                excludeLayerMask.AddLayer(ELayer.Monster);
-
-            Collider.excludeLayers = excludeLayerMask;
-
             switch (projectileData.MotionType)
             {
                 case EProjectileMotionType.Parabola:
@@ -103,60 +80,35 @@ namespace STELLAREST_F1
                     break;
             }
 
-            SetMotionInfo(owner, dataID);
-            return true;
+            ProjectileMotion.InitialSetInfo(projectileData);
         }
 
-        protected virtual void EnterInGame(BaseObject owner, int dataID) // virtual -- TEMP
+        protected override void EnterInGame(Vector3 spawnPos)
         {
-            LayerMask excludeLayerMask = Collider.excludeLayers;
-            if (Owner.ObjectType != owner.ObjectType)
-            {
-                Owner = owner as Creature;
-                Skill = Owner.CreatureSkill.FindSkill(dataID);
+            SpawnedPos = spawnPos;
+            Skill = Owner.CreatureSkill.FindSkill(DataTemplateID);
+            
+            LayerMask excludeLayerMask = 0;
+            excludeLayerMask.AddLayer(ELayer.Default);
+            excludeLayerMask.AddLayer(ELayer.Projectile);
+            excludeLayerMask.AddLayer(ELayer.Env);
+            excludeLayerMask.AddLayer(ELayer.Obstacle);
+            excludeLayerMask.AddLayer(ELayer.Hero);
+            excludeLayerMask.AddLayer(ELayer.Monster);
 
-                // Player to Monster
-                if (owner.ObjectType == EObjectType.Monster)
-                {
-                    excludeLayerMask.RemoveLayer(ELayer.Hero);
-                    excludeLayerMask.AddLayer(ELayer.Monster);
-                }
-                // Monster to Player
-                else if (owner.ObjectType == EObjectType.Hero)
-                {
-                    excludeLayerMask.RemoveLayer(ELayer.Monster);
-                    excludeLayerMask.AddLayer(ELayer.Hero);
-                }
+            if (Owner.ObjectType == EObjectType.Hero)
+                excludeLayerMask.RemoveLayer(ELayer.Monster);
+            else if (Owner.ObjectType == EObjectType.Monster)
+                excludeLayerMask.RemoveLayer(ELayer.Hero);
 
-                Collider.excludeLayers = excludeLayerMask;
-            }
+            Collider.excludeLayers = excludeLayerMask;
 
-            SetMotionInfo(owner, dataID);
-        }
+            ProjectileMotion.SetEndCallback(() => Managers.Object.Despawn(this, DataTemplateID));
 
-        private void SetMotionInfo(BaseObject owner, int dataID)
-        {
-            //ProjectileData = Managers.Data.ProjectileDataDict[dataID];
-            //ProjectileMotionType = Util.GetEnumFromString<EProjectileMotionType>(ProjectileData.MotionType);
-            switch (ProjectileData.MotionType)
-            {
-                case EProjectileMotionType.Straight:
-                    ProjectileMotion.SetEndCallback(() => 
-                    {
-                        Managers.Object.Despawn(this, dataID);
-                    });
-                    (ProjectileMotion as StraightMotion).SetInfo(dataID, owner);
-                    break;
+            Vector3 startPos = Owner.GetFirePosition();
+            Vector3 targetPos = Owner.Target.IsValid() ? Owner.Target.transform.position : startPos;
 
-                case EProjectileMotionType.Parabola:
-                    ProjectileMotion.SetEndCallback(() => 
-                    {
-                        Managers.Object.Despawn(this, dataID);
-                    });
-                    (ProjectileMotion as ParabolaMotion).SetInfo(dataID, owner);
-                    break;
-            }
-
+            ProjectileMotion.EnterInGame(startPos, targetPos);
             StartCoroutine(CoLifeTime(ReadOnly.Util.ProjectileLifeTime));
         }
 
@@ -174,9 +126,7 @@ namespace STELLAREST_F1
         {
             yield return new WaitForSeconds(duration);
             if (this.IsValid())
-            {
                 Managers.Object.Despawn(this, DataTemplateID);
-            }
         }
     }
 }

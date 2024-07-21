@@ -13,7 +13,7 @@ namespace STELLAREST_F1
         public BaseObject Owner { get; set; } = null;
         public T GetOwner<T>() where T : BaseObject => Owner as T;
         public Animator Animator { get; private set; } = null;
-        public AnimationClipCallback AnimClipCallback { get; private set; } = null;
+        //public AnimationClipCallback AnimClipCallback { get; private set; } = null;
    
         public override bool Init()
         {
@@ -21,12 +21,14 @@ namespace STELLAREST_F1
                 return false;
 
             Animator = GetComponent<Animator>();
-            AnimClipCallback = GetComponent<AnimationClipCallback>();
+            //AnimClipCallback = GetComponent<AnimationClipCallback>();
             return true;
         }
 
-        public virtual void SetInfo(int dataID, BaseObject owner)
-            => Owner = owner;
+        public virtual void InitialSetInfo(int dataID, BaseObject owner)
+        {
+            Owner = owner;
+        }
 
         public bool IsPlay()
         {

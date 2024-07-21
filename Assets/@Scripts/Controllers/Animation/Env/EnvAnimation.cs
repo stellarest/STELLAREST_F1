@@ -17,9 +17,9 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public override void SetInfo(int dataID, BaseObject owner)
+        public override void InitialSetInfo(int dataID, BaseObject owner)
         {
-            base.SetInfo(dataID, owner);
+            base.InitialSetInfo(dataID, owner);
             string animatorTextID = Managers.Data.EnvDataDict[dataID].AnimatorLabel;
             RuntimeAnimatorController animController = Managers.Resource.Load<RuntimeAnimatorController>(animatorTextID);
             if (string.IsNullOrEmpty(animatorTextID) == false && animController != null)

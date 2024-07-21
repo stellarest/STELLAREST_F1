@@ -7,74 +7,77 @@ namespace STELLAREST_F1
 {
     public class BodyAttack : SkillBase
     {
-        // public override float RemainCoolTime
-        // {
-        //     get => base.RemainCoolTime;
-        //     set
-        //     {
-        //         base.RemainCoolTime = value;
-        //         if (base.RemainCoolTime == 0f)
-        //             Owner.CreatureAnim.CanSkillAttack = true;
-        //         else
-        //             Owner.CreatureAnim.CanSkillAttack = false;
-        //     }
-        // }
-
-        public override bool Init()
-        {
-            if (base.Init() == false)
-                return false;
-
-            return true;
-        }
-
-        // public override bool SetInfo(int dataID, BaseObject owner)
-        // {
-        //     if (base.SetInfo(dataID, owner) == false)
-        //     {
-        //         EnterInGame(dataID, owner);
-        //         return false;
-        //     }
-
-        //     EnterInGame(dataID, owner);
-        //     return true;
-        // }
-
-        // protected override void EnterInGame(int dataID, BaseObject owner) // dataID 왜 받았지??
-        // {
-        //     base.EnterInGame(dataID, owner);
-        // }
-
-        #region Coroutines
+        #region Background
         private float _delta = 0f;
-        // private float _desiredTimeToReach = 0.25f;
         private float _desiredTimeToReach = 0.35f;
-        // private float _desiredTimeToReach = 1.25f; // -- InAtkRange Test
-
-        private float _desiredTimeToReturn = 0.35f;
-        //private float _desiredTimeToReturn = 1.35f;
+        private float _desiredTimeToReturn = 0.65f;
 
         private Vector3 _startPoint = Vector3.zero;
         private Vector3 _targetPoint = Vector3.zero;
+        #endregion
 
-        private Coroutine _coBodyAttack = null;
-        private IEnumerator CoBodyAttack(System.Action endCallback = null)
+        #region Core
+        public override void OnSkillCallback()
         {
-            _delta = 0f;
-            _startPoint = Owner.transform.position;
-            _targetPoint = Owner.Target.CenterPosition;
-            yield return new WaitUntil(() => IsReachedPoint(_startPoint, _targetPoint, _desiredTimeToReach, EAnimationCurveType.Linear));
-            
-            if (Owner.IsValid() == false || Owner.Target.IsValid() == false)
-                yield break;
+            if (Owner.IsValid() == false)
+            {
+                StopCoBodyAttack();
+                return;
+            }
 
-            if ((Owner.CenterPosition - Owner.Target.CenterPosition).sqrMagnitude < 1f)
-                Owner.Target.OnDamaged(Owner, this);
+            if (Owner.Target.IsValid() == false)
+            {
+                StopCoBodyAttack();
+                return;
+            }
+
+            StopCoBodyAttack();
+            _coBodyAttack = StartCoroutine(CoBodyAttack());
+        }
+        public override void OnSkillStateEnter() { }
+        public override void OnSkillStateUpdate() { }
+        public override void OnSkillStateExit() { }
+        #endregion
+
+        #region Coroutines
+        private Coroutine _coBodyAttack = null;
+        private IEnumerator CoBodyAttack()
+        {
+            Vector3 originLocalPos = Owner.CreatureAnim.transform.localPosition;
+            _delta = 0f;
+            // _startPoint = Owner.transform.position;
+            // _targetPoint = Owner.Target.CenterPosition;
+            _startPoint = Managers.Map.GetCenterWorld(Owner.CellPos);
+            _targetPoint = Managers.Map.GetCenterWorld(Owner.Target.CellPos);
+            yield return new WaitUntil(() => IsReachedPoint(_startPoint, _targetPoint, _desiredTimeToReach, EAnimationCurveType.Linear));
+            // if (Owner.IsValid() == false || Owner.Target.IsValid() == false)
+            // {
+            //     Owner.CreatureAIState = ECreatureAIState.Idle;
+            //     yield break;
+            // }
+
+            // if ((Owner.CenterPosition - Owner.Target.CenterPosition).sqrMagnitude < 1.5f)
+            //     Owner.Target.OnDamaged(Owner, this);
+            
+            Debug.Log($"sqrMag: {(_startPoint - _targetPoint).sqrMagnitude}");
+            if ((_startPoint - _targetPoint).sqrMagnitude <= 3f * 3f)
+            {
+                if (Owner.Target.IsValid())
+                    Owner.Target.OnDamaged(Owner, this);
+            }
 
             _targetPoint = _startPoint;
             _startPoint = Owner.transform.position;
             yield return new WaitUntil(() => IsReachedPoint(_startPoint, _targetPoint, _desiredTimeToReturn, EAnimationCurveType.Ease_Out));
             Owner.CreatureAIState = ECreatureAIState.Idle;
+        }
+
+        private void StopCoBodyAttack()
+        {
+            if (_coBodyAttack != null)
+                StopCoroutine(_coBodyAttack);
+            
+            _coBodyAttack = null;
         }
 
         private bool IsReachedPoint(Vector3 startPoint, Vector3 targetPoint, float desiredTime, EAnimationCurveType animCurveType)
@@ -95,40 +98,6 @@ namespace STELLAREST_F1
 
             return false;
         }
-        #endregion
-
-        #region Anim Clip Callback
-        public override void OnSkillCallback()
-        {
-            // --- DEFENSE
-            if (Owner.IsValid() == false)
-                return;
-
-            // --- DEFENSE
-            if (Owner.Target.IsValid() == false)
-                return;
-
-            if (_coBodyAttack != null)
-            {
-                StopCoroutine(_coBodyAttack);
-                _coBodyAttack = null;
-            }
-
-            //Owner.UpdateCellPos();
-            //Debug.Log($"<color=magenta>Called from {Owner.gameObject.name}</color>");
-            _coBodyAttack = StartCoroutine(CoBodyAttack());
-        }
-        #endregion
-
-        #region Anim State Events
-        public override void OnSkillStateEnter()
-        {
-            Owner.StopCoLerpToCellPos(); // Body Attack은 이게 맞는듯
-            Owner.UpdateCellPos(); // --- DEFENSE
-        }
-
-        public override void OnSkillStateUpdate() { }
-        public override void OnSkillStateExit() { }
         #endregion
     }
 }

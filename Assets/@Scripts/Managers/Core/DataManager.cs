@@ -60,7 +60,6 @@ namespace STELLAREST_F1
             SkillDataDict = LoadJson<Data.SkillDataLoader, int, Data.SkillData>(ReadOnly.DataSet.SkillData).MakeDict();
             ProjectileDataDict = LoadJson<Data.ProjectileDataLoader, int, Data.ProjectileData>(ReadOnly.DataSet.ProjectileData).MakeDict();
             
-            // --- error
             EffectDataDict = LoadJson<Data.EffectDataLoader, int, Data.EffectData>(ReadOnly.DataSet.EffectData).MakeDict();
         }
 

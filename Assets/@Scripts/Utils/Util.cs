@@ -127,16 +127,50 @@ namespace STELLAREST_F1
         public static T ParseEnum<T>(string value)
             => (T)Enum.Parse(typeof(T), value, true);
 
-        public static Vector3 MakeSpawnPosition(BaseObject fromTarget, float fromMinDistance = 10f, float fromMaxDistance = 20f)
+        public static Vector3Int MakeSpawnPosition(Vector3 spawnPos)
         {
-            float angle = UnityEngine.Random.Range(0, 360) * Mathf.Deg2Rad;
-            float distance = UnityEngine.Random.Range(fromMinDistance, fromMaxDistance);
+            int _trySpawnCount = 0;
+            float randMinPos = -1f;
+            float randMaxPos = 1f;
+            Vector3Int cellSpawnPos = Managers.Map.WorldToCell(spawnPos);
+            while (Managers.Map.CanMove(cellSpawnPos) == false)
+            {
+                if (_trySpawnCount++ >= ReadOnly.Util.CanTryMaxSpawnCount)
+                    return Vector3Int.zero;
 
-            float xDistance = UnityEngine.Mathf.Cos(angle) * distance;
-            float yDistance = UnityEngine.Mathf.Sin(angle) * distance;
+                float angle = UnityEngine.Random.Range(0f, 360f) * Mathf.Rad2Deg;
+                float dist = UnityEngine.Random.Range(randMinPos--, randMaxPos++);
 
-            Vector3 targetPos = fromTarget.transform.position;
-            return new Vector3(xDistance, yDistance, 0) + targetPos;
+                float x = Mathf.Cos(angle) * dist;
+                float y = Mathf.Sin(angle) * dist;
+
+                cellSpawnPos = Managers.Map.WorldToCell(spawnPos + new Vector3(x, y, 0));
+            }
+
+            return cellSpawnPos;
+        }
+
+        public static Vector3 GetRandomCellQuadPosition(Vector3 cellCenter, float cellSize = 1f)
+        {
+            float offset = cellSize / 4.0f;
+            Vector3[] quadCenters = new Vector3[4];
+            quadCenters[0] = cellCenter + new Vector3(offset, offset, 0);  // --- 1사분면 중앙
+            quadCenters[1] = cellCenter + new Vector3(-offset, offset, 0);   // --- 2사분면 중앙
+            quadCenters[2] = cellCenter + new Vector3(-offset, -offset, 0); // --- 3사분면 중앙
+            quadCenters[3] = cellCenter + new Vector3(offset, -offset, 0);  // --- 4사분면 중앙
+            int randIdx = UnityEngine.Random.Range(0, quadCenters.Length + 1);
+            // if (randIdx == 0) Debug.Log("1사분면");
+            // if (randIdx == 1) Debug.Log("2사분면");
+            // if (randIdx == 2) Debug.Log("3사분면");
+            // if (randIdx == 3) Debug.Log("4사분면");
+            // if (randIdx == 4) Debug.Log("센터");
+            
+            Debug.Break();
+
+            if (randIdx == quadCenters.Length)
+                return cellCenter;
+
+            return quadCenters[randIdx];
         }
 
         // Chase Or Attack

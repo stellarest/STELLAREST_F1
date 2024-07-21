@@ -193,18 +193,13 @@ namespace STELLAREST_F1
         #endregion
 
         #region Core
-        public override bool SetInfo(int dataID, BaseObject owner)
+        public override void InitialSetInfo(int dataID, BaseObject owner)
         {
             Owner = owner as Monster;
-            if (Owner == null)
-                return false;
-
             MonsterData monsterData = Managers.Data.MonsterDataDict[dataID];
             MonsterType = monsterData.MonsterType;
             _heads = new Sprite[(int)EMonsterEmoji.Max];
             InitBody(Managers.Data.MonsterDataDict[dataID], dataID);
-
-            return true;
         }
 
         private void InitBody(MonsterData monsterData, int dataID)

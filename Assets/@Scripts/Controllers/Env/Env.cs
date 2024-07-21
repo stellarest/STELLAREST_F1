@@ -28,6 +28,7 @@ namespace STELLAREST_F1
         public EEnvType EnvType { get; private set; } = EEnvType.None;
         public EnvBody EnvBody { get; private set; } = null;
 
+        #region Core
         public override bool Init()
         {
             if (base.Init() == false)
@@ -41,39 +42,54 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public override bool SetInfo(int dataID)
-        {
-            // --- EnterInGame from BaseObject
-            if (base.SetInfo(dataID) == false)
-                return false;
-        
-            InitialSetInfo(dataID);
-            return true;
-        }
-
         protected override void InitialSetInfo(int dataID)
         {
             base.InitialSetInfo(dataID);
             _maxLevel = dataID;
 
-            EnvBody.SetInfo(dataID, this);
+            EnvBody.InitialSetInfo(dataID, this);
             EnvAnim = BaseAnim as EnvAnimation;
-            EnvAnim.SetInfo(dataID, this);
-            //Managers.Sprite.SetInfo(dataID, this);
+            EnvAnim.InitialSetInfo(dataID, this);
 
             EnvData = Managers.Data.EnvDataDict[dataID];
             EnvType = EnvData.EnvType;
 
             gameObject.name += $"_{EnvData.NameTextID.Replace(" ", "")}";
-            EnterInGame();
         }
 
-        protected override void EnterInGame()
+        protected override void EnterInGame(Vector3 spawnPos)
         {
-            base.EnterInGame();
-            //ShowBody(true);            
+            //EnvBody.ResetMaterialsAndColors();
+            base.EnterInGame(spawnPos);
+            switch (EnvType)
+            {
+                case EEnvType.Tree:
+                    {
+                        EnvBody.StartCoFadeInEffect(startCallback: () => 
+                        {
+                            Managers.Object.SpawnBaseObject<EffectBase>(
+                                objectType: EObjectType.Effect,
+                                spawnPos: Managers.Map.GetCenterWorld(Vector3Int.up + SpawnedCellPos),
+                                dataID: ReadOnly.DataAndPoolingID.DNPID_Effect_TeleportGreen,
+                                owner: this
+                            );
+                        });
+                    }
+                    break;
+
+                case EEnvType.Rock:
+                    {
+                        Managers.Object.SpawnBaseObject<EffectBase>(
+                            objectType: EObjectType.Effect,
+                            spawnPos: Managers.Map.GetCenterWorld(Vector3Int.up + SpawnedCellPos),
+                            dataID: ReadOnly.DataAndPoolingID.DNPID_Effect_TeleportBlue,
+                            owner: this
+                        );
+                    }
+                    break;
+            }
+
             EnvState = EEnvState.Idle;
-            Debug.Log($"<color=white>EnterInGame, {gameObject.name}, {EnvState}</color>");
         }
 
         public override void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
@@ -102,10 +118,15 @@ namespace STELLAREST_F1
 
         public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
         {
-            EnvBody.ResetMaterialsAndColors();
+            //EnvBody.ResetMaterialsAndColors(); ---> BaseObject::EnterInGame
             EnvState = EEnvState.Dead;
             base.OnDead(attacker, skillFromAttacker);
+            EnvBody.StartCoFadeOutEffect(
+                startCallback: null,
+                endCallback: () => OnDeadFadeOutCompleted()
+            );
             // --- TODO : Drop Item
         }
+        #endregion
     }
 }

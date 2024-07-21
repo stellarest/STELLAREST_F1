@@ -1078,16 +1078,12 @@ namespace STELLAREST_F1
         #endregion
 
         #region Core
-        public override bool SetInfo(int dataID, BaseObject owner)
+        public override void InitialSetInfo(int dataID, BaseObject owner)
         {
             Owner = owner as Hero;
-            if (Owner == null)
-                return false;
-
             _matDefaultEyes = Managers.Resource.Load<Material>(ReadOnly.Materials.Mat_EyesPaint);
             InitBody(Managers.Data.HeroSpriteDataDict[dataID]);
             InitEnvWeapon();
-            return true;
         }
 
         private void InitBody(HeroSpriteData heroSpriteData)

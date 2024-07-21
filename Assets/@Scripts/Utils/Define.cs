@@ -44,12 +44,13 @@ namespace STELLAREST_F1
 
         public enum EObjectSize
         {
-            None = -1, // --- Use Preset
+            None = -1,
             VerySmall,
             Small,
             Medium,
             Large,
-            VeryLarge
+            VeryLarge,
+            PresetSize
         }
 
         public enum EScene
@@ -88,7 +89,6 @@ namespace STELLAREST_F1
             Monster,
             Env,
             Projectile,
-            LeaderController,
             Effect,
             Max = Effect + 1
         }
@@ -422,16 +422,16 @@ namespace STELLAREST_F1
             Pull,
         }
 
-        public enum EEffectSpawnType // ???
+        public enum EEffectSpawnType
         {
-            None,
-            Skill,              // 지속시간이 있는 기본적인 이펙트 
+            None = -1,
+            Internal,              // 지속시간이 있는 기본적인 이펙트 
             External,           // 외부(장판스킬)에서 이펙트를 관리(지속시간에 영향을 받지않음)
         }
 
         public enum EEffectClearType
         {
-            None,
+            VFXTimeOut,
             TimeOut,            // 단순 시간초과로 종료
             ClearSkill,         // 정화 스킬로 인한 종료
             TriggerOutAoE,      // AoE 스킬을 벗어난 종료
@@ -585,6 +585,13 @@ namespace STELLAREST_F1
                 public static readonly int DNPID_Env_TinRock = 103017;
                 public static readonly int DNPID_Env_WhetstoneRock = 103018;
                 public static readonly int DNPID_Env_ZincRock = 103019;
+
+                // --- Effects(VFX)
+                public static readonly int DNPID_Effect_TeleportRed = 301001;
+                public static readonly int DNPID_Effect_TeleportGreen = 301002;
+                public static readonly int DNPID_Effect_TeleportBlue = 301003;
+                public static readonly int DNPID_Effect_Dust = 301004;
+                public static readonly int DNPID_Effect_OnDeadSkull = 301005;
             }
 
             public static class AnimationParams
@@ -693,19 +700,8 @@ namespace STELLAREST_F1
 
                 // [ INTEGER ]
                 public static readonly int HeroMaxLevel = 5;
+                public static readonly int CanTryMaxSpawnCount = 999;
 
-                // public static readonly int SortingLayer_Base = 0;
-                // public static readonly int SortingLayer_Projectile = 10;
-                // public static readonly int SortingLayer_VFX = 20;
-                // public static readonly int SortingLayer_HeroCamp = 90;
-                // public static readonly int SortingOrder_SpellIndicator = 200;
-                // public static readonly int SortingOrder_Creature = 300;
-                // public static readonly int SortingOrder_Env = 300;
-                // public static readonly int SortingOrder_Projectile = 310;
-                // public static readonly int SortingOrder_SkillEffect = 310;
-                // public static readonly int SortingOrder_DamageFont = 410;
-                // //public static readonly int SortingOrder_Weapon = 200;
-                // public static readonly int SortingOrder_Weapon = 320;
 
                 public static readonly int RockElementsCount = 3;
                 public static readonly int MaxActiveSkillsCount = 2;
@@ -753,6 +749,7 @@ namespace STELLAREST_F1
                 public static readonly float StartDeadFadeOutTime = 0.85F; // --- PREV
                 public static readonly float DesiredDeadFadeOutEndTime = 1.0F; // --- PREV
 
+                public static readonly float DesiredEndFadeInTime = 0.5F;
                 public static readonly float DesiredStartFadeOutTime = 2.0F;
                 public static readonly float DesiredEndFadeOutTime = 1.0F;
 

@@ -12,7 +12,6 @@ namespace STELLAREST_F1
 {
     public class BaseObject : InitBase
     {
-        #region Background
         public int DataTemplateID { get; protected set; } = -1;
         public EObjectType ObjectType { get; protected set; } = EObjectType.None;
         public BaseBody BaseBody { get; protected set; } = null;
@@ -20,10 +19,13 @@ namespace STELLAREST_F1
         public CircleCollider2D Collider { get; private set; } = null;
         public Rigidbody2D RigidBody { get; private set; } = null;
         public SortingGroup SortingGroup { get; private set; } = null;
-        public AnimationClipCallback AnimCallback { get; private set; } = null;
+        //public AnimationClipCallback AnimCallback { get; private set; } = null;
+
+        public EffectComponent BaseEffect { get; private set; } = null;
         public float ColliderRadius { get => Collider != null ? Collider.radius : 0.0f; }
         public Vector3 CenterPosition { get => transform.position + Vector3.up * ColliderRadius; } // Creature 및 다른 오브젝트의 경우, 발바닥 부분이 피벗임
         public Vector3 CenterLocalPosition => Vector3.up * ColliderRadius;
+
         [SerializeField] private ELookAtDirection _lookAtDir = ELookAtDirection.Right;
         public ELookAtDirection LookAtDir
         {
@@ -52,7 +54,7 @@ namespace STELLAREST_F1
             StatData = statData; // Refresh
             MaxHp = statData.MaxHp;
             Hp = statData.MaxHp;
-            Atk = AtkBase = statData.Atk;
+            MinAtk = MinAtkBase = statData.MinAtk;
             CriticalRate = CriticalRateBase = statData.CriticalRate;
             DodgeRate = DodgeRateBase = statData.DodgeRate;
             MovementSpeed = MovementSpeedBase = statData.MovementSpeed;
@@ -66,14 +68,16 @@ namespace STELLAREST_F1
         }
 
         public float MaxHpBase { get; set; } = 0f;
-        public float AtkBase { get; set; } = 0f;
+        public float MinAtkBase { get; set; } = 0f;
+        public float MaxAtkBase { get; set; } = 0f;
         public int AtkRangeBase { get; set; } = 0;
         public float CriticalRateBase { get; set; } = 0f;
         public float DodgeRateBase { get; set; } = 0f;
         public float MovementSpeedBase { get; set; } = 0f;
 
         [field: SerializeField] public float MaxHp { get; set; } = 0f;
-        [field: SerializeField] public float Atk { get; set; } = 0f;
+        [field: SerializeField] public float MinAtk { get; set; } = 0f;
+        [field: SerializeField] public float MaxAtk { get; set; } = 0f;
         [field: SerializeField] public int AtkRange { get; set; } = 0;
         [field: SerializeField] public float CriticalRate { get; set; } = 0f;
         [field: SerializeField] public float DodgeRate { get; set; } = 0f;
@@ -94,8 +98,6 @@ namespace STELLAREST_F1
             }
         }
 
-        [field: SerializeField] public Vector3? NextCenteredCellPos { get; set; } = Vector3.zero;
-
         public void LookAtValidTarget()
         {
             if (Target.IsValid() == false)
@@ -114,60 +116,34 @@ namespace STELLAREST_F1
         protected virtual void OnDeadFadeOutCompleted()
         {
             Managers.Object.Despawn(this, DataTemplateID);
-            _initialSpawnedCellPos = null;
+            StopAllCoroutines(); // --- DEFENSE
         }
 
         [field: SerializeField] public bool LerpToCellPosCompleted { get; protected set; } = false;
-
         [field: SerializeField] public Vector3Int CellPos { get; protected set; } = Vector3Int.zero;
-        public Vector3 CellCenteredWorldPos => Managers.Map.CenteredCellToWorld(CellPos);
 
-        private Vector3Int? _initialSpawnedCellPos = null;
-        public Vector3Int? InitialSpawnedCellPos
-        {
-            get => _initialSpawnedCellPos.HasValue ? _initialSpawnedCellPos.Value : null;
-            set
-            {
-                if (_initialSpawnedCellPos.HasValue == false)
-                {
-                    _initialSpawnedCellPos = value;
-                }
-                else
-                {
-                    Debug.LogWarning($"Already it has initial spawned cell pos: {_initialSpawnedCellPos.Value}");
-                }
-            }
-        }
+        [field: SerializeField] public Vector3 SpawnedPos { get; protected set; } = Vector3.zero;
+        [field: SerializeField] public Vector3Int SpawnedCellPos { get; protected set; } = Vector3Int.zero;
 
         public void SetCellPos(Vector3 position, bool forceMove = false)
-            => SetCellPos(Managers.Map.WorldToCell(position), forceMove);
+            => SetCellPos(Managers.Map.WorldToCell(position), forceMove: forceMove);
 
-        private float _centerToCellThreshHoldSQR = 0.01f;
         public void UpdateCellPos()
         {
-             /*
-                    // REF -- Center To Cell
-                    // Vector3Int currentCellPos = Managers.Map.WorldToCell(transform.position);
-                    // Vector3 cellCenteredWorldPos = Managers.Map.CenteredCellToWorld(currentCellPos);
-                    // float distToCellCenterSQR = (transform.position - cellCenteredWorldPos).sqrMagnitude;
-                    // if (distToCellCenterSQR <= _centerToCellThreshHoldSQR)
-                    // {
-                    //     if (currentCellPos != CellPos)
-                    //     {
-                    //         Managers.Map.RemoveObject(this);
-                    //         Managers.Map.AddObject(this, currentCellPos);
-                    //         CellPos = currentCellPos;
-                    //     }
-                    // }
-            */
-
             Vector3Int currentCellPos = Managers.Map.WorldToCell(transform.position);
             Managers.Map.RemoveObject(this);
             Managers.Map.AddObject(this, currentCellPos);
             CellPos = currentCellPos;
         }
 
-        // 이건 애초에 Add를 안함. 제거 예정?
+        public void UpdateCellPos(Vector3 worldPos)
+        {
+            Vector3Int currentCellPos = Managers.Map.WorldToCell(worldPos);
+            Managers.Map.RemoveObject(this);
+            Managers.Map.AddObject(this, currentCellPos);
+            CellPos = currentCellPos;
+        }
+
         public void SetCellPos(Vector3Int cellPos, bool stopLerpToCell = false, bool forceMove = false)
         {
             CellPos = cellPos;
@@ -177,21 +153,18 @@ namespace STELLAREST_F1
 
             if (forceMove)
             {
-                transform.position = Managers.Map.CenteredCellToWorld(cellPos); // 이동은 셀 가운데로
+                transform.position = Managers.Map.GetCenterWorld(cellPos); // 이동은 셀 가운데로
                 LerpToCellPosCompleted = true;
             }
         }
 
-        public virtual void LerpToCellPos(float movementSpeed) // Coroutine every tick
+        public virtual void LerpToCellPos(float movementSpeed)
         {
             if (LerpToCellPosCompleted)
-            {
                 return;
-            }
 
-            Vector3 destPos = Managers.Map.CenteredCellToWorld(CellPos); // 이동은 가운데로.
+            Vector3 destPos = Managers.Map.GetCenterWorld(CellPos);
             Vector3 dir = destPos - transform.position;
-            // --- LookAtValidTarget은 이동할 때 바라보면서 백스텝하는게 어색해보여서 생략
             if (dir.x < 0f)
                 LookAtDir = ELookAtDirection.Left;
             else if (dir.x > 0f)
@@ -218,7 +191,6 @@ namespace STELLAREST_F1
                        transform.position = startPos;
                });
         }
-        #endregion
 
         #region Core
         public override bool Init()
@@ -235,10 +207,6 @@ namespace STELLAREST_F1
             RigidBody.gravityScale = 0f;
             RigidBody.mass = 0f;
             RigidBody.drag = 0f;
-
-            // RigidbodyType2D - Dynamic: 물리 완전 제어, 높은 비용, 충돌 감지
-            // RigidbodyType2D - Kinematic: 물리 회전, 위치를 업데이트 하지 않음, 비교적 낮은 비용, 충돌 감지
-            // RigidbodyType2D - Static: 절대적으로 움직이지 않는 상태에서만 충돌 감지.
             RigidBody.bodyType = RigidbodyType2D.Kinematic;
 
             SortingGroup = gameObject.GetOrAddComponent<SortingGroup>();
@@ -248,23 +216,29 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public override bool SetInfo(int dataID)
+        private bool _initialSetInfo = false;
+        public virtual bool SetInfo(int dataID, Vector3 spawnPos)
         {
-            if (base.SetInfo(dataID) == false)
+            if (_initialSetInfo)
             {
-                EnterInGame();
+                EnterInGame(spawnPos);
                 return false;
             }
 
+            _initialSetInfo = true;
+            InitialSetInfo(dataID);
+            EnterInGame(spawnPos);
             return true;
         }
 
         protected virtual void InitialSetInfo(int dataID)
         {
             DataTemplateID = dataID;
+            BaseEffect = gameObject.GetOrAddComponent<EffectComponent>();
+            BaseEffect.InitialSetInfo(this);
 
             // --- InitStat
-            if (Managers.Data.StatDataDict.TryGetValue(dataID, out Data.StatData statData) == false)
+            if (Managers.Data.StatDataDict.TryGetValue(dataID, out StatData statData) == false)
                 return;
 
             StatData = statData;
@@ -273,50 +247,55 @@ namespace STELLAREST_F1
             Hp = StatData.MaxHp;
 
             MaxHp = MaxHpBase = StatData.MaxHp;
-            Atk = AtkBase = StatData.Atk;
+            MinAtk = MinAtkBase = StatData.MinAtk;
+            MaxAtk = MaxAtkBase = StatData.MaxAtk;
             CriticalRate = CriticalRateBase = StatData.CriticalRate;
             DodgeRate = DodgeRateBase = StatData.DodgeRate;
             MovementSpeed = MovementSpeedBase = StatData.MovementSpeed;
         }
 
-        protected virtual void EnterInGame()
+        protected virtual void EnterInGame(Vector3 spawnPos)
         {
-            if (ObjectType == EObjectType.Projectile)
-                return;
-
-            // --- Reset Stat
+            // StopAllCoroutines(); // --- TEST
+            BaseBody.ResetMaterialsAndColors();
+            // BaseBody.StartCoFadeInEffect();
+            SpawnedPos = spawnPos;
+            SpawnedCellPos = Managers.Map.WorldToCell(spawnPos); // Add는 안한 상태
             MaxHp = StatData.MaxHp;
             Hp = StatData.MaxHp;
+            Debug.Log($"<color=white>{gameObject.name}, {nameof(EnterInGame)}</color>");
         }
 
-        public virtual void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
+        public virtual void OnDamaged(BaseObject attacker, SkillBase skillByAttacker)
         {
             if (attacker.IsValid() == false)
                 return;
 
-            float finalDamage = attacker.Atk;
+            //float finalDamage = attacker.MinAtk;
+            float damage = UnityEngine.Random.Range(attacker.MinAtk, attacker.MaxAtk);
+            float finalDamage = Mathf.FloorToInt(damage);
+
             Hp = Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
             bool isCritical = false;
-            // Managers.Object.ShowDamageFont(position: this.CenterPosition, damage: finalDamage, isCritical: isCritical);
+            Managers.Object.ShowDamageFont(position: this.CenterPosition, damage: finalDamage, isCritical: isCritical);
             // if (UnityEngine.Random.Range(0f, 100f) >= 50f)
             //     isCritical = true;
 
             if (Hp <= 0f)
             {
                 Hp = 0f;
-                OnDead(attacker, skillFromAttacker);
+                OnDead(attacker, skillByAttacker);
             }
             else
             {
-                if (ObjectType != EObjectType.Hero)
-                    BaseBody.StartCoHurtFlashEffect(isCritical: isCritical);
+                BaseBody.StartCoHurtFlashEffect(isCritical: isCritical);
             }
         }
 
         public virtual void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
         {
             RigidBody.simulated = false;
-            BaseBody.StartCoFadeOutEffect(() => OnDeadFadeOutCompleted());
+            //BaseBody.StartCoFadeOutEffect(() => OnDeadFadeOutCompleted());
         }
 
         protected virtual void OnDisable() { }

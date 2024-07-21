@@ -10,11 +10,10 @@ namespace STELLAREST_F1
 {
     public class Creature : BaseObject
     {
-        #region Background
         public CreatureAI CreatureAI { get; protected set; } = null;
         [field: SerializeField] public ECreatureRarity CreatureRarity { get; protected set; } = ECreatureRarity.None;
         public SkillComponent CreatureSkill { get; protected set; } = null; // Skills
-        public EffectComponent CreatureEffect { get; protected set; } = null; // Effects
+        //public EffectComponent CreatureEffect { get; protected set; } = null; // Effects
         public CreatureBody CreatureBody { get; protected set; } = null;
         public CreatureAnimation CreatureAnim { get; private set; } = null;
         public CreatureAnimationCallback CreatureAnimCallback { get; private set; } = null;
@@ -34,6 +33,10 @@ namespace STELLAREST_F1
         [SerializeField] protected EFindPathResult _findPathResult = EFindPathResult.None;
         [field: SerializeField] public bool ForceMove { get; set; } = false;
 
+        private bool IsAtCellCenter(Vector3 worldPos)
+            => Mathf.Approximately(worldPos.x, Managers.Map.GetCenterWorld(CellPos).x) && 
+               Mathf.Approximately(worldPos.y, Managers.Map.GetCenterWorld(CellPos).y);
+
         public bool CanSkill
         {
             get
@@ -44,6 +47,12 @@ namespace STELLAREST_F1
                     return false;
                 }
 
+                // if (ForceMove)
+                // {
+                //     CreatureAnim.ReadySkill = false;
+                //     return false;
+                // }
+
                 if (Target.IsValid() == false)
                 {
                     CreatureAnim.ReadySkill = false;
@@ -53,6 +62,7 @@ namespace STELLAREST_F1
                 if (CreatureAnim.CanEnterAnimState(ECreatureAnimState.Upper_Idle_To_Skill_A) == false ||
                     CreatureAnim.CanEnterAnimState(ECreatureAnimState.Upper_Move_To_Skill_A) == false)
                 {
+                    CreatureAnim.ReadySkill = false;
                     return false;
                 }
 
@@ -70,21 +80,14 @@ namespace STELLAREST_F1
                 {
                     if (dx <= invokeRange && dy <= invokeRange)
                     {
-                        // // --- For HeroAI, MonsterAI, 자기 자신이 아직 Cell 중앙까지 오지 않은 상황이라면 리턴
-                        // if (NextCenteredCellPos.HasValue)
-                        // {
-                        //     if ((transform.position - NextCenteredCellPos.Value).sqrMagnitude > 0.01f)
-                        //         return false;
-                        // }
-                        // // --- For Leader Hero (ex. 리더같은 경우에는 치킨이 중앙에 왔을 때 때려야함)
-                        // else
-                        // {
-                        //     if ((Target.transform.position - Target.NextCenteredCellPos.Value).sqrMagnitude > 0.01f)
-                        //         return false;
-                        // }                        
-
-                        CreatureAnim.ReadySkill = true;
-                        return true;
+                        if (IsAtCellCenter(transform.position))
+                        {
+                            CreatureAnim.ReadySkill = true;
+                            return true;
+                        }
+                        else
+                        {
+                        }
                     }
                 }
 
@@ -170,7 +173,7 @@ namespace STELLAREST_F1
 
             Vector3Int dirCellPos = path[1] - CellPos;
             Vector3Int nextPos = CellPos + dirCellPos;
-            NextCenteredCellPos = Managers.Map.CenteredCellToWorld(nextPos);
+            // NextCenteredCellPos = Managers.Map.CenteredCellToWorld(nextPos);
 
             if (Managers.Map.MoveTo(creature: this, cellPos: nextPos, ignoreObjectType: ignoreObjectType) == false)
                 return EFindPathResult.Fail_MoveTo;
@@ -192,7 +195,11 @@ namespace STELLAREST_F1
 
         public void Skill(ESkillType skillType) => CreatureAnim.Skill(skillType);
         public void CollectEnv() => CreatureAnim.CollectEnv();
-        public void Dead() => CreatureAnim.Dead();
+        public void Dead()
+        {
+            CreatureAnim.ReleaseAllAnimState();
+            CreatureAnim.Dead();
+        }
 
         public bool IsInTheNearestTarget
         {
@@ -247,7 +254,8 @@ namespace STELLAREST_F1
                 return bestShortRange;
             }
         }
-        #endregion
+
+        public virtual Vector3 GetFirePosition() => CenterPosition;
 
         #region Core
         public override bool Init()
@@ -261,38 +269,27 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public override bool SetInfo(int dataID)
-        {
-            // --- EnterInGame from BaseObject
-            if (base.SetInfo(dataID) == false)
-                return false;
-
-            return true;
-        }
-
         protected override void InitialSetInfo(int dataID)
         {
             base.InitialSetInfo(dataID);
-            CreatureAnimCallback.SetInfo(this);
-            CreatureEffect = gameObject.GetOrAddComponent<EffectComponent>();
-            CreatureEffect.SetInfo(this);
+            CreatureAnimCallback.InitialSetInfo(this);
+            // CreatureEffect = gameObject.GetOrAddComponent<EffectComponent>();
+            // CreatureEffect.InitialSetInfo(this);
         }
 
-        protected override void EnterInGame()
+        protected override void EnterInGame(Vector3 spawnPos)
         {
-            base.EnterInGame();
+            base.EnterInGame(spawnPos);
             RigidBody.simulated = false;
             Targets.Clear();
             StartCoWait(waitCondition: () => BaseAnim.IsPlay() == false,
                       callbackWaitCompleted: () =>
                       {
-                          CreatureBody.ResetMaterialsAndColors();
+                          //CreatureBody.ResetMaterialsAndColors();
                           CreatureAI.EnterInGame();
                           RigidBody.simulated = true;
-                #region Events
                           CreatureAnim.AddAnimClipEvents();
                           CreatureAnim.AddAnimStateEvents();
-                #endregion
                           StartCoUpdateAI();
                           StartCoLerpToCellPos();
                       });
@@ -310,29 +307,29 @@ namespace STELLAREST_F1
 
         public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
         {
-            CreatureBody.ResetMaterialsAndColors();
-            StopCoLerpToCellPos(); // 길찾기 움직임 중이었다면 멈춘다.
+            StopCoLerpToCellPos(); // --- 움직임 중인 길찾기 중지
             CreatureAIState = ECreatureAIState.Dead;
+            attacker.Targets.Remove(this);
             base.OnDead(attacker, skillFromAttacker);
+            CreatureBody.StartCoFadeOutEffect(
+                startCallback: () => 
+                {
+                    Managers.Object.SpawnBaseObject<EffectBase>(
+                        objectType: EObjectType.Effect,
+                        spawnPos: CenterPosition,
+                        dataID: ReadOnly.DataAndPoolingID.DNPID_Effect_OnDeadSkull
+                    );
+                },
+                endCallback: () => OnDeadFadeOutCompleted()
+            );
         }
 
         protected override void OnDisable() { } // --- TEMP
         #endregion
 
-        #region Coroutines
         protected Coroutine _coUpdateAI = null;
-        #endregion
         protected IEnumerator CoUpdateAI()
         {
-            // if (ObjectType == EObjectType.Monster)
-            // {
-            //     while (true)
-            //     {
-            //         UpdateCellPos();
-            //         yield return null;
-            //     }
-            // }
-
             while (true)
             {
                 switch (CreatureAIState)
@@ -346,7 +343,7 @@ namespace STELLAREST_F1
                         break;
                 }
 
-                //UpdateCellPos();
+                // UpdateCellPos();
                 yield return null;
             }
         }
@@ -402,8 +399,9 @@ namespace STELLAREST_F1
         {
             while (true)
             {
-                if (IsForceMovingPingPongObject)
+                if (IsForceMovingPingPongObject || CreatureAIState == ECreatureAIState.Idle)
                 {
+                    //LerpToCellPosCompleted = true;
                     yield return null;
                     continue;
                 }
@@ -516,7 +514,7 @@ namespace STELLAREST_F1
             Vector3 currentWorldPos = Managers.Map.CellToWorld(currentCellPos);
             while (pathQueue.Count != 0)
             {
-                Vector3 destPos = Managers.Map.CenteredCellToWorld(nextPos);
+                Vector3 destPos = Managers.Map.GetCenterWorld(nextPos);
                 Vector3 dir = destPos - transform.position; // 왜 이걸로하면 안되지
                 if (dir.x < 0f)
                     LookAtDir = ELookAtDirection.Left;
@@ -539,7 +537,7 @@ namespace STELLAREST_F1
             }
 
             endCallback?.Invoke();
-            UpdateCellPos();
+            // UpdateCellPos();
         }
 
         protected void CoStartForceMovePingPongObject(Vector3Int currentCellPos, Vector3Int destCellPos, System.Action endCallback = null)

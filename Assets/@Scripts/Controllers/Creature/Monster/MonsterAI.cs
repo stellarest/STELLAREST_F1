@@ -10,91 +10,66 @@ namespace STELLAREST_F1
     public class MonsterAI : CreatureAI
     {
         #region Background
-        public Monster MonsterOwner { get; private set; } = null;
-        private float _desiredNextPingPongPatrolDelta = 0f;
-
-        private float SetDesiredNextPingPongPatrolDelta(float minSec, float maxSec)
-            => UnityEngine.Random.Range(minSec, maxSec);
-
-        private float _waitPingPongPatrolDelta = 0f;
-
-        public override Vector3Int ChaseCellPos 
+        public Monster _monsterOwner { get; private set; } = null;
+        private float _patrolDelta = 0f;
+        private float _desiredStartPatrolTime = 0f;
+        public override Vector3Int CellChasePos 
         { 
             get
             {
-                if (MonsterOwner.IsValid() == false)
-                    return base.ChaseCellPos;
+                if (_monsterOwner.Target.IsValid())
+                    return _monsterOwner.Target.CellPos;
 
-                if (MonsterOwner.Target.IsValid())
-                    return MonsterOwner.Target.CellPos;
-                else
-                    return _patrolCellPos;
+                return _cellPatrolPos;
             }
         }
         #endregion
 
-        #region Core
-        public override bool Init()
+        public override void InitialSetInfo(Creature owner)
         {
-            if (base.Init() == false)
-                return false;
-
-            return true;
+            base.InitialSetInfo(owner);
+            _monsterOwner = owner as Monster;
         }
-
-        public override void SetInfo(Creature owner)
-        {
-            base.SetInfo(owner);
-            MonsterOwner = owner as Monster;
-        }
+        
         public override void EnterInGame()
         {
-            base.EnterInGame();
-            _desiredNextPingPongPatrolDelta = Random.Range(2f, 4f);
+            _desiredStartPatrolTime = Random.Range(2f, 4f);
             StartCoFindEnemies();
-
-            // StartCoSearchTarget<Creature>(scanRange: ReadOnly.Util.MonsterDefaultScanRange,
-            //                  firstTargets: Managers.Object.Heroes,
-            //                  secondTargets: null,
-            //                  func: MonsterOwner.IsValid,
-            //                  allTargetsCondition: null);
         }
 
         public override void UpdateIdle()
         {
-            if (MonsterOwner.IsValid() == false)
+            if (_monsterOwner.IsValid() == false)
                 return;
 
-            MonsterOwner.LookAtValidTarget();
-            if (MonsterOwner.CanSkill && MonsterOwner.LerpToCellPosCompleted)
+            _monsterOwner.LookAtValidTarget();
+            if (_monsterOwner.CanSkill)
             {
-                //Owner.StopCoLerpToCellPos();
-                MonsterOwner.CreatureSkill.CurrentSkill.DoSkill();
+                _monsterOwner.CreatureSkill.CurrentSkill.DoSkill();
                 return;
             }
-            else if (_coPingPongPatrol == null)
+            else if (_coPatrol == null)
             {
-                _waitPingPongPatrolDelta += Time.deltaTime;
-                if (_waitPingPongPatrolDelta >= _desiredNextPingPongPatrolDelta)
+                _patrolDelta += Time.deltaTime;
+                if (_patrolDelta >= _desiredStartPatrolTime)
                 {
-                    _waitPingPongPatrolDelta = 0f;
-                    _desiredNextPingPongPatrolDelta = SetDesiredNextPingPongPatrolDelta(2f, 4f);
-                    StartCoPingPongPatrol(-5f, 5f);
+                    _patrolDelta = 0f;
+                    _desiredStartPatrolTime = Random.Range(2f, 4f);
+                    StartCoPatrol(-5f, 5f);
                 }
             }
         }
 
         public override void UpdateMove()
         {
-            if (MonsterOwner.IsValid() == false)
+            if (_monsterOwner.IsValid() == false)
                 return;
 
-            MonsterOwner.LookAtValidTarget();
-            EFindPathResult result = MonsterOwner.FindPathAndMoveToCellPos(destPos: ChaseCellPos, maxDepth: ReadOnly.Util.MonsterDefaultMoveDepth);
-            //Vector3 centeredPos = Managers.Map.CenteredCellToWorld(ChaseCellPos);
-            if (MonsterOwner.CanSkill || result == EFindPathResult.Fail_NoPath)
+            _monsterOwner.LookAtValidTarget();
+            EFindPathResult result = _monsterOwner.FindPathAndMoveToCellPos(destPos: CellChasePos, maxDepth: ReadOnly.Util.MonsterDefaultMoveDepth);
+            if (_monsterOwner.CanSkill || result == EFindPathResult.Fail_NoPath)
             {
-                MonsterOwner.CreatureAIState = ECreatureAIState.Idle;
+                _monsterOwner.CreatureAIState = ECreatureAIState.Idle;
                 return;
             }
 
@@ -121,37 +96,37 @@ namespace STELLAREST_F1
         public override void OnDead()
         {
             base.OnDead();
-            StopCoPingPongPatrol();
+            StopCoPatrol();
         }
-        #endregion
 
-        #region Coroutines
-        protected Coroutine _coPingPongPatrol = null;
-        protected Vector3Int _patrolCellPos = Vector3Int.zero;
+        protected Coroutine _coPatrol = null;
+        protected Vector3Int _cellPatrolPos = Vector3Int.zero;
         protected bool _patrolPingPongFlag = false;
-        protected IEnumerator CoPingPongPatrol(float minDistance, float maxDistance)
+        protected IEnumerator CoPatrol(float minDistance, float maxDistance)
         {
             int attemptCount = 0;
             int maxAttemptCount = 100;
-            Vector3 _initialSpawnPos = Managers.Map.CenteredCellToWorld(MonsterOwner.InitialSpawnedCellPos.Value);
+            //Vector3 _initialSpawnPos = Managers.Map.GetCenterWorld(_monsterOwner.CellPos);
+            Vector3 _initialSpawnPos = _monsterOwner.SpawnedPos;
             if (_patrolPingPongFlag == false)
             {
-                float x = _initialSpawnPos.x + UnityEngine.Random.Range(minDistance, maxDistance);
-                float y = _initialSpawnPos.y + UnityEngine.Random.Range(minDistance, maxDistance);
-                _patrolCellPos = Managers.Map.WorldToCell(new Vector3(x, y, 0));
-                bool isShortDist = (MonsterOwner.InitialSpawnedCellPos.Value - _patrolCellPos).sqrMagnitude < 9f; // 최소 3칸이상으로 움직여라
-                while (Managers.Map.CanMove(_patrolCellPos) == false || isShortDist)
+                float x = _initialSpawnPos.x + Random.Range(minDistance, maxDistance);
+                float y = _initialSpawnPos.y + Random.Range(minDistance, maxDistance);
+                _cellPatrolPos = Managers.Map.WorldToCell(new Vector3(x, y, 0));
+                // --- 최소 3칸 이상일 때 패트롤 시작
+                bool isShortDist = (_monsterOwner.CellPos - _cellPatrolPos).sqrMagnitude < 9f; 
+                while (Managers.Map.CanMove(_cellPatrolPos) == false || isShortDist)
                 {
-                    if (attemptCount++ >= maxAttemptCount) // --- DEFENSE
+                    if (attemptCount++ >= maxAttemptCount)
                     {
-                        _patrolCellPos = MonsterOwner.InitialSpawnedCellPos.Value;
+                        _cellPatrolPos = _monsterOwner.CellPos;
                         break;
                     }
 
-                    x = _initialSpawnPos.x + UnityEngine.Random.Range(minDistance, maxDistance);
-                    y = _initialSpawnPos.y + UnityEngine.Random.Range(minDistance, maxDistance);
-                    _patrolCellPos = Managers.Map.WorldToCell(new Vector3(x, y, 0));
-                    if ((MonsterOwner.InitialSpawnedCellPos.Value - _patrolCellPos).sqrMagnitude < 9f)
+                    x = _initialSpawnPos.x + Random.Range(minDistance, maxDistance);
+                    y = _initialSpawnPos.y + Random.Range(minDistance, maxDistance);
+                    _cellPatrolPos = Managers.Map.WorldToCell(new Vector3(x, y, 0));
+                    if ((_monsterOwner.CellPos - _cellPatrolPos).sqrMagnitude < 9f)
                         isShortDist = true;
                     else
                         isShortDist = false;
@@ -160,33 +135,32 @@ namespace STELLAREST_F1
                 }
             }
             else
-                _patrolCellPos = MonsterOwner.InitialSpawnedCellPos.Value;
+                _cellPatrolPos = Managers.Map.WorldToCell(_initialSpawnPos);
 
-            MonsterOwner.CreatureAIState = ECreatureAIState.Move;
+            _monsterOwner.CreatureAIState = ECreatureAIState.Move;
             _patrolPingPongFlag = !_patrolPingPongFlag;
-            StopCoPingPongPatrol();
+            StopCoPatrol();
         }
 
-        protected void StartCoPingPongPatrol(float minDistance, float maxDistance)
+        protected void StartCoPatrol(float minDistance, float maxDistance)
         {
-            if (MonsterOwner.CreatureAIState != ECreatureAIState.Idle) // --- DEFENSE
+            if (_monsterOwner.CreatureAIState != ECreatureAIState.Idle)
             {
                 Debug.LogWarning("Patrol can only run in idle state.");
                 return;
             }
 
-            StopCoPingPongPatrol();
-            _coPingPongPatrol = StartCoroutine(CoPingPongPatrol(minDistance, maxDistance));
+            StopCoPatrol();
+            _coPatrol = StartCoroutine(CoPatrol(minDistance, maxDistance));
         }
 
-        protected void StopCoPingPongPatrol()
+        protected void StopCoPatrol()
         {
-            if (_coPingPongPatrol != null)
+            if (_coPatrol != null)
             {
-                StopCoroutine(_coPingPongPatrol);
-                _coPingPongPatrol = null;
+                StopCoroutine(_coPatrol);
+                _coPatrol = null;
             }
         }
-        #endregion
     }
 }

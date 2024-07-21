@@ -11,103 +11,9 @@ namespace STELLAREST_F1
 {
     public class CreatureAI : InitBase
     {
-        #region Background
         public Creature Owner { get; private set; } = null;
-        public virtual Vector3Int ChaseCellPos { get; } = Vector3Int.zero;
+        public virtual Vector3Int CellChasePos { get; } = Vector3Int.zero;
         private Queue<Vector3Int> _cantMoveCheckQueue = new Queue<Vector3Int>();
-
-        protected virtual T SearchClosestInRange<T>(float scanRange, IEnumerable<T> firstTargets, IEnumerable<T> secondTargets = null,
-                                      System.Func<T, bool> func = null, System.Func<bool> allTargetsCondition = null) where T : BaseObject
-        {
-            T firstTarget = null;
-            T secondTarget = null;
-            float bestDistSQR = float.MaxValue;
-            float scanRangeSQR = scanRange * scanRange;
-
-            foreach (T obj in firstTargets)
-            {
-                Vector3Int dir = obj.CellPos - Owner.CellPos;
-                
-                float mag = dir.magnitude;
-                float sqrMag = dir.sqrMagnitude;
-                if (scanRangeSQR < sqrMag)
-                    continue;
-
-                if (bestDistSQR < sqrMag)
-                    continue;
-
-                if (func?.Invoke(obj) == false)
-                    continue;
-
-                bestDistSQR = sqrMag;
-                firstTarget = obj;
-            }
-
-            // --- 일반적인 Searching 또는 AutoTarget이 켜져있을 때
-            if (allTargetsCondition == null || allTargetsCondition.Invoke() == false)
-            {
-                if (firstTarget != null)
-                    return firstTarget;
-                else if (firstTarget == null && secondTargets != null)
-                {
-                    foreach (T obj in secondTargets)
-                    {
-                        Vector3Int dir = obj.CellPos - Owner.CellPos;
-                        float distToTargetSQR = dir.sqrMagnitude;
-                        if (scanRangeSQR < distToTargetSQR)
-                            continue;
-
-                        if (bestDistSQR < distToTargetSQR)
-                            continue;
-
-                        if (func?.Invoke(obj) == false)
-                            continue;
-
-                        bestDistSQR = distToTargetSQR;
-                        secondTarget = obj;
-                    }
-                }
-
-                return secondTarget;
-            }
-            // --- AutoTarget과 상관 없이 리더이고 ForceMove가 True일 때.
-            else if (allTargetsCondition != null && allTargetsCondition.Invoke())
-            {
-                foreach (T obj in secondTargets)
-                {
-                    Vector3Int dir = obj.CellPos - Owner.CellPos;
-                    float distToTargetSQR = dir.sqrMagnitude;
-                    if (scanRangeSQR < distToTargetSQR)
-                        continue;
-
-                    if (bestDistSQR < distToTargetSQR)
-                        continue;
-
-                    if (func?.Invoke(obj) == false)
-                        continue;
-
-                    bestDistSQR = distToTargetSQR;
-                    secondTarget = obj;
-                }
-
-                if (func?.Invoke(firstTarget) == false)
-                    return secondTarget;
-                else if (func?.Invoke(secondTarget) == false)
-                    return firstTarget;
-                else
-                {
-                    float fDistSQR = (firstTarget.CellPos - Owner.CellPos).sqrMagnitude;
-                    float sDistSQR = (secondTarget.CellPos - Owner.CellPos).sqrMagnitude;
-                    if (fDistSQR < sDistSQR)
-                        return firstTarget;
-                    else
-                        return secondTarget;
-                }
-            }
-
-            return null;
-        }
-
         /*
             1 - 큐에 A 추가: [A]
             2 - 큐에 B 추가: [A, B]
@@ -159,17 +65,16 @@ namespace STELLAREST_F1
         }
 
         protected bool IsForceMovingPingPongObject => _coForceMovePingPongObject != null;
-
         protected void EvadePingPongMovement()
         {
             if (Owner.ForceMove)
                 return;
 
             {
-                List<Vector3Int> path = Managers.Map.FindPath(Owner.CellPos, ChaseCellPos, 2);
+                List<Vector3Int> path = Managers.Map.FindPath(Owner.CellPos, CellChasePos, 2);
                 if (path.Count > 0)
                 {
-                    Vector3 centeredLastPathPos = Managers.Map.CenteredCellToWorld(path[path.Count - 1]);
+                    Vector3 centeredLastPathPos = Managers.Map.GetCenterWorld(path[path.Count - 1]);
                     if (Owner.Target.IsValid() && (Owner.transform.position - centeredLastPathPos).sqrMagnitude < 0.01f)
                     {
                         if (IsPingPongAndCantMoveToDest(Owner.CellPos))
@@ -178,7 +83,7 @@ namespace STELLAREST_F1
                             {
                                 Debug.Log($"<color=magenta>[!]{Owner.gameObject.name}, Start force moving for PingPong Object.</color>");
                                 Owner.StopCoLerpToCellPos();
-                                CoStartForceMovePingPongObject(Owner.CellPos, ChaseCellPos, endCallback: delegate ()
+                                CoStartForceMovePingPongObject(Owner.CellPos, CellChasePos, endCallback: delegate ()
                                 {
                                     Debug.Log($"<color=cyan>[!]{Owner.gameObject.name}, End ForcePingPong..</color>");
                                     _currentPingPongCantMoveCount = 0;
@@ -194,31 +99,6 @@ namespace STELLAREST_F1
                 }
             }
         }
-        // protected Vector3Int GetWorldToCellDest(Vector3 dir, float dist)
-        // {
-        //     Vector3 dest = dir * dist;
-        //     float minRot = -30f;
-        //     float maxRot = 30f;
-        //     Quaternion randRot = Quaternion.Euler(0f, 0f, UnityEngine.Random.Range(minRot, maxRot));
-        //     Vector3Int destCellPos = Managers.Map.WorldToCell(randRot * dest);
-        //     int attemptCount = 0;
-        //     while (Managers.Map.CanMove(destCellPos) == false)
-        //     {
-        //         if (attemptCount++ > 100)
-        //         {
-        //             destCellPos = Owner.CellPos;
-        //             break;
-        //         }
-
-        //         dest = dir * UnityEngine.Random.Range(dist, dist++);
-        //         randRot = Quaternion.Euler(0f, 0f, UnityEngine.Random.Range(minRot--, maxRot++));
-        //         destCellPos = Managers.Map.WorldToCell(randRot * dest);
-        //     }
-
-        //     return destCellPos;
-        // }
-
-        #endregion
 
         #region Core
         public override bool Init()
@@ -229,7 +109,7 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public virtual void SetInfo(Creature owner) => Owner = owner;
+        public virtual void InitialSetInfo(Creature owner) => Owner = owner;
         public virtual void EnterInGame() { }
         public virtual void UpdateIdle() { }
         public virtual void UpdateMove() { }
@@ -239,7 +119,6 @@ namespace STELLAREST_F1
         }
         #endregion
 
-        #region Coroutines
         public bool PauseFindEnemies { get; protected set; } = false;
         private Coroutine _coFindEnemies = null;
         private IEnumerator CoFindEnemies()
@@ -254,7 +133,6 @@ namespace STELLAREST_F1
 
                 if (PauseFindEnemies)
                 {
-                    Owner.Targets.Clear();
                     yield return null;
                     continue;
                 }
@@ -281,7 +159,14 @@ namespace STELLAREST_F1
                         Owner.Targets.Add(Envs[i]);
                     }
 
-                    (Owner as Hero).SortTargets();
+                    Owner.Targets = Owner.Targets.Where(n => n.IsValid())
+                                    .OrderBy(n =>
+                                    {
+                                         return n.ObjectType == EObjectType.Monster ? 0 :
+                                                n.ObjectType == EObjectType.Env ? 1 : 2;
+                                    })
+                                    .ThenBy(n => (transform.position - n.transform.position).sqrMagnitude)
+                                    .ToList();
                 }
                 else if (targetType == EObjectType.Hero)
                 {
@@ -328,7 +213,7 @@ namespace STELLAREST_F1
             if (pathQueue.Count == 0)
             {
                 endCallback?.Invoke();
-                Owner.UpdateCellPos();
+                // Owner.UpdateCellPos();
                 yield break;
             }
 
@@ -336,7 +221,7 @@ namespace STELLAREST_F1
             Vector3 currentWorldPos = Managers.Map.CellToWorld(currentCellPos);
             while (pathQueue.Count != 0)
             {
-                Vector3 destPos = Managers.Map.CenteredCellToWorld(nextPos);
+                Vector3 destPos = Managers.Map.GetCenterWorld(nextPos);
                 Vector3 dir = destPos - Owner.transform.position;
                 if (dir.x < 0f)
                     Owner.LookAtDir = ELookAtDirection.Left;
@@ -359,10 +244,10 @@ namespace STELLAREST_F1
             }
 
             endCallback?.Invoke();
-            Owner.UpdateCellPos();
+            // Owner.UpdateCellPos();
         }
 
-        protected void CoStartForceMovePingPongObject(Vector3Int currentCellPos, Vector3Int destCellPos, System.Action endCallback = null)
+        protected void CoStartForceMovePingPongObject(Vector3Int currentCellPos, Vector3Int destCellPos, Action endCallback = null)
         {
             if (_coForceMovePingPongObject != null)
                 return;
@@ -373,12 +258,10 @@ namespace STELLAREST_F1
 
         protected void CoStopForceMovePingPongObject()
         {
-            Debug.Log("STOP PING PONG!!!");
             if (_coForceMovePingPongObject != null)
                 StopCoroutine(_coForceMovePingPongObject);
 
             _coForceMovePingPongObject = null;
         }
-        #endregion
     }
 }

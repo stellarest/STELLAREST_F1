@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using STELLAREST_F1.Data;
 using UnityEngine;
 using UnityEngine.Scripting;
 using static STELLAREST_F1.Define;
@@ -12,18 +13,18 @@ namespace STELLAREST_F1
         public int DataTemplateID { get; set; } = -1;
         public Data.ProjectileData ProjectileData { get; private set; } = null;
 
-        public Vector3 StartPosition { get; protected set; } = Vector3.zero; // TEMP
+        public Vector3 StartPosition { get; protected set; } = Vector3.zero;
         public Vector3 TargetPosition { get; private set; } = Vector3.zero;
 
         public EProjectileMotionType MotionType { get; private set; } = EProjectileMotionType.None;
         public EAnimationCurveType AnimCurveType { get; private set; } = EAnimationCurveType.None;
 
 
-        private bool _rotateToTarget = false;
-        public bool RotateToTarget
+        private bool _isRotateToTarget = false;
+        public bool IsRotateToTarget
         {
-            get => _rotateToTarget;
-            private set => _rotateToTarget = value;
+            get => _isRotateToTarget;
+            private set => _isRotateToTarget = value;
         }
 
         protected float _movementSpeed = 0.0f;
@@ -40,24 +41,38 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public override bool SetInfo(int dataID, BaseObject owner)
+        // 움직임과 관련된 부분만 받아올 것. 나머지 부분은 프로젝타일 또는 스킬 부분에서 처리하는게 맞다고 봄.
+        public void InitialSetInfo(ProjectileData projectileData)
         {
-            DataTemplateID = dataID;
-            ProjectileData = Managers.Data.ProjectileDataDict[dataID];
-            MotionType = ProjectileData.MotionType;
+            MotionType = projectileData.MotionType;
             AnimCurveType = Util.GetEnumFromString<EAnimationCurveType>(ProjectileData.AnimationCurveType);
-            RotateToTarget = ProjectileData.RotateToTarget;
+            IsRotateToTarget = projectileData.IsRotateToTarget;
             _movementSpeed = ProjectileData.MovementSpeed;
-            StartPosition = transform.position;
+        }
+
+        public void EnterInGame(Vector3 startPos, Vector3 targetPos)
+        {
+            StartPosition = startPos;
+            TargetPosition = targetPos;
 
             if (_coLaunchProjectile != null)
                 StopCoroutine(_coLaunchProjectile);
 
             ReadyToLaunch();
             _coLaunchProjectile = StartCoroutine(CoLaunchProjectile());
-
-            return true;
         }
+
+        // public override bool SetInfo(int dataID, BaseObject owner)
+        // {
+        //     DataTemplateID = dataID;
+        //     ProjectileData = Managers.Data.ProjectileDataDict[dataID];
+        //     MotionType = ProjectileData.MotionType;
+        //     AnimCurveType = Util.GetEnumFromString<EAnimationCurveType>(ProjectileData.AnimationCurveType);
+        //     RotateToTarget = ProjectileData.RotateToTarget;
+        //     _movementSpeed = ProjectileData.MovementSpeed;
+        //     StartPosition = transform.position;
+        //     return true;
+        // }
 
         public void SetEndCallback(Action endCallback)
         {

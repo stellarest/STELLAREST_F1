@@ -54,7 +54,7 @@ namespace STELLAREST_F1
                 float arcY = baseY + arc;
 
                 Vector3 nextPos = new Vector3(baseX, arcY);
-                if (RotateToTarget)
+                if (IsRotateToTarget)
                     Rotation2D(nextPos - transform.position);
 
                 transform.position = nextPos;

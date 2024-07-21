@@ -17,11 +17,12 @@ namespace STELLAREST_F1
         //    // Debug.Log($"LookAtDir: {(int)LookAtDir}");
         //     if (Input.GetKeyDown("5"))
         //     {
-        //         LevelUp();
+        //         //LevelUp();
+        //         // BaseEffect.GenerateEffect(ReadOnly.DataAndPoolingID.DNPID_Effect_TeleportRed, 
+        //         //     Managers.Map.GetCenterWorld(Vector3Int.up + CellPos));
         //     }
         // }
 
-        #region Background
         public HeroData HeroData { get; private set; } = null;
         public HeroAnimation HeroAnim { get; private set; } = null;
         public HeroAI HeroAI { get; private set; } = null;
@@ -36,14 +37,6 @@ namespace STELLAREST_F1
                     CreatureBody = value;
             }
         }
-
-        // public override BaseObject Target
-        // {
-        //     get
-        //     {
-        //         Targets = Targets.Where(n => n.ObjectType )
-        //     }
-        // }
 
         [SerializeField] private bool _isLeader = false;
         public bool IsLeader
@@ -76,7 +69,7 @@ namespace STELLAREST_F1
             }
         }
 
-        public override void LerpToCellPos(float movementSpeed) // Coroutine every tick
+        public override void LerpToCellPos(float movementSpeed)
         {
             if (IsLeader)
                 return;
@@ -88,7 +81,7 @@ namespace STELLAREST_F1
                 return;
             }
 
-            Vector3 destPos = Managers.Map.CenteredCellToWorld(CellPos); // 이동은 가운데로.
+            Vector3 destPos = Managers.Map.GetCenterWorld(CellPos); // 이동은 가운데로.
             Vector3 dir = destPos - transform.position;
 
             if (dir.x < 0f)
@@ -108,9 +101,9 @@ namespace STELLAREST_F1
             transform.position += dir.normalized * moveDist;
         }
 
-        public override bool Moving 
-        { 
-            get => base.Moving; 
+        public override bool Moving
+        {
+            get => base.Moving;
             set
             {
                 base.Moving = value;
@@ -186,16 +179,16 @@ namespace STELLAREST_F1
         {
             if (this.IsValid() == false)
                 return;
-            
+
             if (_level < _maxLevel)
             {
                 _level = Mathf.Clamp(_level + 1, DataTemplateID, _maxLevel);
                 Debug.Log($"<color=white>++LV: {Level}</color>");
 
-                 if (Managers.Data.StatDataDict.TryGetValue(_level, out Data.StatData statData))
+                if (Managers.Data.StatDataDict.TryGetValue(_level, out Data.StatData statData))
                     SetStat(statData);
             }
-            
+
             if (IsMaxLevel)
             {
                 Debug.Log("<color=yellow>Try ChangeSpriteSet</color>");
@@ -204,125 +197,6 @@ namespace STELLAREST_F1
             }
         }
 
-        public void SortTargets()
-        {
-            if (Targets.Count == 0)
-                return;
-
-            if (IsLeader && Managers.Object.HeroLeaderController.AutoTarget == false)
-            {
-                Targets = Targets.Where(n => n.IsValid())
-                                 .OrderBy(n => (transform.position - n.transform.position).sqrMagnitude)
-                                 .ToList();
-            }
-            else
-            {
-                Targets = Targets.Where(n => n.IsValid())
-                                 .OrderBy(n => {
-                                    return n.ObjectType == EObjectType.Monster ? 0 :
-                                           n.ObjectType == EObjectType.Env ? 1 : 2;
-                                 })
-                                 .ThenBy(n => (transform.position - n.transform.position).sqrMagnitude)
-                                 .ToList();
-            }
-        }
-        #endregion
-
-        #region Core
-        public override bool Init()
-        {
-            if (base.Init() == false)
-                return false;
-
-            ObjectType = EObjectType.Hero;
-            HeroBody = GetComponent<HeroBody>();
-
-            Collider.isTrigger = true;
-            RigidBody.simulated = false;
-            return true;
-        }
-
-        public override bool SetInfo(int dataID)
-        {
-            // --- EnterInGame from BaseObject
-            if (base.SetInfo(dataID) == false)
-                return false;
-            
-            InitialSetInfo(dataID);
-            StartCoroutine(CoInitialReleaseLeaderAI());
-            return true;
-        }
-
-        protected override void InitialSetInfo(int dataID)
-        {
-            base.InitialSetInfo(dataID);
-            HeroData = Managers.Data.HeroDataDict[dataID];
-            for (int i = DataTemplateID; i < DataTemplateID + ReadOnly.Util.HeroMaxLevel;)
-            {
-                if (Managers.Data.StatDataDict.ContainsKey(i) == false)
-                    break;
-
-                _maxLevel = i++;
-            }
-
-            HeroBody.SetInfo(dataID, this);
-            HeroBody.HeroEmoji = EHeroEmoji.Idle;
-
-            HeroAnim = CreatureAnim as HeroAnimation;
-            HeroAnim.SetInfo(dataID, this);
-
-            Type aiClassType = Util.GetTypeFromName(HeroData.AIClassName);
-            CreatureAI = gameObject.AddComponent(aiClassType) as CreatureAI;          
-            CreatureAI.SetInfo(this);  
-            HeroAI = CreatureAI as HeroAI;
-
-            CreatureRarity = HeroData.CreatureRarity;
-            gameObject.name += $"_{HeroData.NameTextID.Replace(" ", "")}";
-            Collider.radius = HeroData.ColliderRadius;
-
-            CreatureSkill = gameObject.GetOrAddComponent<SkillComponent>();
-            CreatureSkill.SetInfo(owner: this, HeroData);
-            EnterInGame();
-        }
-
-        protected override void EnterInGame()
-        {
-            HeroBody.HeroEmoji = EHeroEmoji.Idle;
-            // --- Default Heroes Dir: Right
-            LookAtDir = ELookAtDirection.Right;
-            base.EnterInGame();
-            CreatureAIState = ECreatureAIState.Move;
-
-            Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
-            Managers.Game.OnJoystickStateChangedHandler += OnJoystickStateChanged;
-        }
-
-        public override void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
-        {
-            base.OnDamaged(attacker, skillFromAttacker);
-        }
-
-        public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
-        {
-            if (IsLeader)
-            {
-                Managers.Object.HeroLeaderController.EnableLeaderMark(false);
-                Managers.Object.HeroLeaderController.EnablePointer(false);
-            }
-
-            base.OnDead(attacker, skillFromAttacker);
-        }
-
-        // --- TEMP
-        protected override void OnDisable()
-        {
-            base.OnDisable();
-            if (Managers.Game == null)
-                return;
-        }
-        #endregion
-
-        #region Event
         private void OnJoystickStateChanged(EJoystickState joystickState)
         {
             if (this.IsValid() == false)
@@ -339,16 +213,14 @@ namespace STELLAREST_F1
                     break;
             }
         }
-        #endregion
 
-        #region Coroutines
         private IEnumerator CoInitialReleaseLeaderAI()
         {
             // 여기서 하면 안됨... Leader랑 관련 있는듯.
             // Debug.Log($"1 - Inactive: {HeroBody.GetContainer(EHeroWeapon.WeaponL_Armor).TR.gameObject.name}");
             // HeroBody.GetContainer(EHeroWeapon.WeaponL_Armor).TR.gameObject.SetActive(false);
 
-            yield return new WaitUntil(() => 
+            yield return new WaitUntil(() =>
             {
                 bool allStartedHeroAI = true;
                 for (int i = 0; i < Managers.Object.Heroes.Count; ++i)
@@ -373,6 +245,82 @@ namespace STELLAREST_F1
                 // Debug.Log($"1 - Inactive: {HeroBody.GetContainer(EHeroWeapon.WeaponL_Armor).TR.gameObject.name}");
                 // HeroBody.GetContainer(EHeroWeapon.WeaponL_Armor).TR.gameObject.SetActive(false);
             }
+        }
+
+        #region Core
+        public override bool Init()
+        {
+            if (base.Init() == false)
+                return false;
+
+            ObjectType = EObjectType.Hero;
+            HeroBody = GetComponent<HeroBody>();
+
+            Collider.isTrigger = true;
+            RigidBody.simulated = false;
+            return true;
+        }
+
+        protected override void InitialSetInfo(int dataID)
+        {
+            base.InitialSetInfo(dataID);
+            HeroData = Managers.Data.HeroDataDict[dataID];
+            for (int i = DataTemplateID; i < DataTemplateID + ReadOnly.Util.HeroMaxLevel;)
+            {
+                if (Managers.Data.StatDataDict.ContainsKey(i) == false)
+                    break;
+
+                _maxLevel = i++;
+            }
+
+            HeroBody.InitialSetInfo(dataID, this);
+            HeroBody.HeroEmoji = EHeroEmoji.Idle;
+
+            HeroAnim = CreatureAnim as HeroAnimation;
+            HeroAnim.InitialSetInfo(dataID, this);
+
+            Type aiClassType = Util.GetTypeFromName(HeroData.AIClassName);
+            CreatureAI = gameObject.AddComponent(aiClassType) as CreatureAI;
+            CreatureAI.InitialSetInfo(this);
+            HeroAI = CreatureAI as HeroAI;
+
+            CreatureRarity = HeroData.CreatureRarity;
+            gameObject.name += $"_{HeroData.NameTextID.Replace(" ", "")}";
+            Collider.radius = HeroData.ColliderRadius;
+
+            CreatureSkill = gameObject.GetOrAddComponent<SkillComponent>();
+            CreatureSkill.SetInfo(owner: this, HeroData);
+        }
+
+        protected override void EnterInGame(Vector3 spawnPos)
+        {
+            HeroBody.HeroEmoji = EHeroEmoji.Idle;
+            LookAtDir = ELookAtDirection.Right; // --- Default Heroes Dir: Right
+            CreatureAIState = ECreatureAIState.Move;
+
+            Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
+            Managers.Game.OnJoystickStateChangedHandler += OnJoystickStateChanged;
+            base.EnterInGame(spawnPos);
+            StartCoroutine(CoInitialReleaseLeaderAI());
+        }
+
+        public override void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
+            => base.OnDamaged(attacker, skillFromAttacker);
+        public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
+        {
+            if (IsLeader)
+            {
+                Managers.Object.HeroLeaderController.EnableLeaderMark(false);
+                Managers.Object.HeroLeaderController.EnablePointer(false);
+            }
+
+            base.OnDead(attacker, skillFromAttacker);
+        }
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+            if (Managers.Game == null)
+                return;
         }
         #endregion
     }

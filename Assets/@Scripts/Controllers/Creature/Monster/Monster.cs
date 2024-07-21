@@ -9,6 +9,14 @@ namespace STELLAREST_F1
 {
     public class Monster : Creature
     {
+        private void Update()
+        {
+            if (Input.GetKeyDown("5"))
+            {
+                Debug.Log(ColliderRadius);
+            }
+        }
+
         #region Background
         public Data.MonsterData MonsterData { get; private set; } = null;
         [SerializeField] private MonsterBody _monsterBody = null;
@@ -24,7 +32,6 @@ namespace STELLAREST_F1
         }
         public MonsterAnimation MonsterAnim { get; private set; } = null;
         public EMonsterType MonsterType { get; private set; } = EMonsterType.None;
-
         public override ECreatureAIState CreatureAIState
         {
             get => base.CreatureAIState;
@@ -54,7 +61,8 @@ namespace STELLAREST_F1
                 }
             }
         }
-        public MonsterAI MonsterAI { get; private set; } = null;
+        //public MonsterAI MonsterAI { get; private set; } = null;
+        private MonsterAI _monsterAI = null;
         #endregion
 
         #region Core
@@ -69,32 +77,19 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public override bool SetInfo(int dataID)
-        {
-            // --- EnterInGame from BaseObject
-            if (base.SetInfo(dataID) == false)
-                return false;
-
-            InitialSetInfo(dataID);
-            EnterInGame();
-            return true;
-        }
-
         protected override void InitialSetInfo(int dataID)
         {
             base.InitialSetInfo(dataID);
             _maxLevel = dataID;
 
             MonsterData = Managers.Data.MonsterDataDict[dataID];
-            MonsterAnim.SetInfo(dataID, this);
-            MonsterBody.SetInfo(dataID, this);
-            //MonsterAnim = CreatureAnim as MonsterAnimation;
-            //Managers.Sprite.SetInfo(dataID, target: this);
+            MonsterAnim.InitialSetInfo(dataID, this);
+            MonsterBody.InitialSetInfo(dataID, this);
 
             Type aiClassType = Util.GetTypeFromName(MonsterData.AIClassName);
             CreatureAI = gameObject.AddComponent(aiClassType) as CreatureAI;
-            CreatureAI.SetInfo(this);
-            MonsterAI = CreatureAI as MonsterAI;
+            CreatureAI.InitialSetInfo(this);
+            _monsterAI = CreatureAI as MonsterAI;
             MonsterType = MonsterData.MonsterType;
 
             CreatureRarity = MonsterData.CreatureRarity;
@@ -105,28 +100,28 @@ namespace STELLAREST_F1
             CreatureSkill.SetInfo(owner: this, MonsterData);
         }
 
-        protected override void EnterInGame()
+        protected override void EnterInGame(Vector3 spawnPos)
         {
             MonsterBody.MonsterEmoji = EMonsterEmoji.Normal;
-            // --- Default Monsters Dir: Left
-            LookAtDir = ELookAtDirection.Left;
-            base.EnterInGame();
+            LookAtDir = ELookAtDirection.Left; // --- Default Monsters Dir: Left
+            base.EnterInGame(spawnPos);
             CreatureAIState = ECreatureAIState.Idle;
+            MonsterBody.StartCoFadeInEffect(startCallback: () => 
+            {
+                Managers.Object.SpawnBaseObject<EffectBase>(
+                    objectType: EObjectType.Effect,
+                    spawnPos: Managers.Map.GetCenterWorld(Vector3Int.up + SpawnedCellPos),
+                    dataID: ReadOnly.DataAndPoolingID.DNPID_Effect_TeleportRed,
+                    owner: this);
+            });
         }
 
         public override void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
-        {
-            base.OnDamaged(attacker, skillFromAttacker);
-        }
-
+            => base.OnDamaged(attacker, skillFromAttacker);
         public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
-        {
-            base.OnDead(attacker, skillFromAttacker);
-        }
+            => base.OnDead(attacker, skillFromAttacker);
         protected override void OnDisable()
-        {
-            base.OnDisable();
-        }
+            => base.OnDisable();
         #endregion
     }
 }

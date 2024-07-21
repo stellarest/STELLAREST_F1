@@ -52,7 +52,8 @@ namespace STELLAREST_F1
 
             return true;
         }
-        
+
+        public virtual void InitialSetInfo(int dataID, BaseObject owner) { }
         // --- Mat: Default
         protected virtual void ApplyDefaultMat_Alpha(float alphaValue){ }
 
@@ -74,13 +75,38 @@ namespace STELLAREST_F1
             ResetMaterialsAndColors();
         }
 
+        // --- Effect: Fade In
+        public void StartCoFadeInEffect(System.Action startCallback = null, System.Action endCallback = null)
+        {
+            startCallback?.Invoke();
+            StartCoroutine(CoFadeInEffect(endCallback));
+        }
+        private IEnumerator CoFadeInEffect(System.Action endCallback = null)
+        {
+            ApplyDefaultMat_Alpha(0f);
+            yield return null;
+            float delta = 0f;
+            float percent = 0f;
+            while (percent < 1f)
+            {
+                delta += Time.deltaTime;
+                percent = delta / ReadOnly.Util.DesiredEndFadeInTime;
+                ApplyDefaultMat_Alpha(percent);
+                yield return null;
+            }
+
+            ApplyDefaultMat_Alpha(1f);
+            endCallback?.Invoke();
+        }
+
         // --- Effect: Fade Out
-        public void StartCoFadeOutEffect(System.Action endCallback = null)
+        public void StartCoFadeOutEffect(System.Action startCallback = null, System.Action endCallback = null)
         {
             ResetMaterialsAndColors();
+            startCallback?.Invoke();
             StartCoroutine(CoFadeOutEffect(endCallback));
         }
-        protected virtual IEnumerator CoFadeOutEffect(System.Action endCallback = null)
+        private IEnumerator CoFadeOutEffect(System.Action endCallback = null)
         {
             yield return new WaitForSeconds(ReadOnly.Util.DesiredStartFadeOutTime);
 

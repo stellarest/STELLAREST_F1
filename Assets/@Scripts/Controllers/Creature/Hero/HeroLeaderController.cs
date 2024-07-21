@@ -11,20 +11,11 @@ using UnityEditor;
 
 namespace STELLAREST_F1
 {
-    // 1) Set AutoTarget
-    // 2) Changer Leader
-    // 3) Change Formation
-    // 4) Shuffle Members
-
-    // --- Default로 AutoTarget Mode로 Setting하고, 히어로 리더는 기본 공격시 콤보 모드를 넣어도 될 것 같긴한데.
-    // --- 리더 효과같은것.
     public class HeroLeaderController : InitBase
     {
         private Transform _pointerPivot = null;
         private Transform _pointer = null;
         private Transform _leaderMark = null;
-        [field: SerializeField] public bool AutoTarget { get; set; } = false;
-
         // --- Member들이 전투중에 Leader가 ForceMove를 시도하면 Env처럼 무조건 MoveState로 전환
         [field: SerializeField] public bool ForceFollowToLeader { get; set; } = false;
 
@@ -244,6 +235,42 @@ namespace STELLAREST_F1
             set => SetLeader(value);
         }
 
+        private void OnMovementDirChanged(Vector2 nDir)
+        {
+            if (_leader.IsValid() == false)
+                return;
+
+            _nMovementDir = nDir;
+            if (nDir != Vector2.zero)
+            {
+                float degree = Mathf.Atan2(-nDir.x, nDir.y) * (180f / Mathf.PI);
+                _pointerPivot.rotation = Quaternion.Euler(0, 0, degree);
+            }
+        }
+
+        private void OnJoystickStateChanged(EJoystickState joystickState)
+        {
+            if (_leader.IsValid() == false)
+                return;
+
+            switch (joystickState)
+            {
+                case EJoystickState.Drag:
+                    {
+                        _leader.ForceMove = true;
+                        EnablePointer(true);
+                    }
+                    break;
+
+                case EJoystickState.PointerUp:
+                    {
+                        _leader.ForceMove = false;
+                        EnablePointer(false);
+                    }
+                    break;
+            }
+        }
+
         #region Core
         public override bool Init()
         {
@@ -267,7 +294,6 @@ namespace STELLAREST_F1
             Managers.Game.OnJoystickStateChangedHandler += OnJoystickStateChanged;
 
             HeroMemberFormationMode = EHeroMemberFormationMode.FollowLeaderClosely;
-            AutoTarget = true;
             ForceFollowToLeader = false;
             EnablePointer(false);
             return true;
@@ -304,8 +330,7 @@ namespace STELLAREST_F1
                 else if (_lockFindPath == false && Managers.Map.CanMove(JoystickPos, ignoreObjectType: EObjectType.Hero) == false)
                     TryPathFinding(_pointer.position);
             }
-            // --- AutoTargeting Mode
-            else if (AutoTarget && _lockFindPath == false)
+            else if (_lockFindPath == false)
             {
                 if (_leader.Target.IsValid())
                 {
@@ -350,8 +375,7 @@ namespace STELLAREST_F1
             _coPathFinding = StartCoroutine(CoPathFinding());
         }
 
-        public Vector3 PathFindingPos
-                => AutoTarget && _leader.Target.IsValid() ? _leader.Target.transform.position : _pointer.position;
+        public Vector3 PathFindingPos => _leader.Target.IsValid() ? _leader.Target.transform.position : _pointer.position;
 
         private Vector3 JoystickPos => _leader.transform.position + (_nMovementDir * _leader.MovementSpeed * Time.deltaTime);
 
@@ -360,7 +384,7 @@ namespace STELLAREST_F1
         private int AddPath(Vector3Int startCellPos, Vector3Int targetCellPos)
         {
             int depth = 2;
-            if (_leader.Target.IsValid() && AutoTarget)
+            if (_leader.Target.IsValid())
                 depth = ReadOnly.Util.HeroDefaultMoveDepth;
 
             List<Vector3Int> path = Managers.Map.FindPath(startCellPos: startCellPos,
@@ -417,15 +441,13 @@ namespace STELLAREST_F1
                 _leader.HeroAI.StartCoFindEnemies();
 
                 _leader.IsLeader = false;
-                _leader.NextCenteredCellPos = Managers.Map.CenteredCellPos(_leader.CellPos);
+                // _leader.NextCenteredCellPos = Managers.Map.CenteredCellPos(_leader.CellPos);
                 // --- Set New Leader
                 _leader = newLeader;
                 _leader.IsLeader = true;
             }
-
             newLeader.StopCoUpdateAI();
-            newLeader.NextCenteredCellPos = null;
-            //newLeader.HeroAI.StartSearchTarget(allTargetsCondition: () => (_leader.IsLeader && _leader.ForceMove) || AutoTarget == false);
+            newLeader.StopCoLerpToCellPos();
             newLeader.HeroAI.StartCoFindEnemies();
 
             // Leader Hero는 항상 0번 인덱스로 변경
@@ -477,55 +499,6 @@ namespace STELLAREST_F1
             transform.position = _leader.CenterPosition;
         }
 
-        #region Event
-        private void OnMovementDirChanged(Vector2 nDir)
-        {
-            if (_leader.IsValid() == false) // --- DEFENSE
-                return;
-
-            // if (_leader.CreatureAIState == ECreatureAIState.Dead)
-            // {
-            //     _nMovementDir = Vector3.zero;
-            //     _leader.IsMoving = false;  // --- DEFENSE
-            //     _leader.ForceMove = false; // --- DEFENSE
-            //     return;
-            // }
-
-            _nMovementDir = nDir;
-            if (nDir != Vector2.zero)
-            {
-                float degree = Mathf.Atan2(-nDir.x, nDir.y) * (180f / Mathf.PI);
-                _pointerPivot.rotation = Quaternion.Euler(0, 0, degree);
-            }
-        }
-
-        private void OnJoystickStateChanged(EJoystickState joystickState)
-        {
-            if (_leader.IsValid() == false)
-                return;
-
-            if (_leader.CreatureAIState == ECreatureAIState.Dead)
-                return;
-
-            switch (joystickState)
-            {
-                case EJoystickState.Drag:
-                    {
-                        _leader.ForceMove = true;
-                        EnablePointer(true);
-                    }
-                    break;
-
-                case EJoystickState.PointerUp:
-                    {
-                        _leader.ForceMove = false;
-                        EnablePointer(false);
-                    }
-                    break;
-            }
-        }
-        #endregion
-
         #region Coroutines
         private Coroutine _coPathFinding = null;
         private IEnumerator CoPathFinding()
@@ -537,7 +510,7 @@ namespace STELLAREST_F1
             while (_leaderPath.Count != 0)
             {
                 Vector3Int nextPos = _leaderPath.Peek();
-                Vector3 destPos = Managers.Map.CenteredCellToWorld(nextPos);
+                Vector3 destPos = Managers.Map.GetCenterWorld(nextPos);
                 Vector3 dir = destPos - _leader.transform.position;
                 if (dir.x < 0f)
                     _leader.LookAtDir = ELookAtDirection.Left;

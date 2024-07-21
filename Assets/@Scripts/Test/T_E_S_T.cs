@@ -8,7 +8,24 @@ using DG.Tweening;
 using UnityEditor;
 
 /*
+// --- Hit Effect의 경우에는 떄릴 때 마다 Hit를 발생시키는 거니까 이것도 그냥 따로 빼면 될 것 같고
+// --- Monster 한테 Fade + Spawn Effect Red, Env는 Fade + Spawn Effect Green... 이런식으로
+// --- 플레이어는 적용 안할지도, LeaderController Cell 이동 완료시에만 공격 되는거 수정해야함.
+// --- Move Attack 거리도 잡아야할 것 같고.
+// --- Projectile Test 필요
+
 // [ TODO ]
+// ---> Projectile 부분 얼추 고침
+// ---> PalabolaMotion 부분에서 TargetDir이 있어야하는데 이거 없다면 Owner의 LookAtDir 부분으로 대체
+// ---> EffectComponent::GenerateEffect Spawn할 떄 고민해볼것
+// ---> Effect::SetInfo 부분 고쳐야함. 일단 BaseObject이므로 이 부분은 여기에 맞게 따라야할듯
+// (특히 ObjectManager의 SpawnBaseObject를 따라야 할 것 같음)
+
+// ---> SpawnPos 부분 다시 보기.
+// ---> Moving Shot 제거 예정
+// ---> 리더는 AutoTarget옵션만 있으면 될 것 같고, 무조건 100% Follow Leader
+// ---> 클라우드 지원 확정(구글 플레이, 앱스토어 API 기반, 아무래도 조금이라도 육상하는 맛은 있어야함)
+
 // ---> SkillBody, ProjectileBody ??
 // ---> AI 정리. BaseObject부터 불필요한 부분 정리 / 제거.
 // ---> 정리 완료후 스킬 이펙트 작업.

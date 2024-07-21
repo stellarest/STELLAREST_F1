@@ -42,7 +42,6 @@ namespace STELLAREST_F1
             return true;
         }
 
-        // --- 어차피 Creature를 통해서 들어오기 때문에 한 번만 초기화 됨.
         public void SetInfo(Creature owner, CreatureData creatureData)
         {
             _owner = owner;
@@ -53,7 +52,6 @@ namespace STELLAREST_F1
             AddSkill(creatureData.Skill_Attack_ID);
             AddSkill(creatureData.Skill_A_ID);
             AddSkill(creatureData.Skill_B_ID);
-
             // --- Check Validation
             {
                 int skillCount = 0;
@@ -87,9 +85,13 @@ namespace STELLAREST_F1
             System.Type skillClassType = Util.GetTypeFromName(skillData.ClassName);
             SkillBase skill = gameObject.AddComponent(skillClassType) as SkillBase;
             if (skill == null)
+            {
+                Debug.LogError($"{nameof(AddSkill)}");
+                Debug.Break();
                 return;
+            }
 
-            skill.SetInfo(skillDataID, _owner);
+            skill.InitialSetInfo(dataID: skillDataID, owner: _owner);
             Skills.Add(skill);
 
             //ESkillType skillType = Util.GetEnumFromString<ESkillType>(skillData.Type);

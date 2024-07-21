@@ -10,9 +10,9 @@ namespace STELLAREST_F1
         private Monster _monsterOwner = null;
         public new Monster Owner => _monsterOwner;
 
-        public override void SetInfo(int dataID, BaseObject owner)
+        public override void InitialSetInfo(int dataID, BaseObject owner)
         {
-            base.SetInfo(dataID, owner);
+            base.InitialSetInfo(dataID, owner);
             string animatorTextID = Managers.Data.MonsterDataDict[dataID].AnimatorLabel;
             RuntimeAnimatorController animController = Managers.Resource.Load<RuntimeAnimatorController>(animatorTextID);
             if (string.IsNullOrEmpty(animatorTextID) == false && animController != null)
@@ -68,13 +68,10 @@ namespace STELLAREST_F1
 
         public override void OnUpperMoveEnter()
         {
-            Owner.MonsterBody.MonsterEmoji = EMonsterEmoji.Normal;
-            base.OnUpperMoveEnter();
             if (Owner.IsValid() == false)
                 return;
 
-            //Debug.Log($"<color=cyan>{nameof(OnUpperMoveEnter)}</color>");
-            //Owner.MonsterBody.MonsterEmoji = EMonsterEmoji.Angry;
+            Owner.MonsterBody.MonsterEmoji = EMonsterEmoji.Normal;
             Owner.CreatureAIState = ECreatureAIState.Move;
             Owner.StartCoLerpToCellPos();
         }

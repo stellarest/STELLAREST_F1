@@ -18,7 +18,7 @@ namespace STELLAREST_F1
 
             return true;
         }
-        public override void SetInfo(Creature owner) => base.SetInfo(owner);
+        public override void InitialSetInfo(Creature owner) => base.InitialSetInfo(owner);
         public override void EnterInGame() => base.EnterInGame();
 
         public override void UpdateIdle()
@@ -54,7 +54,7 @@ namespace STELLAREST_F1
             if (HeroOwner.IsValid() == false)
                 return;
 
-            EFindPathResult result = HeroOwner.FindPathAndMoveToCellPos(destPos: ChaseCellPos,
+            EFindPathResult result = HeroOwner.FindPathAndMoveToCellPos(destPos: CellChasePos,
                maxDepth: ReadOnly.Util.HeroDefaultMoveDepth);
             if (HeroOwner.CanSkill || HeroOwner.CanCollectEnv || result == EFindPathResult.Fail_NoPath)
             {

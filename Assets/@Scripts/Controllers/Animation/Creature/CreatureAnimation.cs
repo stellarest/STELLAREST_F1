@@ -18,10 +18,15 @@ namespace STELLAREST_F1
         [SerializeField] private bool[] _canEnterAnimStates = null;
         public void EnteredAnimState(ECreatureAnimState animState)
             => _canEnterAnimStates[(int)animState] = false;
-        public void ReleaseAnimState(ECreatureAnimState animState)
-            => _canEnterAnimStates[(int)animState] = true;
         public bool CanEnterAnimState(ECreatureAnimState animState)
             => _canEnterAnimStates[(int)animState];
+        public void ReleaseAnimState(ECreatureAnimState animState)
+            => _canEnterAnimStates[(int)animState] = true;
+        public void ReleaseAllAnimState()
+        {
+            for (int i = 0; i < _canEnterAnimStates.Length; ++i)
+                _canEnterAnimStates[i] = true;
+        }
 
         // --- Upper Layer
         public readonly int Upper_Idle = Animator.StringToHash(ReadOnly.AnimationParams.Upper_Idle);
@@ -127,9 +132,9 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public override void SetInfo(int dataID, BaseObject owner)
+        public override void InitialSetInfo(int dataID, BaseObject owner)
         {
-            base.SetInfo(dataID, owner);
+            base.InitialSetInfo(dataID, owner);
             _creatureOwner = owner as Creature;
         }
         #endregion
@@ -155,11 +160,15 @@ namespace STELLAREST_F1
             
             _creatureAnimCallback.OnExitLowerAnimIdleToSkillACallbackHandler -= OnExitLowerAnimIdleToSkillACallback;
             _creatureAnimCallback.OnExitLowerAnimIdleToSkillACallbackHandler += OnExitLowerAnimIdleToSkillACallback;
+
+            _creatureAnimCallback.OnDustEffectHandler -= OnDustEffectCallback;
+            _creatureAnimCallback.OnDustEffectHandler += OnDustEffectCallback;
         }
 
         public virtual void OnCollectEnvCallback() { }
         public void OnEnterLowerAnimIdleToSkillACallback() => EnterLowerAnimIdleToSkillA = true;
         public void OnExitLowerAnimIdleToSkillACallback() => EnterLowerAnimIdleToSkillA = false;
+        public virtual void OnDustEffectCallback() { }
         #endregion
 
         #region Anim State Events

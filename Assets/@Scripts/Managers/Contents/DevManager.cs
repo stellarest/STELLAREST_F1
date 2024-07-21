@@ -53,13 +53,6 @@ namespace STELLAREST_F1
             if (Input.GetKeyDown("2"))
                 Managers.Object.HeroLeaderController.ChangeFormation_Dev();
 
-            if (Input.GetKeyDown("3"))
-            {
-                bool autoTarget = Managers.Object.HeroLeaderController.AutoTarget;
-                Managers.Object.HeroLeaderController.AutoTarget = !autoTarget;
-                Debug.Log($"<color=white>AutoTarget: {Managers.Object.HeroLeaderController.AutoTarget}</color>");
-            }
-
             if (Input.GetKeyDown("4"))
             {
                 bool forceFollowToLeader = Managers.Object.HeroLeaderController.ForceFollowToLeader;
@@ -101,7 +94,7 @@ namespace STELLAREST_F1
                 for (int x = MinX; x < MaxX; ++x)
                 {
                     GameObject cell = new GameObject { name = $"{x}, {y}" };
-                    cell.transform.position = Managers.Map.CenteredCellToWorld(new Vector3Int(x, y));
+                    cell.transform.position = Managers.Map.GetCenterWorld(new Vector3Int(x, y));
                     TextMeshPro tmPro = cell.AddComponent<TextMeshPro>();
                     tmPro.fontSize = 3f;
                     tmPro.text = $"{x},{y}";

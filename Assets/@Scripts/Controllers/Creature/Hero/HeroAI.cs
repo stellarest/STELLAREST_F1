@@ -11,98 +11,7 @@ namespace STELLAREST_F1
     {
         #region Background
         public Hero HeroOwner { get; private set; } = null;
-        protected override T SearchClosestInRange<T>(float scanRange, IEnumerable<T> firstTargets, IEnumerable<T> secondTargets = null, Func<T, bool> func = null, Func<bool> allTargetsCondition = null)
-        {
-            T firstTarget = null;
-            T secondTarget = null;
-            float bestDistSQR = float.MaxValue;
-            float scanRangeSQR = scanRange * scanRange;
-
-            if (HeroOwner.IsValid() && HeroOwner.IsLeader)
-                scanRangeSQR *= 0.8f;
-
-            foreach (T obj in firstTargets)
-            {
-                Vector3Int dir = obj.CellPos - Owner.CellPos;
-                float distToTargetSQR = dir.sqrMagnitude;
-                if (scanRangeSQR < distToTargetSQR)
-                    continue;
-
-                if (bestDistSQR < distToTargetSQR)
-                    continue;
-
-                if (func?.Invoke(obj) == false)
-                    continue;
-
-                bestDistSQR = distToTargetSQR;
-                firstTarget = obj;
-            }
-
-            // --- 일반적인 Searching 또는 AutoTarget이 켜져있을 때
-            if (allTargetsCondition == null || allTargetsCondition.Invoke() == false)
-            {
-                if (firstTarget != null)
-                    return firstTarget;
-                else if (firstTarget == null && secondTargets != null)
-                {
-                    foreach (T obj in secondTargets)
-                    {
-                        Vector3Int dir = obj.CellPos - Owner.CellPos;
-                        float distToTargetSQR = dir.sqrMagnitude;
-                        if (scanRangeSQR < distToTargetSQR)
-                            continue;
-
-                        if (bestDistSQR < distToTargetSQR)
-                            continue;
-
-                        if (func?.Invoke(obj) == false)
-                            continue;
-
-                        bestDistSQR = distToTargetSQR;
-                        secondTarget = obj;
-                    }
-                }
-
-                return secondTarget;
-            }
-            // --- AutoTarget과 상관 없이 리더이고 ForceMove가 True일 때.
-            else if (allTargetsCondition != null && allTargetsCondition.Invoke())
-            {
-                foreach (T obj in secondTargets)
-                {
-                    Vector3Int dir = obj.CellPos - Owner.CellPos;
-                    float distToTargetSQR = dir.sqrMagnitude;
-                    if (scanRangeSQR < distToTargetSQR)
-                        continue;
-
-                    if (bestDistSQR < distToTargetSQR)
-                        continue;
-
-                    if (func?.Invoke(obj) == false)
-                        continue;
-
-                    bestDistSQR = distToTargetSQR;
-                    secondTarget = obj;
-                }
-
-                if (func?.Invoke(firstTarget) == false)
-                    return secondTarget;
-                else if (func?.Invoke(secondTarget) == false)
-                    return firstTarget;
-                else
-                {
-                    float fDistSQR = (firstTarget.CellPos - Owner.CellPos).sqrMagnitude;
-                    float sDistSQR = (secondTarget.CellPos - Owner.CellPos).sqrMagnitude;
-                    if (fDistSQR < sDistSQR)
-                        return firstTarget;
-                    else
-                        return secondTarget;
-                }
-            }
-
-            return null;
-        }
-        public override Vector3Int ChaseCellPos
+        public override Vector3Int CellChasePos
         {
             get
             {
@@ -204,19 +113,14 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public override void SetInfo(Creature owner)
+        public override void InitialSetInfo(Creature owner)
         {
-            base.SetInfo(owner);
+            base.InitialSetInfo(owner);
             HeroOwner = owner as Hero;
         }
         public override void EnterInGame()
         {
             base.EnterInGame();
-            // --- First Targets: Monsters, Second Targets: Envs
-            // StartCoSearchTarget<BaseObject>(scanRange: ReadOnly.Util.HeroDefaultScanRange,
-            //                 firstTargets: Managers.Object.Monsters,
-            //                 secondTargets: Managers.Object.Envs,
-            //                 func: Owner.IsValid);
         }
 
         public override void UpdateIdle() { }
@@ -230,11 +134,6 @@ namespace STELLAREST_F1
         #endregion
 
         #region Coroutines
-        public void StartSearchTarget(Func<bool> allTargetsCondition = null)
-        {
-            StartCoIsFarFromLeaderTick();
-        }
-
         [SerializeField] private bool _isFarFromLeader = false;
         private Coroutine _coIsFarFromLeaderTick = null;
         private IEnumerator CoIsFarFromLeaderTick()

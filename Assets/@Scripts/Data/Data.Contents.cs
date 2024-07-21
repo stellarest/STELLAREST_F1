@@ -422,9 +422,9 @@ namespace STELLAREST_F1.Data
     [Serializable]
     public class StatData : BaseData
     {
-        public string LevelText;
         public float MaxHp;
-        public float Atk;
+        public float MinAtk;
+        public float MaxAtk;
         public float CriticalRate;
         public float DodgeRate;
         public float MovementSpeed;
@@ -480,7 +480,7 @@ namespace STELLAREST_F1.Data
         public string Body;
         public string BodyColor;
 		public string ClassName;
-        public bool RotateToTarget;
+        public bool IsRotateToTarget;
         public float ColliderRadius;
         public float MovementSpeed;
 

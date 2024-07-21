@@ -34,19 +34,19 @@ namespace STELLAREST_F1
             StartCoroutine(CoActivateSkill());
         }
 
-        protected virtual Projectile GenerateProjectile(Creature owner, Vector3 spawnPos)
-        {
-            // --- 프로젝타일 객체가 없는 즉발성 원거리 스킬
-            if (SkillData.ProjectileID == -1)
-            {
-                owner.Target.OnDamaged(owner, this);
-                return null;
-            }
+        // protected virtual Projectile GenerateProjectile(Creature owner, Vector3 spawnPos)
+        // {
+        //     // --- 프로젝타일 객체가 없는 즉발성 원거리 스킬
+        //     if (SkillData.ProjectileID == -1)
+        //     {
+        //         owner.Target.OnDamaged(owner, this);
+        //         return null;
+        //     }
 
-            Projectile projectile = Managers.Object.Spawn<Projectile>(EObjectType.Projectile, SkillData.ProjectileID);
-            projectile.transform.position = spawnPos;
-            return projectile;
-        }
+        //     Projectile projectile = Managers.Object.Spawn<Projectile>(EObjectType.Projectile, SkillData.ProjectileID);
+        //     projectile.transform.position = spawnPos;
+        //     return projectile;
+        // }
 
         private IEnumerator CoActivateSkill()
         {
@@ -84,6 +84,11 @@ namespace STELLAREST_F1
 
             return false;
         }
+
+        protected bool IsSkillTarget(BaseObject target)
+        {
+            return false;
+        }
         #endregion
 
         #region Core
@@ -95,14 +100,8 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public override bool SetInfo(int dataID, BaseObject owner)
+        public void InitialSetInfo(int dataID, BaseObject owner)
         {
-            if (base.SetInfo(dataID, owner) == false)
-            {
-                EnterInGame(dataID, owner);
-                return false;
-            }
-
             Owner = owner as Creature;
             DataTemplateID = dataID;
             SkillData = Managers.Data.SkillDataDict[dataID];
@@ -111,16 +110,8 @@ namespace STELLAREST_F1
             SkillDistance = SkillData.SkillDistance;
             SkillType = SkillData.SkillType;
             SkillFromPoint = Util.GetEnumFromString<EAttachmentPoint>(SkillData.AttachmentPoint);
-
-            EnterInGame(dataID, owner);
-            return true;
         }
 
-        protected virtual void EnterInGame(int dataID, BaseObject owner)
-        {
-            RemainCoolTime = 0.0f;
-            Owner.CreatureAnim.ReadySkill = true;
-        }
         #endregion
 
         #region Anim Clip Callback

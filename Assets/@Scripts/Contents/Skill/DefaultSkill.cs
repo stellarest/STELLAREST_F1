@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -10,7 +11,16 @@ namespace STELLAREST_F1
 {
     public class DefaultSkill : SkillBase
     {
-        float AngleThreshHold = 22.5f;
+        public float angleTreshhold = 10f;
+
+        public override bool Init()
+        {
+            if (base.Init() == false)
+                return false;
+
+            return true;
+        }
+
         public override void OnSkillCallback()
         {
             if (Owner.IsValid() == false)
@@ -18,8 +28,11 @@ namespace STELLAREST_F1
 
             if (SkillData.ProjectileID != -1)
             {
-                Projectile projectile = GenerateProjectile(Owner, GetSpawnPos());
-                projectile.SetInfo(SkillData.ProjectileID, Owner);
+                // Projectile projectile = GenerateProjectile(Owner, GetSpawnPos());
+                // projectile.SetInfo(SkillData.ProjectileID, Owner);
+                Projectile projectile = Managers.Object.SpawnBaseObject<Projectile>
+                    (objectType: EObjectType.Env, spawnPos: GetSpawnPos(), dataID: SkillData.ProjectileID, owner: Owner);
+                projectile.Owner = Owner;
 
                 if (Owner.Targets.Count == 0)
                     Owner.CreatureAIState = ECreatureAIState.Move;
@@ -30,69 +43,131 @@ namespace STELLAREST_F1
                 return;
             }
 
+            bool lockHorizontal = false;
+            bool lockVertical = false;
+            bool lockDiagonal = false;
+
             for (int i = 0; i < Owner.Targets.Count; ++i)
             {
-                if (Owner.Targets[i].IsValid() == false)
+                BaseObject target = Owner.Targets[i];
+                if (target.IsValid() == false)
+                    continue;
+
+                if (target.ObjectType == EObjectType.Env)
                     continue;
 
                 Vector3 nLookDir = new Vector3((int)Owner.LookAtDir, 0, 0);
-                Vector3 nTargetDir = (Owner.Targets[i].transform.position - Owner.transform.position).normalized;
+                Vector3 nTargetDir = (target.transform.position - Owner.transform.position).normalized;
+                float dot = Vector3.Dot(nLookDir, nTargetDir);
+                float angle = Mathf.Acos(dot) * Mathf.Rad2Deg;
+                float diagonal = 45f;
+
+                int dx = Mathf.Abs(target.CellPos.x - Owner.CellPos.x);
+                int dy = Mathf.Abs(target.CellPos.y - Owner.CellPos.y);
                 switch (TargetRange)
                 {
                     case ESkillTargetRange.None:
                     case ESkillTargetRange.Single:
                         {
-                            List<BaseObject> singleTargets = new List<BaseObject>();
-
-                            float dot = Vector3.Dot(nLookDir, nTargetDir);
-                            float angle = Mathf.Acos(dot) * Mathf.Rad2Deg;
-                            float diagonal = 45f;
-
-                            int dx = Mathf.Abs(Owner.Targets[i].CellPos.x - Owner.CellPos.x);
-                            int dy = Mathf.Abs(Owner.Targets[i].CellPos.y - Owner.CellPos.y);
-
-                            bool grabbedStraightTarget = false;
-                            bool grabbedDiagonalTarget = false;
-
-                            if (dx <= InvokeRange || dy <= InvokeRange)
+                            if (dx <= SkillDistance && dy <= SkillDistance)
                             {
-                                if (angle < AngleThreshHold && grabbedDiagonalTarget == false)
+                                if (lockHorizontal == false)
                                 {
-                                    grabbedStraightTarget = true;
-                                    singleTargets.Add(Owner.Targets[i]);
+                                    if (target.CellPos.y == Owner.CellPos.y)
+                                    {
+                                        if (angle < angleTreshhold)
+                                        {
+                                            Debug.Log("<color=white>Horizontal</color>");
+                                            lockVertical = true;
+                                            lockDiagonal = true;
+                                            target.OnDamaged(attacker: Owner, skillByAttacker: this);
+                                            if (SkillData.EffectIDs.Length != 0)
+                                            {
+                                                List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
+                                                    effectIDs: SkillData.EffectIDs,
+                                                    source: target,
+                                                    startCallback: null
+                                                );
+                                            }
+
+                                            // --- Prev
+                                            // if (SkillData.EffectIDs.Length != 0)
+                                            //     Owner.BaseEffect.GenerateEffects(SkillData.EffectIDs, EEffectSpawnType.Internal, target);
+                                        }
+                                    }
                                 }
-                                // else if (Mathf.Abs(angle - diagonal) < AngleThreshHold && grabbedStraightTarget == false)
+                                
+                                if (lockVertical == false)
+                                {
+                                    if (target.CellPos.x == Owner.CellPos.x)
+                                    {
+                                        if (angle >= 70f && angle <= 90f)
+                                        {
+                                            Debug.Log("<color=white>Vertical</color>");
+                                            lockHorizontal = true;
+                                            lockDiagonal = true;
+                                            target.OnDamaged(attacker: Owner, skillByAttacker: this);
+                                            if (SkillData.EffectIDs.Length != 0)
+                                            {
+                                                List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
+                                                    effectIDs: SkillData.EffectIDs,
+                                                    source: target,
+                                                    startCallback: null
+                                                );
+                                            }
+
+                                            // --- Prev
+                                            // if (SkillData.EffectIDs.Length != 0)
+                                            //     Owner.BaseEffect.GenerateEffects(SkillData.EffectIDs, EEffectSpawnType.Internal, target);
+                                        }
+                                    }
+                                }
+
+                                if (lockDiagonal == false)
+                                {
+                                    if (Mathf.Abs(angle - diagonal) < angleTreshhold)
+                                    {
+                                        Debug.Log("<color=white>Diagonal</color>");
+                                        lockHorizontal = true;
+                                        lockVertical = true;
+                                        target.OnDamaged(attacker: Owner, skillByAttacker: this);
+                                        if (SkillData.EffectIDs.Length != 0)
+                                        {
+                                            List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
+                                                effectIDs: SkillData.EffectIDs,
+                                                source: target,
+                                                startCallback: null
+                                            );
+                                        }
+
+                                        // if (SkillData.EffectIDs.Length != 0)
+                                        //     Owner.BaseEffect.GenerateEffects(SkillData.EffectIDs, EEffectSpawnType.Internal, target);
+                                    }
+                                }
+
+                                // else if (CanEnterDir(EGameDir.Vertical) && Owner.CellPos.x == Owner.Targets[i].CellPos.x)
                                 // {
-                                //     grabbedDiagonalTarget = true;
-                                //     singleTargets.Add(Owner.Targets[i]);
+                                //     LockEnterDir(EGameDir.Horizontal);
+                                //     LockEnterDir(EGameDir.Diagonal);
+                                //     Owner.Targets[i].OnDamaged(attacker: Owner, skillFromAttacker: this);
+                                //     if (SkillData.EffectIDs.Length != 0)
+                                //         Owner.CreatureEffect.GenerateEffect(SkillData.EffectIDs, EEffectSpawnType.Skill, Owner.Targets[i]);
+                                // }
+                                // else if (CanEnterDir(EGameDir.Diagonal))
+                                // {
+                                //     LockEnterDir(EGameDir.Horizontal);
+                                //     LockEnterDir(EGameDir.Vertical);
+                                //     float angle = Mathf.Acos(Vector3.Dot(nLookDir, nTargetDir)) * Mathf.Rad2Deg;
+                                //     float diagonal = 45f;
+                                //     float angleTreshhold = 22.5f; 
+                                //     if (Mathf.Abs(angle - diagonal) < angleTreshhold)
+                                //     {
+                                //         Owner.Targets[i].OnDamaged(attacker: Owner, skillFromAttacker: this);
+                                //         if (SkillData.EffectIDs.Length != 0)
+                                //             Owner.CreatureEffect.GenerateEffect(SkillData.EffectIDs, EEffectSpawnType.Skill, Owner.Targets[i]);
+                                //     }
                                 // }
                             }
-
-                            if (dx <= InvokeRange && dy <= InvokeRange)
-                            {
-                            }
-                            
-                            // if (dx <= SkillDistance || dy <= SkillDistance)
-                            // {
-                            //     if (angle < AngleThreshHold)
-                            //     {
-                            //         Owner.Targets[i].OnDamaged(attacker: Owner, skillFromAttacker: this);
-                            //         if (SkillData.EffectIDs.Length != 0)
-                            //             Owner.CreatureEffect.GenerateEffect(SkillData.EffectIDs, EEffectSpawnType.Skill, Owner.Targets[i]);
-                                    
-                            //         break;
-                            //     }
-                            // }
-                            // // ---  대각선
-                            // else if (dx <= SkillDistance && dy <= SkillDistance)
-                            // {
-                            //     if (Mathf.Abs(angle - diagonal) < AngleThreshHold)
-                            //     {
-                            //         Owner.Targets[i].OnDamaged(attacker: Owner, skillFromAttacker: this);
-                            //         if (SkillData.EffectIDs.Length != 0)
-                            //             Owner.CreatureEffect.GenerateEffect(SkillData.EffectIDs, EEffectSpawnType.Skill, Owner.Targets[i]);
-                            //     }
-                            // }
                         }
                         break;
 
@@ -100,16 +175,32 @@ namespace STELLAREST_F1
                         {
                             if (Vector3.Dot(nLookDir, nTargetDir) >= 0f)
                             {
+                                // --- 1사분면, 4사분면에 들어오는 타겟
                                 if (nTargetDir.y >= 0 || nTargetDir.y <= 0)
                                 {
-                                    int dx = Mathf.Abs(Owner.Targets[i].CellPos.x - Owner.CellPos.x);
-                                    int dy = Mathf.Abs(Owner.Targets[i].CellPos.y - Owner.CellPos.y);
-                                    if (dx <= SkillDistance && dy <= SkillDistance)
+                                    target.OnDamaged(attacker: Owner, skillByAttacker: this);
+                                    if (SkillData.EffectIDs.Length != 0)
                                     {
-                                        Owner.Targets[i].OnDamaged(attacker: Owner, skillFromAttacker: this);
-                                        if (SkillData.EffectIDs.Length != 0)
-                                            Owner.CreatureEffect.GenerateEffect(SkillData.EffectIDs, EEffectSpawnType.Skill, Owner.Targets[i]);
+                                        List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
+                                            effectIDs: SkillData.EffectIDs,
+                                            spawnPos: Util.GetRandomCellQuadPosition(Managers.Map.GetCenterWorld(target.CellPos)),
+                                            startCallback: null
+                                        );
                                     }
+
+                                    // --- Prev
+                                    // if (SkillData.EffectIDs.Length != 0)
+                                    //     Owner.BaseEffect.GenerateEffects(SkillData.EffectIDs, EEffectSpawnType.Internal, target);
+
+                                    // if (dx <= SkillDistance && dy <= SkillDistance)
+                                    // {
+                                    //     target.OnDamaged(attacker: Owner, skillFromAttacker: this);
+                                    //     if (SkillData.EffectIDs.Length != 0)
+                                    //     {
+                                    //         //Owner.CreatureEffect.GenerateEffect(SkillData.EffectIDs, EEffectSpawnType.Skill, Owner.Targets[i]);
+                                    //         Owner.CreatureEffect.GenerateEffect(SkillData.EffectIDs, EEffectSpawnType.Skill, target);
+                                    //     }
+                                    // }
                                 }
                             }
                         }
@@ -124,7 +215,9 @@ namespace STELLAREST_F1
         }
 
         public override void OnSkillStateEnter() { }
-        public override void OnSkillStateExit() { }
         public override void OnSkillStateUpdate() { }
+        public override void OnSkillStateExit() 
+        { 
+        }
     }
 }

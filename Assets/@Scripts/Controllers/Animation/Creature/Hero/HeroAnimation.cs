@@ -16,9 +16,9 @@ namespace STELLAREST_F1
         private Hero _heroOwner = null;
         public new Hero Owner => _heroOwner;
 
-        public override void SetInfo(int dataID, BaseObject owner)
+        public override void InitialSetInfo(int dataID, BaseObject owner)
         {
-            base.SetInfo(dataID, owner);
+            base.InitialSetInfo(dataID, owner);
             string animatorTextID = Managers.Data.HeroDataDict[dataID].AnimatorLabel;
             RuntimeAnimatorController animController = Managers.Resource.Load<RuntimeAnimatorController>(animatorTextID);
             if (string.IsNullOrEmpty(animatorTextID) == false && animController != null)
@@ -49,7 +49,7 @@ namespace STELLAREST_F1
             if (Owner.Target.ObjectType != EObjectType.Env)
                 return;
 
-            Owner.Target.OnDamaged(attacker: Owner, skillFromAttacker: null);
+            Owner.Target.OnDamaged(attacker: Owner, skillByAttacker: null);
             if (Owner.Target.IsValid() == false && Owner.HeroWeaponType != EHeroWeaponType.Default)
             {
                 Owner.HeroWeaponType = EHeroWeaponType.Default;
@@ -72,6 +72,18 @@ namespace STELLAREST_F1
             //     Owner.HeroWeaponType = EHeroWeaponType.Default;
             //     Owner.CreatureAIState = ECreatureAIState.Move;
             // }
+        }
+
+        public override void OnDustEffectCallback()
+        {
+            Vector3 spawnPos = Owner.HeroBody.GetContainer(EHeroBody_Lower.LegR).TR.position;
+            EffectBase dustEffect = Managers.Object.SpawnBaseObject<EffectBase>(
+                objectType: EObjectType.Effect,
+                spawnPos: spawnPos,
+                dataID: ReadOnly.DataAndPoolingID.DNPID_Effect_Dust,
+                owner: Owner
+            );
+            dustEffect.SortingGroup.sortingOrder = ReadOnly.SortingLayers.SLOrder_BaseObject;
         }
         #endregion
 

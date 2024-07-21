@@ -30,11 +30,11 @@ namespace STELLAREST_F1
                     case EObjectType.Hero:
                     case EObjectType.Monster:
                         Creature creature = bo as Creature;
-                        return creature.CreatureAIState != ECreatureAIState.Dead;
+                        return (creature.CreatureAIState != ECreatureAIState.Dead) && (creature.Hp > 0f);
 
                     case EObjectType.Env:
                         Env env = bo as Env;
-                        return env.EnvState != EEnvState.Dead;
+                        return (env.EnvState != EEnvState.Dead) && (env.Hp > 0f);
 
                     // ##### TODO #####
                     case EObjectType.Projectile:
