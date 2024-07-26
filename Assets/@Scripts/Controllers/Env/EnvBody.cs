@@ -169,6 +169,7 @@ namespace STELLAREST_F1
             EnvData envData = Managers.Data.EnvDataDict[dataID];
             EnvType = envData.EnvType;
             InitBody(Managers.Data.EnvDataDict[dataID], dataID);
+            Debug.Log("EnvBody::InitialSetInfo");
         }
 
         private void InitBody(EnvData envData, int dataID)

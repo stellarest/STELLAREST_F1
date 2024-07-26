@@ -47,10 +47,7 @@ namespace STELLAREST_F1
             base.InitialSetInfo(dataID);
             _maxLevel = dataID;
 
-            EnvBody.InitialSetInfo(dataID, this);
             EnvAnim = BaseAnim as EnvAnimation;
-            EnvAnim.InitialSetInfo(dataID, this);
-
             EnvData = Managers.Data.EnvDataDict[dataID];
             EnvType = EnvData.EnvType;
 

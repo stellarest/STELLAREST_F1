@@ -111,7 +111,6 @@ namespace STELLAREST_F1
             SkillType = SkillData.SkillType;
             SkillFromPoint = Util.GetEnumFromString<EAttachmentPoint>(SkillData.AttachmentPoint);
         }
-
         #endregion
 
         #region Anim Clip Callback

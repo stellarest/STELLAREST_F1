@@ -95,7 +95,19 @@ namespace STELLAREST_F1
                     dataID: ReadOnly.DataAndPoolingID.DNPID_Hero_Paladin);
                 leaderController.Leader = firstHero;
 
-                StartCoroutine(CoContinuousSpawnMonster_Test(1.5f));
+                // Managers.Object.SpawnBaseObject<Monster>
+                //     (objectType: EObjectType.Monster, spawnPos: Managers.Map.GetCenterWorld(new Vector3Int(-6, 8, 0)),
+                //     dataID: ReadOnly.DataAndPoolingID.DNPID_Monster_Chicken, owner: null);
+
+                // Managers.Object.SpawnBaseObject<Monster>
+                //     (objectType: EObjectType.Monster, spawnPos: Managers.Map.GetCenterWorld(new Vector3Int(-6, 7, 0)),
+                //     dataID: ReadOnly.DataAndPoolingID.DNPID_Monster_Chicken, owner: null);
+
+                // Managers.Object.SpawnBaseObject<Monster>
+                //     (objectType: EObjectType.Monster, spawnPos: Managers.Map.GetCenterWorld(new Vector3Int(-6, 6, 0)),
+                //     dataID: ReadOnly.DataAndPoolingID.DNPID_Monster_Chicken, owner: null);
+
+                // StartCoroutine(CoContinuousSpawnMonster_Test(1.5f));
                 StartCoroutine(CoContinuousSpawnEnv_Test(1f));
 
                 // --- Env

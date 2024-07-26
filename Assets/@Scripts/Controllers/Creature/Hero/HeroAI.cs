@@ -9,14 +9,11 @@ namespace STELLAREST_F1
 {
     public class HeroAI : CreatureAI
     {
-        #region Background
         public Hero HeroOwner { get; private set; } = null;
         public override Vector3Int CellChasePos
         {
             get
             {
-                // --- Owner.ForceMove == false는 계속 false로 잠그고 있어야함.
-                // --- 기본적으로 Leader의 Position을 쫓는다.
                 if (Owner.ForceMove == false && Owner.Target.IsValid())
                     return Owner.Target.CellPos;
 
@@ -102,7 +99,6 @@ namespace STELLAREST_F1
             
             return false;
         }
-        #endregion
 
         #region Core
         public override bool Init()
@@ -131,9 +127,8 @@ namespace STELLAREST_F1
             base.OnDead();
 
         }
-        #endregion
+        #endregion Core
 
-        #region Coroutines
         [SerializeField] private bool _isFarFromLeader = false;
         private Coroutine _coIsFarFromLeaderTick = null;
         private IEnumerator CoIsFarFromLeaderTick()
@@ -209,7 +204,6 @@ namespace STELLAREST_F1
 
             _coWaitForceStopWarp = null;
         }
-        #endregion
     }
 }
 

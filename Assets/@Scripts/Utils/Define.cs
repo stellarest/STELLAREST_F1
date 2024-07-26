@@ -93,8 +93,9 @@ namespace STELLAREST_F1
             Max = Effect + 1
         }
 
-        public enum ECreatureAIState // -- > ECreatureAnimMachineState
+        public enum ECreatureAIState // --> ECreatureAnimMachineState
         {
+            Manually, // ---> Leader
             Idle,
             Move,
             Dead,
@@ -451,19 +452,14 @@ namespace STELLAREST_F1
         {
             // Upper
             None = -1,
-
             Upper_Idle,
-            Upper_Idle_To_Skill_A,
-            Upper_Idle_To_Skill_B,
-            Upper_Idle_To_Skill_C,
-            Upper_Idle_To_CollectEnv,
-
             Upper_Move,
-            Upper_Move_To_Skill_A,
-            Upper_Move_To_Skill_B,
-            Upper_Move_To_Skill_C,
-
+            Upper_SkillA,
+            Upper_SkillB,
+            Upper_SkillC,
+            Upper_CollectEnv,
             Upper_Dead,
+            
             // Lower
             Lower_Idle,
             Lower_Move,
@@ -596,36 +592,46 @@ namespace STELLAREST_F1
 
             public static class AnimationParams
             {
-                // --- States for State Machine
-                // Upper Layers
+                // --- Upper Anim States (New)
                 public static readonly string Upper_Idle = "Upper_Idle";
-                public static readonly string Upper_Idle_To_Skill_A = "Upper_Idle_To_Skill_A";
-                public static readonly string Upper_Idle_To_Skill_B = "Upper_Idle_To_Skill_B";
-                public static readonly string Upper_Idle_To_Skill_C = "Upper_Idle_To_Skill_C";
-                public static readonly string Upper_Idle_To_CollectEnv = "Upper_Idle_To_CollectEnv";
-
                 public static readonly string Upper_Move = "Upper_Move";
-                public static readonly string Upper_Move_To_Skill_A = "Upper_Move_To_Skill_A";
-                public static readonly string Upper_Move_To_Skill_B = "Upper_Move_To_Skill_B";
-                public static readonly string Upper_Move_To_Skill_C = "Upper_Move_To_Skill_C";
-
+                public static readonly string Upper_SkillA = "Upper_SkillA";
+                public static readonly string Upper_CollectEnv = "Upper_CollectEnv";
                 public static readonly string Upper_Dead = "Upper_Dead";
 
-                // Lower Layers
+                // --- Lower Anim States (New)
                 public static readonly string Lower_Idle = "Lower_Idle";
-                public static readonly string Lower_Idle_To_Skill_A = "Lower_Idle_To_Skill_A";
                 public static readonly string Lower_Move = "Lower_Move";
+
+                // --- States for State Machine (Prev)
+                // Upper Layers
+                // public static readonly string Upper_Idle = "Upper_Idle";
+                // public static readonly string Upper_Idle_To_Skill_A = "Upper_Idle_To_Skill_A";
+                // public static readonly string Upper_Idle_To_Skill_B = "Upper_Idle_To_Skill_B";
+                // public static readonly string Upper_Idle_To_Skill_C = "Upper_Idle_To_Skill_C";
+                // public static readonly string Upper_Idle_To_CollectEnv = "Upper_Idle_To_CollectEnv";
+
+                // public static readonly string Upper_Move = "Upper_Move";
+                // public static readonly string Upper_Move_To_Skill_A = "Upper_Move_To_Skill_A";
+                // public static readonly string Upper_Move_To_Skill_B = "Upper_Move_To_Skill_B";
+                // public static readonly string Upper_Move_To_Skill_C = "Upper_Move_To_Skill_C";
+
+                //public static readonly string Upper_Dead = "Upper_Dead";
+
+                // Lower Layers (Prev)
+                // public static readonly string Lower_Idle = "Lower_Idle";
+                // public static readonly string Lower_Idle_To_Skill_A = "Lower_Idle_To_Skill_A";
+                // public static readonly string Lower_Move = "Lower_Move";
 
                 // --- Params
                 public static readonly string IsMoving = "IsMoving";
                 public static readonly string CanSkill = "CanSkill";
                 public static readonly string OnSkill_A = "OnSkill_A";
-                public static readonly string LowerIdleToSkillA = "LowerIdleToSkillA";                 
-
                 public static readonly string OnSkill_B = "OnSkill_B";
                 public static readonly string OnSkill_C = "OnSkill_C";
                 public static readonly string OnCollectEnv = "OnCollectEnv";
                 public static readonly string OnDead = "OnDead";
+                //public static readonly string LowerIdleToSkillA = "LowerIdleToSkillA";                 
             }
 
             public static class SortingLayers

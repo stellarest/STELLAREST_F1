@@ -164,8 +164,7 @@ namespace STELLAREST_F1
             // if (randIdx == 2) Debug.Log("3사분면");
             // if (randIdx == 3) Debug.Log("4사분면");
             // if (randIdx == 4) Debug.Log("센터");
-            
-            Debug.Break();
+            // Debug.Break();
 
             if (randIdx == quadCenters.Length)
                 return cellCenter;
@@ -192,6 +191,18 @@ namespace STELLAREST_F1
             else
                 return (pos1 - pos2).magnitude;
         }
+
+        public static float DistanceFromCellCenter(Vector3 worldPos)
+        {
+            Vector3 cellCenter = Managers.Map.GetCenterWorld(Managers.Map.WorldToCell(worldPos));
+            float distX = Mathf.Abs(worldPos.x - cellCenter.x);
+            float distY = Mathf.Abs(worldPos.y - cellCenter.y);
+            // Debug.Log($"RET: {Mathf.Max(distX, distY)}");
+            return Mathf.Max(distX, distY);
+        }
+
+        public static bool IsNearCellCenter(Vector3 worldPos, float threshold = 0.7f)
+            => DistanceFromCellCenter(worldPos) <= threshold;
 
 #if UNITY_EDITOR
         [Conditional("UNITY_EDITOR")]

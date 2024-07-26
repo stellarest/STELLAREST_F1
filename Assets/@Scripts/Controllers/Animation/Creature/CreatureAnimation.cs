@@ -10,9 +10,9 @@ namespace STELLAREST_F1
 {
     public class CreatureAnimation : BaseAnimation
     {
-        #region  Background
         private Creature _creatureOwner = null;
-        public new Creature Owner => _creatureOwner;
+        public override BaseObject Owner => _creatureOwner;
+
         private CreatureAnimationCallback _creatureAnimCallback = null;
 
         [SerializeField] private bool[] _canEnterAnimStates = null;
@@ -22,37 +22,27 @@ namespace STELLAREST_F1
             => _canEnterAnimStates[(int)animState];
         public void ReleaseAnimState(ECreatureAnimState animState)
             => _canEnterAnimStates[(int)animState] = true;
-        public void ReleaseAllAnimState()
+        public void ReleaseAllAnimStates()
         {
             for (int i = 0; i < _canEnterAnimStates.Length; ++i)
                 _canEnterAnimStates[i] = true;
         }
 
-        // --- Upper Layer
+        // --- Upper Layer (New)
         public readonly int Upper_Idle = Animator.StringToHash(ReadOnly.AnimationParams.Upper_Idle);
-        public readonly int Upper_Idle_To_Skill_A = Animator.StringToHash(ReadOnly.AnimationParams.Upper_Idle_To_Skill_A);
-        public readonly int Upper_Idle_To_Skill_B = Animator.StringToHash(ReadOnly.AnimationParams.Upper_Idle_To_Skill_B);
-        public readonly int Upper_Idle_To_Skill_C = Animator.StringToHash(ReadOnly.AnimationParams.Upper_Idle_To_Skill_C);
-        public readonly int Upper_Idle_To_CollectEnv = Animator.StringToHash(ReadOnly.AnimationParams.Upper_Idle_To_CollectEnv);
-
         public readonly int Upper_Move = Animator.StringToHash(ReadOnly.AnimationParams.Upper_Move);
-        public readonly int Upper_Move_To_Skill_A = Animator.StringToHash(ReadOnly.AnimationParams.Upper_Move_To_Skill_A);
-        public readonly int Upper_Move_To_Skill_B = Animator.StringToHash(ReadOnly.AnimationParams.Upper_Move_To_Skill_B);
-        public readonly int Upper_Move_To_Skill_C = Animator.StringToHash(ReadOnly.AnimationParams.Upper_Move_To_Skill_C);
-
+        public readonly int Upper_SkillA = Animator.StringToHash(ReadOnly.AnimationParams.Upper_SkillA);
+        public readonly int Upper_CollectEnv = Animator.StringToHash(ReadOnly.AnimationParams.Upper_CollectEnv);
         public readonly int Upper_Dead = Animator.StringToHash(ReadOnly.AnimationParams.Upper_Dead);
 
-        // --- Lower Layer
+        // --- Lower Layer (New)
         public readonly int Lower_Idle = Animator.StringToHash(ReadOnly.AnimationParams.Lower_Idle);
-        public readonly int Lower_Idle_To_Skill_A = Animator.StringToHash(ReadOnly.AnimationParams.Lower_Idle_To_Skill_A);
         public readonly int Lower_Move = Animator.StringToHash(ReadOnly.AnimationParams.Lower_Move);
 
         // --- Parameters
         protected readonly int IsMoving = Animator.StringToHash(ReadOnly.AnimationParams.IsMoving);
         protected readonly int CanSkill = Animator.StringToHash(ReadOnly.AnimationParams.CanSkill);
         protected readonly int OnSkill_A = Animator.StringToHash(ReadOnly.AnimationParams.OnSkill_A);
-        protected readonly int LowerIdleToSkillA = Animator.StringToHash(ReadOnly.AnimationParams.LowerIdleToSkillA);
-        
         protected readonly int OnSkill_B = Animator.StringToHash(ReadOnly.AnimationParams.OnSkill_B);
         protected readonly int OnSkill_C = Animator.StringToHash(ReadOnly.AnimationParams.OnSkill_C);
         protected readonly int OnCollectEnv = Animator.StringToHash(ReadOnly.AnimationParams.OnCollectEnv);
@@ -69,20 +59,14 @@ namespace STELLAREST_F1
             set => Animator.SetBool(CanSkill, value);
         }
 
-        public bool EnterLowerAnimIdleToSkillA
-        {
-            get => Animator.GetBool(LowerIdleToSkillA);
-            private set => Animator.SetBool(LowerIdleToSkillA, value);
-        }
-
         public void Skill(ESkillType skillType)
         {
             switch (skillType)
             {
                 case ESkillType.Skill_A:
                     {
-                        EnteredAnimState(ECreatureAnimState.Upper_Idle_To_Skill_A);
-                        EnteredAnimState(ECreatureAnimState.Upper_Move_To_Skill_A);
+                        // ---> AnimState
+                        // EnteredAnimState(ECreatureAnimState.Upper_SkillA);
                         Animator.SetTrigger(OnSkill_A);
                         Animator.ResetTrigger(OnSkill_B);
                         Animator.ResetTrigger(OnSkill_C);
@@ -109,14 +93,12 @@ namespace STELLAREST_F1
 
         public void CollectEnv()
         {
-            EnteredAnimState(ECreatureAnimState.Upper_Idle_To_CollectEnv);
+            //EnteredAnimState(ECreatureAnimState.Upper_CollectEnv);
             Animator.SetTrigger(OnCollectEnv);
         }
 
         // --- BaseAnimation으로 옮김
         //public void Dead() => Animator.SetTrigger(OnDead);
-       
-        #endregion
 
         #region Core
         public override bool Init()
@@ -126,8 +108,7 @@ namespace STELLAREST_F1
 
             _creatureAnimCallback = GetComponent<CreatureAnimationCallback>();
             _canEnterAnimStates = new bool[(int)ECreatureAnimState.Max];
-            for (int i = 0; i < _canEnterAnimStates.Length; ++i)
-                _canEnterAnimStates[i] = true;
+            ReleaseAllAnimStates();
 
             return true;
         }
@@ -142,9 +123,9 @@ namespace STELLAREST_F1
         #region Anim Clip Callbacks
         public void AddAnimClipEvents()
         {
-            for (int i = 0; i < Owner.CreatureSkill.SkillArray.Length; ++i)
+            for (int i = 0; i < _creatureOwner.CreatureSkill.SkillArray.Length; ++i)
             {
-                SkillBase skill = Owner.CreatureSkill.SkillArray[i];
+                SkillBase skill = _creatureOwner.CreatureSkill.SkillArray[i];
                 if (skill != null)
                 {
                     _creatureAnimCallback.OnSkillCallbackHandler -= skill.OnSkillCallback;
@@ -155,19 +136,19 @@ namespace STELLAREST_F1
             _creatureAnimCallback.OnCollectEnvCallbackHandler -= OnCollectEnvCallback;
             _creatureAnimCallback.OnCollectEnvCallbackHandler += OnCollectEnvCallback;
 
-            _creatureAnimCallback.OnEnterLowerAnimIdleToSkillACallbackHandler -= OnEnterLowerAnimIdleToSkillACallback;
-            _creatureAnimCallback.OnEnterLowerAnimIdleToSkillACallbackHandler += OnEnterLowerAnimIdleToSkillACallback;
+            // _creatureAnimCallback.OnEnterLowerAnimIdleToSkillACallbackHandler -= OnEnterLowerAnimIdleToSkillACallback;
+            // _creatureAnimCallback.OnEnterLowerAnimIdleToSkillACallbackHandler += OnEnterLowerAnimIdleToSkillACallback;
             
-            _creatureAnimCallback.OnExitLowerAnimIdleToSkillACallbackHandler -= OnExitLowerAnimIdleToSkillACallback;
-            _creatureAnimCallback.OnExitLowerAnimIdleToSkillACallbackHandler += OnExitLowerAnimIdleToSkillACallback;
+            // _creatureAnimCallback.OnExitLowerAnimIdleToSkillACallbackHandler -= OnExitLowerAnimIdleToSkillACallback;
+            // _creatureAnimCallback.OnExitLowerAnimIdleToSkillACallbackHandler += OnExitLowerAnimIdleToSkillACallback;
 
             _creatureAnimCallback.OnDustEffectHandler -= OnDustEffectCallback;
             _creatureAnimCallback.OnDustEffectHandler += OnDustEffectCallback;
         }
 
         public virtual void OnCollectEnvCallback() { }
-        public void OnEnterLowerAnimIdleToSkillACallback() => EnterLowerAnimIdleToSkillA = true;
-        public void OnExitLowerAnimIdleToSkillACallback() => EnterLowerAnimIdleToSkillA = false;
+        // public void OnEnterLowerAnimIdleToSkillACallback() => EnterLowerAnimIdleToSkillA = true;
+        // public void OnExitLowerAnimIdleToSkillACallback() => EnterLowerAnimIdleToSkillA = false;
         public virtual void OnDustEffectCallback() { }
         #endregion
 
@@ -180,8 +161,9 @@ namespace STELLAREST_F1
                 creatureStateMachines[i].OnAnimStateEnterHandler -= OnAnimStateEnter;
                 creatureStateMachines[i].OnAnimStateEnterHandler += OnAnimStateEnter;
 
-                creatureStateMachines[i].OnAnimStateUpdateHandler -= OnAnimStateUpdate;
-                creatureStateMachines[i].OnAnimStateUpdateHandler += OnAnimStateUpdate;
+                // --- 일단 생략
+                // creatureStateMachines[i].OnAnimStateUpdateHandler -= OnAnimStateUpdate;
+                // creatureStateMachines[i].OnAnimStateUpdateHandler += OnAnimStateUpdate;
 
                 creatureStateMachines[i].OnAnimStateExitHandler -= OnAnimStateExit;
                 creatureStateMachines[i].OnAnimStateExitHandler += OnAnimStateExit;
@@ -196,132 +178,58 @@ namespace STELLAREST_F1
                 case ECreatureAnimState.Upper_Idle:
                     OnUpperIdleEnter();
                     break;
-                case ECreatureAnimState.Upper_Idle_To_Skill_A:
-                    OnUpperIdleToSkillAEnter();
-                    break;
-                case ECreatureAnimState.Upper_Idle_To_Skill_B:
-                    OnUpperIdleToSkillBEnter();
-                    break;
-                case ECreatureAnimState.Upper_Idle_To_Skill_C:
-                    OnUpperIdleToSkillCEnter();
-                    break;
-                case ECreatureAnimState.Upper_Idle_To_CollectEnv:
-                    OnUpperIdleToCollectEnvEnter();
-                    break;
-
                 case ECreatureAnimState.Upper_Move:
                     OnUpperMoveEnter();
                     break;
-                case ECreatureAnimState.Upper_Move_To_Skill_A:
-                    OnUpperMoveToSkillAEnter();
+                case ECreatureAnimState.Upper_SkillA:
+                    OnUpperSkillAEnter();
                     break;
-                case ECreatureAnimState.Upper_Move_To_Skill_B:
-                    OnUpperMoveToSkillBEnter();
+                case ECreatureAnimState.Upper_SkillB:
+                    OnUpperSkillBEnter();
                     break;
-                case ECreatureAnimState.Upper_Move_To_Skill_C:
-                    OnUpperMoveToSkillCEnter();
+                case ECreatureAnimState.Upper_SkillC:
+                    OnUpperSkillCEnter();
                     break;
-
+                case ECreatureAnimState.Upper_CollectEnv:
+                    OnUpperCollectEnvEnter();
+                    break;
                 case ECreatureAnimState.Upper_Dead:
                     OnUpperDeadEnter();
                     break;
             }
         }
-        public virtual void OnUpperIdleEnter() { }
-        public virtual void OnUpperIdleToSkillAEnter() 
-        { 
-            if (Owner.IsValid() == false)
-                return;
-
-            Owner.LookAtValidTarget();
-            Owner.CreatureSkill.OnSkillStateEnter(ESkillType.Skill_A);
-        }
-        public virtual void OnUpperIdleToSkillBEnter() { }
-        public virtual void OnUpperIdleToSkillCEnter() { }
-        public virtual void OnUpperIdleToCollectEnvEnter() { }
-
-        public virtual void OnUpperMoveEnter() { }
-        public virtual void OnUpperMoveToSkillAEnter()
+        protected virtual void OnUpperIdleEnter() 
         {
-            if (Owner.IsValid() == false)
-                return;
-
-            Owner.LookAtValidTarget();
-            Owner.CreatureSkill.OnSkillStateEnter(ESkillType.Skill_A);
+            EnteredAnimState(ECreatureAnimState.Upper_Idle);
         }
-        public virtual void OnUpperMoveToSkillBEnter() { }
-        public virtual void OnUpperMoveToSkillCEnter() { }
+        protected virtual void OnUpperMoveEnter()
+        {
+            EnteredAnimState(ECreatureAnimState.Upper_Move);
+        }
+        protected virtual void OnUpperSkillAEnter()
+        {
+            EnteredAnimState(ECreatureAnimState.Upper_SkillA);
+            _creatureOwner.LookAtValidTarget();
+            _creatureOwner.CreatureSkill.OnSkillStateEnter(ESkillType.Skill_A);
+        }
+        protected virtual void OnUpperSkillBEnter() 
+        {
+            EnteredAnimState(ECreatureAnimState.Upper_SkillB);
+        }
+        protected virtual void OnUpperSkillCEnter() 
+        { 
+            EnteredAnimState(ECreatureAnimState.Upper_SkillC);
+        }
+        protected virtual void OnUpperCollectEnvEnter() 
+        { 
+            EnteredAnimState(ECreatureAnimState.Upper_CollectEnv);
+        }
+        protected virtual void OnUpperDeadEnter() 
+        {
+            ReleaseAllAnimStates();
+            EnteredAnimState(ECreatureAnimState.Upper_Dead);
+        }
         
-        public virtual void OnUpperDeadEnter() {}
-
-
-        // --- Update
-        public void OnAnimStateUpdate(ECreatureAnimState animState)
-        {
-            switch (animState)
-            {
-                case ECreatureAnimState.Upper_Idle:
-                    OnUpperIdleUpdate();
-                    break;
-                case ECreatureAnimState.Upper_Idle_To_Skill_A:
-                    OnUpperIdleToSkillAUpdate();
-                    break;
-                case ECreatureAnimState.Upper_Idle_To_Skill_B:
-                    OnUpperIdleToSkillBUpdate();
-                    break;
-                case ECreatureAnimState.Upper_Idle_To_Skill_C:
-                    OnUpperIdleToSkillCUpdate();
-                    break;
-                case ECreatureAnimState.Upper_Idle_To_CollectEnv:
-                    OnUpperIdleToCollectEnvUpdate();
-                    break;
-
-                case ECreatureAnimState.Upper_Move:
-                    OnUpperMoveUpdate();
-                    break;
-                case ECreatureAnimState.Upper_Move_To_Skill_A:
-                    OnUpperMoveToSkillAUpdate();
-                    break;
-                case ECreatureAnimState.Upper_Move_To_Skill_B:
-                    OnUpperMoveToSkillBUpdate();
-                    break;
-                case ECreatureAnimState.Upper_Move_To_Skill_C:
-                    OnUpperMoveToSkillCUpdate();
-                    break;
-
-                case ECreatureAnimState.Upper_Dead:
-                    OnUpperDeadUpdate();
-                    break;
-            }
-        }
-        public virtual void OnUpperIdleUpdate() { }
-        public virtual void OnUpperIdleToSkillAUpdate() 
-        { 
-            if (Owner.IsValid() == false)
-                return;
-
-            Owner.LookAtValidTarget();
-            Owner.CreatureSkill.OnSkillStateUpdate(ESkillType.Skill_A);
-        }
-        public virtual void OnUpperIdleToSkillBUpdate() { }
-        public virtual void OnUpperIdleToSkillCUpdate() { }
-        public virtual void OnUpperIdleToCollectEnvUpdate() { }
-
-        public virtual void OnUpperMoveUpdate() { }
-        public virtual void OnUpperMoveToSkillAUpdate() 
-        {
-            if (Owner.IsValid() == false)
-                return;
-
-            Owner.LookAtValidTarget();
-            Owner.CreatureSkill.OnSkillStateUpdate(ESkillType.Skill_A);
-        }
-        public virtual void OnUpperMoveToSkillBUpdate() { }
-        public virtual void OnUpperMoveToSkillCUpdate() { }
-
-        public virtual void OnUpperDeadUpdate() {}
-
-
         // --- Exit
         public void OnAnimStateExit(ECreatureAnimState animState)
         {
@@ -330,65 +238,57 @@ namespace STELLAREST_F1
                 case ECreatureAnimState.Upper_Idle:
                     OnUpperIdleExit();
                     break;
-                case ECreatureAnimState.Upper_Idle_To_Skill_A:
-                    OnUpperIdleToSkillAExit();
-                    break;
-                case ECreatureAnimState.Upper_Idle_To_Skill_B:
-                    OnUpperIdleToSkillAExit();
-                    break;
-                case ECreatureAnimState.Upper_Idle_To_Skill_C:
-                    OnUpperIdleToSkillAExit();
-                    break;
-                case ECreatureAnimState.Upper_Idle_To_CollectEnv:
-                    OnUpperIdleToCollectEnvExit();
-                    break;
-
                 case ECreatureAnimState.Upper_Move:
                     OnUpperMoveExit();
                     break;
-                case ECreatureAnimState.Upper_Move_To_Skill_A:
-                    OnUpperMoveToSkillAExit();
+                case ECreatureAnimState.Upper_SkillA:
+                    OnUpperSkillAExit();
                     break;
-                case ECreatureAnimState.Upper_Move_To_Skill_B:
-                    OnUpperMoveToSkillBExit();
+                case ECreatureAnimState.Upper_SkillB:
+                    OnUpperSkillBExit();
                     break;
-                case ECreatureAnimState.Upper_Move_To_Skill_C:
-                    OnUpperMoveToSkillCExit();
+                case ECreatureAnimState.Upper_SkillC:
+                    OnUpperSkillCExit();
                     break;
-
+                case ECreatureAnimState.Upper_CollectEnv:
+                    OnUpperCollectEnvExit();
+                    break;
                 case ECreatureAnimState.Upper_Dead:
                     OnUpperDeadExit();
                     break;
             }
         }
-        public virtual void OnUpperIdleExit() { }
-        public virtual void OnUpperIdleToSkillAExit() 
-        {
-            if (Owner.IsValid() == false)
-                return;
-
-            ReleaseAnimState(ECreatureAnimState.Upper_Idle_To_Skill_A);
-            ReleaseAnimState(ECreatureAnimState.Upper_Move_To_Skill_A);
-            Owner.CreatureSkill.OnSkillStateExit(ESkillType.Skill_A);
-        }
-        public virtual void OnUpperIdleToSkillBExit() { }
-        public virtual void OnUpperIdleToSkillCExit() { }
-        public virtual void OnUpperIdleToCollectEnvExit() { }
-
-        public virtual void OnUpperMoveExit() { }
-        public virtual void OnUpperMoveToSkillAExit() 
+        protected virtual void OnUpperIdleExit() 
         { 
-            if (Owner.IsValid() == false)
-                return;
-
-            ReleaseAnimState(ECreatureAnimState.Upper_Idle_To_Skill_A);
-            ReleaseAnimState(ECreatureAnimState.Upper_Move_To_Skill_A);
-            Owner.CreatureSkill.OnSkillStateExit(ESkillType.Skill_A);
+            ReleaseAnimState(ECreatureAnimState.Upper_Idle);
         }
-        public virtual void OnUpperMoveToSkillBExit() { }
-        public virtual void OnUpperMoveToSkillCExit() { }
-
-        public virtual void OnUpperDeadExit() { }
+        protected virtual void OnUpperMoveExit() 
+        { 
+            ReleaseAnimState(ECreatureAnimState.Upper_Move);
+        }
+        protected virtual void OnUpperSkillAExit() 
+        {
+            ReleaseAnimState(ECreatureAnimState.Upper_SkillA);
+            _creatureOwner.CreatureSkill.OnSkillStateExit(ESkillType.Skill_A);
+        }
+        protected virtual void OnUpperSkillBExit() 
+        {
+            ReleaseAnimState(ECreatureAnimState.Upper_SkillB);
+            _creatureOwner.CreatureSkill.OnSkillStateExit(ESkillType.Skill_B);
+        }
+        protected virtual void OnUpperSkillCExit() 
+        {
+            ReleaseAnimState(ECreatureAnimState.Upper_SkillC);
+            _creatureOwner.CreatureSkill.OnSkillStateExit(ESkillType.Skill_C);
+        }
+        protected virtual void OnUpperCollectEnvExit() 
+        { 
+            ReleaseAnimState(ECreatureAnimState.Upper_CollectEnv);
+        }
+        protected virtual void OnUpperDeadExit() 
+        { 
+            ReleaseAnimState(ECreatureAnimState.Upper_Dead);
+        }
         #endregion
     }
 }

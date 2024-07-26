@@ -7,7 +7,8 @@ namespace STELLAREST_F1
 {
     public class EnvAnimation : BaseAnimation
     {
-        private Env _owner = null;
+        private Env _envOwner = null;
+        public override BaseObject Owner => _envOwner;
 
         public override bool Init()
         {
@@ -25,7 +26,8 @@ namespace STELLAREST_F1
             if (string.IsNullOrEmpty(animatorTextID) == false && animController != null)
                 Animator.runtimeAnimatorController = animController;
 
-            _owner = owner as Env;
+            _envOwner = owner as Env;
+            Debug.Log("EnvAnim::InitialSetInfo");
         }
     }
 }

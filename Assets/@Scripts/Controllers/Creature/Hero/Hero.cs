@@ -124,8 +124,8 @@ namespace STELLAREST_F1
         {
             get
             {
-                if (CreatureAnim.CanEnterAnimState(ECreatureAnimState.Upper_Idle_To_CollectEnv) == false)
-                    return false;
+                // if (CreatureAnim.CanEnterAnimState(ECreatureAnimState.Upper_Idle_To_CollectEnv) == false)
+                //     return false;
 
                 if (Moving)
                 {
@@ -157,6 +157,9 @@ namespace STELLAREST_F1
 
                     return false;
                 }
+
+                if (HeroAnim.CanEnterAnimState(ECreatureAnimState.Upper_CollectEnv) == false)
+                    return false;
 
                 if (ForceMove)
                 {
@@ -198,7 +201,7 @@ namespace STELLAREST_F1
         }
 
         private void OnJoystickStateChanged(EJoystickState joystickState)
-        {
+        {   
             if (this.IsValid() == false)
                 return;
 
@@ -206,10 +209,12 @@ namespace STELLAREST_F1
             {
                 case EJoystickState.Drag:
                     ForceMove = true;
+                    Managers.Object.HeroLeaderController.EnablePointer(true);
                     break;
 
                 case EJoystickState.PointerUp:
                     ForceMove = false;
+                    Managers.Object.HeroLeaderController.EnablePointer(false);
                     break;
             }
         }
@@ -219,7 +224,6 @@ namespace STELLAREST_F1
             // 여기서 하면 안됨... Leader랑 관련 있는듯.
             // Debug.Log($"1 - Inactive: {HeroBody.GetContainer(EHeroWeapon.WeaponL_Armor).TR.gameObject.name}");
             // HeroBody.GetContainer(EHeroWeapon.WeaponL_Armor).TR.gameObject.SetActive(false);
-
             yield return new WaitUntil(() =>
             {
                 bool allStartedHeroAI = true;
@@ -273,23 +277,23 @@ namespace STELLAREST_F1
                 _maxLevel = i++;
             }
 
-            HeroBody.InitialSetInfo(dataID, this);
+            //HeroBody.InitialSetInfo(dataID, this);
             HeroBody.HeroEmoji = EHeroEmoji.Idle;
-
             HeroAnim = CreatureAnim as HeroAnimation;
-            HeroAnim.InitialSetInfo(dataID, this);
+            //HeroAnim.InitialSetInfo(dataID, this);
 
-            Type aiClassType = Util.GetTypeFromName(HeroData.AIClassName);
-            CreatureAI = gameObject.AddComponent(aiClassType) as CreatureAI;
-            CreatureAI.InitialSetInfo(this);
+            // Type aiClassType = Util.GetTypeFromName(HeroData.AIClassName);
+            // CreatureAI = gameObject.AddComponent(aiClassType) as CreatureAI;
+            // CreatureAI.InitialSetInfo(this);
             HeroAI = CreatureAI as HeroAI;
 
-            CreatureRarity = HeroData.CreatureRarity;
+            //CreatureRarity = HeroData.CreatureRarity;
             gameObject.name += $"_{HeroData.NameTextID.Replace(" ", "")}";
-            Collider.radius = HeroData.ColliderRadius;
+            //Collider.radius = HeroData.ColliderRadius;
 
-            CreatureSkill = gameObject.GetOrAddComponent<SkillComponent>();
-            CreatureSkill.SetInfo(owner: this, HeroData);
+            // CreatureSkill = gameObject.GetOrAddComponent<SkillComponent>();
+            // CreatureSkill.SetInfo(owner: this, HeroData);
+            Debug.Log("Hero::InitialSetInfo");
         }
 
         protected override void EnterInGame(Vector3 spawnPos)
@@ -322,6 +326,6 @@ namespace STELLAREST_F1
             if (Managers.Game == null)
                 return;
         }
-        #endregion
+        #endregion Core
     }
 }

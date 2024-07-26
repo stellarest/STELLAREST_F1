@@ -234,6 +234,8 @@ namespace STELLAREST_F1
         protected virtual void InitialSetInfo(int dataID)
         {
             DataTemplateID = dataID;
+            BaseBody.InitialSetInfo(dataID, this);
+            BaseAnim.InitialSetInfo(dataID, this);
             BaseEffect = gameObject.GetOrAddComponent<EffectComponent>();
             BaseEffect.InitialSetInfo(this);
 
@@ -260,7 +262,7 @@ namespace STELLAREST_F1
             BaseBody.ResetMaterialsAndColors();
             // BaseBody.StartCoFadeInEffect();
             SpawnedPos = spawnPos;
-            SpawnedCellPos = Managers.Map.WorldToCell(spawnPos); // Add는 안한 상태
+            SpawnedCellPos = Managers.Map.WorldToCell(spawnPos);
             MaxHp = StatData.MaxHp;
             Hp = StatData.MaxHp;
             Debug.Log($"<color=white>{gameObject.name}, {nameof(EnterInGame)}</color>");

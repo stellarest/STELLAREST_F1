@@ -10,7 +10,7 @@ namespace STELLAREST_F1
         private CreatureAnimation _creatureAnim = null;
 
         public event System.Action<ECreatureAnimState> OnAnimStateEnterHandler = null;
-        public event System.Action<ECreatureAnimState> OnAnimStateUpdateHandler = null;
+        // public event System.Action<ECreatureAnimState> OnAnimStateUpdateHandler = null; // --- 일단 생략
         public event System.Action<ECreatureAnimState> OnAnimStateExitHandler = null;
 
         public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -18,77 +18,57 @@ namespace STELLAREST_F1
             if (_creatureAnim == null)
                 _creatureAnim = animator.GetComponent<CreatureAnimation>();
 
+            // --- New
             if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle)
                 OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_Idle);
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle_To_Skill_A)
-                OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_Idle_To_Skill_A);
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle_To_Skill_B)
-                OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_Idle_To_Skill_B);
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle_To_Skill_C)
-                OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_Idle_To_Skill_C);
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle_To_CollectEnv)
-                OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_Idle_To_CollectEnv);
 
             if (stateInfo.shortNameHash == _creatureAnim.Upper_Move)
                 OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_Move);
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Move_To_Skill_A)
-                OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_Move_To_Skill_A);
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Move_To_Skill_B)
-                OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_Move_To_Skill_B);
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Move_To_Skill_C)
-                OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_Move_To_Skill_C);
+
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_SkillA)
+                OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_SkillA);
+
+            // if (stateInfo.shortNameHash == _creatureAnim.Upper_SkillB)
+            //     OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_SkillB);
+
+            // if (stateInfo.shortNameHash == _creatureAnim.Upper_SkillC)
+            //     OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_SkillC);
+
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_CollectEnv)
+                OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_CollectEnv);
 
             if (stateInfo.shortNameHash == _creatureAnim.Upper_Dead)
                 OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_Dead);
         }
 
-        public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-        {
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle)
-                OnAnimStateUpdateHandler?.Invoke(ECreatureAnimState.Upper_Idle);
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle_To_Skill_A)
-                OnAnimStateUpdateHandler?.Invoke(ECreatureAnimState.Upper_Idle_To_Skill_A);
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle_To_Skill_B)
-                OnAnimStateUpdateHandler?.Invoke(ECreatureAnimState.Upper_Idle_To_Skill_B);
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle_To_Skill_C)
-                OnAnimStateUpdateHandler?.Invoke(ECreatureAnimState.Upper_Idle_To_Skill_C);
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle_To_CollectEnv)
-                OnAnimStateUpdateHandler?.Invoke(ECreatureAnimState.Upper_Idle_To_CollectEnv);
-
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Move)
-                OnAnimStateUpdateHandler?.Invoke(ECreatureAnimState.Upper_Move);
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Move_To_Skill_A)
-                OnAnimStateUpdateHandler?.Invoke(ECreatureAnimState.Upper_Move_To_Skill_A);
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Move_To_Skill_B)
-                OnAnimStateUpdateHandler?.Invoke(ECreatureAnimState.Upper_Move_To_Skill_B);
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Move_To_Skill_C)
-                OnAnimStateUpdateHandler?.Invoke(ECreatureAnimState.Upper_Move_To_Skill_C);
-
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Dead)
-                OnAnimStateUpdateHandler?.Invoke(ECreatureAnimState.Upper_Dead);
-        }
+        // --- 일단 생략
+        // public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+        // {
+        // }
 
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
+            if (_creatureAnim == null)
+                _creatureAnim = animator.GetComponent<CreatureAnimation>();
+
+            // --- New
             if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle)
                 OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_Idle);
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle_To_Skill_A)
-                OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_Idle_To_Skill_A);
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle_To_Skill_B)
-                OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_Idle_To_Skill_B);
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle_To_Skill_C)
-                OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_Idle_To_Skill_C);
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle_To_CollectEnv)
-                OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_Idle_To_CollectEnv);
 
             if (stateInfo.shortNameHash == _creatureAnim.Upper_Move)
                 OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_Move);
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Move_To_Skill_A)
-                OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_Move_To_Skill_A);
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Move_To_Skill_B)
-                OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_Move_To_Skill_B);
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Move_To_Skill_C)
-                OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_Move_To_Skill_C);
+
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_SkillA)
+                OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_SkillA);
+
+            // if (stateInfo.shortNameHash == _creatureAnim.Upper_SkillB)
+            //     OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_SkillB);
+
+            // if (stateInfo.shortNameHash == _creatureAnim.Upper_SkillC)
+            //     OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_SkillC);
+
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_CollectEnv)
+                OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_CollectEnv);
 
             if (stateInfo.shortNameHash == _creatureAnim.Upper_Dead)
                 OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_Dead);
@@ -247,10 +227,6 @@ public class CreatureStateMachine : StateMachineBehaviour
             //         return;
             //     }
             // }
-
-
-
-
 
             // if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureAIState.CollectEnv))
             // {

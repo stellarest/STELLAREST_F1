@@ -58,8 +58,7 @@ namespace STELLAREST_F1
 
             // if ((Owner.CenterPosition - Owner.Target.CenterPosition).sqrMagnitude < 1.5f)
             //     Owner.Target.OnDamaged(Owner, this);
-            
-            Debug.Log($"sqrMag: {(_startPoint - _targetPoint).sqrMagnitude}");
+            // Debug.Log($"sqrMag: {(_startPoint - _targetPoint).sqrMagnitude}");
             if ((_startPoint - _targetPoint).sqrMagnitude <= 3f * 3f)
             {
                 if (Owner.Target.IsValid())

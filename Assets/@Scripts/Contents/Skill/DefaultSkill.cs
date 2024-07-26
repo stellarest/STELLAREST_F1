@@ -26,6 +26,7 @@ namespace STELLAREST_F1
             if (Owner.IsValid() == false)
                 return;
 
+            // --- Generate Projectile
             if (SkillData.ProjectileID != -1)
             {
                 // Projectile projectile = GenerateProjectile(Owner, GetSpawnPos());
@@ -46,7 +47,6 @@ namespace STELLAREST_F1
             bool lockHorizontal = false;
             bool lockVertical = false;
             bool lockDiagonal = false;
-
             for (int i = 0; i < Owner.Targets.Count; ++i)
             {
                 BaseObject target = Owner.Targets[i];
@@ -89,10 +89,6 @@ namespace STELLAREST_F1
                                                     startCallback: null
                                                 );
                                             }
-
-                                            // --- Prev
-                                            // if (SkillData.EffectIDs.Length != 0)
-                                            //     Owner.BaseEffect.GenerateEffects(SkillData.EffectIDs, EEffectSpawnType.Internal, target);
                                         }
                                     }
                                 }
@@ -173,6 +169,7 @@ namespace STELLAREST_F1
 
                     case ESkillTargetRange.Half:
                         {
+                            Debug.Log($"DOT: {Vector3.Dot(nLookDir, nTargetDir)}");
                             if (Vector3.Dot(nLookDir, nTargetDir) >= 0f)
                             {
                                 // --- 1사분면, 4사분면에 들어오는 타겟
@@ -187,21 +184,15 @@ namespace STELLAREST_F1
                                             startCallback: null
                                         );
                                     }
-
-                                    // --- Prev
-                                    // if (SkillData.EffectIDs.Length != 0)
-                                    //     Owner.BaseEffect.GenerateEffects(SkillData.EffectIDs, EEffectSpawnType.Internal, target);
-
-                                    // if (dx <= SkillDistance && dy <= SkillDistance)
-                                    // {
-                                    //     target.OnDamaged(attacker: Owner, skillFromAttacker: this);
-                                    //     if (SkillData.EffectIDs.Length != 0)
-                                    //     {
-                                    //         //Owner.CreatureEffect.GenerateEffect(SkillData.EffectIDs, EEffectSpawnType.Skill, Owner.Targets[i]);
-                                    //         Owner.CreatureEffect.GenerateEffect(SkillData.EffectIDs, EEffectSpawnType.Skill, target);
-                                    //     }
-                                    // }
                                 }
+                                else
+                                {
+                                    Debug.Log("11");
+                                }
+                            }
+                            else
+                            {
+                                Debug.Log("22");
                             }
                         }
                         break;
@@ -216,8 +207,6 @@ namespace STELLAREST_F1
 
         public override void OnSkillStateEnter() { }
         public override void OnSkillStateUpdate() { }
-        public override void OnSkillStateExit() 
-        { 
-        }
+        public override void OnSkillStateExit() { }
     }
 }

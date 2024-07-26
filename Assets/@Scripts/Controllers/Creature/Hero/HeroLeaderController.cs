@@ -8,6 +8,7 @@ using static STELLAREST_F1.Define;
 using System.Linq;
 using UnityEngine.Analytics;
 using UnityEditor;
+using Unity.VisualScripting.ReorderableList.Element_Adder_Menu;
 
 namespace STELLAREST_F1
 {
@@ -250,6 +251,7 @@ namespace STELLAREST_F1
 
         private void OnJoystickStateChanged(EJoystickState joystickState)
         {
+            Debug.Log("<color=yellow>Hero::OnJoystickStateChanged</color>");
             if (_leader.IsValid() == false)
                 return;
 
@@ -283,15 +285,11 @@ namespace STELLAREST_F1
             _pointer = Util.FindChild<Transform>(_pointerPivot.gameObject, "Pointer");
             _leaderMark = Util.FindChild<Transform>(gameObject, "LeaderMark");
 
-            // --- 한 번만 설정해놓으면 됨(히어로 자식으로 두면, Sorting Group 때문에 벽에 가려짐)
             _pointer.localPosition = Vector3.up * 3f;
             _leaderMark.localPosition = Vector2.up * 2f;
 
             Managers.Game.OnMoveDirChangedHandler -= OnMovementDirChanged;
             Managers.Game.OnMoveDirChangedHandler += OnMovementDirChanged;
-
-            Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
-            Managers.Game.OnJoystickStateChangedHandler += OnJoystickStateChanged;
 
             HeroMemberFormationMode = EHeroMemberFormationMode.FollowLeaderClosely;
             ForceFollowToLeader = false;
@@ -318,38 +316,34 @@ namespace STELLAREST_F1
             if (_leader.IsValid() == false)
                 return;
 
-            // if (Input.GetKeyDown("5"))
-            //     _leader.Dead();
-
             if (_leader.ForceMove)
             {
                 // --- Joystick Only
-                if (_lockFindPath == false && Managers.Map.CanMove(JoystickPos, ignoreObjectType: EObjectType.Hero))
+                if (_lockFindPath == false && Managers.Map.CanMove(GoToJoystickPos, ignoreObjectType: EObjectType.Hero))
                     Move();
                 // --- Joystick + Path Finding
-                else if (_lockFindPath == false && Managers.Map.CanMove(JoystickPos, ignoreObjectType: EObjectType.Hero) == false)
+                else if (_lockFindPath == false && Managers.Map.CanMove(GoToJoystickPos, ignoreObjectType: EObjectType.Hero) == false)
                     TryPathFinding(_pointer.position);
             }
             else if (_lockFindPath == false)
             {
                 if (_leader.Target.IsValid())
                 {
-                    // --- Stop in the nearest target
-                    if (_leader.IsInTheNearestTarget)
-                        _leader.Moving = false;
-                    // --- Go to target
-                    else
-                    {
-                        _leader.Moving = true;
+                    // --- Go to Target
+                    if (_leader.IsInTheNearestTarget == false)
                         TryPathFinding(_leader.Target.transform.position);
-                    }
+                    // --- Check Move To Current Cell Center / Stop when moving is not
+                    else if (_leader.Moving == false)
+                        MoveToCurrentCellCenter();
+                    // --- Stop Moving is in the Nearest Target 
+                    else
+                        _leader.Moving = false;
                 }
-                // --- Stop if target is invalid.
+                // -- Stop Moving in default when is not ForceMove
                 else
                     _leader.Moving = false;
             }
-            else if (_coPathFinding == null)
-                _leader.Moving = false;
+
         }
 
         private void LateUpdate()
@@ -361,6 +355,28 @@ namespace STELLAREST_F1
         }
         #endregion
 
+        private void MoveToCurrentCellCenter()
+        {
+            Vector3 center = Managers.Map.GetCenterWorld(_leader.CellPos);
+            Vector3 dir = center - _leader.transform.position;
+
+            float threshold = 0.1f;
+            if (dir.sqrMagnitude < threshold * threshold)
+            {
+                _leader.transform.position = center;
+                _leader.Moving = false;
+            }
+            else
+            {
+                if (dir.x < 0f)
+                    _leader.LookAtDir = ELookAtDirection.Left;
+                else if (dir.x > 0f)
+                    _leader.LookAtDir = ELookAtDirection.Right;
+
+                _leader.transform.position += dir.normalized * _leader.MovementSpeed * Time.deltaTime;
+            }
+        }
+
         private void TryPathFinding(Vector3 destPos)
         {
             _lockFindPath = true;
@@ -369,6 +385,10 @@ namespace STELLAREST_F1
             int pathCount = AddPath(currentCellPos, destCellPos);
             if (pathCount == 0)
             {
+                // --- 타겟이 존재할 경우, 이동하면서 공격
+                // if (_leader.ForceMove == false && _leader.Target.IsValid() == false)
+                //     _leader.Moving = false;
+                _leader.Moving = false;
                 _lockFindPath = false;
                 return;
             }
@@ -376,8 +396,7 @@ namespace STELLAREST_F1
         }
 
         public Vector3 PathFindingPos => _leader.Target.IsValid() ? _leader.Target.transform.position : _pointer.position;
-
-        private Vector3 JoystickPos => _leader.transform.position + (_nMovementDir * _leader.MovementSpeed * Time.deltaTime);
+        private Vector3 GoToJoystickPos => _leader.transform.position + (_nMovementDir * _leader.MovementSpeed * Time.deltaTime);
 
         private Queue<Vector3Int> _leaderPath = new Queue<Vector3Int>();
 
@@ -415,7 +434,7 @@ namespace STELLAREST_F1
                 }
 
                 _leader.Moving = true;
-                _leader.transform.position = JoystickPos;
+                _leader.transform.position = GoToJoystickPos;
             }
         }
 
@@ -499,14 +518,10 @@ namespace STELLAREST_F1
             transform.position = _leader.CenterPosition;
         }
 
-        #region Coroutines
         private Coroutine _coPathFinding = null;
         private IEnumerator CoPathFinding()
         {
-            // _leader.CreatureAIState = ECreatureAIState.Move;
-            // _leader.CreatureUpperAnimState = ECreatureUpperAnimState.UA_Move;
-            // _leader.CreatureLowerAnimState = ECreatureLowerAnimState.LA_Move;
-
+            _leader.Moving = true;
             while (_leaderPath.Count != 0)
             {
                 Vector3Int nextPos = _leaderPath.Peek();
@@ -517,23 +532,12 @@ namespace STELLAREST_F1
                 else if (dir.x > 0f)
                     _leader.LookAtDir = ELookAtDirection.Right;
 
-                // if (_leader.Target.IsValid() == false)
-                // {
-                //     if (dir.x < 0f)
-                //         _leader.LookAtDir = ELookAtDirection.Left;
-                //     else if (dir.x > 0f)
-                //         _leader.LookAtDir = ELookAtDirection.Right;
-                // }
-                // else
-                //     _leader.LookAtValidTarget();
-
                 if (dir.sqrMagnitude < 0.001f)
                 {
                     _leader.transform.position = destPos;
                     _leaderPath.Dequeue();
-                    if (Managers.Map.CanMove(JoystickPos, ignoreObjectType: EObjectType.Hero))
+                    if (Managers.Map.CanMove(GoToJoystickPos, ignoreObjectType: EObjectType.Hero))
                     {
-                        // _leader.LookAtValidTarget();
                         _lockFindPath = false;
                         StopCoPathFinding();
                         break;
@@ -548,16 +552,12 @@ namespace STELLAREST_F1
                 yield return null;
             }
 
-            // _leader.LookAtValidTarget();
+            // --- 타겟이 존재할 경우, 이동하면서 공격
+            if (_leader.ForceMove == false && _leader.Target.IsValid() == false)
+                _leader.Moving = false;
+
             _lockFindPath = false;
             StopCoPathFinding();
-
-            // if (_leader.CreatureMoveState == ECreatureMoveState.None)
-            // {
-            //     _leader.CreatureAIState = ECreatureAIState.Idle;
-            //     _leader.CreatureUpperAnimState = ECreatureUpperAnimState.UA_Idle;
-            //     _leader.CreatureLowerAnimState = ECreatureLowerAnimState.LA_Idle;
-            // }
         }
 
         private void StopCoPathFinding()
@@ -748,9 +748,7 @@ namespace STELLAREST_F1
                 _coIsAllHeroMembersStopped = null;
             }
         }
-        #endregion
 
-        #region Debug
 #if UNITY_EDITOR
         public float ScanRange = 1f;
         private void OnDrawGizmos()
@@ -806,7 +804,6 @@ namespace STELLAREST_F1
             // }
         }
 #endif
-        #endregion
     }
 }
 

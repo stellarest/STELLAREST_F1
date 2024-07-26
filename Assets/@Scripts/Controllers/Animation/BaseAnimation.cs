@@ -10,10 +10,10 @@ namespace STELLAREST_F1
 {
     public class BaseAnimation : InitBase
     {
-        public BaseObject Owner { get; set; } = null;
-        public T GetOwner<T>() where T : BaseObject => Owner as T;
+        private BaseObject _baseOwner = null;
+        public virtual BaseObject Owner => _baseOwner;
+        
         public Animator Animator { get; private set; } = null;
-        //public AnimationClipCallback AnimClipCallback { get; private set; } = null;
    
         public override bool Init()
         {
@@ -21,14 +21,11 @@ namespace STELLAREST_F1
                 return false;
 
             Animator = GetComponent<Animator>();
-            //AnimClipCallback = GetComponent<AnimationClipCallback>();
             return true;
         }
 
         public virtual void InitialSetInfo(int dataID, BaseObject owner)
-        {
-            Owner = owner;
-        }
+            => _baseOwner = owner;
 
         public bool IsPlay()
         {

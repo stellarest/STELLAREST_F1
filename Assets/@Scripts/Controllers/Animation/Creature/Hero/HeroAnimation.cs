@@ -14,10 +14,11 @@ namespace STELLAREST_F1
     public class HeroAnimation : CreatureAnimation
     {
         private Hero _heroOwner = null;
-        public new Hero Owner => _heroOwner;
+        public override BaseObject Owner => _heroOwner;
 
         public override void InitialSetInfo(int dataID, BaseObject owner)
         {
+            // Debug.Log("1");
             base.InitialSetInfo(dataID, owner);
             string animatorTextID = Managers.Data.HeroDataDict[dataID].AnimatorLabel;
             RuntimeAnimatorController animController = Managers.Resource.Load<RuntimeAnimatorController>(animatorTextID);
@@ -25,6 +26,7 @@ namespace STELLAREST_F1
                 this.Animator.runtimeAnimatorController = animController;
 
             _heroOwner = owner as Hero;
+            Debug.Log("HeroAnim::InitialSetInfo");
         }
 
         public override void Flip(ELookAtDirection lookAtDir)
@@ -40,217 +42,169 @@ namespace STELLAREST_F1
         #region Anim Clip Callbacks
         public override void OnCollectEnvCallback()
         {
-            if (Owner.IsValid() == false)
+            if (_heroOwner.IsValid() == false)
                 return;
 
-            if (Owner.Target.IsValid() == false)
+            if (_heroOwner.Target.IsValid() == false)
                 return;
 
-            if (Owner.Target.ObjectType != EObjectType.Env)
+            if (_heroOwner.Target.ObjectType != EObjectType.Env)
                 return;
 
-            Owner.Target.OnDamaged(attacker: Owner, skillByAttacker: null);
-            if (Owner.Target.IsValid() == false && Owner.HeroWeaponType != EHeroWeaponType.Default)
+            _heroOwner.Target.OnDamaged(attacker: _heroOwner, skillByAttacker: null);
+            if (_heroOwner.Target.IsValid() == false && _heroOwner.HeroWeaponType != EHeroWeaponType.Default)
             {
-                Owner.HeroWeaponType = EHeroWeaponType.Default;
-                Owner.CreatureAIState = ECreatureAIState.Move;
+                _heroOwner.HeroWeaponType = EHeroWeaponType.Default;
+                _heroOwner.CreatureAIState = ECreatureAIState.Move;
             }
-
-            // --- Prev
-            // if (Owner.IsValid() == false)
-            //     return;
-
-            // if (Owner.Target.IsValid() == false)
-            //     return;
-
-            // if (Owner.Target.ObjectType != EObjectType.Env)
-            //     return;
-
-            // Owner.Target.OnDamaged(attacker: Owner, skillFromAttacker: null);
-            // if (Owner.Target.Hp <= 0f && Owner.HeroWeaponType != EHeroWeaponType.Default)
-            // {
-            //     Owner.HeroWeaponType = EHeroWeaponType.Default;
-            //     Owner.CreatureAIState = ECreatureAIState.Move;
-            // }
         }
 
         public override void OnDustEffectCallback()
         {
-            Vector3 spawnPos = Owner.HeroBody.GetContainer(EHeroBody_Lower.LegR).TR.position;
+            Vector3 spawnPos = _heroOwner.HeroBody.GetContainer(EHeroBody_Lower.LegR).TR.position;
             EffectBase dustEffect = Managers.Object.SpawnBaseObject<EffectBase>(
                 objectType: EObjectType.Effect,
                 spawnPos: spawnPos,
                 dataID: ReadOnly.DataAndPoolingID.DNPID_Effect_Dust,
-                owner: Owner
+                owner: _heroOwner
             );
             dustEffect.SortingGroup.sortingOrder = ReadOnly.SortingLayers.SLOrder_BaseObject;
         }
         #endregion
 
-        #region Anim State Events
+        #region Anim State Events (New)
         // --- Enter
-        public override void OnUpperIdleEnter()
+        protected override void OnUpperIdleEnter()
         {
-            Owner.HeroBody.HeroEmoji = EHeroEmoji.Idle;
+            if (_heroOwner.IsValid() == false)
+                return;
+
+            _heroOwner.HeroBody.HeroEmoji = EHeroEmoji.Idle;
+            if (CanEnterAnimState(ECreatureAnimState.Upper_SkillA) == false)
+                ReleaseAnimState(ECreatureAnimState.Upper_SkillA);
 
             base.OnUpperIdleEnter();
-            if (CanEnterAnimState(ECreatureAnimState.Upper_Idle_To_Skill_A) == false ||
-               CanEnterAnimState(ECreatureAnimState.Upper_Move_To_Skill_A) == false)
-            {
-                ReleaseAnimState(ECreatureAnimState.Upper_Idle_To_Skill_A);
-                ReleaseAnimState(ECreatureAnimState.Upper_Move_To_Skill_A);
-            }
-        }
-        public override void OnUpperIdleToSkillAEnter()
-        {
-            Owner.HeroBody.HeroEmoji = EHeroEmoji.Skill_A;
-            base.OnUpperIdleToSkillAEnter();
-        }
-        public override void OnUpperIdleToSkillBEnter()
-        {
-            base.OnUpperIdleToSkillBEnter();
-        }
-        public override void OnUpperIdleToSkillCEnter()
-        {
-            base.OnUpperIdleToSkillCEnter();
-        }
-        public override void OnUpperIdleToCollectEnvEnter()
-        {
-            Owner.HeroBody.HeroEmoji = EHeroEmoji.CollectEnv;
-            base.OnUpperIdleToCollectEnvEnter();
-            // Debug.Log($"<color=white>{nameof(OnUpperIdleToCollectEnvEnter)}</color>");
-            if (Owner.Target.IsValid() && Owner.Target.ObjectType == EObjectType.Env)
-            {
-                if (Owner.HeroWeaponType == EHeroWeaponType.Default)
-                {
-                    Env envTarget = Owner.Target as Env;
-                    if (envTarget.EnvType == EEnvType.Tree)
-                        Owner.HeroWeaponType = EHeroWeaponType.CollectTree;
-                    else if (envTarget.EnvType == EEnvType.Rock)
-                        Owner.HeroWeaponType = EHeroWeaponType.CollectRock;
-                }
-
-                Owner.LookAtValidTarget();
-            }
         }
 
-        public override void OnUpperMoveEnter()
+        protected override void OnUpperMoveEnter()
         {
-            Owner.HeroBody.HeroEmoji = EHeroEmoji.Move;
+            if (_heroOwner.IsValid() == false)
+                return;
+
+            _heroOwner.HeroBody.HeroEmoji = EHeroEmoji.Move;
             base.OnUpperMoveEnter();
         }
-        public override void OnUpperMoveToSkillAEnter()
+
+        protected override void OnUpperSkillAEnter()
         {
-            Owner.HeroBody.HeroEmoji = EHeroEmoji.Skill_A;
-            base.OnUpperIdleToSkillAEnter();
-        }
-        public override void OnUpperMoveToSkillBEnter()
-        {
-            base.OnUpperIdleToSkillBEnter();
-        }
-        public override void OnUpperMoveToSkillCEnter()
-        {
-            base.OnUpperIdleToSkillCEnter();
+            if (_heroOwner.IsValid() == false)
+                return;
+
+            _heroOwner.HeroBody.HeroEmoji = EHeroEmoji.Skill_A;
+            base.OnUpperSkillAEnter();
         }
 
-        public override void OnUpperDeadEnter()
+        protected override void OnUpperSkillBEnter()
         {
-            Owner.HeroBody.HeroEmoji = EHeroEmoji.Dead;
+            if (_heroOwner.IsValid() == false)
+                return;
+
+            base.OnUpperSkillBEnter();
+        }
+
+        protected override void OnUpperSkillCEnter()
+        {
+            if (_heroOwner.IsValid() == false)
+                return;
+
+            base.OnUpperSkillCEnter();
+        }
+
+        protected override void OnUpperCollectEnvEnter()
+        {
+            if (_heroOwner.IsValid() == false)
+                return;
+
+            Debug.Log($"<color=white>{nameof(OnUpperCollectEnvEnter)}</color>");
+            if (_heroOwner.Target.IsValid() && _heroOwner.Target.ObjectType == EObjectType.Env)
+            {
+                if (_heroOwner.HeroWeaponType == EHeroWeaponType.Default)
+                {
+                    Env envTarget = _heroOwner.Target as Env;
+                    if (envTarget.EnvType == EEnvType.Tree)
+                        _heroOwner.HeroWeaponType = EHeroWeaponType.CollectTree;
+                    else if (envTarget.EnvType == EEnvType.Rock)
+                        _heroOwner.HeroWeaponType = EHeroWeaponType.CollectRock;
+
+                    _heroOwner.HeroBody.HeroEmoji = EHeroEmoji.CollectEnv;
+                    _heroOwner.LookAtValidTarget();
+                    base.OnUpperCollectEnvEnter();
+                }
+            }
+        }
+
+        protected override void OnUpperDeadEnter()
+        {
+            _heroOwner.HeroBody.HeroEmoji = EHeroEmoji.Dead;
             base.OnUpperDeadEnter();
         }
 
-        // --- Update
-        public override void OnUpperIdleUpdate()
-        {
-            base.OnUpperIdleUpdate();
-        }
-        public override void OnUpperIdleToSkillAUpdate()
-        {
-            base.OnUpperIdleToSkillAUpdate();
-        }
-        public override void OnUpperIdleToSkillBUpdate()
-        {
-            base.OnUpperIdleToSkillBUpdate();
-        }
-        public override void OnUpperIdleToSkillCUpdate()
-        {
-            base.OnUpperIdleToSkillCUpdate();
-        }
-        public override void OnUpperIdleToCollectEnvUpdate()
-        {
-            base.OnUpperIdleToCollectEnvUpdate();
-        }
-
-        public override void OnUpperMoveUpdate()
-        {
-            base.OnUpperMoveUpdate();
-        }
-        public override void OnUpperMoveToSkillAUpdate()
-        {
-            base.OnUpperMoveToSkillAUpdate();
-        }
-        public override void OnUpperMoveToSkillBUpdate()
-        {
-            base.OnUpperMoveToSkillAUpdate();
-        }
-        public override void OnUpperMoveToSkillCUpdate()
-        {
-            base.OnUpperMoveToSkillAUpdate();
-        }
-
-        public override void OnUpperDeadUpdate()
-        {
-            base.OnUpperDeadUpdate();
-        }
+        // --- Update (필요시 정의)
 
         // --- Exit
-        public override void OnUpperIdleExit()
+        protected override void OnUpperIdleExit()
         {
+            if (_heroOwner.IsValid() == false)
+                return;
+
             base.OnUpperIdleExit();
         }
-        public override void OnUpperIdleToSkillAExit()
-        {
-            base.OnUpperIdleToSkillAExit();
-        }
-        public override void OnUpperIdleToSkillBExit()
-        {
-            base.OnUpperIdleToSkillBExit();
-        }
-        public override void OnUpperIdleToSkillCExit()
-        {
-            base.OnUpperIdleToSkillCExit();
-        }
-        public override void OnUpperIdleToCollectEnvExit()
-        {
-            // --- DEFENSE
-            if (CanEnterAnimState(ECreatureAnimState.Upper_Idle_To_Skill_A) == false ||
-                CanEnterAnimState(ECreatureAnimState.Upper_Move_To_Skill_A) == false)
-            {
-                ReleaseAnimState(ECreatureAnimState.Upper_Idle_To_Skill_A);
-                ReleaseAnimState(ECreatureAnimState.Upper_Move_To_Skill_A);
-            }
 
-            ReleaseAnimState(ECreatureAnimState.Upper_Idle_To_CollectEnv);
-        }
-
-        public override void OnUpperMoveExit()
+        protected override void OnUpperMoveExit()
         {
+            if (_heroOwner.IsValid() == false)
+                return;
+
             base.OnUpperMoveExit();
         }
-        public override void OnUpperMoveToSkillAExit()
+
+        protected override void OnUpperSkillAExit()
         {
-            base.OnUpperMoveToSkillAExit();
-        }
-        public override void OnUpperMoveToSkillBExit()
-        {
-            base.OnUpperMoveToSkillBExit();
-        }
-        public override void OnUpperMoveToSkillCExit()
-        {
-            base.OnUpperMoveToSkillCExit();
+            if (_heroOwner.IsValid() == false)
+                return;
+
+            base.OnUpperSkillAExit();
         }
 
-        public override void OnUpperDeadExit()
+        protected override void OnUpperSkillBExit()
+        {
+            if (_heroOwner.IsValid() == false)
+                return;
+
+            base.OnUpperSkillBExit();
+        }
+
+        protected override void OnUpperSkillCExit()
+        {
+            if (_heroOwner.IsValid() == false)
+                return;
+
+            base.OnUpperSkillCExit();
+        }
+
+        protected override void OnUpperCollectEnvExit()
+        {
+            if (_heroOwner.IsValid() == false)
+                return;
+
+            Debug.Log($"<color=white>{nameof(OnUpperCollectEnvExit)}</color>");
+            if (_heroOwner.HeroWeaponType != EHeroWeaponType.Default)
+                _heroOwner.HeroWeaponType = EHeroWeaponType.Default;
+
+            base.OnUpperCollectEnvExit();
+        }
+
+        protected override void OnUpperDeadExit()
         {
             base.OnUpperDeadExit();
         }
@@ -317,4 +271,148 @@ namespace STELLAREST_F1
 //                     break;
 //             }
 //         }
+
+// #region Anim State Events (Prev)
+        // // --- Enter
+        // public override void OnUpperIdleToCollectEnvEnter()
+        // {
+        //     _heroOwner.HeroBody.HeroEmoji = EHeroEmoji.CollectEnv;
+        //     base.OnUpperIdleToCollectEnvEnter();
+        //     // Debug.Log($"<color=white>{nameof(OnUpperIdleToCollectEnvEnter)}</color>");
+        //     if (_heroOwner.Target.IsValid() && _heroOwner.Target.ObjectType == EObjectType.Env)
+        //     {
+        //         if (_heroOwner.HeroWeaponType == EHeroWeaponType.Default)
+        //         {
+        //             Env envTarget = _heroOwner.Target as Env;
+        //             if (envTarget.EnvType == EEnvType.Tree)
+        //                 _heroOwner.HeroWeaponType = EHeroWeaponType.CollectTree;
+        //             else if (envTarget.EnvType == EEnvType.Rock)
+        //                 _heroOwner.HeroWeaponType = EHeroWeaponType.CollectRock;
+        //         }
+
+        //         _heroOwner.LookAtValidTarget();
+        //     }
+        // }
+
+        // public override void OnUpperMoveEnter()
+        // {
+        //     _heroOwner.HeroBody.HeroEmoji = EHeroEmoji.Move;
+        //     base.OnUpperMoveEnter();
+        // }
+        // public override void OnUpperMoveToSkillAEnter()
+        // {
+        //     _heroOwner.HeroBody.HeroEmoji = EHeroEmoji.Skill_A;
+        //     base.OnUpperIdleToSkillAEnter();
+        // }
+        // public override void OnUpperMoveToSkillBEnter()
+        // {
+        //     base.OnUpperIdleToSkillBEnter();
+        // }
+        // public override void OnUpperMoveToSkillCEnter()
+        // {
+        //     base.OnUpperIdleToSkillCEnter();
+        // }
+
+        // public override void OnUpperDeadEnter()
+        // {
+        //     _heroOwner.HeroBody.HeroEmoji = EHeroEmoji.Dead;
+        //     base.OnUpperDeadEnter();
+        // }
+
+        // // --- Update
+        // public override void OnUpperIdleUpdate()
+        // {
+        //     base.OnUpperIdleUpdate();
+        // }
+        // public override void OnUpperIdleToSkillAUpdate()
+        // {
+        //     base.OnUpperIdleToSkillAUpdate();
+        // }
+        // public override void OnUpperIdleToSkillBUpdate()
+        // {
+        //     base.OnUpperIdleToSkillBUpdate();
+        // }
+        // public override void OnUpperIdleToSkillCUpdate()
+        // {
+        //     base.OnUpperIdleToSkillCUpdate();
+        // }
+        // public override void OnUpperIdleToCollectEnvUpdate()
+        // {
+        //     base.OnUpperIdleToCollectEnvUpdate();
+        // }
+
+        // public override void OnUpperMoveUpdate()
+        // {
+        //     base.OnUpperMoveUpdate();
+        // }
+        // public override void OnUpperMoveToSkillAUpdate()
+        // {
+        //     base.OnUpperMoveToSkillAUpdate();
+        // }
+        // public override void OnUpperMoveToSkillBUpdate()
+        // {
+        //     base.OnUpperMoveToSkillAUpdate();
+        // }
+        // public override void OnUpperMoveToSkillCUpdate()
+        // {
+        //     base.OnUpperMoveToSkillAUpdate();
+        // }
+
+        // public override void OnUpperDeadUpdate()
+        // {
+        //     base.OnUpperDeadUpdate();
+        // }
+
+        // // --- Exit
+        // public override void OnUpperIdleExit()
+        // {
+        //     base.OnUpperIdleExit();
+        // }
+        // public override void OnUpperIdleToSkillAExit()
+        // {
+        //     base.OnUpperIdleToSkillAExit();
+        // }
+        // public override void OnUpperIdleToSkillBExit()
+        // {
+        //     base.OnUpperIdleToSkillBExit();
+        // }
+        // public override void OnUpperIdleToSkillCExit()
+        // {
+        //     base.OnUpperIdleToSkillCExit();
+        // }
+        // public override void OnUpperIdleToCollectEnvExit()
+        // {
+        //     // --- DEFENSE
+        //     if (CanEnterAnimState(ECreatureAnimState.Upper_Idle_To_Skill_A) == false ||
+        //         CanEnterAnimState(ECreatureAnimState.Upper_Move_To_Skill_A) == false)
+        //     {
+        //         ReleaseAnimState(ECreatureAnimState.Upper_Idle_To_Skill_A);
+        //         ReleaseAnimState(ECreatureAnimState.Upper_Move_To_Skill_A);
+        //     }
+
+        //     ReleaseAnimState(ECreatureAnimState.Upper_Idle_To_CollectEnv);
+        // }
+
+        // public override void OnUpperMoveExit()
+        // {
+        //     base.OnUpperMoveExit();
+        // }
+        // public override void OnUpperMoveToSkillAExit()
+        // {
+        //     base.OnUpperMoveToSkillAExit();
+        // }
+        // public override void OnUpperMoveToSkillBExit()
+        // {
+        //     base.OnUpperMoveToSkillBExit();
+        // }
+        // public override void OnUpperMoveToSkillCExit()
+        // {
+        //     base.OnUpperMoveToSkillCExit();
+        // }
+
+        // public override void OnUpperDeadExit()
+        // {
+        //     base.OnUpperDeadExit();
+        // }
+        // #endregion
 */

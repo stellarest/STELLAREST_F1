@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using STELLAREST_F1.Data;
 using UnityEngine;
 using static STELLAREST_F1.Define;
 
@@ -42,7 +41,35 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public void SetInfo(Creature owner, CreatureData creatureData)
+        public void InitialSetInfo(Creature owner, Data.CreatureData creatureData)
+        {
+            _owner = owner;
+
+            if (SkillArray == null)
+                SkillArray = new SkillBase[(int)ESkillType.Max];
+
+            AddSkill(creatureData.Skill_Attack_ID);
+            AddSkill(creatureData.Skill_A_ID);
+            AddSkill(creatureData.Skill_B_ID);
+            // --- Check Validation
+            {
+                int skillCount = 0;
+                for (int i = 0; i < SkillArray.Length; ++i)
+                {
+                    SkillBase skill = SkillArray[i];
+                    if (skill != null)
+                        ++skillCount;
+                }
+
+                if (skillCount == 0)
+                {
+                    Debug.LogError($"{nameof(SkillComponent)}, {nameof(SetInfo)}");
+                    Debug.Break();
+                }
+            }
+        }
+
+        public void SetInfo(Creature owner, Data.CreatureData creatureData)
         {
             _owner = owner;
 
@@ -75,7 +102,7 @@ namespace STELLAREST_F1
             if (skillDataID == -1)
                 return;
 
-            if (Managers.Data.SkillDataDict.TryGetValue(skillDataID, out SkillData skillData) == false)
+            if (Managers.Data.SkillDataDict.TryGetValue(skillDataID, out Data.SkillData skillData) == false)
             {
                 Debug.LogError($"{nameof(SkillComponent)}, {nameof(AddSkill)}, Input : \"{skillDataID}\"");
                 Debug.Break();

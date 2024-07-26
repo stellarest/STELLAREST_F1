@@ -8,9 +8,13 @@ using DG.Tweening;
 using UnityEditor;
 
 /*
-// --- Hit Effect의 경우에는 떄릴 때 마다 Hit를 발생시키는 거니까 이것도 그냥 따로 빼면 될 것 같고
-// --- Monster 한테 Fade + Spawn Effect Red, Env는 Fade + Spawn Effect Green... 이런식으로
-// --- 플레이어는 적용 안할지도, LeaderController Cell 이동 완료시에만 공격 되는거 수정해야함.
+// --- Animation 간소화해서 다시 잡는중
+// --- CreatureData 통합해볼것
+// --- using STELLAREST_F1.Data; 이거 using 쓰는 부분 지우기. Data는 명시해서 쓰자.
+
+// --- Paladin 무빙샷 잡아보기
+// --- Archer Projectile Test
+
 // --- Move Attack 거리도 잡아야할 것 같고.
 // --- Projectile Test 필요
 

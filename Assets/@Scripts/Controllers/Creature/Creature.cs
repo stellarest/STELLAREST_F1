@@ -8,12 +8,13 @@ using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
-    public class Creature : BaseObject
+    public class Creature : BaseObject // ---> Abstract가 나을 것 같긴해.
     {
+        public Data.CreatureData CreatureData { get; private set; } = null;
         public CreatureAI CreatureAI { get; protected set; } = null;
         [field: SerializeField] public ECreatureRarity CreatureRarity { get; protected set; } = ECreatureRarity.None;
         public SkillComponent CreatureSkill { get; protected set; } = null; // Skills
-        //public EffectComponent CreatureEffect { get; protected set; } = null; // Effects
+        //public EffectComponent CreatureEffect { get; protected set; } = null; // Effects --> Move To BaseEffect
         public CreatureBody CreatureBody { get; protected set; } = null;
         public CreatureAnimation CreatureAnim { get; private set; } = null;
         public CreatureAnimationCallback CreatureAnimCallback { get; private set; } = null;
@@ -33,9 +34,12 @@ namespace STELLAREST_F1
         [SerializeField] protected EFindPathResult _findPathResult = EFindPathResult.None;
         [field: SerializeField] public bool ForceMove { get; set; } = false;
 
-        private bool IsAtCellCenter(Vector3 worldPos)
-            => Mathf.Approximately(worldPos.x, Managers.Map.GetCenterWorld(CellPos).x) && 
-               Mathf.Approximately(worldPos.y, Managers.Map.GetCenterWorld(CellPos).y);
+        public bool IsAtCurrentCellCenter
+            =>  Mathf.Approximately(transform.position.x, Managers.Map.GetCenterWorld(CellPos).x) && 
+                Mathf.Approximately(transform.position.y, Managers.Map.GetCenterWorld(CellPos).y);
+
+        // public bool CanEnterSkillAState
+        //     => CreatureAnim.CanEnterSkillAState;
 
         public bool CanSkill
         {
@@ -47,24 +51,23 @@ namespace STELLAREST_F1
                     return false;
                 }
 
-                // if (ForceMove)
-                // {
-                //     CreatureAnim.ReadySkill = false;
-                //     return false;
-                // }
-
                 if (Target.IsValid() == false)
                 {
                     CreatureAnim.ReadySkill = false;
                     return false;
                 }
 
-                if (CreatureAnim.CanEnterAnimState(ECreatureAnimState.Upper_Idle_To_Skill_A) == false ||
-                    CreatureAnim.CanEnterAnimState(ECreatureAnimState.Upper_Move_To_Skill_A) == false)
+                if (ForceMove)
                 {
                     CreatureAnim.ReadySkill = false;
                     return false;
                 }
+
+                // if (CanEnterSkillAState == false)
+                // {
+                //     CreatureAnim.ReadySkill = false;
+                //     return false;
+                // }
 
                 SkillBase currentSkill = CreatureSkill.CurrentSkill;
                 if (currentSkill.RemainCoolTime > 0f)
@@ -80,14 +83,17 @@ namespace STELLAREST_F1
                 {
                     if (dx <= invokeRange && dy <= invokeRange)
                     {
-                        if (IsAtCellCenter(transform.position))
+                        if (Util.IsNearCellCenter(transform.position))
                         {
                             CreatureAnim.ReadySkill = true;
                             return true;
                         }
-                        else
-                        {
-                        }
+
+                        // if (IsAtCellCenter)
+                        // {
+                        //     CreatureAnim.ReadySkill = true;
+                        //     return true;
+                        // }
                     }
                 }
 
@@ -100,19 +106,26 @@ namespace STELLAREST_F1
         {
             get
             {
-                if (this.IsValid() == false)
-                    return false;
+                // 이거 왜 만든거임 ;;
+                // if (this.IsValid() == false)
+                //     return false;
 
-                if (Target.IsValid() && Target.ObjectType != EObjectType.Env)
-                    return false;
+                // if (Target.IsValid() == false)
+                //     return false;
 
-                if (Moving || CreatureAnim.CanEnterAnimState(ECreatureAnimState.Upper_Idle_To_CollectEnv) == false)
-                    return false;
+                // if (Target.IsValid() && Target.ObjectType != EObjectType.Env)
+                //         return false;
 
-                int dx = Mathf.Abs(Target.CellPos.x - CellPos.x);
-                int dy = Mathf.Abs(Target.CellPos.y - CellPos.y);
-                if (dx <= 1 && dy <= 1)
-                    return true;
+                // if (CreatureAnim.CanEnterAnimState(ECreatureAnimState.Upper_CollectEnv) == false)
+                //     return false;
+
+                // // if (Moving || CreatureAnim.CanEnterAnimState(ECreatureAnimState.Upper_Idle_To_CollectEnv) == false)
+                // //     return false;
+
+                // int dx = Mathf.Abs(Target.CellPos.x - CellPos.x);
+                // int dy = Mathf.Abs(Target.CellPos.y - CellPos.y);
+                // if (dx <= 1 && dy <= 1)
+                //     return true;
 
                 return false;
             }
@@ -197,7 +210,7 @@ namespace STELLAREST_F1
         public void CollectEnv() => CreatureAnim.CollectEnv();
         public void Dead()
         {
-            CreatureAnim.ReleaseAllAnimState();
+            // CreatureAnim.ReleaseAllAnimStates();
             CreatureAnim.Dead();
         }
 
@@ -272,7 +285,23 @@ namespace STELLAREST_F1
         protected override void InitialSetInfo(int dataID)
         {
             base.InitialSetInfo(dataID);
+            if (ObjectType == EObjectType.Hero)
+                CreatureData = Managers.Data.HeroDataDict[dataID];
+            else if (ObjectType == EObjectType.Monster)
+                CreatureData = Managers.Data.MonsterDataDict[dataID];
+
+            CreatureRarity = CreatureData.CreatureRarity;
+            Type aiClassType = Util.GetTypeFromName(CreatureData.AIClassName);
+            CreatureAI = gameObject.AddComponent(aiClassType) as CreatureAI;
+            CreatureAI.InitialSetInfo(this);
+
+            Collider.radius = CreatureData.ColliderRadius;
+            CreatureSkill = gameObject.GetOrAddComponent<SkillComponent>();
+            //CreatureSkill.SetInfo(owner: this, CreatureData);
+            CreatureSkill.InitialSetInfo(owner: this, creatureData: CreatureData);
+
             CreatureAnimCallback.InitialSetInfo(this);
+            // --> Change to BaseEffect
             // CreatureEffect = gameObject.GetOrAddComponent<EffectComponent>();
             // CreatureEffect.InitialSetInfo(this);
         }
@@ -330,6 +359,12 @@ namespace STELLAREST_F1
         protected Coroutine _coUpdateAI = null;
         protected IEnumerator CoUpdateAI()
         {
+            if (ObjectType == EObjectType.Monster)
+            {
+                UpdateCellPos();
+                yield break;
+            }
+
             while (true)
             {
                 switch (CreatureAIState)

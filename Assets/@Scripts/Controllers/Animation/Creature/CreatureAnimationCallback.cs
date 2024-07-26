@@ -8,7 +8,8 @@ namespace STELLAREST_F1
     public class CreatureAnimationCallback : MonoBehaviour
     {
         public Creature Owner { get; private set; } = null;
-        public void InitialSetInfo(Creature owner) => this.Owner = owner;
+        public void InitialSetInfo(Creature owner) => Owner = owner;
+
 
         public event System.Action OnDustEffectHandler = null;
         public void OnDustEffect() => OnDustEffectHandler?.Invoke();
