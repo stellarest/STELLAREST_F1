@@ -77,6 +77,13 @@ namespace STELLAREST_F1
             }
         }
 
+        private void SpawnChicken_Test(int cellPosX, int cellPosY)
+        {
+            Managers.Object.SpawnBaseObject<Monster>
+                (objectType: EObjectType.Monster, spawnPos: Managers.Map.GetCenterWorld(new Vector3Int(cellPosX, cellPosY, 0)),
+                dataID: ReadOnly.DataAndPoolingID.DNPID_Monster_Chicken, owner: null);
+        }
+
         private void Test()
         {
             UI_Joystick joystick = Managers.UI.ShowBaseUI<UI_Joystick>();
@@ -95,20 +102,33 @@ namespace STELLAREST_F1
                     dataID: ReadOnly.DataAndPoolingID.DNPID_Hero_Paladin);
                 leaderController.Leader = firstHero;
 
-                // Managers.Object.SpawnBaseObject<Monster>
-                //     (objectType: EObjectType.Monster, spawnPos: Managers.Map.GetCenterWorld(new Vector3Int(-6, 8, 0)),
-                //     dataID: ReadOnly.DataAndPoolingID.DNPID_Monster_Chicken, owner: null);
-
-                // Managers.Object.SpawnBaseObject<Monster>
-                //     (objectType: EObjectType.Monster, spawnPos: Managers.Map.GetCenterWorld(new Vector3Int(-6, 7, 0)),
-                //     dataID: ReadOnly.DataAndPoolingID.DNPID_Monster_Chicken, owner: null);
-
-                // Managers.Object.SpawnBaseObject<Monster>
-                //     (objectType: EObjectType.Monster, spawnPos: Managers.Map.GetCenterWorld(new Vector3Int(-6, 6, 0)),
-                //     dataID: ReadOnly.DataAndPoolingID.DNPID_Monster_Chicken, owner: null);
+                {
+                    SpawnChicken_Test(-6, 8);
+                    SpawnChicken_Test(-5, 8);
+                    SpawnChicken_Test(-4, 8);
+                    SpawnChicken_Test(-3, 8);
+                    SpawnChicken_Test(-7, 8);
+                    SpawnChicken_Test(-8, 8);
+                    SpawnChicken_Test(-9, 8);
+                    SpawnChicken_Test(-6, 7);
+                    SpawnChicken_Test(-6, 6);
+                    SpawnChicken_Test(-6, 5);
+                    SpawnChicken_Test(-6, 9);
+                    SpawnChicken_Test(-6, 10);
+                    SpawnChicken_Test(-6, 11);
+                    SpawnChicken_Test(-5, 9);
+                    SpawnChicken_Test(-5, 6);
+                    SpawnChicken_Test(-7, 9);
+                    SpawnChicken_Test(-7, 6);
+                    SpawnChicken_Test(-4, 9);
+                    SpawnChicken_Test(-4, 6);
+                    SpawnChicken_Test(-5, 5);
+                    SpawnChicken_Test(-7, 7);
+                    SpawnChicken_Test(-7, 5);
+                }
 
                 // StartCoroutine(CoContinuousSpawnMonster_Test(1.5f));
-                StartCoroutine(CoContinuousSpawnEnv_Test(1f));
+                // StartCoroutine(CoContinuousSpawnEnv_Test(1f));
 
                 // --- Env
                 // Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env, 

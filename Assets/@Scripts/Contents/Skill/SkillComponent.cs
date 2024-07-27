@@ -148,8 +148,8 @@ namespace STELLAREST_F1
 
         public void OnSkillStateEnter(ESkillType skillType)
                 => SkillArray[(int)skillType]?.OnSkillStateEnter();
-        public void OnSkillStateUpdate(ESkillType skillType)
-                => SkillArray[(int)skillType]?.OnSkillStateUpdate();
+        // public void OnSkillStateUpdate(ESkillType skillType)
+        //         => SkillArray[(int)skillType]?.OnSkillStateUpdate();
         public void OnSkillStateExit(ESkillType skillType)
                 => SkillArray[(int)skillType]?.OnSkillStateExit();
 

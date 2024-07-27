@@ -31,7 +31,6 @@ namespace STELLAREST_F1
 
             ObjectType = EObjectType.Effect;
             SortingGroup.sortingOrder = ReadOnly.SortingLayers.SLOrder_Effect;
-
             return true;
         }
 
@@ -50,7 +49,6 @@ namespace STELLAREST_F1
                 Remains = EffectData.Duration;
 
             Period = EffectData.Period;
-
             EffectType = EffectData.EffectType;
             switch (EffectData.EffectSize)
             {
@@ -83,6 +81,7 @@ namespace STELLAREST_F1
                 Remains = EffectData.Duration;
 
             transform.position = spawnPos;
+            ApplyEffect();
             // --- Prev            
             // Vector3Int cellPos = Managers.Map.WorldToCell(spawnPos);
             // transform.position = Managers.Map.GetCenterWorld(cellPos);
@@ -138,31 +137,31 @@ namespace STELLAREST_F1
             // 힘 버프(Buff, TypeID:1), 체력 버프(Buff, TypeID:2) 이런식..
         }
 
-        protected void ShowEffect()
-        {
-            if (Source.IsValid() == false)
-                return;
+        // protected void ShowEffect()
+        // {
+        //     if (Source.IsValid() == false)
+        //         return;
 
-            if (Source.ObjectType == EObjectType.Hero || Source.ObjectType == EObjectType.Monster)
-            {
-                transform.position = GetRandomSpawnPosition(Managers.Map.GetCenterWorld(Source.CellPos), cellSize: 1);
-            }
-        }
+        //     if (Source.ObjectType == EObjectType.Hero || Source.ObjectType == EObjectType.Monster)
+        //     {
+        //         transform.position = GetRandomSpawnPosition(Managers.Map.GetCenterWorld(Source.CellPos), cellSize: 1);
+        //     }
+        // }
 
-        protected Vector3 GetRandomSpawnPosition(Vector3 cellCenter, float cellSize)
-        {
-            float offset = cellSize / 4.0f;
-            Vector3[] quadCenters = new Vector3[4];
-            quadCenters[0] = cellCenter + new Vector3(offset, offset, 0);  // --- 1사분면 중앙
-            quadCenters[1] = cellCenter + new Vector3(-offset, offset, 0);   // --- 2사분면 중앙
-            quadCenters[2] = cellCenter + new Vector3(-offset, -offset, 0); // --- 3사분면 중앙
-            quadCenters[3] = cellCenter + new Vector3(offset, -offset, 0);  // --- 4사분면 중앙
-            int randIdx = Random.Range(0, quadCenters.Length + 1);
-            if (randIdx == quadCenters.Length)
-                return cellCenter;
+        // protected Vector3 GetRandomSpawnPosition(Vector3 cellCenter, float cellSize)
+        // {
+        //     float offset = cellSize / 4.0f;
+        //     Vector3[] quadCenters = new Vector3[4];
+        //     quadCenters[0] = cellCenter + new Vector3(offset, offset, 0);  // --- 1사분면 중앙
+        //     quadCenters[1] = cellCenter + new Vector3(-offset, offset, 0);   // --- 2사분면 중앙
+        //     quadCenters[2] = cellCenter + new Vector3(-offset, -offset, 0); // --- 3사분면 중앙
+        //     quadCenters[3] = cellCenter + new Vector3(offset, -offset, 0);  // --- 4사분면 중앙
+        //     int randIdx = Random.Range(0, quadCenters.Length + 1);
+        //     if (randIdx == quadCenters.Length)
+        //         return cellCenter;
 
-            return quadCenters[randIdx];
-        }
+        //     return quadCenters[randIdx];
+        // }
 
         protected virtual void ProcessDot() { }
 

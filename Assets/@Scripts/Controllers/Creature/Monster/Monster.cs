@@ -9,14 +9,6 @@ namespace STELLAREST_F1
 {
     public class Monster : Creature
     {
-        private void Update()
-        {
-            if (Input.GetKeyDown("5"))
-            {
-                Debug.Log(ColliderRadius);
-            }
-        }
-
         #region Background
         public Data.MonsterData MonsterData { get; private set; } = null;
         [SerializeField] private MonsterBody _monsterBody = null;
@@ -40,7 +32,6 @@ namespace STELLAREST_F1
                 base.CreatureAIState = value;
                 switch (value)
                 {
-
                     case ECreatureAIState.Idle:
                         {
                             Moving = false;

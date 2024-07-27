@@ -14,10 +14,18 @@ namespace STELLAREST_F1
         public SkillData SkillData { get; private set; } = null;
         public int InvokeRange { get; private set; } = -1;
         public ESkillTargetRange TargetRange { get; private set; } = ESkillTargetRange.None;
-        public int SkillDistance { get; private set; } = -1;
+        public int TargetDistance { get; private set; } = -1;
         public int DataTemplateID { get; private set; } = -1;
         public ESkillType SkillType { get; private set; } = ESkillType.None;
         public EAttachmentPoint SkillFromPoint { get; private set; } = EAttachmentPoint.None;
+        protected bool[] _lockTargetDirs = null;
+        protected bool IsLockTargetDir(ETargetDirection targetDir) => _lockTargetDirs[(int)targetDir];
+        protected void LockTargetDir(ETargetDirection targetDir) => _lockTargetDirs[(int)targetDir] = true;
+        protected void ReleaseAllTargetDirs()
+        {
+            for (int i = 0; i < _lockTargetDirs.Length; ++i)
+                _lockTargetDirs[i] = false;
+        }
 
         private float _remainCoolTime = 0f;
         public virtual float RemainCoolTime
@@ -97,6 +105,10 @@ namespace STELLAREST_F1
             if (base.Init() == false)
                 return false;
 
+            _lockTargetDirs = new bool[(int)ETargetDirection.Max];
+            for (int i = 0; i < _lockTargetDirs.Length; ++i)
+                _lockTargetDirs[i] = false;
+
             return true;
         }
 
@@ -107,7 +119,7 @@ namespace STELLAREST_F1
             SkillData = Managers.Data.SkillDataDict[dataID];
             InvokeRange = SkillData.InvokeRange;
             TargetRange = SkillData.TargetRange;
-            SkillDistance = SkillData.SkillDistance;
+            TargetDistance = SkillData.TargetDistance;
             SkillType = SkillData.SkillType;
             SkillFromPoint = Util.GetEnumFromString<EAttachmentPoint>(SkillData.AttachmentPoint);
         }
@@ -119,8 +131,13 @@ namespace STELLAREST_F1
 
         #region Anim State Events
         public abstract void OnSkillStateEnter();
-        public abstract void OnSkillStateUpdate();
+        // public abstract void OnSkillStateUpdate(); // --- 일단 생략
         public abstract void OnSkillStateExit();
         #endregion
+
+        protected abstract void DoSelfTarget(BaseObject target);
+        protected abstract void DoSingleTarget(BaseObject target);
+        protected abstract void DoHalfTarget(BaseObject target);
+        protected abstract void DoAroundTarget(BaseObject target);
     }
 }

@@ -7,16 +7,13 @@ namespace STELLAREST_F1
 {
     public class BodyAttack : SkillBase
     {
-        #region Background
         private float _delta = 0f;
         private float _desiredTimeToReach = 0.35f;
         private float _desiredTimeToReturn = 0.65f;
 
         private Vector3 _startPoint = Vector3.zero;
         private Vector3 _targetPoint = Vector3.zero;
-        #endregion
 
-        #region Core
         public override void OnSkillCallback()
         {
             if (Owner.IsValid() == false)
@@ -35,11 +32,24 @@ namespace STELLAREST_F1
             _coBodyAttack = StartCoroutine(CoBodyAttack());
         }
         public override void OnSkillStateEnter() { }
-        public override void OnSkillStateUpdate() { }
         public override void OnSkillStateExit() { }
-        #endregion
+        protected override void DoSelfTarget(BaseObject target) 
+        { 
+            
+        }
+        protected override void DoSingleTarget(BaseObject target) 
+        { 
 
-        #region Coroutines
+        }
+        protected override void DoHalfTarget(BaseObject target) 
+        { 
+
+        }
+        protected override void DoAroundTarget(BaseObject target) 
+        { 
+
+        }
+
         private Coroutine _coBodyAttack = null;
         private IEnumerator CoBodyAttack()
         {
@@ -97,6 +107,5 @@ namespace STELLAREST_F1
 
             return false;
         }
-        #endregion
     }
 }

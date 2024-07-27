@@ -8,24 +8,12 @@ namespace STELLAREST_F1
     {
         public SpellIndicator Indicator { get; protected set; } = null;
 
-        public override void OnSkillStateExit()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void OnSkillStateEnter()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void OnSkillStateUpdate()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void OnSkillCallback()
-        {
-            throw new System.NotImplementedException();
-        }
+        public override void OnSkillStateEnter() { }
+        public override void OnSkillStateExit() { }
+        public override void OnSkillCallback() { }
+        protected override void DoSelfTarget(BaseObject target) { }
+        protected override void DoSingleTarget(BaseObject target) { }
+        protected override void DoHalfTarget(BaseObject target) { }
+        protected override void DoAroundTarget(BaseObject target) { }
     }
 }

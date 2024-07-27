@@ -42,9 +42,9 @@ namespace STELLAREST_F1
         // --- Parameters
         protected readonly int IsMoving = Animator.StringToHash(ReadOnly.AnimationParams.IsMoving);
         protected readonly int CanSkill = Animator.StringToHash(ReadOnly.AnimationParams.CanSkill);
-        protected readonly int OnSkill_A = Animator.StringToHash(ReadOnly.AnimationParams.OnSkill_A);
-        protected readonly int OnSkill_B = Animator.StringToHash(ReadOnly.AnimationParams.OnSkill_B);
-        protected readonly int OnSkill_C = Animator.StringToHash(ReadOnly.AnimationParams.OnSkill_C);
+        protected readonly int OnSkillA = Animator.StringToHash(ReadOnly.AnimationParams.OnSkillA);
+        protected readonly int OnSkillB = Animator.StringToHash(ReadOnly.AnimationParams.OnSkillB);
+        protected readonly int OnSkillC = Animator.StringToHash(ReadOnly.AnimationParams.OnSkillC);
         protected readonly int OnCollectEnv = Animator.StringToHash(ReadOnly.AnimationParams.OnCollectEnv);
 
         public bool Moving
@@ -65,27 +65,28 @@ namespace STELLAREST_F1
             {
                 case ESkillType.Skill_A:
                     {
-                        // ---> AnimState
-                        // EnteredAnimState(ECreatureAnimState.Upper_SkillA);
-                        Animator.SetTrigger(OnSkill_A);
-                        Animator.ResetTrigger(OnSkill_B);
-                        Animator.ResetTrigger(OnSkill_C);
+                        Animator.SetTrigger(OnSkillA);
+                        Animator.ResetTrigger(OnSkillB);
+                        Animator.ResetTrigger(OnSkillC);
+                        Animator.ResetTrigger(OnCollectEnv);
                     }
                     break;
 
                 case ESkillType.Skill_B:
                     {
-                        Animator.SetTrigger(OnSkill_B);
-                        Animator.ResetTrigger(OnSkill_A);
-                        Animator.ResetTrigger(OnSkill_C);
+                        Animator.SetTrigger(OnSkillB);
+                        Animator.ResetTrigger(OnSkillA);
+                        Animator.ResetTrigger(OnSkillC);
+                        Animator.ResetTrigger(OnCollectEnv);
                     }
                     break;
 
                 case ESkillType.Skill_C:
                     {
-                        Animator.SetTrigger(OnSkill_C);
-                        Animator.ResetTrigger(OnSkill_A);
-                        Animator.ResetTrigger(OnSkill_B);
+                        Animator.SetTrigger(OnSkillC);
+                        Animator.ResetTrigger(OnSkillA);
+                        Animator.ResetTrigger(OnSkillB);
+                        Animator.ResetTrigger(OnCollectEnv);
                     }
                     break;
             }
@@ -95,6 +96,9 @@ namespace STELLAREST_F1
         {
             //EnteredAnimState(ECreatureAnimState.Upper_CollectEnv);
             Animator.SetTrigger(OnCollectEnv);
+            Animator.ResetTrigger(OnSkillA);
+            Animator.ResetTrigger(OnSkillB);
+            Animator.ResetTrigger(OnSkillC);
         }
 
         // --- BaseAnimation으로 옮김
@@ -136,19 +140,11 @@ namespace STELLAREST_F1
             _creatureAnimCallback.OnCollectEnvCallbackHandler -= OnCollectEnvCallback;
             _creatureAnimCallback.OnCollectEnvCallbackHandler += OnCollectEnvCallback;
 
-            // _creatureAnimCallback.OnEnterLowerAnimIdleToSkillACallbackHandler -= OnEnterLowerAnimIdleToSkillACallback;
-            // _creatureAnimCallback.OnEnterLowerAnimIdleToSkillACallbackHandler += OnEnterLowerAnimIdleToSkillACallback;
-            
-            // _creatureAnimCallback.OnExitLowerAnimIdleToSkillACallbackHandler -= OnExitLowerAnimIdleToSkillACallback;
-            // _creatureAnimCallback.OnExitLowerAnimIdleToSkillACallbackHandler += OnExitLowerAnimIdleToSkillACallback;
-
             _creatureAnimCallback.OnDustEffectHandler -= OnDustEffectCallback;
             _creatureAnimCallback.OnDustEffectHandler += OnDustEffectCallback;
         }
 
         public virtual void OnCollectEnvCallback() { }
-        // public void OnEnterLowerAnimIdleToSkillACallback() => EnterLowerAnimIdleToSkillA = true;
-        // public void OnExitLowerAnimIdleToSkillACallback() => EnterLowerAnimIdleToSkillA = false;
         public virtual void OnDustEffectCallback() { }
         #endregion
 

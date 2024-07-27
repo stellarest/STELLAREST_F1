@@ -18,22 +18,6 @@ namespace STELLAREST_F1
             Max = Elite + 1
         }
 
-        public enum ECollectEnvRarity
-        {
-            Common,
-            Elite,
-            Max = Elite + 1
-        }
-
-        public enum EHeroBodyType
-        {
-            Human,
-            Skeleton1,
-            Skeleton2,
-            Undead,
-            Demon
-        }
-
         public enum EMonsterType
         {
             None = -1,
@@ -340,7 +324,15 @@ namespace STELLAREST_F1
             Self,
             Single,
             Half,
-            AllAround
+            Around
+        }
+
+        public enum ETargetDirection
+        {
+            Horizontal,
+            Vertical,
+            Diagonal,
+            Max = Diagonal + 1
         }
 
         // ####################################################
@@ -426,7 +418,7 @@ namespace STELLAREST_F1
         public enum EEffectSpawnType
         {
             None = -1,
-            Internal,              // 지속시간이 있는 기본적인 이펙트 
+            Internal,           // 지속시간이 있는 기본적인 이펙트 
             External,           // 외부(장판스킬)에서 이펙트를 관리(지속시간에 영향을 받지않음)
         }
 
@@ -626,9 +618,9 @@ namespace STELLAREST_F1
                 // --- Params
                 public static readonly string IsMoving = "IsMoving";
                 public static readonly string CanSkill = "CanSkill";
-                public static readonly string OnSkill_A = "OnSkill_A";
-                public static readonly string OnSkill_B = "OnSkill_B";
-                public static readonly string OnSkill_C = "OnSkill_C";
+                public static readonly string OnSkillA = "OnSkillA";
+                public static readonly string OnSkillB = "OnSkillB";
+                public static readonly string OnSkillC = "OnSkillC";
                 public static readonly string OnCollectEnv = "OnCollectEnv";
                 public static readonly string OnDead = "OnDead";
                 //public static readonly string LowerIdleToSkillA = "LowerIdleToSkillA";                 

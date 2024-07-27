@@ -453,7 +453,7 @@ namespace STELLAREST_F1.Data
         public string AttachmentPoint;
         public int InvokeRange; // --- 시전 조건
         public ESkillTargetRange TargetRange; // --- 시전 범위
-        public int SkillDistance;
+        public int TargetDistance;
         public int ProjectileID;
 		public float CoolTime;
         public int[] EffectIDs;

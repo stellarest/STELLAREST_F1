@@ -150,23 +150,17 @@ namespace STELLAREST_F1
             return cellSpawnPos;
         }
 
-        public static Vector3 GetRandomCellQuadPosition(Vector3 cellCenter, float cellSize = 1f)
+        public static Vector3 GetCellRandomQuadPosition(Vector3 cellCenter, float cellSize = 1f)
         {
             float offset = cellSize / 4.0f;
             Vector3[] quadCenters = new Vector3[4];
-            quadCenters[0] = cellCenter + new Vector3(offset, offset, 0);  // --- 1사분면 중앙
-            quadCenters[1] = cellCenter + new Vector3(-offset, offset, 0);   // --- 2사분면 중앙
-            quadCenters[2] = cellCenter + new Vector3(-offset, -offset, 0); // --- 3사분면 중앙
-            quadCenters[3] = cellCenter + new Vector3(offset, -offset, 0);  // --- 4사분면 중앙
+            quadCenters[0] = cellCenter + new Vector3(offset, offset, 0);       // --- 1사분면 중앙
+            quadCenters[1] = cellCenter + new Vector3(-offset, offset, 0);      // --- 2사분면 중앙
+            quadCenters[2] = cellCenter + new Vector3(-offset, -offset, 0);     // --- 3사분면 중앙
+            quadCenters[3] = cellCenter + new Vector3(offset, -offset, 0);      // --- 4사분면 중앙
+            
             int randIdx = UnityEngine.Random.Range(0, quadCenters.Length + 1);
-            // if (randIdx == 0) Debug.Log("1사분면");
-            // if (randIdx == 1) Debug.Log("2사분면");
-            // if (randIdx == 2) Debug.Log("3사분면");
-            // if (randIdx == 3) Debug.Log("4사분면");
-            // if (randIdx == 4) Debug.Log("센터");
-            // Debug.Break();
-
-            if (randIdx == quadCenters.Length)
+            if (randIdx == quadCenters.Length)                                  // --- Center
                 return cellCenter;
 
             return quadCenters[randIdx];
