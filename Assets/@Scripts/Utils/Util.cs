@@ -191,7 +191,6 @@ namespace STELLAREST_F1
             Vector3 cellCenter = Managers.Map.GetCenterWorld(Managers.Map.WorldToCell(worldPos));
             float distX = Mathf.Abs(worldPos.x - cellCenter.x);
             float distY = Mathf.Abs(worldPos.y - cellCenter.y);
-            // Debug.Log($"RET: {Mathf.Max(distX, distY)}");
             return Mathf.Max(distX, distY);
         }
 

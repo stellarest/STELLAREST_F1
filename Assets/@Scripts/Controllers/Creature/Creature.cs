@@ -83,13 +83,11 @@ namespace STELLAREST_F1
                 {
                     if (dx <= invokeRange && dy <= invokeRange)
                     {
-                        if (Util.IsNearCellCenter(transform.position))
-                        {
-                            CreatureAnim.ReadySkill = true;
-                            return true;
-                        }
+                        // 이 문제가 아니었다.
+                        CreatureAnim.ReadySkill = true;
+                        return true;
 
-                        // if (IsAtCellCenter)
+                        // if (Util.IsNearCellCenter(transform.position))
                         // {
                         //     CreatureAnim.ReadySkill = true;
                         //     return true;

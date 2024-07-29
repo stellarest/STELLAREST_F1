@@ -59,34 +59,36 @@ namespace STELLAREST_F1
             set => Animator.SetBool(CanSkill, value);
         }
 
+        
         public void Skill(ESkillType skillType)
         {
+            ResetAllTriggers();
             switch (skillType)
             {
                 case ESkillType.Skill_A:
                     {
                         Animator.SetTrigger(OnSkillA);
-                        Animator.ResetTrigger(OnSkillB);
-                        Animator.ResetTrigger(OnSkillC);
-                        Animator.ResetTrigger(OnCollectEnv);
+                        // Animator.ResetTrigger(OnSkillB);
+                        // Animator.ResetTrigger(OnSkillC);
+                        // Animator.ResetTrigger(OnCollectEnv);
                     }
                     break;
 
                 case ESkillType.Skill_B:
                     {
                         Animator.SetTrigger(OnSkillB);
-                        Animator.ResetTrigger(OnSkillA);
-                        Animator.ResetTrigger(OnSkillC);
-                        Animator.ResetTrigger(OnCollectEnv);
+                        // Animator.ResetTrigger(OnSkillA);
+                        // Animator.ResetTrigger(OnSkillC);
+                        // Animator.ResetTrigger(OnCollectEnv);
                     }
                     break;
 
                 case ESkillType.Skill_C:
                     {
                         Animator.SetTrigger(OnSkillC);
-                        Animator.ResetTrigger(OnSkillA);
-                        Animator.ResetTrigger(OnSkillB);
-                        Animator.ResetTrigger(OnCollectEnv);
+                        // Animator.ResetTrigger(OnSkillA);
+                        // Animator.ResetTrigger(OnSkillB);
+                        // Animator.ResetTrigger(OnCollectEnv);
                     }
                     break;
             }
@@ -99,6 +101,14 @@ namespace STELLAREST_F1
             Animator.ResetTrigger(OnSkillA);
             Animator.ResetTrigger(OnSkillB);
             Animator.ResetTrigger(OnSkillC);
+        }
+
+        private void ResetAllTriggers()
+        {
+            Animator.ResetTrigger(OnSkillA);
+            Animator.ResetTrigger(OnSkillB);
+            Animator.ResetTrigger(OnSkillC);
+            Animator.ResetTrigger(OnCollectEnv);
         }
 
         // --- BaseAnimation으로 옮김

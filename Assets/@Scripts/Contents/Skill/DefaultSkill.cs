@@ -189,9 +189,22 @@ namespace STELLAREST_F1
                 }
             }
         }
-        protected override void DoAroundTarget(BaseObject target) 
-        { 
-
+        protected override void DoAroundTarget(BaseObject target)
+        {
+            int dx = Mathf.Abs(target.CellPos.x - Owner.CellPos.x);
+            int dy = Mathf.Abs(target.CellPos.y - Owner.CellPos.y);
+            if (dx <= TargetDistance && dy <= TargetDistance)
+            {
+                target.OnDamaged(attacker: Owner, skillByAttacker: this);
+                if (SkillData.EffectIDs.Length != 0)
+                {
+                    List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
+                        effectIDs: SkillData.EffectIDs,
+                        spawnPos: Util.GetCellRandomQuadPosition(Managers.Map.GetCenterWorld(target.CellPos)),
+                        startCallback: null
+                    );
+                }
+            }
         }
     }
 }

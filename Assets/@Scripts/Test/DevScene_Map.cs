@@ -104,31 +104,37 @@ namespace STELLAREST_F1
 
                 {
                     SpawnChicken_Test(-6, 8);
-                    SpawnChicken_Test(-5, 8);
-                    SpawnChicken_Test(-4, 8);
-                    SpawnChicken_Test(-3, 8);
-                    SpawnChicken_Test(-7, 8);
-                    SpawnChicken_Test(-8, 8);
-                    SpawnChicken_Test(-9, 8);
-                    SpawnChicken_Test(-6, 7);
-                    SpawnChicken_Test(-6, 6);
-                    SpawnChicken_Test(-6, 5);
-                    SpawnChicken_Test(-6, 9);
-                    SpawnChicken_Test(-6, 10);
-                    SpawnChicken_Test(-6, 11);
-                    SpawnChicken_Test(-5, 9);
-                    SpawnChicken_Test(-5, 6);
-                    SpawnChicken_Test(-7, 9);
-                    SpawnChicken_Test(-7, 6);
-                    SpawnChicken_Test(-4, 9);
-                    SpawnChicken_Test(-4, 6);
-                    SpawnChicken_Test(-5, 5);
-                    SpawnChicken_Test(-7, 7);
-                    SpawnChicken_Test(-7, 5);
+                    // SpawnChicken_Test(-5, 8);
+                    // SpawnChicken_Test(-4, 8);
+                    // SpawnChicken_Test(-3, 8);
+                    // SpawnChicken_Test(-7, 8);
+                    // SpawnChicken_Test(-8, 8);
+                    // SpawnChicken_Test(-9, 8);
+                    // SpawnChicken_Test(-6, 7);
+                    // SpawnChicken_Test(-6, 6);
+                    // SpawnChicken_Test(-6, 5);
+                    // SpawnChicken_Test(-6, 9);
+                    // SpawnChicken_Test(-6, 10);
+                    // SpawnChicken_Test(-6, 11);
+                    // SpawnChicken_Test(-5, 9);
+                    // SpawnChicken_Test(-5, 6);
+                    // SpawnChicken_Test(-7, 9);
+                    // SpawnChicken_Test(-7, 6);
+                    // SpawnChicken_Test(-4, 9);
+                    // SpawnChicken_Test(-4, 6);
+                    // SpawnChicken_Test(-5, 5);
+                    // SpawnChicken_Test(-7, 7);
+                    // SpawnChicken_Test(-7, 5);
+
+                    // SpawnChicken_Test(-3, 3);
+                    // SpawnChicken_Test(-5, 4);
+                    // SpawnChicken_Test(-1, 4);
+                    // SpawnChicken_Test(-5, 2);
+                    // SpawnChicken_Test(-1, 2);
                 }
 
-                // StartCoroutine(CoContinuousSpawnMonster_Test(1.5f));
-                // StartCoroutine(CoContinuousSpawnEnv_Test(1f));
+                StartCoroutine(CoContinuousSpawnMonster_Test(1.5f));
+                StartCoroutine(CoContinuousSpawnEnv_Test(1f));
 
                 // --- Env
                 // Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env, 

@@ -273,6 +273,22 @@ namespace STELLAREST_F1
             }
         }
 
+        private bool SkillOrCollectEnv()
+        {
+            if (_leader.CanSkill)
+            {
+                _leader.CreatureSkill.CurrentSkill.DoSkill();
+                return true;
+            }
+            else if (_leader.CanCollectEnv)
+            {
+                _leader.CollectEnv();
+                return true;
+            }
+
+            return false;
+        }
+
         #region Core
         public override bool Init()
         {
@@ -297,23 +313,25 @@ namespace STELLAREST_F1
             return true;
         }
 
-        private IEnumerator Start()
-        {
-            while (true)
-            {
-                if (_leader.CanSkill)
-                    _leader.CreatureSkill.CurrentSkill.DoSkill();
+        // private IEnumerator Start()
+        // {
+        //     while (true)
+        //     {
+        //         // if (_leader.CanSkill)
+        //         //     _leader.CreatureSkill.CurrentSkill.DoSkill();
+        //         // if (_leader.CanSkill == false && _leader.CanCollectEnv)
+        //         //     _leader.CollectEnv();
 
-                if (_leader.CanCollectEnv)
-                    _leader.CollectEnv();
-
-                yield return null;
-            }
-        }
+        //         yield return null;
+        //     }
+        // }
 
         private void Update()
         {
             if (_leader.IsValid() == false)
+                return;
+
+            if (SkillOrCollectEnv())
                 return;
 
             if (_leader.ForceMove)
@@ -334,11 +352,15 @@ namespace STELLAREST_F1
                         TryPathFinding(_leader.Target.transform.position);
                     // --- Check Move To Current Cell Center / Stop when moving is not
                     else if (_leader.Moving == false)
+                    {
                         MoveToCurrentCellCenter();
+                    }
                     // --- Stop Moving is in the Nearest Target 
                     else
                         _leader.Moving = false;
                 }
+                else if (_leader.Target.IsValid() == false)
+                    MoveToCurrentCellCenter();
                 // -- Stop Moving in default when is not ForceMove
                 else
                     _leader.Moving = false;
@@ -388,6 +410,7 @@ namespace STELLAREST_F1
                 // --- 타겟이 존재할 경우, 이동하면서 공격
                 // if (_leader.ForceMove == false && _leader.Target.IsValid() == false)
                 //     _leader.Moving = false;
+
                 _leader.Moving = false;
                 _lockFindPath = false;
                 return;
