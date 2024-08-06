@@ -9,7 +9,6 @@ namespace STELLAREST_F1
 {
     public class MonsterAI : CreatureAI
     {
-        #region Background
         public Monster _monsterOwner { get; private set; } = null;
         private float _patrolDelta = 0f;
         private float _desiredStartPatrolTime = 0f;
@@ -17,13 +16,12 @@ namespace STELLAREST_F1
         { 
             get
             {
-                if (_monsterOwner.Target.IsValid())
+                if (IsValidTarget)
                     return _monsterOwner.Target.CellPos;
 
                 return _cellPatrolPos;
             }
         }
-        #endregion
 
         public override void InitialSetInfo(Creature owner)
         {
@@ -39,7 +37,7 @@ namespace STELLAREST_F1
 
         public override void UpdateIdle()
         {
-            if (_monsterOwner.IsValid() == false)
+            if (IsValidOwner == false)
                 return;
 
             _monsterOwner.LookAtValidTarget();
@@ -72,25 +70,6 @@ namespace STELLAREST_F1
                 _monsterOwner.CreatureAIState = ECreatureAIState.Idle;
                 return;
             }
-
-            // if ((transform.position - centeredPos).sqrMagnitude < 0.01f && Owner.CanSkill)
-            // {
-            //     if ((transform.position - centeredPos).sqrMagnitude < 0.01f)
-            //     {
-            //         Debug.Log("<color=magenta>### 111 ###</color>");
-            //         Debug.Break();
-            //     }
-
-            //     //Owner.StopCoLerpToCellPos();
-            //     Owner.CreatureAIState = ECreatureAIState.Idle;
-            //     return;
-            // }
-            // else if ((transform.position - centeredPos).sqrMagnitude < 0.01f || result == EFindPathResult.Fail_NoPath)
-            // {
-            //     Debug.Log("<color=magenta>### 222 ###</color>");
-            //     Owner.CreatureAIState = ECreatureAIState.Idle;
-            //     return;
-            // }
         }
 
         public override void OnDead()

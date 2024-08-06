@@ -8,179 +8,112 @@ namespace STELLAREST_F1
     public class MonsterAnimation : CreatureAnimation
     {
         private Monster _monsterOwner = null;
-        public override BaseObject Owner => _monsterOwner;
-
         public override void InitialSetInfo(int dataID, BaseObject owner)
         {
             base.InitialSetInfo(dataID, owner);
             string animatorTextID = Managers.Data.MonsterDataDict[dataID].AnimatorLabel;
             RuntimeAnimatorController animController = Managers.Resource.Load<RuntimeAnimatorController>(animatorTextID);
             if (string.IsNullOrEmpty(animatorTextID) == false && animController != null)
-            {
-                // Ref Origin
                 Animator.runtimeAnimatorController = animController;
-
-                // Cloned
-                // RuntimeAnimatorController cloned = UnityEngine.Object.Instantiate(animController);
-                // Animator.runtimeAnimatorController = cloned;
-            }
 
             _monsterOwner = owner as Monster;
         }
 
         public override void Flip(ELookAtDirection lookAtDir)
         {
-            // Monster LookAtDir Default Sprite : Left
+            // --- Monster Default Sprite Dir: Left
             Vector3 localScale = _monsterOwner.transform.localScale;
             int sign = (lookAtDir == ELookAtDirection.Left) ? (localScale.x > 0 ? 1 : -1) : -1;
             localScale.x = localScale.x * sign;
             _monsterOwner.transform.localScale = localScale;
         }
 
-        // #region Anim State Events
-        // // --- Enter
-        // public override void OnUpperIdleEnter()
-        // {
-        //     if (_monsterOwner.Target.IsValid() == false)
-        //         _monsterOwner.MonsterBody.MonsterEmoji = EMonsterEmoji.Normal;
-        //     else
-        //         _monsterOwner.MonsterBody.MonsterEmoji = EMonsterEmoji.Angry;
+        // --- Enter
+        protected override void OnUpperIdleEnter()
+        {
+            if (IsValidOwner == false)
+                return;
+
+            if (_monsterOwner.Target.IsValid() == false)
+                _monsterOwner.MonsterBody.MonsterEmoji = EMonsterEmoji.Normal;
+            else
+                _monsterOwner.MonsterBody.MonsterEmoji = EMonsterEmoji.Angry;
             
-        //     base.OnUpperIdleEnter();
-        // }
-        // public override void OnUpperIdleToSkillAEnter()
-        // {
-        //     _monsterOwner.MonsterBody.MonsterEmoji = EMonsterEmoji.Angry;
-        //     base.OnUpperIdleToSkillAEnter();
-        // }
-        // public override void OnUpperIdleToSkillBEnter()
-        // {
-        //     base.OnUpperIdleToSkillBEnter();
-        // }
-        // public override void OnUpperIdleToSkillCEnter()
-        // {
-        //     base.OnUpperIdleToSkillCEnter();
-        // }
-        // public override void OnUpperIdleToCollectEnvEnter()
-        // {
-        //     base.OnUpperIdleToCollectEnvEnter();
-        // }
+            base.OnUpperIdleEnter();
+        }
 
-        // public override void OnUpperMoveEnter()
-        // {
-        //     if (_monsterOwner.IsValid() == false)
-        //         return;
+        protected override void OnUpperMoveEnter()
+        {
+            if (IsValidOwner == false)
+                return;
 
-        //     _monsterOwner.MonsterBody.MonsterEmoji = EMonsterEmoji.Normal;
-        //     _monsterOwner.CreatureAIState = ECreatureAIState.Move;
-        //     _monsterOwner.StartCoLerpToCellPos();
-        // }
-        // public override void OnUpperMoveToSkillAEnter()
-        // {
-        //     base.OnUpperMoveToSkillAEnter();
-        // }
-        // public override void OnUpperMoveToSkillBEnter()
-        // {
-        //     base.OnUpperMoveToSkillBEnter();
-        // }
-        // public override void OnUpperMoveToSkillCEnter()
-        // {
-        //     base.OnUpperMoveToSkillCEnter();
-        // }
+            _monsterOwner.MonsterBody.MonsterEmoji = EMonsterEmoji.Normal;
+            _monsterOwner.CreatureAIState = ECreatureAIState.Move; // --- ???
+            _monsterOwner.StartCoLerpToCellPos(); // --- ???
+            base.OnUpperMoveEnter();
+        }
 
-        // public override void OnUpperDeadEnter()
-        // {
-        //     _monsterOwner.MonsterBody.MonsterEmoji = EMonsterEmoji.Dead;
-        //     base.OnUpperDeadEnter();
-        // }
+        protected override void OnUpperSkillAEnter()
+        {
+            if (IsValidOwner == false)
+                return;
 
-        // // --- Update
-        // public override void OnUpperIdleUpdate()
-        // {
-        //     base.OnUpperIdleUpdate();
-        // }
-        // public override void OnUpperIdleToSkillAUpdate()
-        // {
-        //     base.OnUpperIdleToSkillAUpdate();
-        // }
-        // public override void OnUpperIdleToSkillBUpdate()
-        // {
-        //     base.OnUpperIdleToSkillBUpdate();
-        // }
-        // public override void OnUpperIdleToSkillCUpdate()
-        // {
-        //     base.OnUpperIdleToSkillCUpdate();
-        // }
-        // public override void OnUpperIdleToCollectEnvUpdate()
-        // {
-        //     base.OnUpperIdleToCollectEnvUpdate();
-        // }
+            _monsterOwner.MonsterBody.MonsterEmoji = EMonsterEmoji.Angry;
+            base.OnUpperSkillAEnter();
+        }
 
-        // public override void OnUpperMoveUpdate()
-        // {
-        //     base.OnUpperMoveUpdate();
-        // }
-        // public override void OnUpperMoveToSkillAUpdate()
-        // {
-        //     base.OnUpperMoveToSkillAUpdate();
-        // }
-        // public override void OnUpperMoveToSkillBUpdate()
-        // {
-        //     base.OnUpperMoveToSkillBUpdate();
-        // }
-        // public override void OnUpperMoveToSkillCUpdate()
-        // {
-        //     base.OnUpperMoveToSkillCUpdate();
-        // }
+        protected override void OnUpperSkillBEnter() => base.OnUpperSkillBEnter();
+        protected override void OnUpperSkillCEnter() => base.OnUpperSkillCEnter();
+        protected override void OnUpperDeadEnter()
+        {
+            _monsterOwner.MonsterBody.MonsterEmoji = EMonsterEmoji.Dead;
+            base.OnUpperDeadEnter();
+        }
 
-        // public override void OnUpperDeadUpdate()
-        // {
-        //     base.OnUpperDeadUpdate();
-        // }
+        // --- Exit
+        protected override void OnUpperIdleExit()
+        {
+            if (IsValidOwner == false)
+                return;
 
-        // // --- Exit
-        // public override void OnUpperIdleExit()
-        // {
-        //     base.OnUpperIdleExit();
-        // }
-        // public override void OnUpperIdleToSkillAExit()
-        // {
-        //     base.OnUpperIdleToSkillAExit();
-        // }
-        // public override void OnUpperIdleToSkillBExit()
-        // {
-        //     base.OnUpperIdleToSkillBExit();
-        // }
-        // public override void OnUpperIdleToSkillCExit()
-        // {
-        //     base.OnUpperIdleToSkillCExit();
-        // }
-        // public override void OnUpperIdleToCollectEnvExit()
-        // {
-        //     base.OnUpperIdleToCollectEnvExit();
-        // }
+            base.OnUpperIdleExit();
+        }
+        protected override void OnUpperMoveExit()
+        {
+            if (IsValidOwner == false)
+                return;
 
-        // public override void OnUpperMoveExit()
-        // {
-        //     base.OnUpperMoveExit();
-        // }
-        // public override void OnUpperMoveToSkillAExit()
-        // {
-        //     base.OnUpperMoveToSkillAExit();
-        // }
-        // public override void OnUpperMoveToSkillBExit()
-        // {
-        //     base.OnUpperMoveToSkillBExit();
-        // }
-        // public override void OnUpperMoveToSkillCExit()
-        // {
-        //     base.OnUpperMoveToSkillCExit();
-        // }
+            base.OnUpperMoveExit();
+        }
+        protected override void OnUpperSkillAExit()
+        {
+            if (IsValidOwner == false)
+                return;
 
-        // public override void OnUpperDeadExit()
-        // {
-        //     base.OnUpperDeadExit();
-        // }
-        // #endregion
+            base.OnUpperSkillAExit();
+        }
+        protected override void OnUpperSkillBExit()
+        {
+            if (IsValidOwner == false)
+                return;
+
+            base.OnUpperSkillBExit();
+        }
+        protected override void OnUpperSkillCExit()
+        {
+            if (IsValidOwner == false)
+                return;
+
+            base.OnUpperSkillCExit();
+        }
+        
+        protected override void OnUpperDeadExit()
+            => base.OnUpperDeadExit();
     }
 }
+
+/*
+        // Cloned
+        // RuntimeAnimatorController cloned = UnityEngine.Object.Instantiate(animController);
+        // Animator.runtimeAnimatorController = cloned;
+*/

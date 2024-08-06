@@ -51,7 +51,7 @@ namespace STELLAREST_F1
             CellGrid = map.GetComponent<Grid>();
 
             ParseCollisionData(map, mapName);
-            // SpawnObjectsByData(map, mapName);
+            SpawnObjectsByData(map, mapName);
         }
 
         private void ParseCollisionData(GameObject map, string mapName, string tileMap = "Tilemap_Collision")
@@ -334,9 +334,17 @@ namespace STELLAREST_F1
             if (CanMove(cellPos, ignoreObjectType) == false)
                 return false;
 
-            RemoveObject(creature);
+            if (forceMove)
+            {
+                creature.SetCellPos(cellPos, stopLerpToCell, forceMove: true);
+                _cells[creature.CellPos] = null;
+                _cells[cellPos] = creature;
+                return true;
+            }
+
+            // RemoveObject(creature); --- REMOVE TEMPORARY 
             AddObject(creature, cellPos);
-            creature.SetCellPos(cellPos, stopLerpToCell, forceMove);
+            // creature.SetCellPos(cellPos, stopLerpToCell, forceMove);
             return true;
         }
 
@@ -371,7 +379,21 @@ namespace STELLAREST_F1
             if (prev != null)
                 return false;
 
+            obj.NextCellPos = cellPos;
+            // if (Util.IsNearCellCenter(baseObj: obj, threshold: 0.2f) == false)
+            // {
+            //     Debug.LogWarning("FAILED ADD OBJ.");
+            //     return false;
+            // }
+            if (Util.IsNearCellCenter(baseObj: obj, cellPos: cellPos, threshold: 0.1f) == false)
+                return false;
+
+            if (RemoveObject(obj) == false)
+                return false;
+
             _cells[cellPos] = obj;
+            obj.SetCellPos(cellPos);
+
             return true;
         }
 

@@ -24,7 +24,9 @@ namespace STELLAREST_F1
         // {
         //     while (true)
         //     {
-        //         yield return new WaitForSeconds(1f);
+        //         //yield return new WaitForSeconds(1f);
+        //         yield return null;
+
         //         foreach (var pair in Managers.Map.Cells)
         //         {
         //             if (pair.Value != null)

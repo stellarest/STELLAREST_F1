@@ -11,8 +11,6 @@ namespace STELLAREST_F1
     public class CreatureAnimation : BaseAnimation
     {
         private Creature _creatureOwner = null;
-        public override BaseObject Owner => _creatureOwner;
-
         private CreatureAnimationCallback _creatureAnimCallback = null;
 
         [SerializeField] private bool[] _canEnterAnimStates = null;
@@ -142,13 +140,13 @@ namespace STELLAREST_F1
                 SkillBase skill = _creatureOwner.CreatureSkill.SkillArray[i];
                 if (skill != null)
                 {
-                    _creatureAnimCallback.OnSkillCallbackHandler -= skill.OnSkillCallback;
-                    _creatureAnimCallback.OnSkillCallbackHandler += skill.OnSkillCallback;
+                    _creatureAnimCallback.OnSkillHandler -= skill.OnSkillCallback;
+                    _creatureAnimCallback.OnSkillHandler += skill.OnSkillCallback;
                 }
             }
 
-            _creatureAnimCallback.OnCollectEnvCallbackHandler -= OnCollectEnvCallback;
-            _creatureAnimCallback.OnCollectEnvCallbackHandler += OnCollectEnvCallback;
+            _creatureAnimCallback.OnCollectEnvHandler -= OnCollectEnvCallback;
+            _creatureAnimCallback.OnCollectEnvHandler += OnCollectEnvCallback;
 
             _creatureAnimCallback.OnDustEffectHandler -= OnDustEffectCallback;
             _creatureAnimCallback.OnDustEffectHandler += OnDustEffectCallback;
@@ -205,13 +203,9 @@ namespace STELLAREST_F1
             }
         }
         protected virtual void OnUpperIdleEnter() 
-        {
-            EnteredAnimState(ECreatureAnimState.Upper_Idle);
-        }
+            => EnteredAnimState(ECreatureAnimState.Upper_Idle);
         protected virtual void OnUpperMoveEnter()
-        {
-            EnteredAnimState(ECreatureAnimState.Upper_Move);
-        }
+            => EnteredAnimState(ECreatureAnimState.Upper_Move);
         protected virtual void OnUpperSkillAEnter()
         {
             EnteredAnimState(ECreatureAnimState.Upper_SkillA);
@@ -219,17 +213,11 @@ namespace STELLAREST_F1
             _creatureOwner.CreatureSkill.OnSkillStateEnter(ESkillType.Skill_A);
         }
         protected virtual void OnUpperSkillBEnter() 
-        {
-            EnteredAnimState(ECreatureAnimState.Upper_SkillB);
-        }
+            => EnteredAnimState(ECreatureAnimState.Upper_SkillB);
         protected virtual void OnUpperSkillCEnter() 
-        { 
-            EnteredAnimState(ECreatureAnimState.Upper_SkillC);
-        }
+            => EnteredAnimState(ECreatureAnimState.Upper_SkillC);
         protected virtual void OnUpperCollectEnvEnter() 
-        { 
-            EnteredAnimState(ECreatureAnimState.Upper_CollectEnv);
-        }
+            => EnteredAnimState(ECreatureAnimState.Upper_CollectEnv);
         protected virtual void OnUpperDeadEnter() 
         {
             ReleaseAllAnimStates();

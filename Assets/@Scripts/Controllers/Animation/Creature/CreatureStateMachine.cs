@@ -10,7 +10,6 @@ namespace STELLAREST_F1
         private CreatureAnimation _creatureAnim = null;
 
         public event System.Action<ECreatureAnimState> OnAnimStateEnterHandler = null;
-        // public event System.Action<ECreatureAnimState> OnAnimStateUpdateHandler = null; // --- 일단 생략
         public event System.Action<ECreatureAnimState> OnAnimStateExitHandler = null;
 
         public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -40,11 +39,6 @@ namespace STELLAREST_F1
             if (stateInfo.shortNameHash == _creatureAnim.Upper_Dead)
                 OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_Dead);
         }
-
-        // --- 일단 생략
-        // public override void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-        // {
-        // }
 
         public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {

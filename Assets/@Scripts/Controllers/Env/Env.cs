@@ -36,8 +36,9 @@ namespace STELLAREST_F1
 
             ObjectType = EObjectType.Env;
             RigidBody.bodyType = RigidbodyType2D.Static;
-            Collider.isTrigger = true;
-            EnvBody = GetComponent<EnvBody>();
+
+            EnvBody = BaseBody as EnvBody;
+            EnvAnim = BaseAnim as EnvAnimation;
 
             return true;
         }
@@ -47,7 +48,6 @@ namespace STELLAREST_F1
             base.InitialSetInfo(dataID);
             _maxLevel = dataID;
 
-            EnvAnim = BaseAnim as EnvAnimation;
             EnvData = Managers.Data.EnvDataDict[dataID];
             EnvType = EnvData.EnvType;
 

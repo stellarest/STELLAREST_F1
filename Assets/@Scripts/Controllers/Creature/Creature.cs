@@ -155,6 +155,21 @@ namespace STELLAREST_F1
             return FindPathAndMoveToCellPos(destCellPos, maxDepth, ignoreObjectType);
         }
 
+        // public bool IsAtCenter(Vector3Int destPos)
+        // {
+        //     Vector3 center = Managers.Map.GetCenterWorld(destPos);
+        //     Vector3 dir = center - transform.position;
+
+        //     float threshold = 0.1f;
+        //     if (dir.sqrMagnitude < threshold * threshold)
+        //     {
+        //         transform.position = center;
+        //         return true;
+        //     }
+
+        //     return false;
+        // }
+
         public EFindPathResult FindPathAndMoveToCellPos(Vector3Int destPos, int maxDepth, EObjectType ignoreObjectType = EObjectType.None)
         {
             if (IsForceMovingPingPongObject)
@@ -163,6 +178,10 @@ namespace STELLAREST_F1
             // ***** 이미 스킬(공격)중이면 길찾기 금지 *****
             // if (CreatureAIState == ECreatureAIState.Idle)
             //     return EFindPathResult.Fail_LerpCell;
+
+            // --- TEST
+            // if (IsAtCenter(destPos) == false)
+            //     return EFindPathResult.Fail_NoCenter;
 
             if (_coLerpToCellPos == null)
             {
@@ -274,9 +293,10 @@ namespace STELLAREST_F1
             if (base.Init() == false)
                 return false;
 
-            CreatureBody = GetComponent<CreatureBody>();
+            CreatureBody = BaseBody as CreatureBody;
             CreatureAnim = BaseAnim as CreatureAnimation;
             CreatureAnimCallback = CreatureAnim.GetComponent<CreatureAnimationCallback>();
+            
             return true;
         }
 
@@ -295,10 +315,9 @@ namespace STELLAREST_F1
 
             Collider.radius = CreatureData.ColliderRadius;
             CreatureSkill = gameObject.GetOrAddComponent<SkillComponent>();
-            //CreatureSkill.SetInfo(owner: this, CreatureData);
             CreatureSkill.InitialSetInfo(owner: this, creatureData: CreatureData);
-
             CreatureAnimCallback.InitialSetInfo(this);
+
             // --> Change to BaseEffect
             // CreatureEffect = gameObject.GetOrAddComponent<EffectComponent>();
             // CreatureEffect.InitialSetInfo(this);
@@ -357,11 +376,11 @@ namespace STELLAREST_F1
         protected Coroutine _coUpdateAI = null;
         protected IEnumerator CoUpdateAI()
         {
-            if (ObjectType == EObjectType.Monster)
-            {
-                UpdateCellPos();
-                yield break;
-            }
+            // if (ObjectType == EObjectType.Monster)
+            // {
+            //     UpdateCellPos();
+            //     yield break;
+            // }
 
             while (true)
             {

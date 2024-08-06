@@ -12,6 +12,9 @@ namespace STELLAREST_F1
     public class CreatureAI : InitBase
     {
         public Creature Owner { get; private set; } = null;
+        protected bool IsValidOwner => Owner.IsValid();
+        protected bool IsValidTarget => Owner.Target.IsValid();
+
         public virtual Vector3Int CellChasePos { get; } = Vector3Int.zero;
         private Queue<Vector3Int> _cantMoveCheckQueue = new Queue<Vector3Int>();
         /*
@@ -100,7 +103,6 @@ namespace STELLAREST_F1
             }
         }
 
-        #region Core
         public override bool Init()
         {
             if (base.Init() == false)
@@ -117,7 +119,6 @@ namespace STELLAREST_F1
         {
             StopCoFindEnemies();
         }
-        #endregion
 
         public bool PauseFindEnemies { get; protected set; } = false;
         private Coroutine _coFindEnemies = null;
@@ -159,7 +160,8 @@ namespace STELLAREST_F1
                         Owner.Targets.Add(Envs[i]);
                     }
 
-                    Owner.Targets = Owner.Targets.Where(n => n.IsValid())
+                    Owner.Targets = Owner.Targets
+                                    .Where(n => n.IsValid())
                                     .OrderBy(n =>
                                     {
                                          return n.ObjectType == EObjectType.Monster ? 0 :

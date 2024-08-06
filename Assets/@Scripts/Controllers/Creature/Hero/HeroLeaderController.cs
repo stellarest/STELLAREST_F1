@@ -9,6 +9,7 @@ using System.Linq;
 using UnityEngine.Analytics;
 using UnityEditor;
 using Unity.VisualScripting.ReorderableList.Element_Adder_Menu;
+using UnityEditor.Experimental.GraphView;
 
 namespace STELLAREST_F1
 {
@@ -21,7 +22,8 @@ namespace STELLAREST_F1
         [field: SerializeField] public bool ForceFollowToLeader { get; set; } = false;
 
         [SerializeField] private Vector3 _nMovementDir = Vector3.zero;
-
+        public Vector3 nLastMovementDir { get; private set;} = Vector3.zero;
+ 
         [SerializeField] private EHeroMemberFormationMode _heroMemberFormationMode = EHeroMemberFormationMode.FollowLeaderClosely;
         public EHeroMemberFormationMode HeroMemberFormationMode
         {
@@ -246,6 +248,7 @@ namespace STELLAREST_F1
             {
                 float degree = Mathf.Atan2(-nDir.x, nDir.y) * (180f / Mathf.PI);
                 _pointerPivot.rotation = Quaternion.Euler(0, 0, degree);
+                nLastMovementDir = nDir;
             }
         }
 
@@ -387,6 +390,18 @@ namespace STELLAREST_F1
             {
                 _leader.transform.position = center;
                 _leader.Moving = false;
+
+                // _nLastMovementDir로 Joystick LookAtTarget 정하면 되니까 갖고만 있기
+                // if (_nLastMovementDir.x < 0f)
+                // {
+                //     _leader.LookAtDir = ELookAtDirection.Left;
+                //     Debug.Log("LEFT");
+                // }
+                // else if (_nLastMovementDir.x > 0f)
+                // {
+                //     _leader.LookAtDir = ELookAtDirection.Right;
+                //     Debug.Log("RIGHT");
+                // }
             }
             else
             {

@@ -7,6 +7,7 @@ using Unity.Burst;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 using static STELLAREST_F1.Define;
+using UnityEngine.U2D;
 
 namespace STELLAREST_F1
 {
@@ -138,11 +139,18 @@ namespace STELLAREST_F1
                 if (_trySpawnCount++ >= ReadOnly.Util.CanTryMaxSpawnCount)
                     return Vector3Int.zero;
 
-                float angle = UnityEngine.Random.Range(0f, 360f) * Mathf.Rad2Deg;
-                float dist = UnityEngine.Random.Range(randMinPos--, randMaxPos++);
+                // float angle = UnityEngine.Random.Range(0f, 360f) * Mathf.Rad2Deg;
+                // float dist = UnityEngine.Random.Range(randMinPos--, randMaxPos++);
 
-                float x = Mathf.Cos(angle) * dist;
-                float y = Mathf.Sin(angle) * dist;
+                // float x = Mathf.Cos(angle) * dist;
+                // float y = Mathf.Sin(angle) * dist;
+
+                float angle = UnityEngine.Random.Range(0f, 360f);
+                float rad = angle * Mathf.Deg2Rad;
+                float dist = UnityEngine.Random.Range(randMinPos-- ,randMaxPos++);
+
+                float x = Mathf.Cos(rad) * dist;
+                float y = Mathf.Sin(rad) * dist;
 
                 cellSpawnPos = Managers.Map.WorldToCell(spawnPos + new Vector3(x, y, 0));
             }
@@ -150,18 +158,18 @@ namespace STELLAREST_F1
             return cellSpawnPos;
         }
 
-        public static Vector3 GetCellRandomQuadPosition(Vector3 cellCenter, float cellSize = 1f)
+        public static Vector3 GetRandomQuadPosition(Vector3 from, float dist = 1f)
         {
-            float offset = cellSize / 4.0f;
+            float offset = dist / 4.0f;
             Vector3[] quadCenters = new Vector3[4];
-            quadCenters[0] = cellCenter + new Vector3(offset, offset, 0);       // --- 1사분면 중앙
-            quadCenters[1] = cellCenter + new Vector3(-offset, offset, 0);      // --- 2사분면 중앙
-            quadCenters[2] = cellCenter + new Vector3(-offset, -offset, 0);     // --- 3사분면 중앙
-            quadCenters[3] = cellCenter + new Vector3(offset, -offset, 0);      // --- 4사분면 중앙
-            
+            quadCenters[0] = from + new Vector3(offset, offset, 0);       // --- 1사분면 중앙
+            quadCenters[1] = from + new Vector3(-offset, offset, 0);      // --- 2사분면 중앙
+            quadCenters[2] = from + new Vector3(-offset, -offset, 0);     // --- 3사분면 중앙
+            quadCenters[3] = from + new Vector3(offset, -offset, 0);      // --- 4사분면 중앙
+
             int randIdx = UnityEngine.Random.Range(0, quadCenters.Length + 1);
-            if (randIdx == quadCenters.Length)                                  // --- Center
-                return cellCenter;
+            if (randIdx == quadCenters.Length)                             // --- Center
+                return from;
 
             return quadCenters[randIdx];
         }
@@ -186,16 +194,25 @@ namespace STELLAREST_F1
                 return (pos1 - pos2).magnitude;
         }
 
-        public static float DistanceFromCellCenter(Vector3 worldPos)
-        {
-            Vector3 cellCenter = Managers.Map.GetCenterWorld(Managers.Map.WorldToCell(worldPos));
-            float distX = Mathf.Abs(worldPos.x - cellCenter.x);
-            float distY = Mathf.Abs(worldPos.y - cellCenter.y);
-            return Mathf.Max(distX, distY);
-        }
+        // public static float DistanceFromCellCenter(Vector3 worldPos)
+        // {
+        //     Vector3 cellCenter = Managers.Map.GetCenterWorld(Managers.Map.WorldToCell(worldPos));
+        //     float distX = Mathf.Abs(worldPos.x - cellCenter.x);
+        //     float distY = Mathf.Abs(worldPos.y - cellCenter.y);
+        //     return Mathf.Max(distX, distY);
+        // }
 
-        public static bool IsNearCellCenter(Vector3 worldPos, float threshold = 0.7f)
-            => DistanceFromCellCenter(worldPos) <= threshold;
+        // public static bool IsNearCellCenter(Vector3 worldPos, float threshold = 0.5f)
+        //     => DistanceFromCellCenter(worldPos) <= threshold;
+
+        public static bool IsNearCellCenter(BaseObject baseObj, Vector3Int cellPos, float threshold = 0.1f)
+        {
+            Vector3 center = Managers.Map.GetCenterWorld(cellPos);
+            if ((center - baseObj.transform.position).sqrMagnitude < threshold * threshold)
+                return true;
+
+            return false;
+        }
 
 #if UNITY_EDITOR
         [Conditional("UNITY_EDITOR")]

@@ -98,6 +98,33 @@ namespace STELLAREST_F1
             }
         }
 
+        // public bool IsAtCenter(float threshold = 0.1f)
+        // {
+        //     Vector3 center = Managers.Map.GetCenterWorld(CellPos);
+        //     Vector3 dir = center - transform.position;
+
+        //     if (dir.sqrMagnitude < threshold * threshold)
+        //     {
+        //         // transform.position = center;
+        //         return true;
+        //     }
+
+        //     return false;
+        // }
+
+        public bool IsAtCenter
+        {
+            get
+            {
+                Vector3 center = Managers.Map.GetCenterWorld(CellPos);
+                float threshold = 0.1f;
+                if ((center - transform.position).sqrMagnitude < threshold * threshold)
+                    return true;
+
+                return false;
+            }
+        }
+
         public void LookAtValidTarget()
         {
             if (Target.IsValid() == false)
@@ -121,12 +148,21 @@ namespace STELLAREST_F1
 
         [field: SerializeField] public bool LerpToCellPosCompleted { get; protected set; } = false;
         [field: SerializeField] public Vector3Int CellPos { get; protected set; } = Vector3Int.zero;
+        public void SetCellPos(Vector3Int cellPos) => CellPos = cellPos;
+
+        private Vector3Int _nextCellPos = Vector3Int.zero;
+        public Vector3Int NextCellPos
+        {
+            get => _nextCellPos;
+            set
+            {
+                _nextCellPos = value;
+                LerpToCellPosCompleted = false;
+            }
+        }
 
         [field: SerializeField] public Vector3 SpawnedPos { get; protected set; } = Vector3.zero;
         [field: SerializeField] public Vector3Int SpawnedCellPos { get; protected set; } = Vector3Int.zero;
-
-        public void SetCellPos(Vector3 position, bool forceMove = false)
-            => SetCellPos(Managers.Map.WorldToCell(position), forceMove: forceMove);
 
         public void UpdateCellPos()
         {
@@ -143,6 +179,9 @@ namespace STELLAREST_F1
             Managers.Map.AddObject(this, currentCellPos);
             CellPos = currentCellPos;
         }
+
+        public void SetCellPos(Vector3 position, bool forceMove = false)
+            => SetCellPos(cellPos: Managers.Map.WorldToCell(position), forceMove: forceMove);
 
         public void SetCellPos(Vector3Int cellPos, bool stopLerpToCell = false, bool forceMove = false)
         {
@@ -163,7 +202,9 @@ namespace STELLAREST_F1
             if (LerpToCellPosCompleted)
                 return;
 
-            Vector3 destPos = Managers.Map.GetCenterWorld(CellPos);
+            //Vector3 destPos = Managers.Map.GetCenterWorld(CellPos);
+            Vector3 destPos = Managers.Map.GetCenterWorld(NextCellPos);
+
             Vector3 dir = destPos - transform.position;
             if (dir.x < 0f)
                 LookAtDir = ELookAtDirection.Left;
@@ -198,16 +239,19 @@ namespace STELLAREST_F1
             if (base.Init() == false)
                 return false;
 
-            BaseAnim = Util.FindChild<BaseAnimation>(gameObject, name: ReadOnly.Util.AnimationBody, recursive: false);
             BaseBody = GetComponent<BaseBody>();
+            BaseAnim = Util.FindChild<BaseAnimation>(gameObject, name: ReadOnly.Util.AnimationBody, recursive: false);
 
             Collider = gameObject.GetOrAddComponent<CircleCollider2D>();
+            Collider.isTrigger = true;
+
             RigidBody = gameObject.GetOrAddComponent<Rigidbody2D>();
             RigidBody.constraints = RigidbodyConstraints2D.FreezeRotation;
             RigidBody.gravityScale = 0f;
             RigidBody.mass = 0f;
             RigidBody.drag = 0f;
             RigidBody.bodyType = RigidbodyType2D.Kinematic;
+            RigidBody.simulated = false;
 
             SortingGroup = gameObject.GetOrAddComponent<SortingGroup>();
             SortingGroup.sortingLayerName = ReadOnly.SortingLayers.SLName_BaseObject;
@@ -216,16 +260,16 @@ namespace STELLAREST_F1
             return true;
         }
 
-        private bool _initialSetInfo = false;
+        private bool _initCompleted = false;
         public virtual bool SetInfo(int dataID, Vector3 spawnPos)
         {
-            if (_initialSetInfo)
+            if (_initCompleted)
             {
                 EnterInGame(spawnPos);
                 return false;
             }
 
-            _initialSetInfo = true;
+            _initCompleted = true;
             InitialSetInfo(dataID);
             EnterInGame(spawnPos);
             return true;

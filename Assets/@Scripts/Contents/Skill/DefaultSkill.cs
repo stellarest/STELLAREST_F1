@@ -182,7 +182,8 @@ namespace STELLAREST_F1
                     {
                         List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
                             effectIDs: SkillData.EffectIDs,
-                            spawnPos: Util.GetCellRandomQuadPosition(Managers.Map.GetCenterWorld(target.CellPos)),
+                            spawnPos: Util.GetRandomQuadPosition(target.CenterPosition),
+                            //spawnPos: Util.GetCellRandomQuadPosition(Managers.Map.GetCenterWorld(target.CellPos)),
                             startCallback: null
                         );
                     }
@@ -200,7 +201,8 @@ namespace STELLAREST_F1
                 {
                     List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
                         effectIDs: SkillData.EffectIDs,
-                        spawnPos: Util.GetCellRandomQuadPosition(Managers.Map.GetCenterWorld(target.CellPos)),
+                            spawnPos: Util.GetRandomQuadPosition(target.CenterPosition),
+                        //spawnPos: Util.GetCellRandomQuadPosition(Managers.Map.GetCenterWorld(target.CellPos)),
                         startCallback: null
                     );
                 }

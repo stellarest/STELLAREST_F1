@@ -103,7 +103,7 @@ namespace STELLAREST_F1
                 leaderController.Leader = firstHero;
 
                 {
-                    SpawnChicken_Test(-6, 8);
+                    // SpawnChicken_Test(-6, 8);
                     // SpawnChicken_Test(-5, 8);
                     // SpawnChicken_Test(-4, 8);
                     // SpawnChicken_Test(-3, 8);
@@ -133,8 +133,8 @@ namespace STELLAREST_F1
                     // SpawnChicken_Test(-1, 2);
                 }
 
-                StartCoroutine(CoContinuousSpawnMonster_Test(1.5f));
-                StartCoroutine(CoContinuousSpawnEnv_Test(1f));
+                StartCoroutine(CoContinuousSpawnMonster_Test(2.5f));
+                // StartCoroutine(CoContinuousSpawnEnv_Test(1f));
 
                 // --- Env
                 // Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env, 

@@ -11,6 +11,9 @@ namespace STELLAREST_F1
     {
         #region Background
         public Creature Owner { get; private set; } = null;
+        protected bool IsValidOwner => Owner.IsValid();
+        protected bool IsValidTarget => Owner.Target.IsValid();
+
         public SkillData SkillData { get; private set; } = null;
         public int InvokeRange { get; private set; } = -1;
         public ESkillTargetRange TargetRange { get; private set; } = ESkillTargetRange.None;

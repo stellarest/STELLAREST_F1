@@ -244,7 +244,6 @@ namespace STELLAREST_F1
             {
                 StopCoUpdateAI();
                 Debug.Log("<color=white>Initial Release Leader Hero's AI</color>");
-
                 // 여기서 하니까 됨.. 이거 때문인가??
                 // Debug.Log($"1 - Inactive: {HeroBody.GetContainer(EHeroWeapon.WeaponL_Armor).TR.gameObject.name}");
                 // HeroBody.GetContainer(EHeroWeapon.WeaponL_Armor).TR.gameObject.SetActive(false);
@@ -258,16 +257,16 @@ namespace STELLAREST_F1
                 return false;
 
             ObjectType = EObjectType.Hero;
-            HeroBody = GetComponent<HeroBody>();
+            HeroBody = CreatureBody as HeroBody;
+            HeroAnim = CreatureAnim as HeroAnimation;
 
-            Collider.isTrigger = true;
-            RigidBody.simulated = false;
             return true;
         }
 
         protected override void InitialSetInfo(int dataID)
         {
             base.InitialSetInfo(dataID);
+            HeroAI = CreatureAI as HeroAI;
             HeroData = Managers.Data.HeroDataDict[dataID];
             for (int i = DataTemplateID; i < DataTemplateID + ReadOnly.Util.HeroMaxLevel;)
             {
@@ -277,23 +276,7 @@ namespace STELLAREST_F1
                 _maxLevel = i++;
             }
 
-            //HeroBody.InitialSetInfo(dataID, this);
-            HeroBody.HeroEmoji = EHeroEmoji.Idle;
-            HeroAnim = CreatureAnim as HeroAnimation;
-            //HeroAnim.InitialSetInfo(dataID, this);
-
-            // Type aiClassType = Util.GetTypeFromName(HeroData.AIClassName);
-            // CreatureAI = gameObject.AddComponent(aiClassType) as CreatureAI;
-            // CreatureAI.InitialSetInfo(this);
-            HeroAI = CreatureAI as HeroAI;
-
-            //CreatureRarity = HeroData.CreatureRarity;
             gameObject.name += $"_{HeroData.NameTextID.Replace(" ", "")}";
-            //Collider.radius = HeroData.ColliderRadius;
-
-            // CreatureSkill = gameObject.GetOrAddComponent<SkillComponent>();
-            // CreatureSkill.SetInfo(owner: this, HeroData);
-            Debug.Log("Hero::InitialSetInfo");
         }
 
         protected override void EnterInGame(Vector3 spawnPos)
@@ -304,6 +287,7 @@ namespace STELLAREST_F1
 
             Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
             Managers.Game.OnJoystickStateChangedHandler += OnJoystickStateChanged;
+            
             base.EnterInGame(spawnPos);
             StartCoroutine(CoInitialReleaseLeaderAI());
         }

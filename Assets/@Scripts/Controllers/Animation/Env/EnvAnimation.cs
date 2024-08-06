@@ -8,8 +8,6 @@ namespace STELLAREST_F1
     public class EnvAnimation : BaseAnimation
     {
         private Env _envOwner = null;
-        public override BaseObject Owner => _envOwner;
-
         public override bool Init()
         {
             if (base.Init() == false)

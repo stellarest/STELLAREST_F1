@@ -39,7 +39,7 @@ namespace STELLAREST_F1
             Vector3Int cellSpawnPos = Util.MakeSpawnPosition(spawnPos);
             if (Managers.Map.CanMove(cellSpawnPos) == false)
             {
-                Debug.LogWarning($"Failed Spawn Object: {objectType}");
+                Debug.LogWarning($"Failed: {nameof(Util.MakeSpawnPosition)}, {objectType}");
                 return null;
             }
 
