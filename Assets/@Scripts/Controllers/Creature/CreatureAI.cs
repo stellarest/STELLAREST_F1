@@ -173,6 +173,7 @@ namespace STELLAREST_F1
                 else if (targetType == EObjectType.Hero)
                 {
                     List<Hero> heroes = Managers.Map.GatherObjects<Hero>(Owner.transform.position, scanRange, scanRange);
+                    // Debug.Log(Owner.gameObject.name + " " + "Count: " + heroes.Count); // 0이 나오네?
                     for (int i = 0; i < heroes.Count; ++i)
                     {
                         if (heroes[i].IsValid() == false)

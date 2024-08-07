@@ -185,8 +185,8 @@ namespace STELLAREST_F1
 
             if (_coLerpToCellPos == null)
             {
-                Managers.Map.RemoveObject(this);
-                Managers.Map.AddObject(this, CellPos);
+                // Managers.Map.RemoveObject(this);
+                // Managers.Map.AddObject(this, CellPos);
                 return EFindPathResult.Fail_LerpCell;
             }
 

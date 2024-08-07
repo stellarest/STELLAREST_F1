@@ -9,10 +9,10 @@ namespace STELLAREST_F1
 {
     public class Monster : Creature
     {
-        private void Update()
-        {
-            Debug.Log($"MonCell: {CellPos}");
-        }
+        // private void Update()
+        // {
+        //     //Debug.Log($"MonCell: {CellPos}");
+        // }
         
         public Data.MonsterData MonsterData { get; private set; } = null;
         [SerializeField] private MonsterBody _monsterBody = null;

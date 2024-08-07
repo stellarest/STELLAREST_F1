@@ -98,6 +98,8 @@ namespace STELLAREST_F1
             }
         }
 
+        public bool IsValidOwner => this.IsValid();
+        public bool IsValidTarget => Target.IsValid();
         // public bool IsAtCenter(float threshold = 0.1f)
         // {
         //     Vector3 center = Managers.Map.GetCenterWorld(CellPos);
@@ -148,17 +150,25 @@ namespace STELLAREST_F1
 
         [field: SerializeField] public bool LerpToCellPosCompleted { get; protected set; } = false;
         [field: SerializeField] public Vector3Int CellPos { get; protected set; } = Vector3Int.zero;
-        public void SetCellPos(Vector3Int cellPos) => CellPos = cellPos;
 
-        private Vector3Int _nextCellPos = Vector3Int.zero;
-        public Vector3Int NextCellPos
+        public bool SetCellPos(Vector3 worldPos)
+            => SetCellPos(Managers.Map.WorldToCell(worldPos));
+
+        public bool SetCellPos(Vector3Int cellPos)
         {
-            get => _nextCellPos;
-            set
-            {
-                _nextCellPos = value;
-                LerpToCellPosCompleted = false;
-            }
+            if (Managers.Map.Cells.TryGetValue(cellPos, out BaseObject obj))
+                return false;
+
+            // ***********************************
+            if (Managers.Map.RemoveObject(this) == false)
+                return false;
+            // ***********************************
+
+            Managers.Map.Cells[cellPos] = this;
+            CellPos = cellPos;
+            transform.position = Managers.Map.GetCenterWorld(cellPos);
+            LerpToCellPosCompleted = true;
+            return true;
         }
 
         [field: SerializeField] public Vector3 SpawnedPos { get; protected set; } = Vector3.zero;
@@ -167,9 +177,8 @@ namespace STELLAREST_F1
         public void UpdateCellPos()
         {
             Vector3Int currentCellPos = Managers.Map.WorldToCell(transform.position);
-            Managers.Map.RemoveObject(this);
-            Managers.Map.AddObject(this, currentCellPos);
-            CellPos = currentCellPos;
+            if (Managers.Map.AddObject(this, currentCellPos))
+                CellPos = currentCellPos;
         }
 
         public void UpdateCellPos(Vector3 worldPos)
@@ -180,22 +189,22 @@ namespace STELLAREST_F1
             CellPos = currentCellPos;
         }
 
-        public void SetCellPos(Vector3 position, bool forceMove = false)
-            => SetCellPos(cellPos: Managers.Map.WorldToCell(position), forceMove: forceMove);
+        // public void SetCellPos(Vector3 position, bool forceMove = false)
+        //     => SetCellPos(cellPos: Managers.Map.WorldToCell(position), forceMove: forceMove);
 
-        public void SetCellPos(Vector3Int cellPos, bool stopLerpToCell = false, bool forceMove = false)
-        {
-            CellPos = cellPos;
+        // public void SetCellPos(Vector3Int cellPos, bool stopLerpToCell = false, bool forceMove = false)
+        // {
+        //     CellPos = cellPos;
 
-            if (stopLerpToCell == false) // 이녀석 때문임 !!!
-                LerpToCellPosCompleted = false;
+        //     if (stopLerpToCell == false)
+        //         LerpToCellPosCompleted = false;
 
-            if (forceMove)
-            {
-                transform.position = Managers.Map.GetCenterWorld(cellPos); // 이동은 셀 가운데로
-                LerpToCellPosCompleted = true;
-            }
-        }
+        //     if (forceMove)
+        //     {
+        //         transform.position = Managers.Map.GetCenterWorld(cellPos);
+        //         LerpToCellPosCompleted = true;
+        //     }
+        // }
 
         public virtual void LerpToCellPos(float movementSpeed)
         {
@@ -203,7 +212,7 @@ namespace STELLAREST_F1
                 return;
 
             //Vector3 destPos = Managers.Map.GetCenterWorld(CellPos);
-            Vector3 destPos = Managers.Map.GetCenterWorld(NextCellPos);
+            Vector3 destPos = Managers.Map.GetCenterWorld(CellPos);
 
             Vector3 dir = destPos - transform.position;
             if (dir.x < 0f)
@@ -214,6 +223,7 @@ namespace STELLAREST_F1
             if (dir.sqrMagnitude < 0.001f)
             {
                 transform.position = destPos;
+                //CellPos = NextCellPos; // Update CellPos..
                 LerpToCellPosCompleted = true;
                 return;
             }

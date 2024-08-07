@@ -15,7 +15,9 @@ namespace STELLAREST_F1
             get
             {
                 if (Owner.ForceMove == false && Owner.Target.IsValid())
+                {
                     return Owner.Target.CellPos;
+                }
 
                 HeroLeaderController leaderController = Managers.Object.HeroLeaderController;
                 switch (leaderController.HeroMemberFormationMode)

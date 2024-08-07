@@ -25,6 +25,8 @@ namespace STELLAREST_F1
         {
             if (HeroOwner.IsValid() == false)
                 return;
+            if (HeroOwner.IsLeader)
+                return;
 
             // --- Try ForceMove
             if (TryForceMove())
@@ -52,6 +54,8 @@ namespace STELLAREST_F1
         public override void UpdateMove()
         {
             if (HeroOwner.IsValid() == false)
+                return;
+            if (HeroOwner.IsLeader)
                 return;
 
             EFindPathResult result = HeroOwner.FindPathAndMoveToCellPos(destPos: CellChasePos,

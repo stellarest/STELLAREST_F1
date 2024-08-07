@@ -58,7 +58,8 @@ namespace STELLAREST_F1
 
                         Hero hero = go.GetComponent<Hero>();
                         hero.SetInfo(dataID, spawnPos);
-                        Managers.Map.MoveTo(creature: hero, cellSpawnPos, stopLerpToCell: false, forceMove: true);
+                        // Managers.Map.MoveTo(creature: hero, cellSpawnPos, stopLerpToCell: false, forceMove: true);
+                        Managers.Map.ForceMove(baseObj: hero, cellPos: cellSpawnPos);
                         Heroes.Add(hero);
                         return hero as T;
                     }
@@ -92,7 +93,7 @@ namespace STELLAREST_F1
 
                         Env env = go.GetComponent<Env>();
                         env.SetInfo(dataID, spawnPos);
-                        env.SetCellPos(position: spawnPos, forceMove: true);
+                        // env.SetCellPos(position: spawnPos, forceMove: true);
                         env.UpdateCellPos(spawnPos);
                         Envs.Add(env);
                         return env as T;

@@ -51,7 +51,7 @@ namespace STELLAREST_F1
             CellGrid = map.GetComponent<Grid>();
 
             ParseCollisionData(map, mapName);
-            SpawnObjectsByData(map, mapName);
+            // SpawnObjectsByData(map, mapName);
         }
 
         private void ParseCollisionData(GameObject map, string mapName, string tileMap = "Tilemap_Collision")
@@ -326,6 +326,21 @@ namespace STELLAREST_F1
             return objects.ToList();
         }
 
+        // START
+        public bool ForceMove(BaseObject baseObj, Vector3 worldPos, EObjectType ignoreObjectType = EObjectType.None)
+            => ForceMove(baseObj, Managers.Map.WorldToCell(worldPos), ignoreObjectType);
+
+        public bool ForceMove(BaseObject baseObj, Vector3Int cellPos, EObjectType ignoreObjectType = EObjectType.None)
+        {
+            if (CanMove(cellPos, ignoreObjectType) == false)
+                return false;
+
+            if (baseObj.SetCellPos(cellPos) == false)
+                return false;
+
+            return true;
+        }
+
         public bool MoveTo(Creature creature, Vector3 position, bool stopLerpToCell = false, bool forceMove = false, EObjectType ignoreObjectType = EObjectType.None)
             => MoveTo(creature: creature, cellPos: Managers.Map.WorldToCell(position), stopLerpToCell: stopLerpToCell, forceMove: forceMove, ignoreObjectType);
 
@@ -336,16 +351,18 @@ namespace STELLAREST_F1
 
             if (forceMove)
             {
-                creature.SetCellPos(cellPos, stopLerpToCell, forceMove: true);
+                // creature.SetCellPos(cellPos, stopLerpToCell, forceMove: true);
                 _cells[creature.CellPos] = null;
                 _cells[cellPos] = creature;
                 return true;
             }
 
             // RemoveObject(creature); --- REMOVE TEMPORARY 
-            AddObject(creature, cellPos);
+            if (AddObject(creature, cellPos))
+                return true;
+
             // creature.SetCellPos(cellPos, stopLerpToCell, forceMove);
-            return true;
+            return false;
         }
 
         #region Helpers
@@ -363,7 +380,7 @@ namespace STELLAREST_F1
             BaseObject prev = GetObject(obj.CellPos);
 
             // 지우려고하는데 obj 자기 자신이 아니라면
-            if (prev != obj)
+            if (prev.IsValid() && prev != obj)
                 return false;
 
             _cells[obj.CellPos] = null;
@@ -373,31 +390,37 @@ namespace STELLAREST_F1
         public bool AddObject(BaseObject obj, Vector3Int cellPos)
         {
             if (CanMove(cellPos) == false)
+            {
+                // Debug.Log("1");
                 return false;
+            }
 
             BaseObject prev = GetObject(cellPos);
             if (prev != null)
+            {
+                // Debug.Log("2");
                 return false;
-
-            obj.NextCellPos = cellPos;
-            // if (Util.IsNearCellCenter(baseObj: obj, threshold: 0.2f) == false)
-            // {
-            //     Debug.LogWarning("FAILED ADD OBJ.");
-            //     return false;
-            // }
+            }
+            
+            //obj.NextCellPos = cellPos;
             if (Util.IsNearCellCenter(baseObj: obj, cellPos: cellPos, threshold: 0.1f) == false)
+            {
+                // Debug.Log("3");
                 return false;
+            }
 
             if (RemoveObject(obj) == false)
+            {
+                // Debug.Log("4");
                 return false;
+            }
 
             _cells[cellPos] = obj;
-            obj.SetCellPos(cellPos);
-
+            // obj.SetCellPos(cellPos);
+            // Debug.Log("5");
             return true;
         }
 
-        // 이걸로 전부 교체 예정
         public bool CanMove(Vector3 worldPos, EObjectType ignoreObjectType)
             => CanMove(WorldToCell(worldPos), ignoreObjectType);
 

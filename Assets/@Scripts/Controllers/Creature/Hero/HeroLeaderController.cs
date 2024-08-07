@@ -356,14 +356,18 @@ namespace STELLAREST_F1
                     // --- Check Move To Current Cell Center / Stop when moving is not
                     else if (_leader.Moving == false)
                     {
-                        MoveToCurrentCellCenter();
+                        //MoveToCurrentCellCenter();
+                        MoveToNearCellCenter();
                     }
                     // --- Stop Moving is in the Nearest Target 
                     else
                         _leader.Moving = false;
                 }
                 else if (_leader.Target.IsValid() == false)
-                    MoveToCurrentCellCenter();
+                {
+                    // MoveToCurrentCellCenter();
+                    MoveToNearCellCenter();
+                }
                 // -- Stop Moving in default when is not ForceMove
                 else
                     _leader.Moving = false;
@@ -379,6 +383,30 @@ namespace STELLAREST_F1
             LateTickLeaderPos();
         }
         #endregion
+
+        private void MoveToNearCellCenter()
+        {
+            //Vector3 center = Managers.Map.GetCenterWorld(_leader.CellPos);
+            Vector3Int nearCell = Managers.Map.WorldToCell(_leader.transform.position);
+            Vector3 center = Managers.Map.GetCenterWorld(nearCell);
+            Vector3 dir = center - _leader.transform.position;
+
+            float threshold = 0.1f;
+            if (dir.sqrMagnitude < threshold * threshold)
+            {
+                _leader.transform.position = center;
+                _leader.Moving = false;
+            }
+            else
+            {
+                if (dir.x < 0f)
+                    _leader.LookAtDir = ELookAtDirection.Left;
+                else if (dir.x > 0f)
+                    _leader.LookAtDir = ELookAtDirection.Right;
+
+                _leader.transform.position += dir.normalized * _leader.MovementSpeed * Time.deltaTime;
+            }
+        }
 
         private void MoveToCurrentCellCenter()
         {
@@ -435,7 +463,6 @@ namespace STELLAREST_F1
 
         public Vector3 PathFindingPos => _leader.Target.IsValid() ? _leader.Target.transform.position : _pointer.position;
         private Vector3 GoToJoystickPos => _leader.transform.position + (_nMovementDir * _leader.MovementSpeed * Time.deltaTime);
-
         private Queue<Vector3Int> _leaderPath = new Queue<Vector3Int>();
 
         private int AddPath(Vector3Int startCellPos, Vector3Int targetCellPos)
@@ -537,10 +564,8 @@ namespace STELLAREST_F1
 
         private void LateTickLeaderPos()
         {
-            _leader.UpdateCellPos();
-
+            // --- Sorting heroes in same cellpos for leader
             {
-                // --- Sorting for leader in same cellpos
                 BaseObject obj = Managers.Map.GetObject(_leader.CellPos);
                 if (obj.IsValid() && obj.ObjectType == EObjectType.Hero)
                 {
@@ -554,6 +579,7 @@ namespace STELLAREST_F1
             }
 
             transform.position = _leader.CenterPosition;
+            _leader.UpdateCellPos();
         }
 
         private Coroutine _coPathFinding = null;
