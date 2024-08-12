@@ -84,7 +84,7 @@ namespace STELLAREST_F1
         [field: SerializeField] public float MovementSpeed { get; set; } = 0f;
 
         [field: SerializeField] public List<BaseObject> Targets { get; set; } = new List<BaseObject>();
-        public virtual BaseObject Target
+        public BaseObject Target
         {
             get
             {
@@ -100,32 +100,6 @@ namespace STELLAREST_F1
 
         public bool IsValidOwner => this.IsValid();
         public bool IsValidTarget => Target.IsValid();
-        // public bool IsAtCenter(float threshold = 0.1f)
-        // {
-        //     Vector3 center = Managers.Map.GetCenterWorld(CellPos);
-        //     Vector3 dir = center - transform.position;
-
-        //     if (dir.sqrMagnitude < threshold * threshold)
-        //     {
-        //         // transform.position = center;
-        //         return true;
-        //     }
-
-        //     return false;
-        // }
-
-        public bool IsAtCenter
-        {
-            get
-            {
-                Vector3 center = Managers.Map.GetCenterWorld(CellPos);
-                float threshold = 0.1f;
-                if ((center - transform.position).sqrMagnitude < threshold * threshold)
-                    return true;
-
-                return false;
-            }
-        }
 
         public void LookAtValidTarget()
         {
@@ -139,6 +113,8 @@ namespace STELLAREST_F1
                 LookAtDir = ELookAtDirection.Right;
         }
 
+        [field: SerializeField] public List<BaseObject> Allies { get; set; } = new List<BaseObject>();
+
         public static Vector3 GetLookAtRotation(Vector3 dir)
             => new Vector3(0, 0, Mathf.Atan2(-dir.x, dir.y) * Mathf.Rad2Deg);
 
@@ -148,8 +124,9 @@ namespace STELLAREST_F1
             StopAllCoroutines(); // --- DEFENSE
         }
 
-        [field: SerializeField] public bool LerpToCellPosCompleted { get; protected set; } = false;
         [field: SerializeField] public Vector3Int CellPos { get; protected set; } = Vector3Int.zero;
+        [field: SerializeField] public Vector3Int NextCellPos { get; set; } = Vector3Int.one;
+        [field: SerializeField] public bool LerpToCellPosCompleted { get; protected set; } = false;
 
         public bool SetCellPos(Vector3 worldPos)
             => SetCellPos(Managers.Map.WorldToCell(worldPos));
@@ -173,7 +150,6 @@ namespace STELLAREST_F1
 
         [field: SerializeField] public Vector3 SpawnedPos { get; protected set; } = Vector3.zero;
         [field: SerializeField] public Vector3Int SpawnedCellPos { get; protected set; } = Vector3Int.zero;
-
         public void UpdateCellPos()
         {
             Vector3Int currentCellPos = Managers.Map.WorldToCell(transform.position);
@@ -189,47 +165,42 @@ namespace STELLAREST_F1
             CellPos = currentCellPos;
         }
 
-        // public void SetCellPos(Vector3 position, bool forceMove = false)
-        //     => SetCellPos(cellPos: Managers.Map.WorldToCell(position), forceMove: forceMove);
+        public bool IsOnTheCellCenter
+        {
+            get
+            {
+                Vector3 center = Managers.Map.GetCenterWorld(CellPos);
+                float threshold = 0.1f;
+                if ((center - transform.position).sqrMagnitude < threshold * threshold)
+                    return true;
 
-        // public void SetCellPos(Vector3Int cellPos, bool stopLerpToCell = false, bool forceMove = false)
-        // {
-        //     CellPos = cellPos;
-
-        //     if (stopLerpToCell == false)
-        //         LerpToCellPosCompleted = false;
-
-        //     if (forceMove)
-        //     {
-        //         transform.position = Managers.Map.GetCenterWorld(cellPos);
-        //         LerpToCellPosCompleted = true;
-        //     }
-        // }
+                return false;
+            }
+        }
 
         public virtual void LerpToCellPos(float movementSpeed)
         {
             if (LerpToCellPosCompleted)
                 return;
-
-            //Vector3 destPos = Managers.Map.GetCenterWorld(CellPos);
-            Vector3 destPos = Managers.Map.GetCenterWorld(CellPos);
-
+                
+            Vector3 destPos = Managers.Map.GetCenterWorld(NextCellPos);
             Vector3 dir = destPos - transform.position;
             if (dir.x < 0f)
                 LookAtDir = ELookAtDirection.Left;
             else if (dir.x > 0f)
                 LookAtDir = ELookAtDirection.Right;
 
-            if (dir.sqrMagnitude < 0.001f)
+            float threshold = 0.1f;
+            if (dir.sqrMagnitude < threshold * threshold)
             {
-                transform.position = destPos;
-                //CellPos = NextCellPos; // Update CellPos..
                 LerpToCellPosCompleted = true;
+                transform.position = destPos;
                 return;
             }
 
             float moveDist = Mathf.Min(dir.magnitude, movementSpeed * Time.deltaTime);
             transform.position += dir.normalized * moveDist;
+            // LerpToCellPosCompleted = false;
         }
 
         protected void HitShakeMovement(float duration, float power, int vibrato)
@@ -243,7 +214,24 @@ namespace STELLAREST_F1
                });
         }
 
-        #region Core
+        // public bool IsTargetSamePosition
+        // {
+        //     get
+        //     {
+        //         if (IsValidOwner == false)
+        //             return false;
+
+        //         if (IsValidTarget == false)
+        //             return false;
+
+        //         float threshold = 1f;
+        //         return (Target.transform.position - transform.position).sqrMagnitude < threshold * threshold;
+        //     }
+        // }
+
+        //public bool IsOnCellCenter { get; protected set; } = false;
+
+        #region Init Core
         public override bool Init()
         {
             if (base.Init() == false)
@@ -321,6 +309,7 @@ namespace STELLAREST_F1
             Hp = StatData.MaxHp;
             Debug.Log($"<color=white>{gameObject.name}, {nameof(EnterInGame)}</color>");
         }
+        #endregion
 
         public virtual void OnDamaged(BaseObject attacker, SkillBase skillByAttacker)
         {
@@ -355,6 +344,5 @@ namespace STELLAREST_F1
         }
 
         protected virtual void OnDisable() { }
-        #endregion
     }
 }

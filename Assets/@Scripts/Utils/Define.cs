@@ -385,9 +385,9 @@ namespace STELLAREST_F1
         {
             None = -1,
             Fail_LerpCell,
-            Fail_NoPath,
+            // Fail_NoPath,
             Fail_MoveTo,
-            Fail_ForceMovePingPongObject,
+            Fail_ForceMove,
             Success
         }
 
@@ -700,7 +700,6 @@ namespace STELLAREST_F1
                 public static readonly int HeroMaxLevel = 5;
                 public static readonly int CanTryMaxSpawnCount = 999;
 
-
                 public static readonly int RockElementsCount = 3;
                 public static readonly int MaxActiveSkillsCount = 2;
                 public static readonly int HeroDefaultMoveDepth = 10; // default: 5 -> 10
@@ -710,6 +709,9 @@ namespace STELLAREST_F1
                 public static readonly int MaxCanPingPongConditionCount = 20;
 
                 public static readonly int ObjectScanRange = 6; // --- 대각선 상관없이 6칸
+
+                public static readonly int ScanEnemyRange = 6;
+                public static readonly int ScanAllyRange = ScanEnemyRange / 2;
 
                 // --- [ FLOATING ]
                 // -- [ HERO ]

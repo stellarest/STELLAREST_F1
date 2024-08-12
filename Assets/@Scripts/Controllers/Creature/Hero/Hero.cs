@@ -161,13 +161,13 @@ namespace STELLAREST_F1
                 if (HeroAnim.CanEnterAnimState(ECreatureAnimState.Upper_CollectEnv) == false)
                     return false;
 
-                if (ForceMove)
-                {
-                    if (HeroWeaponType != EHeroWeaponType.Default)
-                        HeroWeaponType = EHeroWeaponType.Default;
+                // if (ForceMove)
+                // {
+                //     if (HeroWeaponType != EHeroWeaponType.Default)
+                //         HeroWeaponType = EHeroWeaponType.Default;
 
-                    return false;
-                }
+                //     return false;
+                // }
 
                 int dx = Mathf.Abs(Target.CellPos.x - CellPos.x);
                 int dy = Mathf.Abs(Target.CellPos.y - CellPos.y);
@@ -197,25 +197,6 @@ namespace STELLAREST_F1
                 Debug.Log("<color=yellow>Try ChangeSpriteSet</color>");
                 CreatureRarity = ECreatureRarity.Elite;
                 HeroBody.ChangeSpriteSet(Managers.Data.HeroSpriteDataDict[_level]);
-            }
-        }
-
-        private void OnJoystickStateChanged(EJoystickState joystickState)
-        {   
-            if (this.IsValid() == false)
-                return;
-
-            switch (joystickState)
-            {
-                case EJoystickState.Drag:
-                    ForceMove = true;
-                    Managers.Object.HeroLeaderController.EnablePointer(true);
-                    break;
-
-                case EJoystickState.PointerUp:
-                    ForceMove = false;
-                    Managers.Object.HeroLeaderController.EnablePointer(false);
-                    break;
             }
         }
 
@@ -250,7 +231,7 @@ namespace STELLAREST_F1
             }
         }
 
-        #region Core
+        #region Init Core
         public override bool Init()
         {
             if (base.Init() == false)
@@ -285,12 +266,13 @@ namespace STELLAREST_F1
             LookAtDir = ELookAtDirection.Right; // --- Default Heroes Dir: Right
             CreatureAIState = ECreatureAIState.Move;
 
-            Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
-            Managers.Game.OnJoystickStateChangedHandler += OnJoystickStateChanged;
+            // Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
+            // Managers.Game.OnJoystickStateChangedHandler += OnJoystickStateChanged;
             
             base.EnterInGame(spawnPos);
             StartCoroutine(CoInitialReleaseLeaderAI());
         }
+        #endregion Init Core
 
         public override void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
             => base.OnDamaged(attacker, skillFromAttacker);
@@ -310,6 +292,26 @@ namespace STELLAREST_F1
             if (Managers.Game == null)
                 return;
         }
-        #endregion Core
     }
 }
+
+/*
+        // private void OnJoystickStateChanged(EJoystickState joystickState)
+        // {   
+        //     if (this.IsValid() == false)
+        //         return;
+
+        //     switch (joystickState)
+        //     {
+        //         case EJoystickState.Drag:
+        //             ForceMove = true;
+        //             Managers.Object.HeroLeaderController.EnablePointer(true);
+        //             break;
+
+        //         case EJoystickState.PointerUp:
+        //             ForceMove = false;
+        //             Managers.Object.HeroLeaderController.EnablePointer(false);
+        //             break;
+        //     }
+        // }
+*/

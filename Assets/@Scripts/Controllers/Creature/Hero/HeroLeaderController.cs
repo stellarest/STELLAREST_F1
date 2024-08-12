@@ -254,22 +254,21 @@ namespace STELLAREST_F1
 
         private void OnJoystickStateChanged(EJoystickState joystickState)
         {
-            Debug.Log("<color=yellow>Hero::OnJoystickStateChanged</color>");
-            if (_leader.IsValid() == false)
+            if (_leader.IsValidOwner == false)
                 return;
 
             switch (joystickState)
             {
                 case EJoystickState.Drag:
                     {
-                        _leader.ForceMove = true;
+                        ForceMove = true;
                         EnablePointer(true);
                     }
                     break;
 
                 case EJoystickState.PointerUp:
                     {
-                        _leader.ForceMove = false;
+                        ForceMove = false;
                         EnablePointer(false);
                     }
                     break;
@@ -278,6 +277,9 @@ namespace STELLAREST_F1
 
         private bool SkillOrCollectEnv()
         {
+            if (ForceMove)
+                return false;
+
             if (_leader.CanSkill)
             {
                 _leader.CreatureSkill.CurrentSkill.DoSkill();
@@ -292,7 +294,9 @@ namespace STELLAREST_F1
             return false;
         }
 
-        #region Core
+        [field: SerializeField] public bool ForceMove { get; private set; } = false;
+
+        #region Init Core
         public override bool Init()
         {
             if (base.Init() == false)
@@ -310,22 +314,58 @@ namespace STELLAREST_F1
             Managers.Game.OnMoveDirChangedHandler -= OnMovementDirChanged;
             Managers.Game.OnMoveDirChangedHandler += OnMovementDirChanged;
 
+            Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
+            Managers.Game.OnJoystickStateChangedHandler += OnJoystickStateChanged;
+
             HeroMemberFormationMode = EHeroMemberFormationMode.FollowLeaderClosely;
             ForceFollowToLeader = false;
             EnablePointer(false);
             return true;
         }
+        #endregion Init Core
 
-        // private IEnumerator Start()
+        // private void Update() --- Prev
         // {
-        //     while (true)
-        //     {
-        //         // if (_leader.CanSkill)
-        //         //     _leader.CreatureSkill.CurrentSkill.DoSkill();
-        //         // if (_leader.CanSkill == false && _leader.CanCollectEnv)
-        //         //     _leader.CollectEnv();
+        //     if (_leader.IsValid() == false)
+        //         return;
 
-        //         yield return null;
+        //     if (SkillOrCollectEnv())
+        //         return;
+
+        //     if (_leader.ForceMove)
+        //     {
+        //         // --- Joystick Only
+        //         if (_lockFindPath == false && Managers.Map.CanMove(GoToJoystickPos, ignoreObjectType: EObjectType.Hero))
+        //             Move();
+        //         // --- Joystick + Path Finding
+        //         else if (_lockFindPath == false && Managers.Map.CanMove(GoToJoystickPos, ignoreObjectType: EObjectType.Hero) == false)
+        //             TryPathFinding(_pointer.position);
+        //     }
+        //     else if (_lockFindPath == false)
+        //     {
+        //         if (_leader.Target.IsValid())
+        //         {
+        //             // --- Go to Target
+        //             if (_leader.IsInTheNearestTarget == false)
+        //                 TryPathFinding(_leader.Target.transform.position);
+        //             // --- Check Move To Current Cell Center / Stop when moving is not
+        //             else if (_leader.Moving == false)
+        //             {
+        //                 //MoveToCurrentCellCenter();
+        //                 _leader.MoveToNearCellCenter();
+        //             }
+        //             // --- Stop Moving is in the Nearest Target 
+        //             else
+        //                 _leader.Moving = false;
+        //         }
+        //         else if (_leader.Target.IsValid() == false)
+        //         {
+        //             // MoveToCurrentCellCenter();
+        //             _leader.MoveToNearCellCenter();
+        //         }
+        //         // -- Stop Moving in default when is not ForceMove
+        //         else
+        //             _leader.Moving = false;
         //     }
         // }
 
@@ -337,7 +377,7 @@ namespace STELLAREST_F1
             if (SkillOrCollectEnv())
                 return;
 
-            if (_leader.ForceMove)
+            if (ForceMove)
             {
                 // --- Joystick Only
                 if (_lockFindPath == false && Managers.Map.CanMove(GoToJoystickPos, ignoreObjectType: EObjectType.Hero))
@@ -353,26 +393,20 @@ namespace STELLAREST_F1
                     // --- Go to Target
                     if (_leader.IsInTheNearestTarget == false)
                         TryPathFinding(_leader.Target.transform.position);
-                    // --- Check Move To Current Cell Center / Stop when moving is not
-                    else if (_leader.Moving == false)
-                    {
-                        //MoveToCurrentCellCenter();
-                        MoveToNearCellCenter();
-                    }
-                    // --- Stop Moving is in the Nearest Target 
+                    // --- Stop Moving(Go to Cell Center)
+                    else if (_leader.IsOnTheCellCenter == false)
+                        _leader.MoveToCellCenter();
+                    // --- Stop
                     else
                         _leader.Moving = false;
                 }
-                else if (_leader.Target.IsValid() == false)
-                {
-                    // MoveToCurrentCellCenter();
-                    MoveToNearCellCenter();
-                }
-                // -- Stop Moving in default when is not ForceMove
+                // --- Stop Moving(Go to Cell Center)
+                else if (_leader.Target.IsValid() == false && _leader.IsOnTheCellCenter == false)
+                    _leader.MoveToCellCenter();
+                // -- Stop
                 else
                     _leader.Moving = false;
             }
-
         }
 
         private void LateUpdate()
@@ -381,65 +415,6 @@ namespace STELLAREST_F1
                 return;
 
             LateTickLeaderPos();
-        }
-        #endregion
-
-        private void MoveToNearCellCenter()
-        {
-            //Vector3 center = Managers.Map.GetCenterWorld(_leader.CellPos);
-            Vector3Int nearCell = Managers.Map.WorldToCell(_leader.transform.position);
-            Vector3 center = Managers.Map.GetCenterWorld(nearCell);
-            Vector3 dir = center - _leader.transform.position;
-
-            float threshold = 0.1f;
-            if (dir.sqrMagnitude < threshold * threshold)
-            {
-                _leader.transform.position = center;
-                _leader.Moving = false;
-            }
-            else
-            {
-                if (dir.x < 0f)
-                    _leader.LookAtDir = ELookAtDirection.Left;
-                else if (dir.x > 0f)
-                    _leader.LookAtDir = ELookAtDirection.Right;
-
-                _leader.transform.position += dir.normalized * _leader.MovementSpeed * Time.deltaTime;
-            }
-        }
-
-        private void MoveToCurrentCellCenter()
-        {
-            Vector3 center = Managers.Map.GetCenterWorld(_leader.CellPos);
-            Vector3 dir = center - _leader.transform.position;
-
-            float threshold = 0.1f;
-            if (dir.sqrMagnitude < threshold * threshold)
-            {
-                _leader.transform.position = center;
-                _leader.Moving = false;
-
-                // _nLastMovementDir로 Joystick LookAtTarget 정하면 되니까 갖고만 있기
-                // if (_nLastMovementDir.x < 0f)
-                // {
-                //     _leader.LookAtDir = ELookAtDirection.Left;
-                //     Debug.Log("LEFT");
-                // }
-                // else if (_nLastMovementDir.x > 0f)
-                // {
-                //     _leader.LookAtDir = ELookAtDirection.Right;
-                //     Debug.Log("RIGHT");
-                // }
-            }
-            else
-            {
-                if (dir.x < 0f)
-                    _leader.LookAtDir = ELookAtDirection.Left;
-                else if (dir.x > 0f)
-                    _leader.LookAtDir = ELookAtDirection.Right;
-
-                _leader.transform.position += dir.normalized * _leader.MovementSpeed * Time.deltaTime;
-            }
         }
 
         private void TryPathFinding(Vector3 destPos)
@@ -450,10 +425,7 @@ namespace STELLAREST_F1
             int pathCount = AddPath(currentCellPos, destCellPos);
             if (pathCount == 0)
             {
-                // --- 타겟이 존재할 경우, 이동하면서 공격
-                // if (_leader.ForceMove == false && _leader.Target.IsValid() == false)
-                //     _leader.Moving = false;
-
+                Debug.Log($"PathCount: {pathCount}");
                 _leader.Moving = false;
                 _lockFindPath = false;
                 return;
@@ -500,6 +472,7 @@ namespace STELLAREST_F1
 
                 _leader.Moving = true;
                 _leader.transform.position = GoToJoystickPos;
+                // _leader.LerpToCellPosCompleted = false;
             }
         }
 
@@ -578,8 +551,11 @@ namespace STELLAREST_F1
                 }
             }
 
+            // --- Update Leader Mark
             transform.position = _leader.CenterPosition;
-            _leader.UpdateCellPos();
+
+            // --- Update Leader CellPos
+            //_leader.UpdateCellPos();
         }
 
         private Coroutine _coPathFinding = null;
@@ -599,6 +575,7 @@ namespace STELLAREST_F1
                 if (dir.sqrMagnitude < 0.001f)
                 {
                     _leader.transform.position = destPos;
+                    // _leader.LerpToCellPosCompleted = true;
                     _leaderPath.Dequeue();
                     if (Managers.Map.CanMove(GoToJoystickPos, ignoreObjectType: EObjectType.Hero))
                     {
@@ -611,13 +588,14 @@ namespace STELLAREST_F1
                 {
                     float moveDist = Mathf.Min(dir.magnitude, _leader.MovementSpeed * Time.deltaTime);
                     _leader.transform.position += dir.normalized * moveDist; // 한 번 이동은 완료한다.
+                    // _leader.LerpToCellPosCompleted = false;
                 }
 
                 yield return null;
             }
 
             // --- 타겟이 존재할 경우, 이동하면서 공격
-            if (_leader.ForceMove == false && _leader.Target.IsValid() == false)
+            if (ForceMove == false && _leader.Target.IsValid() == false)
                 _leader.Moving = false;
 
             _lockFindPath = false;

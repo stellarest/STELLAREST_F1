@@ -8,6 +8,11 @@ using DG.Tweening;
 using UnityEditor;
 
 /*
+// --- LeaderController Movement(FindPath)
+
+// --- 오브젝트의 모든 행동은 셀 가운데에서 시작
+// --- 일반 몬스터AI 이동 고치긴했는데 전투 테스트 해봐야함
+
 // --- Chicken AI 고쳐기 (바디어택)
 // --- 히어로 리더 둘러쌓여있을 때 조이스틱 방향 참고
 // --- 조이스틱을 돌리고 공격할 때, Target을 바라보지 않는거(아니면 이미 공격 동작 나오면 데미지 들어가게, 근데 이건 어쌔신때문에 안될듯)

@@ -48,8 +48,8 @@ namespace STELLAREST_F1
                 return;
 
             _monsterOwner.MonsterBody.MonsterEmoji = EMonsterEmoji.Normal;
-            _monsterOwner.CreatureAIState = ECreatureAIState.Move; // --- ???
-            _monsterOwner.StartCoLerpToCellPos(); // --- ???
+            // _monsterOwner.CreatureAIState = ECreatureAIState.Move; // --- ???
+            // _monsterOwner.StartCoLerpToCellPos(); // --- ???
             base.OnUpperMoveEnter();
         }
 

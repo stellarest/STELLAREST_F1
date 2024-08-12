@@ -9,7 +9,6 @@ namespace STELLAREST_F1
 {
     public abstract class SkillBase : InitBase
     {
-        #region Background
         public Creature Owner { get; private set; } = null;
         protected bool IsValidOwner => Owner.IsValid();
         protected bool IsValidTarget => Owner.Target.IsValid();
@@ -86,23 +85,8 @@ namespace STELLAREST_F1
             return Owner.CenterPosition;
         }
 
-        public bool CanSkill()
-        {
-            // if (RemainCoolTime > 0f)
-            //     return false;
-
-            // if (Owner.Target.IsValid() && )
-
-            return false;
-        }
-
-        protected bool IsSkillTarget(BaseObject target)
-        {
-            return false;
-        }
-        #endregion
-
-        #region Core
+        protected List<BaseObject> _skillTargets = new List<BaseObject>();
+        #region Init Core
         public override bool Init()
         {
             if (base.Init() == false)
@@ -141,6 +125,9 @@ namespace STELLAREST_F1
         protected abstract void DoSelfTarget(BaseObject target);
         protected abstract void DoSingleTarget(BaseObject target);
         protected abstract void DoHalfTarget(BaseObject target);
+        
+        protected abstract void GatherHalfTarget(BaseObject target); // --- TEST
+
         protected abstract void DoAroundTarget(BaseObject target);
     }
 }

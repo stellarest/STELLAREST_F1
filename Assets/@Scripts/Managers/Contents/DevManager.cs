@@ -20,19 +20,18 @@ namespace STELLAREST_F1
             Instance = this;
         }
 
-        private IEnumerator Start()
-        {
-            while (true)
-            {
-                //yield return new WaitForSeconds(1f);
-                yield return null;
-                foreach (var pair in Managers.Map.Cells)
-                {
-                    if (pair.Value != null)
-                        Debug.Log($"({pair.Key}, {pair.Value.gameObject.name}");
-                }
-            }
-        }
+        // private IEnumerator Start()
+        // {
+        //     while (true)
+        //     {
+        //         yield return null;
+        //         foreach (var pair in Managers.Map.Cells)
+        //         {
+        //             if (pair.Value != null)
+        //                 Debug.Log($"({pair.Key}, {pair.Value.gameObject.name}");
+        //         }
+        //     }
+        // }
 
         private void Update()
         {
@@ -46,7 +45,7 @@ namespace STELLAREST_F1
                     else
                         Debug.Log("NONE OF VALUE...");
                 }
-                Debug.Log($"<color=white>Is GameOver: {Managers.Game.IsGameOver}</color>");
+                // Debug.Log($"<color=white>Is GameOver: {Managers.Game.IsGameOver}</color>");
             }
 
             if (Input.GetKeyDown("1"))

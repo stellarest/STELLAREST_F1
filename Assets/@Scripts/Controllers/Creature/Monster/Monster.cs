@@ -9,11 +9,6 @@ namespace STELLAREST_F1
 {
     public class Monster : Creature
     {
-        // private void Update()
-        // {
-        //     //Debug.Log($"MonCell: {CellPos}");
-        // }
-        
         public Data.MonsterData MonsterData { get; private set; } = null;
         [SerializeField] private MonsterBody _monsterBody = null;
         public MonsterBody MonsterBody
@@ -58,6 +53,7 @@ namespace STELLAREST_F1
             }
         }
 
+        #region Init Core
         public override bool Init()
         {
             if (base.Init() == false)
@@ -66,7 +62,6 @@ namespace STELLAREST_F1
             ObjectType = EObjectType.Monster;
             MonsterBody = CreatureBody as MonsterBody;
             MonsterAnim = CreatureAnim as MonsterAnimation;
-
             return true;
         }
 
@@ -97,6 +92,7 @@ namespace STELLAREST_F1
                     owner: this);
             });
         }
+        #endregion
 
         public override void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
             => base.OnDamaged(attacker, skillFromAttacker);

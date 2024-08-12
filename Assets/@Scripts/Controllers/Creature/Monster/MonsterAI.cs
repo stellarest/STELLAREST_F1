@@ -23,6 +23,40 @@ namespace STELLAREST_F1
             }
         }
 
+        protected override IEnumerator CoFindTargets()
+        {
+            int scanRange = ReadOnly.Util.ObjectScanRange; // --- 6칸
+            float scanTick = ReadOnly.Util.ObjectScanTick;
+            while (true)
+            {
+                Owner.Targets.Clear();
+                if (Owner.IsValidOwner == false)
+                {
+                    StopCoFindTargets();
+                    yield break;
+                }
+
+                if (PauseFindTargets)
+                {
+                    yield return null;
+                    continue;
+                }
+                
+                // Need to add ally option later
+                List<Hero> heroes = Managers.Map.GatherObjects<Hero>(Owner.transform.position, scanRange, scanRange);
+                for (int i = 0; i < heroes.Count; ++i)
+                {
+                    if (heroes[i].IsValidOwner == false)
+                        continue;
+
+                    Owner.Targets.Add(heroes[i]);
+                }
+
+                yield return new WaitForSeconds(scanTick);
+            }
+        }
+
+        #region Init Core
         public override void InitialSetInfo(Creature owner)
         {
             base.InitialSetInfo(owner);
@@ -34,6 +68,7 @@ namespace STELLAREST_F1
             _desiredStartPatrolTime = Random.Range(2f, 4f);
             StartCoFindEnemies();
         }
+        #endregion Init Core
 
         public override void UpdateIdle()
         {
@@ -65,11 +100,17 @@ namespace STELLAREST_F1
 
             _monsterOwner.LookAtValidTarget();
             EFindPathResult result = _monsterOwner.FindPathAndMoveToCellPos(destPos: CellChasePos, maxDepth: ReadOnly.Util.MonsterDefaultMoveDepth);
-            if (_monsterOwner.CanSkill || result == EFindPathResult.Fail_NoPath)
+            if (result == EFindPathResult.Fail_LerpCell)
             {
                 _monsterOwner.CreatureAIState = ECreatureAIState.Idle;
                 return;
             }
+
+            // if (_monsterOwner.CanSkill || result == EFindPathResult.Fail_LerpCell)
+            // {
+            //     _monsterOwner.CreatureAIState = ECreatureAIState.Idle;
+            //     return;
+            // }
         }
 
         public override void OnDead()
@@ -84,8 +125,7 @@ namespace STELLAREST_F1
         protected IEnumerator CoPatrol(float minDistance, float maxDistance)
         {
             int attemptCount = 0;
-            int maxAttemptCount = 100;
-            //Vector3 _initialSpawnPos = Managers.Map.GetCenterWorld(_monsterOwner.CellPos);
+            int maxAttemptCount = 999;
             Vector3 _initialSpawnPos = _monsterOwner.SpawnedPos;
             if (_patrolPingPongFlag == false)
             {
@@ -98,7 +138,8 @@ namespace STELLAREST_F1
                 {
                     if (attemptCount++ >= maxAttemptCount)
                     {
-                        _cellPatrolPos = _monsterOwner.CellPos;
+                        //_cellPatrolPos = _monsterOwner.CellPos;
+                        _cellPatrolPos = Managers.Map.WorldToCell(_monsterOwner.transform.position); // --- TEMP
                         break;
                     }
 

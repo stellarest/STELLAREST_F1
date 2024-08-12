@@ -17,8 +17,8 @@ namespace STELLAREST_F1
             {
                 // --- Owner.ForceMove == false는 계속 false로 잠그고 있어야함.
                 // --- 기본적으로 Leader의 Position을 쫓는다.
-                if (HeroOwner.ForceMove == false)
-                {
+                // if (HeroOwner.ForceMove == false)
+                // {
                     if (_tryBackStep)
                     {
                         int dx = Mathf.Abs(_backStepDestCellPos.x - HeroOwner.CellPos.x);
@@ -34,7 +34,7 @@ namespace STELLAREST_F1
                     }
                     else if (HeroOwner.Target.IsValid())
                         return HeroOwner.Target.CellPos;
-                }
+                // }
 
                 HeroLeaderController leaderController = Managers.Object.HeroLeaderController;
                 switch (leaderController.HeroMemberFormationMode)
@@ -163,25 +163,25 @@ namespace STELLAREST_F1
             EFindPathResult result = HeroOwner.FindPathAndMoveToCellPos(destPos: CellChasePos,
                maxDepth: ReadOnly.Util.HeroDefaultMoveDepth);
 
-            if (HeroOwner.CanSkill || HeroOwner.CanCollectEnv || result == EFindPathResult.Fail_NoPath)
-            {
-                Hero leader = Managers.Object.HeroLeaderController.Leader;
-                if (leader.Moving == false)
-                {
-                    HeroOwner.CreatureAIState = ECreatureAIState.Idle;
-                    return;
-                }
-                // --- 움직이고 있을 때, Skill이 가능하면 Moving Shot을 한다.
-                else if (leader.Moving && HeroOwner.CanSkill)
-                {
-                    HeroOwner.CreatureSkill.CurrentSkill.DoSkill();
-                    return;
-                }
-            }
+            // if (HeroOwner.CanSkill || HeroOwner.CanCollectEnv || result == EFindPathResult.Fail_NoPath)
+            // {
+            //     Hero leader = Managers.Object.HeroLeaderController.Leader;
+            //     if (leader.Moving == false)
+            //     {
+            //         HeroOwner.CreatureAIState = ECreatureAIState.Idle;
+            //         return;
+            //     }
+            //     // --- 움직이고 있을 때, Skill이 가능하면 Moving Shot을 한다.
+            //     else if (leader.Moving && HeroOwner.CanSkill)
+            //     {
+            //         HeroOwner.CreatureSkill.CurrentSkill.DoSkill();
+            //         return;
+            //     }
+            // }
 
-            {
-                EvadePingPongMovement();
-            }
+            // {
+            //     EvadePingPongMovement();
+            // }
         }
 
         public override void OnDead() => base.OnDead();

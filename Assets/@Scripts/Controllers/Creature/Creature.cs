@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -31,12 +32,13 @@ namespace STELLAREST_F1
             }
         }
 
-        [SerializeField] protected EFindPathResult _findPathResult = EFindPathResult.None;
-        [field: SerializeField] public bool ForceMove { get; set; } = false;
+        // [SerializeField] protected EFindPathResult _findPathResult = EFindPathResult.None;
+        
+        // [field: SerializeField] public bool ForceMove { get; set; } = false;
 
-        public bool IsAtCurrentCellCenter
-            =>  Mathf.Approximately(transform.position.x, Managers.Map.GetCenterWorld(CellPos).x) && 
-                Mathf.Approximately(transform.position.y, Managers.Map.GetCenterWorld(CellPos).y);
+        // public bool IsAtCurrentCellCenter
+        //     =>  Mathf.Approximately(transform.position.x, Managers.Map.GetCenterWorld(CellPos).x) && 
+        //         Mathf.Approximately(transform.position.y, Managers.Map.GetCenterWorld(CellPos).y);
 
         // public bool CanEnterSkillAState
         //     => CreatureAnim.CanEnterSkillAState;
@@ -45,29 +47,23 @@ namespace STELLAREST_F1
         {
             get
             {
-                if (this.IsValid() == false)
+                if (IsValidOwner == false)
                 {
                     CreatureAnim.ReadySkill = false;
                     return false;
                 }
 
-                if (Target.IsValid() == false)
+                if (CanEnterSkillAState == false)
                 {
                     CreatureAnim.ReadySkill = false;
                     return false;
                 }
 
-                if (ForceMove)
+                if (IsValidTarget == false)
                 {
                     CreatureAnim.ReadySkill = false;
                     return false;
                 }
-
-                // if (CanEnterSkillAState == false)
-                // {
-                //     CreatureAnim.ReadySkill = false;
-                //     return false;
-                // }
 
                 SkillBase currentSkill = CreatureSkill.CurrentSkill;
                 if (currentSkill.RemainCoolTime > 0f)
@@ -76,27 +72,72 @@ namespace STELLAREST_F1
                     return false;
                 }
 
-                int dx = Mathf.Abs(Target.CellPos.x - CellPos.x);
-                int dy = Mathf.Abs(Target.CellPos.y - CellPos.y);
+                Vector3Int worldToCell = Managers.Map.WorldToCell(transform.position);
+                Vector3Int targetWorldToCell = Managers.Map.WorldToCell(Target.transform.position);
+                int dx = Mathf.Abs(worldToCell.x - targetWorldToCell.x);
+                int dy = Mathf.Abs(worldToCell.y - targetWorldToCell.y);
                 int invokeRange = currentSkill.InvokeRange;
                 if (Target.ObjectType != EObjectType.Env)
                 {
                     if (dx <= invokeRange && dy <= invokeRange)
                     {
-                        // 이 문제가 아니었다.
                         CreatureAnim.ReadySkill = true;
                         return true;
-
-                        // if (Util.IsNearCellCenter(transform.position))
-                        // {
-                        //     CreatureAnim.ReadySkill = true;
-                        //     return true;
-                        // }
                     }
                 }
 
                 CreatureAnim.ReadySkill = false;
                 return false;
+
+                // int dx = Mathf.Abs(Target.CellPos.x - CellPos.x);
+                // int dy = Mathf.Abs(Target.CellPos.y - CellPos.y);
+                // int invokeRange = currentSkill.InvokeRange;
+                // if (Target.ObjectType != EObjectType.Env)
+                // {
+                //     if (dx <= invokeRange && dy <= invokeRange)
+                //     {
+                //         // 이 문제가 아니었다.
+                //         CreatureAnim.ReadySkill = true;
+                //         return true;
+
+                //         // if (Util.IsNearCellCenter(transform.position))
+                //         // {
+                //         //     CreatureAnim.ReadySkill = true;
+                //         //     return true;
+                //         // }
+                //     }
+                // }
+
+                // Vector3Int targetCurrentCell = Managers.Map.WorldToCell(Target.transform.position);
+                // if (targetCurrentCell != Target.CellPos)
+                // {
+                //     CreatureAnim.ReadySkill = false;
+                //     return false;
+                // }
+
+                // // --- 타겟은 이동중이라는 뜻임
+                // if (Target.IsOnTheCellCenter == false)
+                // {
+                //     CreatureAnim.ReadySkill = false;
+                //     return false;
+                // }
+
+                // Vector3Int currentCellPos = Managers.Map.WorldToCell(transform.position);
+                // if (Util.IsNearCellCenter(this, currentCellPos) == false)
+                // {
+                //     CreatureAnim.ReadySkill = false;
+                //     return false;
+                // }
+
+
+                // if (Util.IsNearCellCenter(this, CellPos) == false)
+                //     return false;
+
+                // if (CanEnterSkillAState == false)
+                // {
+                //     CreatureAnim.ReadySkill = false;
+                //     return false;
+                // }
             }
         }
 
@@ -173,40 +214,53 @@ namespace STELLAREST_F1
         public EFindPathResult FindPathAndMoveToCellPos(Vector3Int destPos, int maxDepth, EObjectType ignoreObjectType = EObjectType.None)
         {
             if (IsForceMovingPingPongObject)
-                return EFindPathResult.Fail_ForceMovePingPongObject;
+                return EFindPathResult.Fail_ForceMove;
 
-            // ***** 이미 스킬(공격)중이면 길찾기 금지 *****
+            // 움직임 진행중..
+            // if (LerpToCellPosCompleted == false)
+            //     return EFindPathResult.Success;
+
             // if (CreatureAIState == ECreatureAIState.Idle)
             //     return EFindPathResult.Fail_LerpCell;
 
-            // --- TEST
-            // if (IsAtCenter(destPos) == false)
-            //     return EFindPathResult.Fail_NoCenter;
+            // if (_coLerpToCellPos == null)
+            // {
+            //     // Managers.Map.RemoveObject(this);
+            //     // Managers.Map.AddObject(this, CellPos);
+            //     return EFindPathResult.Fail_LerpCell;
+            // }
 
-            if (_coLerpToCellPos == null)
-            {
-                // Managers.Map.RemoveObject(this);
-                // Managers.Map.AddObject(this, CellPos);
-                return EFindPathResult.Fail_LerpCell;
-            }
-
-            // 움직임 진행중
-            if (LerpToCellPosCompleted == false)
-            {
-                return EFindPathResult.Fail_LerpCell;
-            }
+            // // 움직임 진행중
+            // if (LerpToCellPosCompleted == false)
+            // {
+            //     return EFindPathResult.Fail_LerpCell;
+            // }
 
             // A*
             List<Vector3Int> path = Managers.Map.FindPath(startCellPos: CellPos, destPos, maxDepth, ignoreObjectType);
-            if (path.Count < 2)
-                return EFindPathResult.Fail_NoPath;
+            if (path.Count == 1)
+            {
+                if (IsOnTheCellCenter == false)
+                {
+                    NextCellPos = path[0];
+                    LerpToCellPosCompleted = false;
+                    return EFindPathResult.Success;
+                }
+                else if (LerpToCellPosCompleted) // --- 무조건 가운데까지 간다.
+                    return EFindPathResult.Fail_LerpCell;
+            }
 
-            Vector3Int dirCellPos = path[1] - CellPos;
-            Vector3Int nextPos = CellPos + dirCellPos;
-            // NextCenteredCellPos = Managers.Map.CenteredCellToWorld(nextPos);
+            else if (path.Count > 1)
+            {
+                Vector3Int dirCellPos = path[1] - CellPos;
+                Vector3Int nextPos = CellPos + dirCellPos;
 
-            if (Managers.Map.MoveTo(creature: this, cellPos: nextPos, ignoreObjectType: ignoreObjectType) == false)
-                return EFindPathResult.Fail_MoveTo;
+                if (Managers.Map.TryMove(creature: this, cellPos: nextPos, ignoreObjectType: ignoreObjectType) == false)
+                    return EFindPathResult.Fail_MoveTo;
+
+                NextCellPos = nextPos;
+                LerpToCellPosCompleted = false;
+            }
 
             return EFindPathResult.Success;
         }
@@ -287,7 +341,54 @@ namespace STELLAREST_F1
 
         public virtual Vector3 GetFirePosition() => CenterPosition;
 
-        #region Core
+        public void MoveToCellCenter()
+        {
+            Vector3 center = Managers.Map.GetCenterWorld(CellPos);
+            Vector3 dir = center - transform.position;
+
+            float threshold = 0.1f;
+            if (dir.sqrMagnitude < threshold * threshold)
+            {
+                LerpToCellPosCompleted = true;
+                transform.position = center;
+                Moving = false;
+            }
+            else if (dir.x < 0f)
+                LookAtDir = ELookAtDirection.Left;
+            else if (dir.x > 0f)
+                LookAtDir = ELookAtDirection.Right;
+
+            transform.position += dir.normalized * MovementSpeed * Time.deltaTime;
+            LerpToCellPosCompleted = false;
+
+            // --- CellPos로 가도록 변경해야함. 어차피 CellPos는 실시간으로 업데이트중.
+            // Vector3Int nearCell = Managers.Map.WorldToCell(transform.position);
+            // Vector3 center = Managers.Map.GetCenterWorld(nearCell);
+            // Vector3 dir = center - transform.position;
+
+            // float threshold = 0.1f;
+            // if (dir.sqrMagnitude < threshold * threshold)
+            // {
+            //     transform.position = center;
+            //     Moving = false;
+            //     LerpToCellPosCompleted = true;
+            // }
+            // else
+            // {
+            //     if (dir.x < 0f)
+            //         LookAtDir = ELookAtDirection.Left;
+            //     else if (dir.x > 0f)
+            //         LookAtDir = ELookAtDirection.Right;
+
+            //     transform.position += dir.normalized * MovementSpeed * Time.deltaTime;
+            //     LerpToCellPosCompleted = false;
+            // }
+        }
+
+        private bool CanEnterSkillAState
+            => CreatureAnim.CanEnterAnimState(ECreatureAnimState.Upper_SkillA);
+
+        #region Init Core
         public override bool Init()
         {
             if (base.Init() == false)
@@ -340,6 +441,10 @@ namespace STELLAREST_F1
                           StartCoLerpToCellPos();
                       });
         }
+        #endregion Init Core
+
+        private void LateUpdate()
+            => UpdateCellPos();
 
         public override void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
         {
@@ -371,7 +476,6 @@ namespace STELLAREST_F1
         }
 
         protected override void OnDisable() { } // --- TEMP
-        #endregion
 
         protected Coroutine _coUpdateAI = null;
         protected IEnumerator CoUpdateAI()
@@ -395,7 +499,6 @@ namespace STELLAREST_F1
                         break;
                 }
 
-                // UpdateCellPos();
                 yield return null;
             }
         }

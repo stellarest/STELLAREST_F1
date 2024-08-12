@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using UnityEngine;
 using static STELLAREST_F1.Define;
 
@@ -14,7 +15,7 @@ namespace STELLAREST_F1
         {
             get
             {
-                if (Owner.ForceMove == false && Owner.Target.IsValid())
+                if (Owner.Target.IsValid())
                 {
                     return Owner.Target.CellPos;
                 }
@@ -52,8 +53,8 @@ namespace STELLAREST_F1
         protected bool TryForceMove()
         {
             // --- ForceMove가 아닌 상태에서 싸우고 있을 때
-            if (Owner.ForceMove == false)
-                return false;
+            // if (Owner.ForceMove == false)
+            //     return false;
 
             _currentPingPongCantMoveCount = 0;
             HeroLeaderController leaderController = Managers.Object.HeroLeaderController;
@@ -102,7 +103,59 @@ namespace STELLAREST_F1
             return false;
         }
 
-        #region Core
+        protected override IEnumerator CoFindTargets()
+        {
+            int scanRange = ReadOnly.Util.ObjectScanRange; // --- 6칸
+            float scanTick = ReadOnly.Util.ObjectScanTick;
+            while (true)
+            {
+                Owner.Targets.Clear();
+                if (Owner.IsValidOwner == false)
+                {
+                    StopCoFindTargets();
+                    yield break;
+                }
+
+                if (PauseFindTargets)
+                {
+                    yield return null;
+                    continue;
+                }
+
+                // Need to add ally option later
+                List<Monster> monsters = Managers.Map.GatherObjects<Monster>(Owner.transform.position, scanRange, scanRange);
+                for (int i = 0; i < monsters.Count; ++i)
+                {
+                    if (monsters[i].IsValid() == false)
+                        continue;
+
+                    Owner.Targets.Add(monsters[i]);
+                }
+
+                List<Env> Envs = Managers.Map.GatherObjects<Env>(Owner.transform.position, scanRange, scanRange);
+                for (int i = 0; i < Envs.Count; ++i)
+                {
+                    if (Envs[i].IsValid() == false)
+                        continue;
+
+                    Owner.Targets.Add(Envs[i]);
+                }
+
+                Owner.Targets = Owner.Targets
+                                .Where(n => n.IsValid())
+                                .OrderBy(n =>
+                                {
+                                    return n.ObjectType == EObjectType.Monster ? 0 :
+                                               n.ObjectType == EObjectType.Env ? 1 : 2;
+                                })
+                                .ThenBy(n => (transform.position - n.transform.position).sqrMagnitude)
+                                .ToList();
+
+                yield return new WaitForSeconds(scanTick);
+            }
+        }
+
+        #region Init Core
         public override bool Init()
         {
             if (base.Init() == false)
@@ -119,7 +172,9 @@ namespace STELLAREST_F1
         public override void EnterInGame()
         {
             base.EnterInGame();
+            StartCoFindEnemies();
         }
+        #endregion Init Core
 
         public override void UpdateIdle() { }
         public override void UpdateMove() { }
@@ -129,7 +184,6 @@ namespace STELLAREST_F1
             base.OnDead();
 
         }
-        #endregion Core
 
         [SerializeField] private bool _isFarFromLeader = false;
         private Coroutine _coIsFarFromLeaderTick = null;

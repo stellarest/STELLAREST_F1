@@ -11,6 +11,11 @@ namespace STELLAREST_F1
         public override void OnSkillStateEnter() { }
         public override void OnSkillStateExit() { }
         public override void OnSkillCallback() { }
+
+        protected override void GatherHalfTarget(BaseObject target)
+        {
+        }
+
         protected override void DoSelfTarget(BaseObject target) { }
         protected override void DoSingleTarget(BaseObject target) { }
         protected override void DoHalfTarget(BaseObject target) { }

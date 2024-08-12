@@ -15,9 +15,8 @@ namespace STELLAREST_F1
         public string MapName { get; private set; } = null;
         public Grid CellGrid { get; private set; } = null;
 
-        // 현재 사용하고 있는 이 Cell에 쿼드트리를 얹히면 좋다고 함(TODO LIST)
-        // 스타크래프트 유닛은 아마 일일이 칸 단위로 찾진 않을것임
-        // 갈 수 있는지 큼지막하게 먼저 판단하고 먼저 갈수있는 기본적인것부터 셋팅하는 등의 방법을 썼을 것이라고 함
+        // --- 현재 사용하고 있는 이 Cell에 쿼드트리를 얹히면 좋다고 함(TODO LIST)
+        // --- 스타크래프트 유닛은 아마 일일이 칸 단위로 찾진 않을것임, 갈 수 있는지 큼지막하게 먼저 판단하고 먼저 갈수있는 기본적인것부터 셋팅하는 등의 방법을 썼을 것이라고 함
         private Dictionary<Vector3Int, BaseObject> _cells = new Dictionary<Vector3Int, BaseObject>();
         public Dictionary<Vector3Int, BaseObject> Cells => _cells;
 
@@ -51,7 +50,7 @@ namespace STELLAREST_F1
             CellGrid = map.GetComponent<Grid>();
 
             ParseCollisionData(map, mapName);
-            // SpawnObjectsByData(map, mapName);
+            SpawnObjectsByData(map, mapName);
         }
 
         private void ParseCollisionData(GameObject map, string mapName, string tileMap = "Tilemap_Collision")
@@ -341,10 +340,21 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public bool MoveTo(Creature creature, Vector3 position, bool stopLerpToCell = false, bool forceMove = false, EObjectType ignoreObjectType = EObjectType.None)
-            => MoveTo(creature: creature, cellPos: Managers.Map.WorldToCell(position), stopLerpToCell: stopLerpToCell, forceMove: forceMove, ignoreObjectType);
+        public bool TryMove(Creature creature, Vector3 worldPos, EObjectType ignoreObjectType = EObjectType.None)
+            => TryMove(creature, Managers.Map.WorldToCell(worldPos), ignoreObjectType);
 
-        public bool MoveTo(Creature creature, Vector3Int cellPos, bool stopLerpToCell = false, bool forceMove = false, EObjectType ignoreObjectType = EObjectType.None)
+        public bool TryMove(Creature creature, Vector3Int cellPos, EObjectType ignoreObjectType = EObjectType.None)
+        {
+            if (CanMove(cellPos, ignoreObjectType) == false)
+                return false;
+
+            return true;
+        }
+
+        public bool MoveTo_Temp(Creature creature, Vector3 position, bool stopLerpToCell = false, bool forceMove = false, EObjectType ignoreObjectType = EObjectType.None)
+            => MoveTo_Temp(creature: creature, cellPos: Managers.Map.WorldToCell(position), stopLerpToCell: stopLerpToCell, forceMove: forceMove, ignoreObjectType);
+
+        public bool MoveTo_Temp(Creature creature, Vector3Int cellPos, bool stopLerpToCell = false, bool forceMove = false, EObjectType ignoreObjectType = EObjectType.None)
         {
             if (CanMove(cellPos, ignoreObjectType) == false)
                 return false;
@@ -359,7 +369,9 @@ namespace STELLAREST_F1
 
             // RemoveObject(creature); --- REMOVE TEMPORARY 
             if (AddObject(creature, cellPos))
+            {
                 return true;
+            }
 
             // creature.SetCellPos(cellPos, stopLerpToCell, forceMove);
             return false;
@@ -390,35 +402,28 @@ namespace STELLAREST_F1
         public bool AddObject(BaseObject obj, Vector3Int cellPos)
         {
             if (CanMove(cellPos) == false)
-            {
-                // Debug.Log("1");
                 return false;
-            }
 
             BaseObject prev = GetObject(cellPos);
             if (prev != null)
-            {
-                // Debug.Log("2");
                 return false;
-            }
-            
-            //obj.NextCellPos = cellPos;
-            if (Util.IsNearCellCenter(baseObj: obj, cellPos: cellPos, threshold: 0.1f) == false)
+
+            if (RemoveObject(obj))
             {
-                // Debug.Log("3");
-                return false;
+                _cells[cellPos] = obj;
+                return true;
             }
 
-            if (RemoveObject(obj) == false)
-            {
-                // Debug.Log("4");
-                return false;
-            }
-
-            _cells[cellPos] = obj;
-            // obj.SetCellPos(cellPos);
-            // Debug.Log("5");
-            return true;
+            return false;
+            // 아.. 커런트 포스로 들어간다... 그래서 안됐던것...
+            // if (Util.IsNearCellCenter(baseObj: obj, cellPos: cellPos, threshold: 0.1f))
+            // {
+            //     if (RemoveObject(obj))
+            //     {
+            //         _cells[cellPos] = obj;
+            //         return true;
+            //     }
+            // }
         }
 
         public bool CanMove(Vector3 worldPos, EObjectType ignoreObjectType)

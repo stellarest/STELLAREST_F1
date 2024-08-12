@@ -83,6 +83,9 @@ namespace STELLAREST_F1
                     dataID: ReadOnly.DataAndPoolingID.DNPID_Hero_Paladin);
                 leaderController.Leader = firstHero;
 
+                StartCoroutine(CoContinuousSpawnMonster_Test(2.5f));
+                // StartCoroutine(CoContinuousSpawnEnv_Test(1f));
+
                 {
                     // SpawnChicken_Test(-6, 8);
                     // SpawnChicken_Test(-5, 8);
@@ -113,9 +116,6 @@ namespace STELLAREST_F1
                     // SpawnChicken_Test(-5, 2);
                     // SpawnChicken_Test(-1, 2);
                 }
-
-                // StartCoroutine(CoContinuousSpawnMonster_Test(2.5f));
-                // StartCoroutine(CoContinuousSpawnEnv_Test(1f));
 
                 // --- Env
                 // Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env, 

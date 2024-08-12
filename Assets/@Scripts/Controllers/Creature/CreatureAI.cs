@@ -70,8 +70,8 @@ namespace STELLAREST_F1
         protected bool IsForceMovingPingPongObject => _coForceMovePingPongObject != null;
         protected void EvadePingPongMovement()
         {
-            if (Owner.ForceMove)
-                return;
+            // if (Owner.ForceMove)
+            //     return;
 
             {
                 List<Vector3Int> path = Managers.Map.FindPath(Owner.CellPos, CellChasePos, 2);
@@ -103,6 +103,7 @@ namespace STELLAREST_F1
             }
         }
 
+        #region Init Core
         public override bool Init()
         {
             if (base.Init() == false)
@@ -113,16 +114,17 @@ namespace STELLAREST_F1
 
         public virtual void InitialSetInfo(Creature owner) => Owner = owner;
         public virtual void EnterInGame() { }
+        #endregion Init Core
         public virtual void UpdateIdle() { }
         public virtual void UpdateMove() { }
         public virtual void OnDead()
         {
-            StopCoFindEnemies();
+            StopCoFindTargets();
         }
 
-        public bool PauseFindEnemies { get; protected set; } = false;
-        private Coroutine _coFindEnemies = null;
-        private IEnumerator CoFindEnemies()
+        public bool PauseFindTargets { get; protected set; } = false;
+        private Coroutine _coFindTargets = null;
+        protected virtual IEnumerator CoFindTargets() // --- Virtual로 바꿔도 될 것 같은데...
         {
             int scanRange = ReadOnly.Util.ObjectScanRange; // --- 6칸
             float scanTick = ReadOnly.Util.ObjectScanTick;
@@ -132,7 +134,7 @@ namespace STELLAREST_F1
                 if (Owner.IsValid() == false)
                     yield break;
 
-                if (PauseFindEnemies)
+                if (PauseFindTargets)
                 {
                     yield return null;
                     continue;
@@ -187,19 +189,21 @@ namespace STELLAREST_F1
             }
         }
 
+        // Enemies
+        // Allies
         public void StartCoFindEnemies()
         {
-            StopCoFindEnemies();
-            _coFindEnemies = StartCoroutine(CoFindEnemies());
+            StopCoFindTargets();
+            _coFindTargets = StartCoroutine(CoFindTargets());
         }
 
-        private void StopCoFindEnemies()
+        protected void StopCoFindTargets()
         {
-            if (_coFindEnemies != null)
-                StopCoroutine(_coFindEnemies);
+            if (_coFindTargets != null)
+                StopCoroutine(_coFindTargets);
             
             Owner.Targets.Clear();
-            _coFindEnemies = null;
+            _coFindTargets = null;
         }
 
         private Coroutine _coForceMovePingPongObject = null;
