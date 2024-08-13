@@ -334,9 +334,7 @@ namespace STELLAREST_F1
             if (CanMove(cellPos, ignoreObjectType) == false)
                 return false;
 
-            if (baseObj.SetCellPos(cellPos) == false)
-                return false;
-
+            baseObj.SetCellPos(cellPos);
             return true;
         }
 
@@ -351,32 +349,6 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public bool MoveTo_Temp(Creature creature, Vector3 position, bool stopLerpToCell = false, bool forceMove = false, EObjectType ignoreObjectType = EObjectType.None)
-            => MoveTo_Temp(creature: creature, cellPos: Managers.Map.WorldToCell(position), stopLerpToCell: stopLerpToCell, forceMove: forceMove, ignoreObjectType);
-
-        public bool MoveTo_Temp(Creature creature, Vector3Int cellPos, bool stopLerpToCell = false, bool forceMove = false, EObjectType ignoreObjectType = EObjectType.None)
-        {
-            if (CanMove(cellPos, ignoreObjectType) == false)
-                return false;
-
-            if (forceMove)
-            {
-                // creature.SetCellPos(cellPos, stopLerpToCell, forceMove: true);
-                _cells[creature.CellPos] = null;
-                _cells[cellPos] = creature;
-                return true;
-            }
-
-            // RemoveObject(creature); --- REMOVE TEMPORARY 
-            if (AddObject(creature, cellPos))
-            {
-                return true;
-            }
-
-            // creature.SetCellPos(cellPos, stopLerpToCell, forceMove);
-            return false;
-        }
-
         #region Helpers
         public BaseObject GetObject(Vector3Int cellPos)
             => _cells.TryGetValue(cellPos, out BaseObject value) ? value : null;
@@ -387,16 +359,16 @@ namespace STELLAREST_F1
             return GetObject(cellPos);
         }
 
-        public bool RemoveObject(BaseObject obj)
+        public void RemoveObject(BaseObject obj)
         {
             BaseObject prev = GetObject(obj.CellPos);
 
-            // 지우려고하는데 obj 자기 자신이 아니라면
+            // 지우려고하는데, obj자기 자신이 아니라면
             if (prev.IsValid() && prev != obj)
-                return false;
+                return;
 
             _cells[obj.CellPos] = null;
-            return true;
+            return;
         }
 
         public bool AddObject(BaseObject obj, Vector3Int cellPos)
@@ -408,22 +380,9 @@ namespace STELLAREST_F1
             if (prev != null)
                 return false;
 
-            if (RemoveObject(obj))
-            {
-                _cells[cellPos] = obj;
-                return true;
-            }
-
-            return false;
-            // 아.. 커런트 포스로 들어간다... 그래서 안됐던것...
-            // if (Util.IsNearCellCenter(baseObj: obj, cellPos: cellPos, threshold: 0.1f))
-            // {
-            //     if (RemoveObject(obj))
-            //     {
-            //         _cells[cellPos] = obj;
-            //         return true;
-            //     }
-            // }
+            RemoveObject(obj);
+            _cells[cellPos] = obj;
+            return true;
         }
 
         public bool CanMove(Vector3 worldPos, EObjectType ignoreObjectType)

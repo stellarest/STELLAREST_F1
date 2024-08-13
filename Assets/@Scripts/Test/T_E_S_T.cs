@@ -8,8 +8,11 @@ using DG.Tweening;
 using UnityEditor;
 
 /*
-// --- LeaderController Movement(FindPath)
+// Monster ForceWait When Spawned
+// Hero Half Target -> Signle Target -> Around Target -> Projectile
 
+
+// --- LeaderController Movement(FindPath)
 // --- 오브젝트의 모든 행동은 셀 가운데에서 시작
 // --- 일반 몬스터AI 이동 고치긴했는데 전투 테스트 해봐야함
 

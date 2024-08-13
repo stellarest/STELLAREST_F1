@@ -458,7 +458,9 @@ namespace STELLAREST_F1
 
         public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
         {
-            StopCoLerpToCellPos(); // --- 움직임 중인 길찾기 중지
+            Moving = false;
+            StopCoLerpToCellPos(); // --- Stop Path Finding
+            StopCoUpdateAI(); // --- Stop AI Tick
             CreatureAIState = ECreatureAIState.Dead;
             attacker.Targets.Remove(this);
             base.OnDead(attacker, skillFromAttacker);

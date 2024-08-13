@@ -240,7 +240,7 @@ namespace STELLAREST_F1
 
         private void OnMovementDirChanged(Vector2 nDir)
         {
-            if (_leader.IsValid() == false)
+            if (_leader.IsValidOwner == false)
                 return;
 
             _nMovementDir = nDir;
@@ -371,7 +371,7 @@ namespace STELLAREST_F1
 
         private void Update()
         {
-            if (_leader.IsValid() == false)
+            if (_leader.IsValidOwner == false)
                 return;
 
             if (SkillOrCollectEnv())
@@ -553,6 +553,13 @@ namespace STELLAREST_F1
 
             // --- Update Leader Mark
             transform.position = _leader.CenterPosition;
+            if (_leader.IsValidOwner)
+            {
+                if (_leader.Moving)
+                    _leader.CreatureAIState = ECreatureAIState.Move;
+                else
+                    _leader.CreatureAIState = ECreatureAIState.Idle;
+            }
 
             // --- Update Leader CellPos
             //_leader.UpdateCellPos();
@@ -641,7 +648,7 @@ namespace STELLAREST_F1
 
                     if (isAllStop)
                     {
-                        Debug.Log("<color=yellow>IS ALL STOPPED !!</color>");
+                        Debug.Log("<color=yellow>IS ALL STOPPED!!</color>");
                         return true;
                     }
 

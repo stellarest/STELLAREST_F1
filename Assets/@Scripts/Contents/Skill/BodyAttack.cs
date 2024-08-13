@@ -11,6 +11,7 @@ namespace STELLAREST_F1
         private float _desiredTimeToReach = 0.35f;
         private float _desiredTimeToReturn = 0.65f;
 
+        #region Events
         public override void OnSkillCallback()
         {
             if (IsValidOwner == false || IsValidTarget == false)
@@ -24,27 +25,7 @@ namespace STELLAREST_F1
         }
         public override void OnSkillStateEnter() { }
         public override void OnSkillStateExit() { }
-
-        protected override void GatherHalfTarget(BaseObject target)
-        {
-        }
-
-        protected override void DoSelfTarget(BaseObject target) 
-        { 
-            
-        }
-        protected override void DoSingleTarget(BaseObject target) 
-        { 
-
-        }
-        protected override void DoHalfTarget(BaseObject target) 
-        { 
-
-        }
-        protected override void DoAroundTarget(BaseObject target)
-        {
-
-        }
+        #endregion Events
 
         private Vector3 _startPoint = Vector3.zero;
         private Vector3 _targetPoint = Vector3.zero;

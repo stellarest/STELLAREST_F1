@@ -84,7 +84,7 @@ namespace STELLAREST_F1
         [field: SerializeField] public float MovementSpeed { get; set; } = 0f;
 
         [field: SerializeField] public List<BaseObject> Targets { get; set; } = new List<BaseObject>();
-        public BaseObject Target
+        public virtual BaseObject Target
         {
             get
             {
@@ -128,24 +128,17 @@ namespace STELLAREST_F1
         [field: SerializeField] public Vector3Int NextCellPos { get; set; } = Vector3Int.one;
         [field: SerializeField] public bool LerpToCellPosCompleted { get; protected set; } = false;
 
-        public bool SetCellPos(Vector3 worldPos)
+        public void SetCellPos(Vector3 worldPos)
             => SetCellPos(Managers.Map.WorldToCell(worldPos));
 
-        public bool SetCellPos(Vector3Int cellPos)
+        public void SetCellPos(Vector3Int cellPos)
         {
-            if (Managers.Map.Cells.TryGetValue(cellPos, out BaseObject obj))
-                return false;
-
-            // ***********************************
-            if (Managers.Map.RemoveObject(this) == false)
-                return false;
-            // ***********************************
-
+            Managers.Map.RemoveObject(this);
             Managers.Map.Cells[cellPos] = this;
             CellPos = cellPos;
+            NextCellPos = cellPos;
             transform.position = Managers.Map.GetCenterWorld(cellPos);
             LerpToCellPosCompleted = true;
-            return true;
         }
 
         [field: SerializeField] public Vector3 SpawnedPos { get; protected set; } = Vector3.zero;
@@ -305,6 +298,7 @@ namespace STELLAREST_F1
             // BaseBody.StartCoFadeInEffect();
             SpawnedPos = spawnPos;
             SpawnedCellPos = Managers.Map.WorldToCell(spawnPos);
+            Managers.Map.ForceMove(baseObj: this, cellPos: SpawnedCellPos, ignoreObjectType: EObjectType.None);
             MaxHp = StatData.MaxHp;
             Hp = StatData.MaxHp;
             Debug.Log($"<color=white>{gameObject.name}, {nameof(EnterInGame)}</color>");

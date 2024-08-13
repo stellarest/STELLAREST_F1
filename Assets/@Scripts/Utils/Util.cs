@@ -158,9 +158,9 @@ namespace STELLAREST_F1
             return cellSpawnPos;
         }
 
-        public static Vector3 GetRandomQuadPosition(Vector3 from, float dist = 1f)
+        public static Vector3 GetRandomQuadPosition(Vector3 from, float cellSize = 1f)
         {
-            float offset = dist / 4.0f;
+            float offset = cellSize / 4.0f;
             Vector3[] quadCenters = new Vector3[4];
             quadCenters[0] = from + new Vector3(offset, offset, 0);       // --- 1사분면 중앙
             quadCenters[1] = from + new Vector3(-offset, offset, 0);      // --- 2사분면 중앙

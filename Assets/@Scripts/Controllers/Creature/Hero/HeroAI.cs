@@ -172,7 +172,6 @@ namespace STELLAREST_F1
         public override void EnterInGame()
         {
             base.EnterInGame();
-            StartCoFindEnemies();
         }
         #endregion Init Core
 

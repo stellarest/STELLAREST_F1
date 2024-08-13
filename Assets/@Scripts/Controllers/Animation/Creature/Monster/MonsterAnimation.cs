@@ -34,10 +34,10 @@ namespace STELLAREST_F1
             if (IsValidOwner == false)
                 return;
 
-            if (_monsterOwner.Target.IsValid() == false)
-                _monsterOwner.MonsterBody.MonsterEmoji = EMonsterEmoji.Normal;
-            else
-                _monsterOwner.MonsterBody.MonsterEmoji = EMonsterEmoji.Angry;
+            // if (_monsterOwner.Target.IsValid() == false)
+            //     _monsterOwner.MonsterBody.MonsterEmoji = EMonsterEmoji.Normal;
+            // else
+            //     _monsterOwner.MonsterBody.MonsterEmoji = EMonsterEmoji.Angry;
             
             base.OnUpperIdleEnter();
         }
@@ -47,7 +47,7 @@ namespace STELLAREST_F1
             if (IsValidOwner == false)
                 return;
 
-            _monsterOwner.MonsterBody.MonsterEmoji = EMonsterEmoji.Normal;
+            // _monsterOwner.MonsterBody.MonsterEmoji = EMonsterEmoji.Normal;
             // _monsterOwner.CreatureAIState = ECreatureAIState.Move; // --- ???
             // _monsterOwner.StartCoLerpToCellPos(); // --- ???
             base.OnUpperMoveEnter();
@@ -58,7 +58,7 @@ namespace STELLAREST_F1
             if (IsValidOwner == false)
                 return;
 
-            _monsterOwner.MonsterBody.MonsterEmoji = EMonsterEmoji.Angry;
+            // _monsterOwner.MonsterBody.MonsterEmoji = EMonsterEmoji.Angry;
             base.OnUpperSkillAEnter();
         }
 

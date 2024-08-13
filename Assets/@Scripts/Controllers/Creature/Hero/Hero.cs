@@ -7,6 +7,7 @@ using STELLAREST_F1.Data;
 using UnityEngine;
 using UnityEngine.UIElements;
 using static STELLAREST_F1.Define;
+using Unity.VisualScripting;
 
 namespace STELLAREST_F1
 {
@@ -22,6 +23,12 @@ namespace STELLAREST_F1
         //         //     Managers.Map.GetCenterWorld(Vector3Int.up + CellPos));
         //     }
         // }
+
+        private void Update()
+        {
+            if (_coUpdateAI != null)
+                Debug.Log("Valid AI TICK.");
+        }
 
         public HeroData HeroData { get; private set; } = null;
         public HeroAnimation HeroAnim { get; private set; } = null;
@@ -200,7 +207,7 @@ namespace STELLAREST_F1
             }
         }
 
-        private IEnumerator CoInitialReleaseLeaderAI()
+        private IEnumerator CoInitialReleaseLeaderHeroAI()
         {
             // 여기서 하면 안됨... Leader랑 관련 있는듯.
             // Debug.Log($"1 - Inactive: {HeroBody.GetContainer(EHeroWeapon.WeaponL_Armor).TR.gameObject.name}");
@@ -270,7 +277,7 @@ namespace STELLAREST_F1
             // Managers.Game.OnJoystickStateChangedHandler += OnJoystickStateChanged;
             
             base.EnterInGame(spawnPos);
-            StartCoroutine(CoInitialReleaseLeaderAI());
+            StartCoroutine(CoInitialReleaseLeaderHeroAI());
         }
         #endregion Init Core
 

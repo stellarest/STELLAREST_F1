@@ -30,7 +30,7 @@ namespace STELLAREST_F1
                 yield return new WaitForSeconds(waitTime);
                 Monster chicken = Managers.Object.SpawnBaseObject<Monster>
                     (objectType: EObjectType.Monster, spawnPos: Managers.Map.GetCenterWorld(new Vector3Int(-9, 8, 0)),
-                     dataID: ReadOnly.DataAndPoolingID.DNPID_Monster_Chicken, owner: null);
+                     dataID: ReadOnly.DataAndPoolingID.DNPID_Monster_Chicken);
             }
         }
 

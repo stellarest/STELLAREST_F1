@@ -53,6 +53,24 @@ namespace STELLAREST_F1
             }
         }
 
+        public override BaseObject Target
+        {
+            get
+            {
+                if (IsValidOwner == false)
+                    return null;
+
+                BaseObject target = base.Target;
+                // --- base에서 null을 리턴하므로 null 체크를 먼저 해야함
+                if (target != null && target.IsValidOwner)
+                    MonsterBody.MonsterEmoji = EMonsterEmoji.Angry;
+                else
+                    MonsterBody.MonsterEmoji = EMonsterEmoji.Normal;
+
+                return target;
+            }
+        }
+
         #region Init Core
         public override bool Init()
         {
