@@ -66,7 +66,8 @@ namespace STELLAREST_F1
         public override void EnterInGame()
         {
             _desiredStartPatrolTime = Random.Range(2f, 4f);
-            base.EnterInGame();
+            //base.EnterInGame();
+            StartCoForceWait();
         }
         #endregion Init Core
 

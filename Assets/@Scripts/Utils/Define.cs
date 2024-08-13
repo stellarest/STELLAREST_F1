@@ -714,7 +714,8 @@ namespace STELLAREST_F1
                 public static readonly int ScanAllyRange = ScanEnemyRange / 2;
 
                 // --- [ FLOATING ]
-                // -- [ HERO ]
+                public static readonly float CoForceWaitTime = 2.5F;
+
                 public static readonly float CheckFarFromHeroesLeaderTick = 1.0F;
                 public static readonly float CheckFarFromHeroesLeaderDistanceForWarp = 30.0F; // 15F(15칸, 상하좌우 기준) -> 30칸
                 //public static readonly float WaitMovementDistanceSQRFromLeader = 2.4F;

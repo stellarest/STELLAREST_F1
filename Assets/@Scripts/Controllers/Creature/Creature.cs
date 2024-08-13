@@ -434,11 +434,12 @@ namespace STELLAREST_F1
                       {
                           //CreatureBody.ResetMaterialsAndColors();
                           CreatureAI.EnterInGame();
-                          RigidBody.simulated = true;
-                          CreatureAnim.AddAnimClipEvents();
-                          CreatureAnim.AddAnimStateEvents();
+                          //CreatureAnim.AddAnimClipEvents();
+                          //CreatureAnim.AddAnimStateEvents();
+                          CreatureAnim.EnterInGame();
                           StartCoUpdateAI();
                           StartCoLerpToCellPos();
+                          RigidBody.simulated = true;
                       });
         }
         #endregion Init Core
@@ -479,6 +480,7 @@ namespace STELLAREST_F1
 
         protected override void OnDisable() { } // --- TEMP
 
+        public bool IsRunningAITick => _coUpdateAI != null;
         protected Coroutine _coUpdateAI = null;
         protected IEnumerator CoUpdateAI()
         {
@@ -490,6 +492,13 @@ namespace STELLAREST_F1
 
             while (true)
             {
+                if (CreatureAI.ForceWaitCompleted == false)
+                {
+                    Debug.Log("FORCE WAIT AI..");
+                    yield return null;
+                    continue;
+                }
+
                 switch (CreatureAIState)
                 {
                     case ECreatureAIState.Idle:

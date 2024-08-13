@@ -115,7 +115,7 @@ namespace STELLAREST_F1
         public virtual void InitialSetInfo(Creature owner) => Owner = owner;
         public virtual void EnterInGame() 
         { 
-            StartCoFindEnemies();
+            StartCoFindTargets();
         }
         #endregion Init Core
         public virtual void UpdateIdle() { }
@@ -194,7 +194,7 @@ namespace STELLAREST_F1
 
         // Enemies
         // Allies
-        public void StartCoFindEnemies()
+        public void StartCoFindTargets()
         {
             StopCoFindTargets();
             _coFindTargets = StartCoroutine(CoFindTargets());
@@ -272,6 +272,32 @@ namespace STELLAREST_F1
                 StopCoroutine(_coForceMovePingPongObject);
 
             _coForceMovePingPongObject = null;
+        }
+
+        [field: SerializeField] public bool ForceWaitCompleted { get; private set; } = false;
+        private Coroutine _coForceWait = null;
+        private IEnumerator CoForceWait()
+        {
+            ForceWaitCompleted = false;
+            if (IsValidOwner == false)
+                yield break;
+
+            StopCoFindTargets();
+            Owner.CreatureAIState = ECreatureAIState.Idle;
+            yield return new WaitUntil(() => IsValidOwner && Owner.IsRunningAITick);
+            yield return new WaitForSeconds(ReadOnly.Util.CoForceWaitTime);
+            if (IsValidOwner == false)
+                yield break;
+
+            ForceWaitCompleted = true;
+            StartCoFindTargets();
+        }
+        protected void StartCoForceWait()
+        {
+            if (_coForceWait != null)
+                StopCoroutine(_coForceWait);
+            
+            _coForceWait = StartCoroutine(CoForceWait());
         }
     }
 }

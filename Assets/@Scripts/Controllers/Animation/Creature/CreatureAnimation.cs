@@ -130,10 +130,16 @@ namespace STELLAREST_F1
             base.InitialSetInfo(dataID, owner);
             _creatureOwner = owner as Creature;
         }
+
+        public override void EnterInGame()
+        {
+            AddAnimClipEvents();
+            AddAnimStateEvents();
+        }
         #endregion
 
         #region Anim Clip Callbacks
-        public void AddAnimClipEvents()
+        private void AddAnimClipEvents()
         {
             for (int i = 0; i < _creatureOwner.CreatureSkill.SkillArray.Length; ++i)
             {
@@ -157,7 +163,7 @@ namespace STELLAREST_F1
         #endregion
 
         #region Anim State Events
-        public void AddAnimStateEvents()
+        private void AddAnimStateEvents()
         {
             CreatureStateMachine[] creatureStateMachines = Animator.GetBehaviours<CreatureStateMachine>();
              for (int i = 0; i < creatureStateMachines.Length; ++i)

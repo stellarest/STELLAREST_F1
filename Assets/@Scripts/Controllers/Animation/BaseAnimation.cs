@@ -28,6 +28,8 @@ namespace STELLAREST_F1
         public virtual void InitialSetInfo(int dataID, BaseObject owner)
             => _baseOwner = owner;
 
+        public virtual void EnterInGame() { }
+
         public bool IsPlay()
         {
             AnimatorStateInfo stateInfo = Animator.GetCurrentAnimatorStateInfo(0);

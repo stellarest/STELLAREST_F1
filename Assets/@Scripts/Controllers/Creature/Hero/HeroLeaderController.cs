@@ -495,7 +495,7 @@ namespace STELLAREST_F1
                 // --- Release Prev Leader
                 _leader.StartCoUpdateAI();
                 //_leader.HeroAI.StartSearchTarget(allTargetsCondition: null);
-                _leader.HeroAI.StartCoFindEnemies();
+                _leader.HeroAI.StartCoFindTargets();
 
                 _leader.IsLeader = false;
                 // _leader.NextCenteredCellPos = Managers.Map.CenteredCellPos(_leader.CellPos);
@@ -505,7 +505,7 @@ namespace STELLAREST_F1
             }
             newLeader.StopCoUpdateAI();
             newLeader.StopCoLerpToCellPos();
-            newLeader.HeroAI.StartCoFindEnemies();
+            newLeader.HeroAI.StartCoFindTargets();
 
             // Leader Hero는 항상 0번 인덱스로 변경
             List<Hero> heroes = Managers.Object.Heroes;
