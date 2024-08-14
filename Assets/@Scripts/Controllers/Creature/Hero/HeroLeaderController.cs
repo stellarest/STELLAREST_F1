@@ -1,15 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 using static STELLAREST_F1.Define;
 using System.Linq;
-using UnityEngine.Analytics;
-using UnityEditor;
-using Unity.VisualScripting.ReorderableList.Element_Adder_Menu;
-using UnityEditor.Experimental.GraphView;
 
 namespace STELLAREST_F1
 {
@@ -240,7 +234,7 @@ namespace STELLAREST_F1
 
         private void OnMovementDirChanged(Vector2 nDir)
         {
-            if (_leader.IsValidOwner == false)
+            if (_leader.IsValid() == false)
                 return;
 
             _nMovementDir = nDir;
@@ -254,7 +248,7 @@ namespace STELLAREST_F1
 
         private void OnJoystickStateChanged(EJoystickState joystickState)
         {
-            if (_leader.IsValidOwner == false)
+            if (_leader.IsValid() == false)
                 return;
 
             switch (joystickState)
@@ -371,7 +365,7 @@ namespace STELLAREST_F1
 
         private void Update()
         {
-            if (_leader.IsValidOwner == false)
+            if (_leader.IsValid() == false)
                 return;
 
             if (SkillOrCollectEnv())
@@ -406,6 +400,7 @@ namespace STELLAREST_F1
                 // -- Stop
                 else
                     _leader.Moving = false;
+
             }
         }
 
@@ -414,7 +409,7 @@ namespace STELLAREST_F1
             if (_leader.IsValid() == false)
                 return;
 
-            LateTickLeaderPos();
+            LateTickHeroLeader();
         }
 
         private void TryPathFinding(Vector3 destPos)
@@ -425,11 +420,11 @@ namespace STELLAREST_F1
             int pathCount = AddPath(currentCellPos, destCellPos);
             if (pathCount == 0)
             {
-                Debug.Log($"PathCount: {pathCount}");
                 _leader.Moving = false;
                 _lockFindPath = false;
                 return;
             }
+
             _coPathFinding = StartCoroutine(CoPathFinding());
         }
 
@@ -439,10 +434,10 @@ namespace STELLAREST_F1
 
         private int AddPath(Vector3Int startCellPos, Vector3Int targetCellPos)
         {
-            int depth = 2;
-            if (_leader.Target.IsValid())
-                depth = ReadOnly.Util.HeroDefaultMoveDepth;
-
+            // int depth = 2;
+            // if (_leader.Target.IsValid())
+            //     depth = ReadOnly.Util.HeroDefaultMoveDepth;
+            int depth = ReadOnly.Util.HeroDefaultMoveDepth;
             List<Vector3Int> path = Managers.Map.FindPath(startCellPos: startCellPos,
                                                         destCellPos: targetCellPos,
                                                         maxDepth: depth,
@@ -535,7 +530,7 @@ namespace STELLAREST_F1
         public void EnablePointer(bool enable)
             => _pointer.gameObject.SetActive(enable);
 
-        private void LateTickLeaderPos()
+        private void LateTickHeroLeader()
         {
             // --- Sorting heroes in same cellpos for leader
             {
@@ -553,10 +548,22 @@ namespace STELLAREST_F1
 
             // --- Update Leader Mark
             transform.position = _leader.CenterPosition;
-            if (_leader.IsValidOwner)
+            if (_leader.IsValid())
             {
                 if (_leader.Moving)
+                {
                     _leader.CreatureAIState = ECreatureAIState.Move;
+                    if (_lockFindPath && _nMovementDir.sqrMagnitude > 0)
+                    {
+                        // --- Stop PathFinding Immediately
+                        if (Managers.Map.CanMove(_leader.transform.position + _nMovementDir))
+                        {
+                            // Debug.Log("Out PathFinding Immediately.");
+                            _lockFindPath = false;
+                            StopCoPathFinding();
+                        }
+                    }
+                }
                 else
                     _leader.CreatureAIState = ECreatureAIState.Idle;
             }
@@ -574,6 +581,8 @@ namespace STELLAREST_F1
                 Vector3Int nextPos = _leaderPath.Peek();
                 Vector3 destPos = Managers.Map.GetCenterWorld(nextPos);
                 Vector3 dir = destPos - _leader.transform.position;
+
+                // TODO: Out Leader CoPathFinding Immediately
                 if (dir.x < 0f)
                     _leader.LookAtDir = ELookAtDirection.Left;
                 else if (dir.x > 0f)
@@ -584,8 +593,10 @@ namespace STELLAREST_F1
                     _leader.transform.position = destPos;
                     // _leader.LerpToCellPosCompleted = true;
                     _leaderPath.Dequeue();
+                    // --- Out Pathfinding when nMovement zero mag or not.
                     if (Managers.Map.CanMove(GoToJoystickPos, ignoreObjectType: EObjectType.Hero))
                     {
+                        // Debug.Log("Out After PathFinding.");
                         _lockFindPath = false;
                         StopCoPathFinding();
                         break;
@@ -612,10 +623,9 @@ namespace STELLAREST_F1
         private void StopCoPathFinding()
         {
             if (_coPathFinding != null)
-            {
                 StopCoroutine(_coPathFinding);
-                _coPathFinding = null;
-            }
+
+            _coPathFinding = null;
         }
 
         private Coroutine _coRandomFormation = null;

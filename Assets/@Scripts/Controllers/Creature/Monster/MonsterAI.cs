@@ -30,7 +30,7 @@ namespace STELLAREST_F1
             while (true)
             {
                 Owner.Targets.Clear();
-                if (Owner.IsValidOwner == false)
+                if (Owner.IsValid() == false)
                 {
                     StopCoFindTargets();
                     yield break;
@@ -46,7 +46,7 @@ namespace STELLAREST_F1
                 List<Hero> heroes = Managers.Map.GatherObjects<Hero>(Owner.transform.position, scanRange, scanRange);
                 for (int i = 0; i < heroes.Count; ++i)
                 {
-                    if (heroes[i].IsValidOwner == false)
+                    if (heroes[i].IsValid() == false)
                         continue;
 
                     Owner.Targets.Add(heroes[i]);

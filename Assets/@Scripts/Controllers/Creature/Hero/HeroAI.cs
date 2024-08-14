@@ -110,7 +110,7 @@ namespace STELLAREST_F1
             while (true)
             {
                 Owner.Targets.Clear();
-                if (Owner.IsValidOwner == false)
+                if (Owner.IsValid() == false)
                 {
                     StopCoFindTargets();
                     yield break;

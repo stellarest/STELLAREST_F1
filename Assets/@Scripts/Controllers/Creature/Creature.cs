@@ -47,7 +47,7 @@ namespace STELLAREST_F1
         {
             get
             {
-                if (IsValidOwner == false)
+                if (this.IsValid() == false)
                 {
                     CreatureAnim.ReadySkill = false;
                     return false;
@@ -59,7 +59,7 @@ namespace STELLAREST_F1
                     return false;
                 }
 
-                if (IsValidTarget == false)
+                if (Target.IsValid() == false)
                 {
                     CreatureAnim.ReadySkill = false;
                     return false;
@@ -494,7 +494,6 @@ namespace STELLAREST_F1
             {
                 if (CreatureAI.ForceWaitCompleted == false)
                 {
-                    Debug.Log("FORCE WAIT AI..");
                     yield return null;
                     continue;
                 }

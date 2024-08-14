@@ -57,12 +57,12 @@ namespace STELLAREST_F1
         {
             get
             {
-                if (IsValidOwner == false)
+                if (this.IsValid() == false)
                     return null;
 
                 BaseObject target = base.Target;
                 // --- base에서 null을 리턴하므로 null 체크를 먼저 해야함
-                if (target != null && target.IsValidOwner)
+                if (target != null && target.IsValid())
                     MonsterBody.MonsterEmoji = EMonsterEmoji.Angry;
                 else
                     MonsterBody.MonsterEmoji = EMonsterEmoji.Normal;

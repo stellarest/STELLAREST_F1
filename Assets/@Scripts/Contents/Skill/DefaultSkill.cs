@@ -23,7 +23,7 @@ namespace STELLAREST_F1
         #region Events
         public override void OnSkillCallback()
         {
-            if (Owner.IsValidOwner == false)
+            if (Owner.IsValid() == false)
                 return;
 
             if (_skillTargets.Count == 0)
@@ -32,7 +32,7 @@ namespace STELLAREST_F1
             // --- Do Projectile Later
             for (int i = 0; i < _skillTargets.Count; ++i)
             {
-                if (_skillTargets[i].IsValidOwner == false)
+                if (_skillTargets[i].IsValid() == false)
                     continue;
 
                 BaseObject target = _skillTargets[i];
@@ -114,17 +114,17 @@ namespace STELLAREST_F1
         // --- Reverse Targets
         public override void OnSkillStateEnter() 
         {
-            if (Owner.IsValidOwner == false)
+            if (Owner.IsValid() == false)
                 return;
 
-            if (Owner.IsValidTarget == false)
+            if (Owner.Target.IsValid() == false)
                 return;
             
             _skillTargets.Clear();
             Owner.LookAtValidTarget();
             for (int i = 0; i < Owner.Targets.Count; ++i)
             {
-                if (Owner.Targets[i].IsValidOwner == false)
+                if (Owner.Targets[i].IsValid() == false)
                     continue;
 
                 BaseObject target = Owner.Targets[i];

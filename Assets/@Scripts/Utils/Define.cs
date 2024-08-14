@@ -702,7 +702,7 @@ namespace STELLAREST_F1
 
                 public static readonly int RockElementsCount = 3;
                 public static readonly int MaxActiveSkillsCount = 2;
-                public static readonly int HeroDefaultMoveDepth = 10; // default: 5 -> 10
+                public static readonly int HeroDefaultMoveDepth = 20; // default: 5 -> 10 -> 20
                 public static readonly int HeroMaxMoveDepth = 100;
                 public static readonly int CreatureWarpMoveDepth = 50;
                 public static readonly int MonsterDefaultMoveDepth = 5; // default: 3 -> 5       

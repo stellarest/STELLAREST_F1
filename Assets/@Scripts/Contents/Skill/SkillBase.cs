@@ -128,7 +128,7 @@ namespace STELLAREST_F1
 
         protected virtual void GatherSingleTargetRange(BaseObject target)
         {
-            if (target.IsValidOwner == false)
+            if (target.IsValid() == false)
                 return;
 
             Vector3 nLookDir = new Vector3((int)Owner.LookAtDir, 0, 0);

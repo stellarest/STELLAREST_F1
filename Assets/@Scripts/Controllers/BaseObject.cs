@@ -98,8 +98,8 @@ namespace STELLAREST_F1
             }
         }
 
-        public bool IsValidOwner => this.IsValid();
-        public bool IsValidTarget => Target.IsValid();
+        // public bool IsValidOwner => this.IsValid();
+        // public bool IsValidTarget => Target.IsValid();
 
         public void LookAtValidTarget()
         {

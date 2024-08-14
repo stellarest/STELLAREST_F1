@@ -34,14 +34,14 @@ namespace STELLAREST_F1
             }
         }
 
-        private bool _spawnEnvFlag = false;
+        private bool _spawnEnvTypeFlag = false;
         private IEnumerator CoContinuousSpawnEnv_Test(float waitTime = 0.1f)
         {
             while (true)
             {
                 yield return new WaitUntil(() => Managers.Object.Envs.Count == 0);
                 yield return new WaitForSeconds(waitTime);
-                if (_spawnEnvFlag == false)
+                if (_spawnEnvTypeFlag == false)
                 {
                     Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
                        spawnPos: Managers.Map.GetCenterWorld(new Vector3Int(-6, 11, 0)),
@@ -54,7 +54,7 @@ namespace STELLAREST_F1
                        dataID: ReadOnly.DataAndPoolingID.DNPID_Env_GoldRock);
                 }
 
-                _spawnEnvFlag = !_spawnEnvFlag;
+                _spawnEnvTypeFlag = !_spawnEnvTypeFlag;
             }
         }
 
@@ -83,7 +83,7 @@ namespace STELLAREST_F1
                     dataID: ReadOnly.DataAndPoolingID.DNPID_Hero_Paladin);
                 leaderController.Leader = firstHero;
 
-                StartCoroutine(CoContinuousSpawnMonster_Test(2.5f));
+                // StartCoroutine(CoContinuousSpawnMonster_Test(2.5f));
                 // StartCoroutine(CoContinuousSpawnEnv_Test(1f));
 
                 {
