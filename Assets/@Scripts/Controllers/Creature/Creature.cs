@@ -485,10 +485,7 @@ namespace STELLAREST_F1
         protected IEnumerator CoUpdateAI()
         {
             // if (ObjectType == EObjectType.Monster)
-            // {
-            //     UpdateCellPos();
             //     yield break;
-            // }
 
             while (true)
             {

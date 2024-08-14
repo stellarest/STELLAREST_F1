@@ -113,7 +113,10 @@ namespace STELLAREST_F1
         #endregion
 
         public override void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
-            => base.OnDamaged(attacker, skillFromAttacker);
+        {
+            base.OnDamaged(attacker, skillFromAttacker);
+            HitShakeMovement(duration: 0.05f, power: 0.5f, vibrato: 10); // --- TEMP
+        }
         public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
             => base.OnDead(attacker, skillFromAttacker);
         protected override void OnDisable()

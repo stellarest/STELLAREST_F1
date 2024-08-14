@@ -122,6 +122,7 @@ namespace STELLAREST_F1
             
             _skillTargets.Clear();
             Owner.LookAtValidTarget();
+            ELookAtDirection enterLookAtDir = Owner.LookAtDir;
             for (int i = 0; i < Owner.Targets.Count; ++i)
             {
                 if (Owner.Targets[i].IsValid() == false)
@@ -140,7 +141,7 @@ namespace STELLAREST_F1
                         break;
 
                     case ESkillTargetRange.Half:
-                        ReserveHalfTargets(target);
+                        ReserveHalfTargets(enterLookAtDir, target);
                         break;
 
                     case ESkillTargetRange.Around:

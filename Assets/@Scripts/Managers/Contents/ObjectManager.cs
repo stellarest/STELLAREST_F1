@@ -60,6 +60,16 @@ namespace STELLAREST_F1
                         hero.SetInfo(dataID, spawnPos);
                         // Managers.Map.ForceMove(baseObj: hero, cellPos: cellSpawnPos);
                         Heroes.Add(hero);
+
+#if UNITY_EDITOR
+                        CellObject cellObj = new CellObject
+                        {
+                            CellPos = cellSpawnPos,
+                            CellObj = hero
+                        };
+                        DevManager.Instance.CellObjs.Add(cellObj);
+#endif
+
                         return hero as T;
                     }
 
@@ -77,6 +87,16 @@ namespace STELLAREST_F1
                         monster.SetInfo(dataID, spawnPos);
                         // Managers.Map.ForceMove(baseObj: monster, cellPos: cellSpawnPos);
                         Monsters.Add(monster);
+
+#if UNITY_EDITOR
+                        CellObject cellObj = new CellObject
+                        {
+                            CellPos = cellSpawnPos,
+                            CellObj = monster
+                        };
+                        DevManager.Instance.CellObjs.Add(cellObj);
+#endif
+
                         return monster as T;
                     }
 
@@ -93,8 +113,18 @@ namespace STELLAREST_F1
                         Env env = go.GetComponent<Env>();
                         env.SetInfo(dataID, spawnPos);
                         // env.SetCellPos(position: spawnPos, forceMove: true);
-                        env.UpdateCellPos(spawnPos);
+                        // env.UpdateCellPos(spawnPos);
                         Envs.Add(env);
+
+#if UNITY_EDITOR
+                        CellObject cellObj = new CellObject
+                        {
+                            CellPos = cellSpawnPos,
+                            CellObj = env
+                        };
+                        DevManager.Instance.CellObjs.Add(cellObj);
+#endif
+
                         return env as T;
                     }
 
@@ -294,6 +324,11 @@ namespace STELLAREST_F1
             }
 
             Managers.Resource.Destroy(obj.gameObject, poolingID);
+
+#if UNITY_EDITOR
+            CellObject cellObj = DevManager.Instance.CellObjs.Find(n => n.CellObj == obj);
+            DevManager.Instance.CellObjs.Remove(cellObj);
+#endif
         }
     }
 }

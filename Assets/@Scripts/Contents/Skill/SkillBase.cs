@@ -205,11 +205,13 @@ namespace STELLAREST_F1
             }
         }
 
-        protected virtual void ReserveHalfTargets(BaseObject target)
+        protected virtual void ReserveHalfTargets(ELookAtDirection lookAtDir, BaseObject target)
         {
-            Vector3 nLookDir = new Vector3((int)Owner.LookAtDir, 0, 0);
-            Vector3 nTargetDir = (target.transform.position - Owner.transform.position).normalized;
-            float dot = Vector3.Dot(nLookDir, nTargetDir);
+            Vector3 nLookAtDir  = new Vector3((int)lookAtDir, 0, 0);
+            //Vector3 nTargetDir = (target.transform.position - Owner.transform.position).normalized;
+            Vector3 nTargetDir = target.CellPos - Owner.CellPos;
+            float dot = Vector3.Dot(nLookAtDir, nTargetDir.normalized);
+            //Debug.Log($"Dot: {dot} - {target.CellPos}");
             if (dot < 0) // --- 둔각일때는 종료
                 return;
 

@@ -705,7 +705,7 @@ namespace STELLAREST_F1
                 public static readonly int HeroDefaultMoveDepth = 20; // default: 5 -> 10 -> 20
                 public static readonly int HeroMaxMoveDepth = 100;
                 public static readonly int CreatureWarpMoveDepth = 50;
-                public static readonly int MonsterDefaultMoveDepth = 5; // default: 3 -> 5       
+                public static readonly int MonsterDefaultMoveDepth = 20; // default: 3 -> 5 -> 20       
                 public static readonly int MaxCanPingPongConditionCount = 20;
 
                 public static readonly int ObjectScanRange = 6; // --- 대각선 상관없이 6칸

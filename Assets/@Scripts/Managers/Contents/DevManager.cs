@@ -1,7 +1,7 @@
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting.Antlr3.Runtime.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Tilemaps;
@@ -11,6 +11,13 @@ using static STELLAREST_F1.Define;
 #if UNITY_EDITOR
 namespace STELLAREST_F1
 {
+    [System.Serializable]
+    public class CellObject
+    {
+        public Vector3Int CellPos;
+        public BaseObject CellObj;
+    }
+
     public class DevManager : MonoBehaviour
     {
         public static DevManager Instance = null;
@@ -20,18 +27,40 @@ namespace STELLAREST_F1
             Instance = this;
         }
 
-        // private IEnumerator Start()
-        // {
-        //     while (true)
-        //     {
-        //         yield return null;
-        //         foreach (var pair in Managers.Map.Cells)
-        //         {
-        //             if (pair.Value != null)
-        //                 Debug.Log($"({pair.Key}, {pair.Value.gameObject.name}");
-        //         }
-        //     }
-        // }
+        public List<CellObject> CellObjs = new List<CellObject>();
+        private IEnumerator Start()
+        {
+            while (true)
+            {
+                yield return null;
+                foreach (var pair in Managers.Map.Cells)
+                {
+                    Vector3Int currentPos = pair.Key;
+                    BaseObject currentObj = pair.Value;
+
+                    // 오브젝트가 있는지 먼저 찾아본다.
+                    CellObject cellObj = CellObjs.Find(n => n.CellObj == currentObj);
+                    if (cellObj != null)
+                    {
+                        // 제거할 필요는 없고, 업데이트만 해주면 될 것 같은데
+                        if (cellObj.CellPos != currentPos)
+                        {
+                            cellObj.CellPos = currentPos;
+                            continue;
+                        }
+                    }
+                }
+
+                // yield return null;
+                // foreach (var pair in Managers.Map.Cells)
+                // {
+                //     if (pair.Value != null)
+                //     {
+                //         Debug.Log($"({pair.Key}, {pair.Value.gameObject.name}");
+                //     }
+                // }
+            }
+        }
 
         private void Update()
         {

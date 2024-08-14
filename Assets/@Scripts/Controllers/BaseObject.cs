@@ -150,13 +150,13 @@ namespace STELLAREST_F1
                 CellPos = currentCellPos;
         }
 
-        public void UpdateCellPos(Vector3 worldPos)
-        {
-            Vector3Int currentCellPos = Managers.Map.WorldToCell(worldPos);
-            Managers.Map.RemoveObject(this);
-            Managers.Map.AddObject(this, currentCellPos);
-            CellPos = currentCellPos;
-        }
+        // public void UpdateCellPos(Vector3 worldPos)
+        // {
+        //     Vector3Int currentCellPos = Managers.Map.WorldToCell(worldPos);
+        //     Managers.Map.RemoveObject(this);
+        //     Managers.Map.AddObject(this, currentCellPos);
+        //     CellPos = currentCellPos;
+        // }
 
         public bool IsOnTheCellCenter
         {
