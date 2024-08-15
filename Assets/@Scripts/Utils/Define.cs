@@ -330,9 +330,11 @@ namespace STELLAREST_F1
         public enum ETargetDirection
         {
             Horizontal,
-            Vertical,
-            Diagonal,
-            Max = Diagonal + 1
+            VerticalUp,     // --- Added Up, Down
+            VerticalDown,   // --- Added Up, Down
+            DiagonalUp,     // --- Added Up, Down
+            DiagonalDown,   // --- Added Up, Down
+            Max = DiagonalDown + 1
         }
 
         // ####################################################

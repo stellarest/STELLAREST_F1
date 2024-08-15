@@ -4,6 +4,7 @@ using UnityEngine;
 
 using static STELLAREST_F1.Define;
 using STELLAREST_F1.Data;
+using System;
 
 namespace STELLAREST_F1
 {
@@ -21,8 +22,10 @@ namespace STELLAREST_F1
         public ESkillType SkillType { get; private set; } = ESkillType.None;
         public EAttachmentPoint SkillFromPoint { get; private set; } = EAttachmentPoint.None;
         protected bool[] _lockTargetDirs = null;
-        protected bool IsLockTargetDir(ETargetDirection targetDir) => _lockTargetDirs[(int)targetDir];
-        protected void LockTargetDir(ETargetDirection targetDir) => _lockTargetDirs[(int)targetDir] = true;
+        protected bool IsLockTargetDir(ETargetDirection targetDir) 
+            => _lockTargetDirs[(int)targetDir];
+        protected void LockTargetDir(ETargetDirection targetDir) 
+            => _lockTargetDirs[(int)targetDir] = true;
         protected void ReleaseAllTargetDirs()
         {
             for (int i = 0; i < _lockTargetDirs.Length; ++i)
@@ -112,102 +115,133 @@ namespace STELLAREST_F1
         }
         #endregion
 
-        #region Anim Clip Callback
-        public abstract void OnSkillCallback();
-        #endregion
-
-        #region Anim State Events
+        #region Events
         public abstract void OnSkillStateEnter();
         public abstract void OnSkillStateExit();
-        #endregion
+        public abstract void OnSkillCallback();
+        #endregion Events
 
-        private float _angleDiagonal = 45f;
-        private float _angleVerticalMin = 70f;
-        private float _angleVerticalMax = 90f;
-        public float angleTreshhold = 10f;
-
-        protected virtual void GatherSingleTargetRange(BaseObject target)
+        private const float c_angleDiagonal = 45f;
+        protected virtual void ReserveSelfTargets(BaseObject target) { }
+        protected virtual void ReserveSingleTargets(ELookAtDirection enteredLookAtDir, BaseObject target)
         {
-            if (target.IsValid() == false)
-                return;
-
-            Vector3 nLookDir = new Vector3((int)Owner.LookAtDir, 0, 0);
-            Vector3 nTargetDir = (target.transform.position - Owner.transform.position).normalized;
-            float dot = Vector3.Dot(nLookDir, nTargetDir);
-            float angle = Mathf.Acos(dot) * Mathf.Rad2Deg;
+            Vector3 nLookAtDir = new Vector3((int)enteredLookAtDir, 0, 0);
+            Vector3 nTargetDir = target.CellPos - Owner.CellPos;
+            float dot = Vector3.Dot(nLookAtDir, nTargetDir.normalized);
 
             int dx = Mathf.Abs(target.CellPos.x - Owner.CellPos.x);
             int dy = Mathf.Abs(target.CellPos.y - Owner.CellPos.y);
             if (dx <= TargetDistance && dy <= TargetDistance)
-            {
+            { 
+                // --- Horizontal
                 if (IsLockTargetDir(ETargetDirection.Horizontal) == false)
                 {
-                    if (target.CellPos.y == Owner.CellPos.y)
+                    if (dot == 1)
                     {
-                        if (angle < angleTreshhold)
-                        {
-                            Debug.Log("<color=white>Horizontal</color>");
-                            LockTargetDir(ETargetDirection.Vertical);
-                            LockTargetDir(ETargetDirection.Diagonal); ;
-                            target.OnDamaged(attacker: Owner, skillByAttacker: this);
-                            if (SkillData.EffectIDs.Length != 0)
-                            {
-                                List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
-                                    effectIDs: SkillData.EffectIDs,
-                                    source: target,
-                                    startCallback: null
-                                );
-                            }
-                        }
+#if UNITY_EDITOR
+                        if (!IsLockTargetDir(ETargetDirection.VerticalUp) || !IsLockTargetDir(ETargetDirection.VerticalDown) ||
+                            !IsLockTargetDir(ETargetDirection.DiagonalUp) || !IsLockTargetDir(ETargetDirection.DiagonalDown))
+                            Debug.Log("<color=white>Single - Horizontal</color>");
+#endif
+                        LockTargetDir(ETargetDirection.VerticalUp);
+                        LockTargetDir(ETargetDirection.VerticalDown);
+                        LockTargetDir(ETargetDirection.DiagonalUp);
+                        LockTargetDir(ETargetDirection.DiagonalDown);
+                        _skillTargets.Add(target);
                     }
                 }
 
-                if (IsLockTargetDir(ETargetDirection.Vertical) == false)
+                // --- VerticalUp
+                if (IsLockTargetDir(ETargetDirection.VerticalUp) == false)
                 {
-                    if (target.CellPos.x == Owner.CellPos.x)
+                    if (target.CellPos.y > Owner.CellPos.y)
                     {
-                        if (angle >= _angleVerticalMin && angle <= _angleVerticalMax)
+                        if (dot == 0)
                         {
-                            Debug.Log("<color=white>Vertical</color>");
+#if UNITY_EDITOR
+                            if (!IsLockTargetDir(ETargetDirection.Horizontal) || !IsLockTargetDir(ETargetDirection.VerticalDown) || 
+                                !IsLockTargetDir(ETargetDirection.DiagonalUp) || !IsLockTargetDir(ETargetDirection.DiagonalDown))
+                                Debug.Log("<color=yellow>Single - VerticalUp</color>");
+#endif
                             LockTargetDir(ETargetDirection.Horizontal);
-                            LockTargetDir(ETargetDirection.Diagonal);
-                            target.OnDamaged(attacker: Owner, skillByAttacker: this);
-                            if (SkillData.EffectIDs.Length != 0)
-                            {
-                                List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
-                                    effectIDs: SkillData.EffectIDs,
-                                    source: target,
-                                    startCallback: null
-                                );
-                            }
+                            LockTargetDir(ETargetDirection.VerticalDown);
+                            LockTargetDir(ETargetDirection.DiagonalUp);
+                            LockTargetDir(ETargetDirection.DiagonalDown);
+                            _skillTargets.Add(target);
                         }
                     }
                 }
 
-                if (IsLockTargetDir(ETargetDirection.Diagonal) == false)
+                // --- VerticalDown
+                if (IsLockTargetDir(ETargetDirection.VerticalDown) == false)
                 {
-                    if (Mathf.Abs(angle - _angleDiagonal) < angleTreshhold)
+                    if (target.CellPos.y < Owner.CellPos.y)
                     {
-                        Debug.Log("<color=white>Diagonal</color>");
-                        LockTargetDir(ETargetDirection.Horizontal);
-                        LockTargetDir(ETargetDirection.Vertical);
-                        target.OnDamaged(attacker: Owner, skillByAttacker: this);
-                        if (SkillData.EffectIDs.Length != 0)
+                        if (dot == 0)
                         {
-                            List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
-                                effectIDs: SkillData.EffectIDs,
-                                source: target,
-                                startCallback: null
-                            );
+#if UNITY_EDITOR
+                            if (!IsLockTargetDir(ETargetDirection.Horizontal) || !IsLockTargetDir(ETargetDirection.VerticalUp) || 
+                                !IsLockTargetDir(ETargetDirection.DiagonalUp) || !IsLockTargetDir(ETargetDirection.DiagonalDown))
+                                Debug.Log("<color=brown>Single - VerticalDown</color>");
+#endif
+                            LockTargetDir(ETargetDirection.Horizontal);
+                            LockTargetDir(ETargetDirection.VerticalUp);
+                            LockTargetDir(ETargetDirection.DiagonalUp);
+                            LockTargetDir(ETargetDirection.DiagonalDown);
+                            _skillTargets.Add(target);
+                        }
+                    }
+                }
+
+                // --- DiagonalUp
+                if (IsLockTargetDir(ETargetDirection.DiagonalUp) == false)
+                {
+                    if (target.CellPos.y > Owner.CellPos.y)
+                    {
+                        float angle = Mathf.Acos(dot) * Mathf.Rad2Deg;
+                        if (angle == c_angleDiagonal)
+                        {
+#if UNITY_EDITOR
+                            if (!IsLockTargetDir(ETargetDirection.Horizontal) || !IsLockTargetDir(ETargetDirection.VerticalUp) ||
+                                !IsLockTargetDir(ETargetDirection.VerticalDown) || !IsLockTargetDir(ETargetDirection.DiagonalDown))
+                                Debug.Log("<color=magenta>Single - DiagonalUp</color>");
+#endif
+                            LockTargetDir(ETargetDirection.Horizontal);
+                            LockTargetDir(ETargetDirection.VerticalUp);
+                            LockTargetDir(ETargetDirection.VerticalDown);
+                            LockTargetDir(ETargetDirection.DiagonalDown);
+                            _skillTargets.Add(target);
+                        }
+                    }
+                }
+
+                // --- DiagonalDown
+                if (IsLockTargetDir(ETargetDirection.DiagonalDown) == false)
+                {
+                    if (target.CellPos.y < Owner.CellPos.y)
+                    {
+                        float angle = Mathf.Acos(dot) * Mathf.Rad2Deg;
+                        if (angle == c_angleDiagonal)
+                        {
+#if UNITY_EDITOR
+                            if (!IsLockTargetDir(ETargetDirection.Horizontal) || !IsLockTargetDir(ETargetDirection.VerticalUp) ||
+                                !IsLockTargetDir(ETargetDirection.VerticalDown) || !IsLockTargetDir(ETargetDirection.DiagonalUp))
+                                Debug.Log("<color=green>Single - DiagonalDown</color>");
+#endif
+                            LockTargetDir(ETargetDirection.Horizontal);
+                            LockTargetDir(ETargetDirection.VerticalUp);
+                            LockTargetDir(ETargetDirection.VerticalDown);
+                            LockTargetDir(ETargetDirection.DiagonalUp);
+                            _skillTargets.Add(target);
                         }
                     }
                 }
             }
         }
 
-        protected virtual void ReserveHalfTargets(ELookAtDirection lookAtDir, BaseObject target)
+        protected virtual void ReserveHalfTargets(ELookAtDirection enteredLookAtDir, BaseObject target)
         {
-            Vector3 nLookAtDir  = new Vector3((int)lookAtDir, 0, 0);
+            Vector3 nLookAtDir  = new Vector3((int)enteredLookAtDir, 0, 0);
             //Vector3 nTargetDir = (target.transform.position - Owner.transform.position).normalized;
             Vector3 nTargetDir = target.CellPos - Owner.CellPos;
             float dot = Vector3.Dot(nLookAtDir, nTargetDir.normalized);
@@ -222,6 +256,10 @@ namespace STELLAREST_F1
                 if (nTargetDir.y >= 0 || nTargetDir.y <= 0)
                     _skillTargets.Add(target);
             }
+        }
+
+        protected virtual void ReserveAroundTargets(ELookAtDirection enteredLookAtDir, BaseObject target)
+        {
         }
 
         protected virtual void GatherAroundTargets(BaseObject target)
@@ -245,3 +283,84 @@ namespace STELLAREST_F1
         }
     }
 }
+
+/*
+// protected virtual void GatherSingleTargetRange(BaseObject target)
+        // {
+        //     if (target.IsValid() == false)
+        //         return;
+
+        //     Vector3 nLookDir = new Vector3((int)Owner.LookAtDir, 0, 0);
+        //     Vector3 nTargetDir = (target.transform.position - Owner.transform.position).normalized;
+        //     float dot = Vector3.Dot(nLookDir, nTargetDir);
+        //     float angle = Mathf.Acos(dot) * Mathf.Rad2Deg;
+
+        //     int dx = Mathf.Abs(target.CellPos.x - Owner.CellPos.x);
+        //     int dy = Mathf.Abs(target.CellPos.y - Owner.CellPos.y);
+        //     if (dx <= TargetDistance && dy <= TargetDistance)
+        //     {
+        //         if (IsLockTargetDir(ETargetDirection.Horizontal) == false)
+        //         {
+        //             if (target.CellPos.y == Owner.CellPos.y)
+        //             {
+        //                 if (angle < angleTreshhold)
+        //                 {
+        //                     Debug.Log("<color=white>Horizontal</color>");
+        //                     LockTargetDir(ETargetDirection.Vertical);
+        //                     LockTargetDir(ETargetDirection.Diagonal);
+        //                     target.OnDamaged(attacker: Owner, skillByAttacker: this);
+        //                     if (SkillData.EffectIDs.Length != 0)
+        //                     {
+        //                         List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
+        //                             effectIDs: SkillData.EffectIDs,
+        //                             source: target,
+        //                             startCallback: null
+        //                         );
+        //                     }
+        //                 }
+        //             }
+        //         }
+
+        //         if (IsLockTargetDir(ETargetDirection.Vertical) == false)
+        //         {
+        //             if (target.CellPos.x == Owner.CellPos.x)
+        //             {
+        //                 if (angle >= _angleVerticalMin && angle <= _angleVerticalMax)
+        //                 {
+        //                     Debug.Log("<color=white>Vertical</color>");
+        //                     LockTargetDir(ETargetDirection.Horizontal);
+        //                     LockTargetDir(ETargetDirection.Diagonal);
+        //                     target.OnDamaged(attacker: Owner, skillByAttacker: this);
+        //                     if (SkillData.EffectIDs.Length != 0)
+        //                     {
+        //                         List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
+        //                             effectIDs: SkillData.EffectIDs,
+        //                             source: target,
+        //                             startCallback: null
+        //                         );
+        //                     }
+        //                 }
+        //             }
+        //         }
+
+        //         if (IsLockTargetDir(ETargetDirection.Diagonal) == false)
+        //         {
+        //             if (Mathf.Abs(angle - _angleDiagonal) < angleTreshhold)
+        //             {
+        //                 Debug.Log("<color=white>Diagonal</color>");
+        //                 LockTargetDir(ETargetDirection.Horizontal);
+        //                 LockTargetDir(ETargetDirection.Vertical);
+        //                 target.OnDamaged(attacker: Owner, skillByAttacker: this);
+        //                 if (SkillData.EffectIDs.Length != 0)
+        //                 {
+        //                     List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
+        //                         effectIDs: SkillData.EffectIDs,
+        //                         source: target,
+        //                         startCallback: null
+        //                     );
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
+*/

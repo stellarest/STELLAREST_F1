@@ -13,7 +13,7 @@ using UnityEditor;
 - ENV Test (O)
 - Leader LookAtValidTarget Off when using Joystick (TODO: Out Leader CoPathFinding Immediately (O)
 - Env And Chicken Test (First Target Chicken, Second Target Env) (O)
-- Hero Half Target -> Signle Target -> Around Target
+- Default Skill Test: Hero Half Target(O) -> Signle Target -> Around Target
 - Archer(Chara + Anim) - Projectile
 ********************************************************************
 */

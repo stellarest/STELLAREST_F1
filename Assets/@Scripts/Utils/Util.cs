@@ -8,6 +8,7 @@ using UnityEngine;
 using Debug = UnityEngine.Debug;
 using static STELLAREST_F1.Define;
 using UnityEngine.U2D;
+using UnityEditor;
 
 namespace STELLAREST_F1
 {

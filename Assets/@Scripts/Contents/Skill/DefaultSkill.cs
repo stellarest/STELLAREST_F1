@@ -12,15 +12,51 @@ namespace STELLAREST_F1
 {
     public class DefaultSkill : SkillBase
     {
-        public override bool Init()
+        #region Events
+        public override void OnSkillStateEnter()
         {
-            if (base.Init() == false)
-                return false;
+            if (Owner.IsValid() == false)
+                return;
 
-            return true;
+            if (Owner.Target.IsValid() == false)
+                return;
+
+            _skillTargets.Clear();
+            Owner.LookAtValidTarget();
+            ELookAtDirection enteredLookAtDir = Owner.LookAtDir;
+            for (int i = 0; i < Owner.Targets.Count; ++i)
+            {
+                if (Owner.Targets[i].IsValid() == false)
+                    continue;
+
+                BaseObject target = Owner.Targets[i];
+                if (target.ObjectType == EObjectType.Env)
+                    continue;
+
+                switch (TargetRange)
+                {
+                    case ESkillTargetRange.Self:
+                        break;
+
+                    case ESkillTargetRange.Single:
+                        ReserveSingleTargets(enteredLookAtDir, target);
+                        break;
+
+                    case ESkillTargetRange.Half:
+                        ReserveHalfTargets(enteredLookAtDir, target);
+                        break;
+
+                    case ESkillTargetRange.Around:
+                        break;
+                }
+            }
+
+            ReleaseAllTargetDirs();
         }
 
-        #region Events
+        public override void OnSkillStateExit()
+            => _skillTargets.Clear();
+
         public override void OnSkillCallback()
         {
             if (Owner.IsValid() == false)
@@ -29,7 +65,9 @@ namespace STELLAREST_F1
             if (_skillTargets.Count == 0)
                 return;
 
+            // ******************************
             // --- Do Projectile Later
+            // ******************************
             for (int i = 0; i < _skillTargets.Count; ++i)
             {
                 if (_skillTargets[i].IsValid() == false)
@@ -110,52 +148,6 @@ namespace STELLAREST_F1
 
         //     ReleaseAllTargetDirs();
         // }
-
-        // --- Reverse Targets
-        public override void OnSkillStateEnter() 
-        {
-            if (Owner.IsValid() == false)
-                return;
-
-            if (Owner.Target.IsValid() == false)
-                return;
-            
-            _skillTargets.Clear();
-            Owner.LookAtValidTarget();
-            ELookAtDirection enterLookAtDir = Owner.LookAtDir;
-            for (int i = 0; i < Owner.Targets.Count; ++i)
-            {
-                if (Owner.Targets[i].IsValid() == false)
-                    continue;
-
-                BaseObject target = Owner.Targets[i];
-                if (target.ObjectType == EObjectType.Env)
-                    continue;
-
-                switch (TargetRange)
-                {
-                    case ESkillTargetRange.Self:
-                        break;
-
-                    case ESkillTargetRange.Single:
-                        break;
-
-                    case ESkillTargetRange.Half:
-                        ReserveHalfTargets(enterLookAtDir, target);
-                        break;
-
-                    case ESkillTargetRange.Around:
-                        break;
-                }
-            }
-
-            ReleaseAllTargetDirs();
-        }
-
-        public override void OnSkillStateExit() 
-        {  
-            _skillTargets.Clear();
-        }
         #endregion Events
     }
 }
