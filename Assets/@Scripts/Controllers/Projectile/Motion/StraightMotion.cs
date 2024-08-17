@@ -8,10 +8,15 @@ namespace STELLAREST_F1
 {
     public class StraightMotion : ProjectileMotionBase
     {
+        protected override IEnumerator CoLaunchProjectile()
+        {
+            yield return null;
+        }
+
         // protected override void ReadyToLaunch()
         // {
         // }
-        
+
         // protected override IEnumerator CoLaunchProjectile()
         // {
         //     // Debug.Log($"### Launch::StraightMotion ###");

@@ -58,8 +58,7 @@ namespace STELLAREST_F1
             }
 
             Projectile projectile = Managers.Object.SpawnBaseObject<Projectile>(EObjectType.Projectile, 
-                Owner.CenterPosition, SkillData.ProjectileID);
-
+                Owner.CenterPosition, SkillData.ProjectileID, owner: Owner);
 
             // Projectile projectile = Managers.Object.Spawn<Projectile>(EObjectType.Projectile, SkillData.ProjectileID);
             // projectile.transform.position = spawnPos;

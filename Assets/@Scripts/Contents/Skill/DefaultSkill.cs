@@ -57,6 +57,9 @@ namespace STELLAREST_F1
             Owner.LookAtValidTarget();
             if (SkillData.ProjectileID == -1)
                 GatherMeleeTargets();
+
+            // --- Projectile TargetRange, TargetDistance?
+            // OnTrigger(OnDamaged) in Projectile. (멀티샷x, 연속샷x, Default Skill은 무조건 한 발)
         }
 
         public override void OnSkillStateExit()
@@ -69,7 +72,7 @@ namespace STELLAREST_F1
 
             if (SkillData.ProjectileID > -1)
             {
-                // --- Generate Projectile
+                // --- Generate Projectile (error)
                 Projectile projectile = GenerateProjectile(Owner, GetSpawnPos());
                 return;
             }

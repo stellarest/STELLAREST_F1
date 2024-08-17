@@ -355,8 +355,8 @@ namespace STELLAREST_F1
         public enum EProjectileMotionType
         {
             None = -1,
-            Parabola,
             Straight,
+            Parabola,
         }
 
         public enum EWeaponChildIndex

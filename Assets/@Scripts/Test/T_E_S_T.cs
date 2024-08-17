@@ -15,6 +15,7 @@ using UnityEditor;
 - Env And Chicken Test (First Target Chicken, Second Target Env) (O)
 - Default Skill Test: Hero Half Target(O) -> Signle Target(O) -> Around Target(O)
 - Failed Effect_OnDeadSkull (O, TEMP)
+- 지금 현재 Projectile OnTrigerEnter2D 안먹힘
 - Archer(Chara + Anim) - Projectile, Parabola, Archer Attack Lower Anim
 - Wizard - Projectile, Straight
 - Priest, Gather Ally Targets

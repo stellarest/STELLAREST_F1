@@ -226,6 +226,7 @@ namespace STELLAREST_F1
             RigidBody.gravityScale = 0f;
             RigidBody.mass = 0f;
             RigidBody.drag = 0f;
+            // RigidBody.bodyType = RigidbodyType2D.Kinematic;
             RigidBody.bodyType = RigidbodyType2D.Kinematic;
             RigidBody.simulated = false;
 
@@ -279,6 +280,7 @@ namespace STELLAREST_F1
         protected virtual void EnterInGame(Vector3 spawnPos)
         {
             // StopAllCoroutines(); // --- TEST
+            RigidBody.simulated = true;
             BaseBody.ResetMaterialsAndColors();
             // BaseBody.StartCoFadeInEffect();
             SpawnedPos = spawnPos;

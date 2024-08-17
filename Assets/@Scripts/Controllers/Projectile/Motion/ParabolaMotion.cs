@@ -17,6 +17,34 @@ namespace STELLAREST_F1
         private bool changeStraightMotion = false; // *****
         private const float MaxDistanceSQR = 144.0F;
 
+        protected override IEnumerator CoLaunchProjectile()
+        {
+            float startTime = Time.time;
+            float journeyLength = Vector2.Distance(_startPos, _targetPos);
+            float totalTime = journeyLength / _projectile.ProjectileSpeed;
+
+            AnimationCurve curve = Managers.Contents.Curve(_projectile.ProjectileCurveType);
+            while (Time.time - startTime < totalTime)
+            {
+                float normalizedTime = (Time.time - startTime) / totalTime;
+                float baseX = Mathf.Lerp(_startPos.x, _targetPos.x, curve.Evaluate(normalizedTime));
+                float baseY = Mathf.Lerp(_startPos.y, _targetPos.y, curve.Evaluate(normalizedTime));
+
+                float arc = HeightArc * Mathf.Sin(normalizedTime * Mathf.PI);
+                float arcY = baseY + arc;
+
+                Vector3 nextPos = new Vector3(baseX, arcY);
+                if (_projectile.RotateToTarget)
+                    Rotate2D(nextPos - transform.position);
+
+                transform.position = nextPos;
+
+                yield return null;
+            }
+
+            // _endCallback?.Invoke();
+        }
+
         // protected override void ReadyToLaunch()
         // {
         //     float firstTick = Time.deltaTime;
