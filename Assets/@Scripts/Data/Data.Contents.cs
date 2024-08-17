@@ -477,16 +477,12 @@ namespace STELLAREST_F1.Data
     [Serializable]
     public class ProjectileData : BaseData
     {
-        public string Body;
-        public string BodyColor;
-		public string ClassName;
-        public bool IsRotateToTarget;
-        public float ColliderRadius;
-        public float MovementSpeed;
-
-        public string AnimationCurveType;
-        public EProjectileMotionType MotionType;
+        public bool RotateToTarget;
+        public float ProjectileSpeed;
+        public float ProjectileLifeTime;
         public EObjectSize ProjectileSize;
+        public EAnimationCurveType ProjectileCurveType;
+        public EProjectileMotionType ProjectileMotionType;
     }
 
     public class ProjectileDataLoader : ILoader<int, ProjectileData>

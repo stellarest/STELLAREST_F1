@@ -17,52 +17,52 @@ namespace STELLAREST_F1
         private bool changeStraightMotion = false; // *****
         private const float MaxDistanceSQR = 144.0F;
 
-        protected override void ReadyToLaunch()
-        {
-            float firstTick = Time.deltaTime;
-            float baseX = Mathf.Lerp(StartPosition.x, TargetPosition.x, firstTick);
-            float baseY = Mathf.Lerp(StartPosition.y, TargetPosition.y, firstTick);
+        // protected override void ReadyToLaunch()
+        // {
+        //     float firstTick = Time.deltaTime;
+        //     float baseX = Mathf.Lerp(StartPosition.x, TargetPosition.x, firstTick);
+        //     float baseY = Mathf.Lerp(StartPosition.y, TargetPosition.y, firstTick);
 
-            HeightArc = Mathf.Lerp(MinHeight, MaxHeight, Util.Distance(StartPosition, TargetPosition, isSQR: true)/ MaxDistanceSQR);
-            float arc = HeightArc * Mathf.Sin(firstTick * Mathf.PI);
-            float arcY = baseY + arc;
+        //     HeightArc = Mathf.Lerp(MinHeight, MaxHeight, Util.Distance(StartPosition, TargetPosition, isSQR: true)/ MaxDistanceSQR);
+        //     float arc = HeightArc * Mathf.Sin(firstTick * Mathf.PI);
+        //     float arcY = baseY + arc;
 
-            Vector3 nextPos = new Vector3(baseX, arcY);
-            transform.position += (nextPos - transform.position).normalized * 2f;
-            Rotation2D(transform.position - nextPos);
-            StartPosition = transform.position;
-        }
+        //     Vector3 nextPos = new Vector3(baseX, arcY);
+        //     transform.position += (nextPos - transform.position).normalized * 2f;
+        //     Rotation2D(transform.position - nextPos);
+        //     StartPosition = transform.position;
+        // }
 
-        // 파라볼라 모션도 지금 고장나있는게 가까이 붙어 있으면 못맞춤
-        protected override IEnumerator CoLaunchProjectile()
-        {
-            //Debug.Log($"### Launch::ParabolaMotion ###");
-            float startTime = Time.time;
-            float journeyLength = Vector2.Distance(StartPosition, TargetPosition);
-            float totalTime = journeyLength / _movementSpeed;
+        // // 파라볼라 모션도 지금 고장나있는게 가까이 붙어 있으면 못맞춤
+        // protected override IEnumerator CoLaunchProjectile()
+        // {
+        //     //Debug.Log($"### Launch::ParabolaMotion ###");
+        //     float startTime = Time.time;
+        //     float journeyLength = Vector2.Distance(StartPosition, TargetPosition);
+        //     float totalTime = journeyLength / _movementSpeed;
 
-            AnimationCurve curve = Managers.Contents.Curve(AnimCurveType);
-            while (Time.time - startTime < totalTime)
-            {
-                float normalizedTime = (Time.time - startTime) / totalTime;
-                // float baseX = Mathf.Lerp(StartPosition.x, TargetPosition.x, normalizedTime);
-                // float baseY = Mathf.Lerp(StartPosition.y, TargetPosition.y, normalizedTime);
-                float baseX = Mathf.Lerp(StartPosition.x, TargetPosition.x, curve.Evaluate(normalizedTime));
-                float baseY = Mathf.Lerp(StartPosition.y, TargetPosition.y, curve.Evaluate(normalizedTime));
+        //     AnimationCurve curve = Managers.Contents.Curve(AnimCurveType);
+        //     while (Time.time - startTime < totalTime)
+        //     {
+        //         float normalizedTime = (Time.time - startTime) / totalTime;
+        //         // float baseX = Mathf.Lerp(StartPosition.x, TargetPosition.x, normalizedTime);
+        //         // float baseY = Mathf.Lerp(StartPosition.y, TargetPosition.y, normalizedTime);
+        //         float baseX = Mathf.Lerp(StartPosition.x, TargetPosition.x, curve.Evaluate(normalizedTime));
+        //         float baseY = Mathf.Lerp(StartPosition.y, TargetPosition.y, curve.Evaluate(normalizedTime));
 
-                float arc = HeightArc * Mathf.Sin(normalizedTime * Mathf.PI);
-                float arcY = baseY + arc;
+        //         float arc = HeightArc * Mathf.Sin(normalizedTime * Mathf.PI);
+        //         float arcY = baseY + arc;
 
-                Vector3 nextPos = new Vector3(baseX, arcY);
-                if (IsRotateToTarget)
-                    Rotation2D(nextPos - transform.position);
+        //         Vector3 nextPos = new Vector3(baseX, arcY);
+        //         if (IsRotateToTarget)
+        //             Rotation2D(nextPos - transform.position);
 
-                transform.position = nextPos;
-                yield return null;
-            }
+        //         transform.position = nextPos;
+        //         yield return null;
+        //     }
 
-            _endCallback?.Invoke();
-        }
+        //     _endCallback?.Invoke();
+        // }
     }
 }
 

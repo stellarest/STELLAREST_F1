@@ -321,8 +321,7 @@ namespace STELLAREST_F1
         public enum ESkillTargetRange
         {
             None = -1,
-            Self,
-            Single,
+            Single = 1,
             Half,
             Around
         }

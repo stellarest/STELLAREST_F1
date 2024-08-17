@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -34,13 +35,23 @@ namespace STELLAREST_F1
         public Transform DamageFontRoot => GetRoot(ReadOnly.Util.DamageFontPoolingRootName);
         public Transform EffectRoot => GetRoot(ReadOnly.Util.EffectPoolingRootName);
 
+        private bool IsCellObject(EObjectType objectType)
+            => objectType == EObjectType.Hero || objectType == EObjectType.Monster || objectType == EObjectType.Env;
+
         public T SpawnBaseObject<T>(EObjectType objectType, Vector3 spawnPos, int dataID = -1, BaseObject owner = null) where T : BaseObject
         {
-            Vector3Int cellSpawnPos = Util.MakeSpawnPosition(spawnPos);
-            if (Managers.Map.CanMove(cellSpawnPos) == false)
+            Vector3Int cellSpawnPos = Vector3Int.zero;
+            if (IsCellObject(objectType))
             {
-                Debug.LogWarning($"Failed: {nameof(Util.MakeSpawnPosition)}, {objectType}");
-                return null;
+                cellSpawnPos = Util.MakeSpawnPosition(spawnPos);
+                if (Managers.Map.CanMove(cellSpawnPos) == false)
+                {
+                    Debug.LogWarning($"Failed Spawn Cell Object: {nameof(Util.MakeSpawnPosition)}, {objectType}");
+                    return null;
+                }
+
+                // --- If success making spawn position
+                spawnPos = Managers.Map.CellToCenteredWorld(cellSpawnPos);
             }
 
             GameObject go = null;

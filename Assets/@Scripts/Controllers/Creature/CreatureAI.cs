@@ -77,7 +77,7 @@ namespace STELLAREST_F1
                 List<Vector3Int> path = Managers.Map.FindPath(Owner.CellPos, CellChasePos, 2);
                 if (path.Count > 0)
                 {
-                    Vector3 centeredLastPathPos = Managers.Map.GetCenterWorld(path[path.Count - 1]);
+                    Vector3 centeredLastPathPos = Managers.Map.CellToCenteredWorld(path[path.Count - 1]);
                     if (Owner.Target.IsValid() && (Owner.transform.position - centeredLastPathPos).sqrMagnitude < 0.01f)
                     {
                         if (IsPingPongAndCantMoveToDest(Owner.CellPos))
@@ -231,7 +231,7 @@ namespace STELLAREST_F1
             Vector3 currentWorldPos = Managers.Map.CellToWorld(currentCellPos);
             while (pathQueue.Count != 0)
             {
-                Vector3 destPos = Managers.Map.GetCenterWorld(nextPos);
+                Vector3 destPos = Managers.Map.CellToCenteredWorld(nextPos);
                 Vector3 dir = destPos - Owner.transform.position;
                 if (dir.x < 0f)
                     Owner.LookAtDir = ELookAtDirection.Left;

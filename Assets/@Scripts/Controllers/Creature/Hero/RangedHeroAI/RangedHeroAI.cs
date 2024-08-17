@@ -90,7 +90,8 @@ namespace STELLAREST_F1
                     isShortDist = false;
             }
 
-            return Managers.Map.CenteredCellPos(destCellPos);
+            //return Managers.Map.CenteredCellPos(destCellPos);
+            return Vector3Int.zero;
         }
         private Vector3Int _backStepDestCellPos = Vector3Int.zero;
         #endregion

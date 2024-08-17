@@ -29,7 +29,7 @@ namespace STELLAREST_F1
                 yield return new WaitUntil(() => Managers.Object.Monsters.Count == 0);
                 yield return new WaitForSeconds(waitTime);
                 Monster chicken = Managers.Object.SpawnBaseObject<Monster>
-                    (objectType: EObjectType.Monster, spawnPos: Managers.Map.GetCenterWorld(new Vector3Int(-9, 8, 0)),
+                    (objectType: EObjectType.Monster, spawnPos: Managers.Map.CellToCenteredWorld(new Vector3Int(-9, 8, 0)),
                      dataID: ReadOnly.DataAndPoolingID.DNPID_Monster_Chicken);
             }
         }
@@ -44,13 +44,13 @@ namespace STELLAREST_F1
                 if (_spawnEnvTypeFlag == false)
                 {
                     Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
-                       spawnPos: Managers.Map.GetCenterWorld(new Vector3Int(-6, 11, 0)),
+                       spawnPos: Managers.Map.CellToCenteredWorld(new Vector3Int(-6, 11, 0)),
                        dataID: ReadOnly.DataAndPoolingID.DNPID_Env_AshTree);
                 }
                 else
                 {
                     Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
-                       spawnPos: Managers.Map.GetCenterWorld(new Vector3Int(-3, 11, 0)),
+                       spawnPos: Managers.Map.CellToCenteredWorld(new Vector3Int(-3, 11, 0)),
                        dataID: ReadOnly.DataAndPoolingID.DNPID_Env_GoldRock);
                 }
 
@@ -61,7 +61,7 @@ namespace STELLAREST_F1
         private void SpawnChicken_Test(int cellPosX, int cellPosY)
         {
             Managers.Object.SpawnBaseObject<Monster>
-                (objectType: EObjectType.Monster, spawnPos: Managers.Map.GetCenterWorld(new Vector3Int(cellPosX, cellPosY, 0)),
+                (objectType: EObjectType.Monster, spawnPos: Managers.Map.CellToCenteredWorld(new Vector3Int(cellPosX, cellPosY, 0)),
                 dataID: ReadOnly.DataAndPoolingID.DNPID_Monster_Chicken, owner: null);
         }
 
@@ -72,7 +72,7 @@ namespace STELLAREST_F1
             Managers.Map.Map.transform.position = Vector3.zero;
 
             {
-                // --- Leader Controlelr, Cam
+                // --- Lead er Controlelr, Cam
                 HeroLeaderController leaderController = Managers.Object.SpawnHeroLeaderController();
                 CameraController cam = Camera.main.GetComponent<CameraController>();
                 Managers.Object.CameraController = cam;
@@ -83,33 +83,32 @@ namespace STELLAREST_F1
                     dataID: ReadOnly.DataAndPoolingID.DNPID_Hero_Paladin);
                 leaderController.Leader = firstHero;
 
-                // StartCoroutine(CoContinuousSpawnMonster_Test(2.5f));
+                StartCoroutine(CoContinuousSpawnMonster_Test(2.5f));
                 // StartCoroutine(CoContinuousSpawnEnv_Test(1f));
 
                 {
-                    SpawnChicken_Test(-10, 8);
-                    SpawnChicken_Test(-8, 8);
-                    // SpawnChicken_Test(-9, 8);
-                    SpawnChicken_Test(-6, 7);
-                    SpawnChicken_Test(-6, 6);
-                    SpawnChicken_Test(-6, 5);
-                    SpawnChicken_Test(-6, 9);
+                    // SpawnChicken_Test(-10, 8);
+                    // SpawnChicken_Test(-8, 8);
+                    // SpawnChicken_Test(-6, 7);
+                    // SpawnChicken_Test(-6, 6);
+                    // SpawnChicken_Test(-6, 5);
+                    // SpawnChicken_Test(-6, 9);
 
-                    SpawnChicken_Test(-4, 7);
-                    SpawnChicken_Test(-4, 6);
-                    SpawnChicken_Test(-4, 5);
+                    // SpawnChicken_Test(-4, 7);
+                    // SpawnChicken_Test(-4, 6);
+                    // SpawnChicken_Test(-4, 5);
 
-                    SpawnChicken_Test(-3, 8);
-                    SpawnChicken_Test(-3, 7);
-                    SpawnChicken_Test(-3, 6);
-                    SpawnChicken_Test(-3, 5);
-                    SpawnChicken_Test(-3, 4);
+                    // SpawnChicken_Test(-3, 8);
+                    // SpawnChicken_Test(-3, 7);
+                    // SpawnChicken_Test(-3, 6);
+                    // SpawnChicken_Test(-3, 5);
+                    // SpawnChicken_Test(-3, 4);
 
-                    SpawnChicken_Test(-7, 8);
-                    SpawnChicken_Test(-7, 7);
-                    SpawnChicken_Test(-7, 6);
-                    SpawnChicken_Test(-7, 5);
-                    SpawnChicken_Test(-7, 4);
+                    // SpawnChicken_Test(-7, 8);
+                    // SpawnChicken_Test(-7, 7);
+                    // SpawnChicken_Test(-7, 6);
+                    // SpawnChicken_Test(-7, 5);
+                    // SpawnChicken_Test(-7, 4);
 
                     // SpawnChicken_Test(-6, 10);
                     // SpawnChicken_Test(-6, 11);

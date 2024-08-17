@@ -113,8 +113,7 @@ namespace STELLAREST_F1
                 LookAtDir = ELookAtDirection.Right;
         }
 
-        [field: SerializeField] public List<BaseObject> Allies { get; set; } = new List<BaseObject>();
-
+        // [field: SerializeField] public List<BaseObject> Allies { get; set; } = new List<BaseObject>();
         public static Vector3 GetLookAtRotation(Vector3 dir)
             => new Vector3(0, 0, Mathf.Atan2(-dir.x, dir.y) * Mathf.Rad2Deg);
 
@@ -137,7 +136,7 @@ namespace STELLAREST_F1
             Managers.Map.Cells[cellPos] = this;
             CellPos = cellPos;
             NextCellPos = cellPos;
-            transform.position = Managers.Map.GetCenterWorld(cellPos);
+            transform.position = Managers.Map.CellToCenteredWorld(cellPos);
             LerpToCellPosCompleted = true;
         }
 
@@ -162,7 +161,7 @@ namespace STELLAREST_F1
         {
             get
             {
-                Vector3 center = Managers.Map.GetCenterWorld(CellPos);
+                Vector3 center = Managers.Map.CellToCenteredWorld(CellPos);
                 float threshold = 0.1f;
                 if ((center - transform.position).sqrMagnitude < threshold * threshold)
                     return true;
@@ -175,8 +174,11 @@ namespace STELLAREST_F1
         {
             if (LerpToCellPosCompleted)
                 return;
+
+            // if Creature is not
+            // return;
                 
-            Vector3 destPos = Managers.Map.GetCenterWorld(NextCellPos);
+            Vector3 destPos = Managers.Map.CellToCenteredWorld(NextCellPos);
             Vector3 dir = destPos - transform.position;
             if (dir.x < 0f)
                 LookAtDir = ELookAtDirection.Left;
@@ -206,23 +208,6 @@ namespace STELLAREST_F1
                        transform.position = startPos;
                });
         }
-
-        // public bool IsTargetSamePosition
-        // {
-        //     get
-        //     {
-        //         if (IsValidOwner == false)
-        //             return false;
-
-        //         if (IsValidTarget == false)
-        //             return false;
-
-        //         float threshold = 1f;
-        //         return (Target.transform.position - transform.position).sqrMagnitude < threshold * threshold;
-        //     }
-        // }
-
-        //public bool IsOnCellCenter { get; protected set; } = false;
 
         #region Init Core
         public override bool Init()

@@ -10,84 +10,84 @@ namespace STELLAREST_F1
 {
     public abstract class ProjectileMotionBase : InitBase
     {
-        public int DataTemplateID { get; set; } = -1;
-        public Data.ProjectileData ProjectileData { get; private set; } = null;
+    //     public int DataTemplateID { get; set; } = -1;
+    //     public Data.ProjectileData ProjectileData { get; private set; } = null;
 
-        public Vector3 StartPosition { get; protected set; } = Vector3.zero;
-        public Vector3 TargetPosition { get; private set; } = Vector3.zero;
+    //     public Vector3 StartPosition { get; protected set; } = Vector3.zero;
+    //     public Vector3 TargetPosition { get; private set; } = Vector3.zero;
 
-        public EProjectileMotionType MotionType { get; private set; } = EProjectileMotionType.None;
-        public EAnimationCurveType AnimCurveType { get; private set; } = EAnimationCurveType.None;
+    //     public EProjectileMotionType MotionType { get; private set; } = EProjectileMotionType.None;
+    //     public EAnimationCurveType AnimCurveType { get; private set; } = EAnimationCurveType.None;
 
 
-        private bool _isRotateToTarget = false;
-        public bool IsRotateToTarget
-        {
-            get => _isRotateToTarget;
-            private set => _isRotateToTarget = value;
-        }
+    //     private bool _isRotateToTarget = false;
+    //     public bool IsRotateToTarget
+    //     {
+    //         get => _isRotateToTarget;
+    //         private set => _isRotateToTarget = value;
+    //     }
 
-        protected float _movementSpeed = 0.0f;
-        protected float _atkRange = 0.0f;
+    //     protected float _movementSpeed = 0.0f;
+    //     protected float _atkRange = 0.0f;
         
-        protected Action _endCallback = null;
-        private Coroutine _coLaunchProjectile = null;
+    //     protected Action _endCallback = null;
+    //     private Coroutine _coLaunchProjectile = null;
 
-        public override bool Init()
-        {
-            if (base.Init() == false)
-                return false;
+    //     public override bool Init()
+    //     {
+    //         if (base.Init() == false)
+    //             return false;
 
-            return true;
-        }
+    //         return true;
+    //     }
 
-        // 움직임과 관련된 부분만 받아올 것. 나머지 부분은 프로젝타일 또는 스킬 부분에서 처리하는게 맞다고 봄.
-        public void InitialSetInfo(ProjectileData projectileData)
-        {
-            MotionType = projectileData.MotionType;
-            AnimCurveType = Util.GetEnumFromString<EAnimationCurveType>(ProjectileData.AnimationCurveType);
-            IsRotateToTarget = projectileData.IsRotateToTarget;
-            _movementSpeed = ProjectileData.MovementSpeed;
-        }
+    //     // 움직임과 관련된 부분만 받아올 것. 나머지 부분은 프로젝타일 또는 스킬 부분에서 처리하는게 맞다고 봄.
+    //     public void InitialSetInfo(ProjectileData projectileData)
+    //     {
+    //         MotionType = projectileData.MotionType;
+    //         AnimCurveType = Util.GetEnumFromString<EAnimationCurveType>(ProjectileData.AnimationCurveType);
+    //         IsRotateToTarget = projectileData.IsRotateToTarget;
+    //         _movementSpeed = ProjectileData.MovementSpeed;
+    //     }
 
-        public void EnterInGame(Vector3 startPos, Vector3 targetPos)
-        {
-            StartPosition = startPos;
-            TargetPosition = targetPos;
+    //     public void EnterInGame(Vector3 startPos, Vector3 targetPos)
+    //     {
+    //         StartPosition = startPos;
+    //         TargetPosition = targetPos;
 
-            if (_coLaunchProjectile != null)
-                StopCoroutine(_coLaunchProjectile);
+    //         if (_coLaunchProjectile != null)
+    //             StopCoroutine(_coLaunchProjectile);
 
-            ReadyToLaunch();
-            _coLaunchProjectile = StartCoroutine(CoLaunchProjectile());
-        }
+    //         ReadyToLaunch();
+    //         _coLaunchProjectile = StartCoroutine(CoLaunchProjectile());
+    //     }
 
-        // public override bool SetInfo(int dataID, BaseObject owner)
-        // {
-        //     DataTemplateID = dataID;
-        //     ProjectileData = Managers.Data.ProjectileDataDict[dataID];
-        //     MotionType = ProjectileData.MotionType;
-        //     AnimCurveType = Util.GetEnumFromString<EAnimationCurveType>(ProjectileData.AnimationCurveType);
-        //     RotateToTarget = ProjectileData.RotateToTarget;
-        //     _movementSpeed = ProjectileData.MovementSpeed;
-        //     StartPosition = transform.position;
-        //     return true;
-        // }
+    //     // public override bool SetInfo(int dataID, BaseObject owner)
+    //     // {
+    //     //     DataTemplateID = dataID;
+    //     //     ProjectileData = Managers.Data.ProjectileDataDict[dataID];
+    //     //     MotionType = ProjectileData.MotionType;
+    //     //     AnimCurveType = Util.GetEnumFromString<EAnimationCurveType>(ProjectileData.AnimationCurveType);
+    //     //     RotateToTarget = ProjectileData.RotateToTarget;
+    //     //     _movementSpeed = ProjectileData.MovementSpeed;
+    //     //     StartPosition = transform.position;
+    //     //     return true;
+    //     // }
 
-        public void SetEndCallback(Action endCallback)
-        {
-            _endCallback -= endCallback;
-            _endCallback += endCallback;
-        }
+    //     public void SetEndCallback(Action endCallback)
+    //     {
+    //         _endCallback -= endCallback;
+    //         _endCallback += endCallback;
+    //     }
 
-        protected void Rotation2D(Vector2 targetDir)
-        {
-            targetDir = targetDir.normalized;
-            transform.rotation = Quaternion.Euler(0, 0, Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg);
-        }
+    //     protected void Rotation2D(Vector2 targetDir)
+    //     {
+    //         targetDir = targetDir.normalized;
+    //         transform.rotation = Quaternion.Euler(0, 0, Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg);
+    //     }
 
-        protected abstract void ReadyToLaunch();
+    //     protected abstract void ReadyToLaunch();
 
-        protected abstract IEnumerator CoLaunchProjectile(); 
+    //     protected abstract IEnumerator CoLaunchProjectile(); 
     }
 }

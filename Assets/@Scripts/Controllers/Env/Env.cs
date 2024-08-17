@@ -66,7 +66,7 @@ namespace STELLAREST_F1
                         {
                             Managers.Object.SpawnBaseObject<EffectBase>(
                                 objectType: EObjectType.Effect,
-                                spawnPos: Managers.Map.GetCenterWorld(Vector3Int.up + SpawnedCellPos),
+                                spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos),
                                 dataID: ReadOnly.DataAndPoolingID.DNPID_Effect_TeleportGreen,
                                 owner: this
                             );
@@ -78,7 +78,7 @@ namespace STELLAREST_F1
                     {
                         Managers.Object.SpawnBaseObject<EffectBase>(
                             objectType: EObjectType.Effect,
-                            spawnPos: Managers.Map.GetCenterWorld(Vector3Int.up + SpawnedCellPos),
+                            spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos),
                             dataID: ReadOnly.DataAndPoolingID.DNPID_Effect_TeleportBlue,
                             owner: this
                         );

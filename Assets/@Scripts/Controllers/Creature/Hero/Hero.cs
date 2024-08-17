@@ -88,7 +88,7 @@ namespace STELLAREST_F1
                 return;
             }
 
-            Vector3 destPos = Managers.Map.GetCenterWorld(CellPos); // 이동은 가운데로.
+            Vector3 destPos = Managers.Map.CellToCenteredWorld(CellPos); // 이동은 가운데로.
             Vector3 dir = destPos - transform.position;
 
             if (dir.x < 0f)

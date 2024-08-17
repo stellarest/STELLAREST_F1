@@ -200,8 +200,12 @@ namespace STELLAREST_F1
         // StatModifier 부분은 생략
         public virtual bool ClearEffect(EEffectClearType clearType)
         {
+            // --- TEMP
             if (Owner.IsValid() == false)
+            {
+                Managers.Object.Despawn(this, DataTemplateID);
                 return false;
+            }
 
             switch (clearType)
             {

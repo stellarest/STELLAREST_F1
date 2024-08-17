@@ -208,7 +208,7 @@ namespace STELLAREST_F1
 
         public static bool IsNearCellCenter(BaseObject baseObj, Vector3Int cellPos, float threshold = 0.1f)
         {
-            Vector3 center = Managers.Map.GetCenterWorld(cellPos);
+            Vector3 center = Managers.Map.CellToCenteredWorld(cellPos);
             if ((center - baseObj.transform.position).sqrMagnitude < threshold * threshold)
                 return true;
 

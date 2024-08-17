@@ -343,7 +343,7 @@ namespace STELLAREST_F1
 
         public void MoveToCellCenter()
         {
-            Vector3 center = Managers.Map.GetCenterWorld(CellPos);
+            Vector3 center = Managers.Map.CellToCenteredWorld(CellPos);
             Vector3 dir = center - transform.position;
 
             float threshold = 0.1f;
@@ -484,30 +484,30 @@ namespace STELLAREST_F1
         protected Coroutine _coUpdateAI = null;
         protected IEnumerator CoUpdateAI()
         {
-            if (ObjectType == EObjectType.Monster)
-                yield break;
+            // if (ObjectType == EObjectType.Monster)
+            //     yield break;
 
-            // while (true)
-            // {
-            //     if (CreatureAI.ForceWaitCompleted == false)
-            //     {
-            //         yield return null;
-            //         continue;
-            //     }
+            while (true)
+            {
+                if (CreatureAI.ForceWaitCompleted == false)
+                {
+                    yield return null;
+                    continue;
+                }
 
-            //     switch (CreatureAIState)
-            //     {
-            //         case ECreatureAIState.Idle:
-            //             CreatureAI.UpdateIdle();
-            //             break;
+                switch (CreatureAIState)
+                {
+                    case ECreatureAIState.Idle:
+                        CreatureAI.UpdateIdle();
+                        break;
 
-            //         case ECreatureAIState.Move:
-            //             CreatureAI.UpdateMove();
-            //             break;
-            //     }
+                    case ECreatureAIState.Move:
+                        CreatureAI.UpdateMove();
+                        break;
+                }
 
-            //     yield return null;
-            // }
+                yield return null;
+            }
         }
 
         public void StartCoUpdateAI()
@@ -676,7 +676,7 @@ namespace STELLAREST_F1
             Vector3 currentWorldPos = Managers.Map.CellToWorld(currentCellPos);
             while (pathQueue.Count != 0)
             {
-                Vector3 destPos = Managers.Map.GetCenterWorld(nextPos);
+                Vector3 destPos = Managers.Map.CellToCenteredWorld(nextPos);
                 Vector3 dir = destPos - transform.position; // 왜 이걸로하면 안되지
                 if (dir.x < 0f)
                     LookAtDir = ELookAtDirection.Left;

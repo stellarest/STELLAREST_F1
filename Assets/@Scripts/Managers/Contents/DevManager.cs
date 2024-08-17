@@ -124,7 +124,7 @@ namespace STELLAREST_F1
                 for (int x = MinX; x < MaxX; ++x)
                 {
                     GameObject cell = new GameObject { name = $"{x}, {y}" };
-                    cell.transform.position = Managers.Map.GetCenterWorld(new Vector3Int(x, y));
+                    cell.transform.position = Managers.Map.CellToCenteredWorld(new Vector3Int(x, y));
                     TextMeshPro tmPro = cell.AddComponent<TextMeshPro>();
                     tmPro.fontSize = 3f;
                     tmPro.text = $"{x},{y}";

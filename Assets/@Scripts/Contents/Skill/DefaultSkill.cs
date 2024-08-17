@@ -12,17 +12,10 @@ namespace STELLAREST_F1
 {
     public class DefaultSkill : SkillBase
     {
-        #region Events
-        public override void OnSkillStateEnter()
+        // --- How to gather Allies Targets?
+        private void GatherMeleeTargets()
         {
-            if (Owner.IsValid() == false)
-                return;
-
-            if (Owner.Target.IsValid() == false)
-                return;
-
             _skillTargets.Clear();
-            Owner.LookAtValidTarget();
             ELookAtDirection enteredLookAtDir = Owner.LookAtDir;
             for (int i = 0; i < Owner.Targets.Count; ++i)
             {
@@ -35,9 +28,6 @@ namespace STELLAREST_F1
 
                 switch (TargetRange)
                 {
-                    case ESkillTargetRange.Self:
-                        break;
-
                     case ESkillTargetRange.Single:
                         ReserveSingleTargets(enteredLookAtDir, target);
                         break;
@@ -47,11 +37,26 @@ namespace STELLAREST_F1
                         break;
 
                     case ESkillTargetRange.Around:
+                        ReserveAroundTargets(target);
                         break;
                 }
             }
 
             ReleaseAllTargetDirs();
+        }
+
+        #region Events
+        public override void OnSkillStateEnter()
+        {
+            if (Owner.IsValid() == false)
+                return;
+
+            if (Owner.Target.IsValid() == false)
+                return;
+
+            Owner.LookAtValidTarget();
+            if (SkillData.ProjectileID == -1)
+                GatherMeleeTargets();
         }
 
         public override void OnSkillStateExit()
@@ -62,8 +67,12 @@ namespace STELLAREST_F1
             if (Owner.IsValid() == false)
                 return;
 
-            if (_skillTargets.Count == 0)
+            if (SkillData.ProjectileID > -1)
+            {
+                // --- Generate Projectile
+                Projectile projectile = GenerateProjectile(Owner, GetSpawnPos());
                 return;
+            }
 
             // ******************************
             // --- Do Projectile Later
