@@ -14,16 +14,16 @@ namespace STELLAREST_F1
         private const float MinHeight = 1F;
         private const float MaxHeight = 2F;
         public float HeightArc { get; private set; } = MaxHeight;
-        private bool changeStraightMotion = false; // *****
         private const float MaxDistanceSQR = 144.0F;
 
         protected override IEnumerator CoLaunchProjectile()
         {
             float startTime = Time.time;
             float journeyLength = Vector2.Distance(_startPos, _targetPos);
-            float totalTime = journeyLength / _projectile.ProjectileSpeed;
+            float totalTime = journeyLength / _projectile.ProjectileSpeed; // 거리를 속도로 나누면 시간
 
             AnimationCurve curve = Managers.Contents.Curve(_projectile.ProjectileCurveType);
+            Vector3 nextPos = Vector3.zero;
             while (Time.time - startTime < totalTime)
             {
                 float normalizedTime = (Time.time - startTime) / totalTime;
@@ -33,16 +33,83 @@ namespace STELLAREST_F1
                 float arc = HeightArc * Mathf.Sin(normalizedTime * Mathf.PI);
                 float arcY = baseY + arc;
 
-                Vector3 nextPos = new Vector3(baseX, arcY);
+                nextPos = new Vector3(baseX, arcY);
                 if (_projectile.RotateToTarget)
                     Rotate2D(nextPos - transform.position);
 
+                transform.position = nextPos;
+                yield return null;
+            }
+
+            // --- Falldown Test 3
+            float falldownSpeed = 5f;
+            float falldownRotSpeed = 10f;
+            while (true)
+            {
+                // 로컬 오른쪽 방향으로 이동
+                Vector3 localRight = transform.TransformDirection(Vector3.right) * _projectile.ProjectileSpeed * Time.deltaTime;
+
+                // 하강 속도를 따로 적용하여 서서히 하강
+                Vector3 downwardMovement = Vector3.down * falldownSpeed * Time.deltaTime;
+
+                // 다음 위치 계산
+                nextPos = transform.position + localRight + downwardMovement;
+
+                // 방향을 향해 부드럽게 회전
+                Vector3 rotDir = (nextPos - transform.position).normalized;
+                float angle = Mathf.Atan2(rotDir.y, rotDir.x) * Mathf.Rad2Deg;
+                Quaternion targetRotation = Quaternion.Euler(0, 0, angle);
+
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * falldownRotSpeed);
+
+                // 위치 업데이트
                 transform.position = nextPos;
 
                 yield return null;
             }
 
-            // _endCallback?.Invoke();
+            // --- Falldown Test 2
+            // float falldownSpeed = 200f;
+            // while (true)
+            // {
+            //     Vector3 localRight = transform.TransformDirection(Vector3.right);
+            //     localRight.y -= falldownSpeed * Time.deltaTime;
+            //     nextPos = transform.position + localRight * _projectile.ProjectileSpeed * Time.deltaTime;
+            //     Vector3 rotDir = (nextPos - transform.position).normalized; 
+            //     //Rotate2D(nextPos - transform.position);
+            //     transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0, 0, Mathf.Atan2(rotDir.y, rotDir.x) * Mathf.Rad2Deg), Time.deltaTime * 10f);
+            //     transform.position = nextPos;
+            //     yield return null;
+            // }
+
+            // --- Falldown Test 1
+            // float falldownSpeed = 200f;
+            // while (true)
+            // {
+            //     Vector3 localRight = transform.TransformDirection(Vector3.right);
+            //     localRight.y -= falldownSpeed * Time.deltaTime;
+            //     transform.position += localRight * _projectile.ProjectileSpeed * Time.deltaTime;
+
+            //     yield return null;
+            // }
+
+            // while (true)
+            // {
+            //     // forward 방향으로 이동
+            //     Vector3 localRight = transform.TransformDirection(Vector3.right);
+            //     nextPos += localRight * _projectile.ProjectileSpeed * Time.deltaTime;
+
+            //     // Y축 방향으로 서서히 하강
+            //     // nextPos.y -= _projectile.ProjectileSpeed * Time.deltaTime;
+
+            //     transform.position = nextPos;
+
+            //     // 필요에 따라 회전 처리
+            //     if (_projectile.RotateToTarget)
+            //         Rotate2D(nextPos - transform.position);
+
+            //     yield return null;
+            // }
         }
 
         // protected override void ReadyToLaunch()

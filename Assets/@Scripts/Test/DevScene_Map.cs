@@ -87,8 +87,16 @@ namespace STELLAREST_F1
                 // StartCoroutine(CoContinuousSpawnEnv_Test(1f));
 
                 {
+                    // SpawnChicken_Test(-9, 9);
                     // SpawnChicken_Test(-10, 8);
                     // SpawnChicken_Test(-8, 8);
+                    // SpawnChicken_Test(-9, 7);
+
+                    // SpawnChicken_Test(-10, 9);
+                    // SpawnChicken_Test(-10, 7);
+                    // SpawnChicken_Test(-8, 9);
+                    // SpawnChicken_Test(-8, 7);
+
                     // SpawnChicken_Test(-6, 7);
                     // SpawnChicken_Test(-6, 6);
                     // SpawnChicken_Test(-6, 5);
@@ -109,6 +117,8 @@ namespace STELLAREST_F1
                     // SpawnChicken_Test(-7, 6);
                     // SpawnChicken_Test(-7, 5);
                     // SpawnChicken_Test(-7, 4);
+                    SpawnChicken_Test(-7, 10);
+                    SpawnChicken_Test(-8, 9);
 
                     // SpawnChicken_Test(-6, 10);
                     // SpawnChicken_Test(-6, 11);

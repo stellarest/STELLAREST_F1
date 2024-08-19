@@ -10,6 +10,13 @@ namespace STELLAREST_F1
         private float _delta = 0f;
         private float _desiredTimeToReach = 0.35f;
         private float _desiredTimeToReturn = 0.65f;
+        private float _sqrTargetDist = 0f;
+
+        public override void InitialSetInfo(int dataID, BaseObject owner)
+        {
+            base.InitialSetInfo(dataID, owner);
+            _sqrTargetDist = TargetDistance * 3f;
+        }
 
         #region Events
         public override void OnSkillCallback()
@@ -46,7 +53,7 @@ namespace STELLAREST_F1
             // if ((Owner.CenterPosition - Owner.Target.CenterPosition).sqrMagnitude < 1.5f)
             //     Owner.Target.OnDamaged(Owner, this);
             // Debug.Log($"sqrMag: {(_startPoint - _targetPoint).sqrMagnitude}");
-            if ((_startPoint - _targetPoint).sqrMagnitude <= 3f * 3f)
+            if ((_startPoint - _targetPoint).sqrMagnitude <= _sqrTargetDist * _sqrTargetDist)
             {
                 if (IsValidTarget)
                     Owner.Target.OnDamaged(Owner, this);

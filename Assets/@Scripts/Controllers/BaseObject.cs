@@ -228,6 +228,7 @@ namespace STELLAREST_F1
             RigidBody.drag = 0f;
             // RigidBody.bodyType = RigidbodyType2D.Kinematic;
             RigidBody.bodyType = RigidbodyType2D.Kinematic;
+            RigidBody.collisionDetectionMode = CollisionDetectionMode2D.Discrete;
             RigidBody.simulated = false;
 
             SortingGroup = gameObject.GetOrAddComponent<SortingGroup>();

@@ -318,6 +318,9 @@ namespace STELLAREST_F1
             Max = Skill_C + 1
         }
 
+        // ********************************************************************************
+        // Melee는 완료했으므로 일단 이거 세개(Single, Half, Around) Projectile 부분 정의 완료하기
+        // 그 다음에 모양을 더 추가하던지 (예시, XShaped)
         public enum ESkillTargetRange
         {
             None = -1,
@@ -325,7 +328,7 @@ namespace STELLAREST_F1
             Half,
             Around
         }
-
+        // ********************************************************************************
         public enum ETargetDirection
         {
             Horizontal,
@@ -335,6 +338,7 @@ namespace STELLAREST_F1
             DiagonalDown,   // --- Added Up, Down
             Max = DiagonalDown + 1
         }
+
 
         // ####################################################
         // Util.GetTypeFromClassName에 반드시 타입 추가

@@ -107,7 +107,7 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public void InitialSetInfo(int dataID, BaseObject owner)
+        public virtual void InitialSetInfo(int dataID, BaseObject owner)
         {
             Owner = owner as Creature;
             DataTemplateID = dataID;
@@ -127,7 +127,6 @@ namespace STELLAREST_F1
         #endregion Events
 
         private const float c_angleDiagonal = 45f;
-        protected virtual void ReserveSelfTargets(BaseObject target) { }
         protected virtual void ReserveSingleTargets(ELookAtDirection enteredLookAtDir, BaseObject target)
         {
             Vector3 nLookAtDir = new Vector3((int)enteredLookAtDir, 0, 0);
@@ -215,6 +214,23 @@ namespace STELLAREST_F1
                             _skillTargets.Add(target);
                         }
                     }
+                }
+            }
+        }
+
+        protected virtual void ReserveVerticalBothTargets(ELookAtDirection enteredLookAtDir, BaseObject target)
+        {
+            Vector3 nLookAtDir = new Vector3((int)enteredLookAtDir, 0, 0);
+            Vector3 nTargetDir = target.CellPos - Owner.CellPos;
+            float dot = Vector3.Dot(nLookAtDir, nTargetDir.normalized);
+
+            int dx = Mathf.Abs(target.CellPos.x - Owner.CellPos.x);
+            int dy = Mathf.Abs(target.CellPos.y - Owner.CellPos.y);
+            if (dx <= TargetDistance && dy <= TargetDistance)
+            {
+                if (dot == 0 || dot == 1)
+                {
+                    _skillTargets.Add(target);
                 }
             }
         }

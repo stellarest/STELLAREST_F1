@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using STELLAREST_F1.Data;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -22,10 +23,14 @@ namespace STELLAREST_F1
         protected float _projectileLifeTime = 0f;
         protected ESkillTargetRange _targetRange = ESkillTargetRange.None;
         protected int _targetDistance = -1;
+        private int _penetrateCount = 0;
+        public int CanPenetrateCount { get; private set; } = 0;
         protected List<BaseObject> _projectileSkillTargets = new List<BaseObject>();
 
         private Coroutine _coProjectileLifeTime = null;
 
+        private Coroutine _coCollisionDelay = null;
+        private HashSet<Collider2D> _hitColliders = new HashSet<Collider2D>();
         #region Init Core
         public override bool Init()
         {
@@ -55,13 +60,10 @@ namespace STELLAREST_F1
             ProjectileCurveType = projectileData.ProjectileCurveType;
             InitialSetProjectileMotion(projectileData.ProjectileMotionType);
 
-            if (Managers.Data.SkillDataDict.TryGetValue(dataID, out SkillData skillData) == false)
-            {
-                Debug.LogError($"{nameof(Projectile)}, {nameof(InitialSetInfo)}, Failed to load SkillData");
-                return;
-            }
-            _targetRange = skillData.TargetRange;
-            _targetDistance = skillData.TargetDistance;
+            Skill = Owner.CreatureSkill.FindSkill(DataTemplateID);
+            _targetRange = Skill.SkillData.TargetRange;
+            _targetDistance = Skill.SkillData.TargetDistance;
+            CanPenetrateCount = Skill.SkillData.TargetDistance;
         }
 
         protected override void EnterInGame(Vector3 spawnPos)
@@ -91,19 +93,117 @@ namespace STELLAREST_F1
 
             Vector3 startPos = Owner.GetFirePosition();
             Vector3 targetPos = Owner.Target.transform.position;
+            _penetrateCount = 0;
             
             RigidBody.simulated = true;
             ProjectileMotion.ReadyToLaunch(startPos, targetPos, this);
             StartCoProjectileLifeTime();
+            _hitColliders.Clear();
+            StopCoDelayCollision();
+            //Debug.Log("ENTER IN GAME PROJECTILE");
         }
         #endregion
 
+        // private Coroutine _coCollisionDelay = null;
+
+
         private void OnTriggerEnter2D(Collider2D other)
         {
-            // _projectileSkillTargets.Add
-            Debug.Log("NO DMG NOW !!");
-            RigidBody.simulated = false;
-            Managers.Object.Despawn(this, DataTemplateID);
+            if (_hitColliders.Contains(other))
+            {
+                Debug.Log("<color=cyan>DelayCollider</color>");
+                return;
+            }
+
+            StartCoDelayCollision(other);
+            
+            // _targetRange, _targetDistance
+            BaseObject target = other.GetComponent<BaseObject>();
+            if (target.IsValid() == false)
+                return;
+
+            switch (_targetRange)
+            {
+                case ESkillTargetRange.Single:
+                    {
+                        DamageToTarget(target);
+                        if (++_penetrateCount >= CanPenetrateCount)
+                        {
+                            RigidBody.simulated = false;
+                            Managers.Object.Despawn(this, DataTemplateID);
+                        }
+                    }
+                    break;
+
+                case ESkillTargetRange.Half:
+                    _projectileSkillTargets.Clear();
+                    // ReserveHalfTargets(target);
+                    break;
+
+                case ESkillTargetRange.Around:
+                    _projectileSkillTargets.Clear();
+                    // ReserveAroundTargets(target);
+                    break;
+            }
+        }
+
+        private void DamageToTarget(BaseObject target)
+        {
+            if (target.IsValid() == false)
+                return;
+
+            target.OnDamaged(attacker: Owner, skillByAttacker: Skill);
+            // --- Effect
+            if (Skill.SkillData.EffectIDs.Length != 0)
+            {
+                List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
+                effectIDs: Skill.SkillData.EffectIDs,
+                spawnPos: Util.GetRandomQuadPosition(target.CenterPosition),
+                startCallback: null
+                );
+            }
+        }
+
+        private void DamageToTargets()
+        {
+            for (int i = 0; i < _projectileSkillTargets.Count; ++i)
+            {
+                if (_projectileSkillTargets[i].IsValid() == false)
+                    continue;
+
+                BaseObject target = _projectileSkillTargets[i];
+                target.OnDamaged(attacker: Owner, skillByAttacker: Skill);
+                // --- Effect
+                if (Skill.SkillData.EffectIDs.Length != 0)
+                {
+                    List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
+                    effectIDs: Skill.SkillData.EffectIDs,
+                    spawnPos: Util.GetRandomQuadPosition(target.CenterPosition),
+                    startCallback: null
+                    );
+                }
+            }
+        }
+
+        // _targetDistance
+        private void ReserveHalfTargets(BaseObject target)
+        {
+        }
+
+        // _targetDistance
+        private void ReserveAroundTargets(BaseObject target)
+        {
+            Vector3Int targetCellPos = target.CellPos;
+            for (int x = _targetDistance * -1; x <= _targetDistance; ++x)
+            {
+                for (int y = _targetDistance * -1; y <= _targetDistance; ++y)
+                {
+                    Vector3Int cellPos = new Vector3Int(targetCellPos.x + x, targetCellPos.y + y, 0);
+                    BaseObject obj = Managers.Map.GetObject(cellPos);
+                    if (obj.IsValid() && obj != null)
+                        _projectileSkillTargets.Add(obj);
+                }
+            }
         }
 
         private void InitialSetProjectileSize(EObjectSize size)
@@ -167,6 +267,27 @@ namespace STELLAREST_F1
                 RigidBody.simulated = false;
                 Managers.Object.Despawn(this, DataTemplateID);
             }
+        }
+
+        private void StartCoDelayCollision(Collider2D other, float delayTime = 0.1f)
+        {
+            _coCollisionDelay = StartCoroutine(CoDelayCollision(other, delayTime));
+        }
+
+        private void StopCoDelayCollision()
+        {
+            if (_coCollisionDelay != null)
+                StopCoroutine(_coCollisionDelay);
+
+            _hitColliders.Clear();
+            _coCollisionDelay = null;
+        }
+
+        private IEnumerator CoDelayCollision(Collider2D other, float delayTime = 0.1f)
+        {
+            _hitColliders.Add(other);
+            yield return new WaitForSeconds(delayTime);
+            _hitColliders.Remove(other);
         }
 
         // public override bool Init()

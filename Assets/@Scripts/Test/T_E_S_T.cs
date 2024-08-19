@@ -15,8 +15,17 @@ using UnityEditor;
 - Env And Chicken Test (First Target Chicken, Second Target Env) (O)
 - Default Skill Test: Hero Half Target(O) -> Signle Target(O) -> Around Target(O)
 - Failed Effect_OnDeadSkull (O, TEMP)
-- 지금 현재 Projectile OnTrigerEnter2D 안먹힘
+
 - Archer(Chara + Anim) - Projectile, Parabola, Archer Attack Lower Anim
+-- Skill Target Range 여러가지로 고쳐야할지. 예를 들어 좌우 동시, 상하 동시, 엑스자 등...
+-- 북마크 참조(ESkillTargetRange, ETargetDirection), Horizontal, VerticalUp, ... , DiagonalDown은 Single에서 사용하는 것은 맞고
+Single에서 그대로 사용하면 됨. 추가해야 할 것은...
+-- Skill Target Range 예시
+Single (그대로 사용)
+BothHorizontal
+BothVertical
+BothDiagonal
+
 - Wizard - Projectile, Straight
 - Priest, Gather Ally Targets
 - Failed Effect_OnDeadSkull (O, TEMP, Again)

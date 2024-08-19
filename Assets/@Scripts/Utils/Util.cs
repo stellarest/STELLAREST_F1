@@ -225,6 +225,13 @@ namespace STELLAREST_F1
             method.Invoke(new object(), null);
             Debug.Log("### CLEAR ###");
         }
+
+        public static GameObject SpawnTestObject(Vector3Int spawnCellPos)
+        {
+            GameObject obj = Managers.Resource.Instantiate("TestCircleObject");
+            obj.transform.position = Managers.Map.CellToCenteredWorld(spawnCellPos);
+            return obj;
+        }
 #endif
     }
 }

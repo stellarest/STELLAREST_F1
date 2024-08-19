@@ -484,30 +484,30 @@ namespace STELLAREST_F1
         protected Coroutine _coUpdateAI = null;
         protected IEnumerator CoUpdateAI()
         {
-            // if (ObjectType == EObjectType.Monster)
-            //     yield break;
+            if (ObjectType == EObjectType.Monster)
+                yield break;
 
-            while (true)
-            {
-                if (CreatureAI.ForceWaitCompleted == false)
-                {
-                    yield return null;
-                    continue;
-                }
+            // while (true)
+            // {
+            //     if (CreatureAI.ForceWaitCompleted == false)
+            //     {
+            //         yield return null;
+            //         continue;
+            //     }
 
-                switch (CreatureAIState)
-                {
-                    case ECreatureAIState.Idle:
-                        CreatureAI.UpdateIdle();
-                        break;
+            //     switch (CreatureAIState)
+            //     {
+            //         case ECreatureAIState.Idle:
+            //             CreatureAI.UpdateIdle();
+            //             break;
 
-                    case ECreatureAIState.Move:
-                        CreatureAI.UpdateMove();
-                        break;
-                }
+            //         case ECreatureAIState.Move:
+            //             CreatureAI.UpdateMove();
+            //             break;
+            //     }
 
-                yield return null;
-            }
+            //     yield return null;
+            // }
         }
 
         public void StartCoUpdateAI()
