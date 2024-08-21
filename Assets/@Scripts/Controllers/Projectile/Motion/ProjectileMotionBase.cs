@@ -13,7 +13,7 @@ namespace STELLAREST_F1
         protected Vector3 _startPos = Vector3.zero;
         protected Vector3 _targetPos = Vector3.zero;
         protected Projectile _projectile = null;
-        protected Action _endCallback = null; // event keyworld 임시로 빼둠
+        // protected Action _endCallback = null; // event keyworld 임시로 빼둠
 
         public void ReadyToLaunch(Vector3 startPos, Vector3 targetPos, Projectile projectile)
         {
@@ -21,8 +21,8 @@ namespace STELLAREST_F1
             _targetPos = targetPos;
             _projectile = projectile;
 
-            _endCallback -= AddEndCallback;
-            _endCallback += AddEndCallback;
+            // _endCallback -= AddEndCallback;
+            // _endCallback += AddEndCallback;
 
             StartCoroutine(CoLaunchProjectile());
         }

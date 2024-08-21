@@ -86,6 +86,43 @@ namespace STELLAREST_F1
                 StartCoroutine(CoContinuousSpawnMonster_Test(2.5f));
                 // StartCoroutine(CoContinuousSpawnEnv_Test(1f));
 
+                // --- Test Projectile Single Targets List
+                SpawnChicken_Test(-8, 8);
+                SpawnChicken_Test(-7, 8);
+                SpawnChicken_Test(-6, 8);
+
+                SpawnChicken_Test(-9, 10);
+                SpawnChicken_Test(-8, 10);
+                SpawnChicken_Test(-7, 10);
+                SpawnChicken_Test(-6, 10);
+
+                SpawnChicken_Test(-9, 9);
+                SpawnChicken_Test(-8, 9);
+                SpawnChicken_Test(-7, 9);
+                SpawnChicken_Test(-6, 9);
+
+                SpawnChicken_Test(-9, 7);
+                SpawnChicken_Test(-8, 7);
+                SpawnChicken_Test(-7, 7);
+                SpawnChicken_Test(-6, 7);
+
+                SpawnChicken_Test(-9, 6);
+                SpawnChicken_Test(-8, 6);
+                SpawnChicken_Test(-7, 6);
+                SpawnChicken_Test(-6, 6);
+                // --- Test Projectile Single Targets List
+
+                // SpawnChicken_Test(-9, 10);
+                // SpawnChicken_Test(-8, 10);
+                // SpawnChicken_Test(-7, 10);
+
+                // SpawnChicken_Test(-9, 9);
+                // SpawnChicken_Test(-8, 9);
+                // SpawnChicken_Test(-7, 9);
+
+                // // SpawnChicken_Test(-9, 8);
+                // SpawnChicken_Test(-8, 8);
+                // SpawnChicken_Test(-7, 8);
                 {
                     // SpawnChicken_Test(-9, 9);
                     // SpawnChicken_Test(-10, 8);
@@ -117,26 +154,7 @@ namespace STELLAREST_F1
                     // SpawnChicken_Test(-7, 6);
                     // SpawnChicken_Test(-7, 5);
                     // SpawnChicken_Test(-7, 4);
-                    SpawnChicken_Test(-7, 10);
-                    SpawnChicken_Test(-8, 9);
 
-                    // SpawnChicken_Test(-6, 10);
-                    // SpawnChicken_Test(-6, 11);
-                    // SpawnChicken_Test(-5, 9);
-                    // SpawnChicken_Test(-5, 6);
-                    // SpawnChicken_Test(-7, 9);
-                    // SpawnChicken_Test(-7, 6);
-                    // SpawnChicken_Test(-4, 9);
-                    // SpawnChicken_Test(-4, 6);
-                    // SpawnChicken_Test(-5, 5);
-                    // SpawnChicken_Test(-7, 7);
-                    // SpawnChicken_Test(-7, 5);
-
-                    // SpawnChicken_Test(-3, 3);
-                    // SpawnChicken_Test(-5, 4);
-                    // SpawnChicken_Test(-1, 4);
-                    // SpawnChicken_Test(-5, 2);
-                    // SpawnChicken_Test(-1, 2);
                 }
 
                 // --- Env

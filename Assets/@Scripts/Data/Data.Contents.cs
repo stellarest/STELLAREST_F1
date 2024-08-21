@@ -23,6 +23,7 @@ namespace STELLAREST_F1.Data
         public string AIClassName;
         public string AnimatorLabel;
         public float ColliderRadius;
+        public Vector2 ColliderOffset;
         public int Skill_Attack_ID;
         public int Skill_A_ID;
         public int Skill_B_ID;
@@ -478,6 +479,7 @@ namespace STELLAREST_F1.Data
     public class ProjectileData : BaseData
     {
         public bool RotateToTarget;
+        public int PenetrationCount;
         public float ProjectileSpeed;
         public float ProjectileLifeTime;
         public EObjectSize ProjectileSize;

@@ -306,7 +306,7 @@ namespace STELLAREST_F1
             Ease_In,      // 천천히 시작, 후반에 속도 증가
             Ease_Out,     // 빠르게 시작, 후반에 속도 감소
             Ease_In_Out,   // 천천히 시작, 중간에 속도 증가, 후반에 속도 감소
-            Max = Ease_In_Out + 1
+            Max = Ease_In_Out
         }
 
         public enum ESkillType
@@ -359,8 +359,8 @@ namespace STELLAREST_F1
         public enum EProjectileMotionType
         {
             None = -1,
-            Straight,
-            Parabola,
+            Straight = 1,
+            Parabola = 2,
         }
 
         public enum EWeaponChildIndex

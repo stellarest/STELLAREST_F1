@@ -415,6 +415,8 @@ namespace STELLAREST_F1
             CreatureAI.InitialSetInfo(this);
 
             Collider.radius = CreatureData.ColliderRadius;
+            Collider.offset = CreatureData.ColliderOffset;
+            
             CreatureSkill = gameObject.GetOrAddComponent<SkillComponent>();
             CreatureSkill.InitialSetInfo(owner: this, creatureData: CreatureData);
             CreatureAnimCallback.InitialSetInfo(this);

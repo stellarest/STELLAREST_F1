@@ -9,12 +9,10 @@ namespace STELLAREST_F1
 {
     public class ParabolaMotion : ProjectileMotionBase
     {
-        // 개선 필요
-        // transform.position += (nextPos - transform.position).normalized * 3f;
-        private const float MinHeight = 1F;
         private const float MaxHeight = 2F;
         public float HeightArc { get; private set; } = MaxHeight;
-        private const float MaxDistanceSQR = 144.0F;
+        private const float FalldownSpeed = 2F;
+        private const float FalldownRotSpeed = 10F;
 
         protected override IEnumerator CoLaunchProjectile()
         {
@@ -41,75 +39,29 @@ namespace STELLAREST_F1
                 yield return null;
             }
 
-            // --- Falldown Test 3
-            float falldownSpeed = 5f;
-            float falldownRotSpeed = 10f;
+            // --- Falldown
             while (true)
             {
-                // 로컬 오른쪽 방향으로 이동
+                // --- 로컬 오른쪽 방향으로 이동
                 Vector3 localRight = transform.TransformDirection(Vector3.right) * _projectile.ProjectileSpeed * Time.deltaTime;
 
-                // 하강 속도를 따로 적용하여 서서히 하강
-                Vector3 downwardMovement = Vector3.down * falldownSpeed * Time.deltaTime;
+                // --- 하강 속도를 따로 적용하여 서서히 하강
+                Vector3 downwardMovement = Vector3.down * FalldownSpeed * Time.deltaTime;
 
-                // 다음 위치 계산
+                // --- 다음 위치 계산
                 nextPos = transform.position + localRight + downwardMovement;
 
-                // 방향을 향해 부드럽게 회전
+                // --- 방향을 향해 부드럽게 회전
                 Vector3 rotDir = (nextPos - transform.position).normalized;
                 float angle = Mathf.Atan2(rotDir.y, rotDir.x) * Mathf.Rad2Deg;
                 Quaternion targetRotation = Quaternion.Euler(0, 0, angle);
 
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * falldownRotSpeed);
-
-                // 위치 업데이트
+                // --- 위치, 회전 업데이트
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * FalldownRotSpeed);
                 transform.position = nextPos;
 
                 yield return null;
             }
-
-            // --- Falldown Test 2
-            // float falldownSpeed = 200f;
-            // while (true)
-            // {
-            //     Vector3 localRight = transform.TransformDirection(Vector3.right);
-            //     localRight.y -= falldownSpeed * Time.deltaTime;
-            //     nextPos = transform.position + localRight * _projectile.ProjectileSpeed * Time.deltaTime;
-            //     Vector3 rotDir = (nextPos - transform.position).normalized; 
-            //     //Rotate2D(nextPos - transform.position);
-            //     transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(0, 0, Mathf.Atan2(rotDir.y, rotDir.x) * Mathf.Rad2Deg), Time.deltaTime * 10f);
-            //     transform.position = nextPos;
-            //     yield return null;
-            // }
-
-            // --- Falldown Test 1
-            // float falldownSpeed = 200f;
-            // while (true)
-            // {
-            //     Vector3 localRight = transform.TransformDirection(Vector3.right);
-            //     localRight.y -= falldownSpeed * Time.deltaTime;
-            //     transform.position += localRight * _projectile.ProjectileSpeed * Time.deltaTime;
-
-            //     yield return null;
-            // }
-
-            // while (true)
-            // {
-            //     // forward 방향으로 이동
-            //     Vector3 localRight = transform.TransformDirection(Vector3.right);
-            //     nextPos += localRight * _projectile.ProjectileSpeed * Time.deltaTime;
-
-            //     // Y축 방향으로 서서히 하강
-            //     // nextPos.y -= _projectile.ProjectileSpeed * Time.deltaTime;
-
-            //     transform.position = nextPos;
-
-            //     // 필요에 따라 회전 처리
-            //     if (_projectile.RotateToTarget)
-            //         Rotate2D(nextPos - transform.position);
-
-            //     yield return null;
-            // }
         }
 
         // protected override void ReadyToLaunch()

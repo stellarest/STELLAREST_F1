@@ -1,8 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using STELLAREST_F1.Data;
-using Unity.VisualScripting;
 using UnityEngine;
 using static STELLAREST_F1.Define;
 
@@ -18,17 +18,17 @@ namespace STELLAREST_F1
         public EProjectileMotionType ProjectileMotionType { get; private set; } = EProjectileMotionType.None;
 
         public bool RotateToTarget { get; private set; } = false;
+        public int CanPenetrateCount { get; private set; } = 0;
+        private int _currentPenetrationCount = 0;
         public float ProjectileSpeed { get; private set; } = 0f;
+        public Vector3 nStartShootDir { get; private set; } = Vector3.zero;
 
         protected float _projectileLifeTime = 0f;
         protected ESkillTargetRange _targetRange = ESkillTargetRange.None;
-        protected int _targetDistance = -1;
-        private int _penetrateCount = 0;
-        public int CanPenetrateCount { get; private set; } = 0;
+        protected int _targetDistance = 0;
         protected List<BaseObject> _projectileSkillTargets = new List<BaseObject>();
 
         private Coroutine _coProjectileLifeTime = null;
-
         private Coroutine _coCollisionDelay = null;
         private HashSet<Collider2D> _hitColliders = new HashSet<Collider2D>();
         #region Init Core
@@ -54,6 +54,7 @@ namespace STELLAREST_F1
             DataTemplateID = dataID;
             ProjectileData = projectileData;
             RotateToTarget = projectileData.RotateToTarget;
+            CanPenetrateCount = projectileData.PenetrationCount;
             ProjectileSpeed = projectileData.ProjectileSpeed;
             _projectileLifeTime = projectileData.ProjectileLifeTime;
             InitialSetProjectileSize(projectileData.ProjectileSize);
@@ -63,7 +64,7 @@ namespace STELLAREST_F1
             Skill = Owner.CreatureSkill.FindSkill(DataTemplateID);
             _targetRange = Skill.SkillData.TargetRange;
             _targetDistance = Skill.SkillData.TargetDistance;
-            CanPenetrateCount = Skill.SkillData.TargetDistance;
+
         }
 
         protected override void EnterInGame(Vector3 spawnPos)
@@ -92,8 +93,10 @@ namespace STELLAREST_F1
             Collider.excludeLayers = excludeLayerMask;
 
             Vector3 startPos = Owner.GetFirePosition();
-            Vector3 targetPos = Owner.Target.transform.position;
-            _penetrateCount = 0;
+            Vector3 targetPos = Owner.Target.CenterPosition;
+            nStartShootDir = (targetPos - startPos).normalized;
+
+            _currentPenetrationCount = 0;
             
             RigidBody.simulated = true;
             ProjectileMotion.ReadyToLaunch(startPos, targetPos, this);
@@ -103,47 +106,199 @@ namespace STELLAREST_F1
             //Debug.Log("ENTER IN GAME PROJECTILE");
         }
         #endregion
-
         // private Coroutine _coCollisionDelay = null;
-
-
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (_hitColliders.Contains(other))
-            {
-                Debug.Log("<color=cyan>DelayCollider</color>");
                 return;
-            }
+
+            if (_targetDistance < 1)
+                return;
 
             StartCoDelayCollision(other);
-            
             // _targetRange, _targetDistance
             BaseObject target = other.GetComponent<BaseObject>();
             if (target.IsValid() == false)
                 return;
-
+            
+            _projectileSkillTargets.Clear();
             switch (_targetRange)
             {
                 case ESkillTargetRange.Single:
-                    {
-                        DamageToTarget(target);
-                        if (++_penetrateCount >= CanPenetrateCount)
-                        {
-                            RigidBody.simulated = false;
-                            Managers.Object.Despawn(this, DataTemplateID);
-                        }
-                    }
+                    ReserveSingleTargets(target);
                     break;
 
                 case ESkillTargetRange.Half:
-                    _projectileSkillTargets.Clear();
                     // ReserveHalfTargets(target);
                     break;
 
                 case ESkillTargetRange.Around:
-                    _projectileSkillTargets.Clear();
                     // ReserveAroundTargets(target);
                     break;
+            }
+
+            // Damage To Targets
+            for (int i = 0; i < _projectileSkillTargets.Count; ++i)
+            {
+                if (_projectileSkillTargets[i].IsValid() == false)
+                    continue;
+
+                DamageToTarget(_projectileSkillTargets[i]);
+            }
+
+            if (_currentPenetrationCount++ >= CanPenetrateCount)
+            {
+                RigidBody.simulated = false;
+                Managers.Object.Despawn(this, DataTemplateID);
+            }
+        }
+
+        /*
+            팔라딘 기준
+            "TargetRange": 1,
+            "TargetDistance": 1,
+            이것이 타겟 1개만 공격하는 것이므로, 프로젝타일에서도 TargetDistance가 1일 때, 부딪힌 녀석만 공격헌다.
+        */
+
+        private void ReserveSingleTargets(BaseObject target)
+        {
+            if (_targetDistance == 1)
+            {
+                _projectileSkillTargets.Add(target);
+                return;
+            }
+
+            int roundX = Mathf.RoundToInt(Mathf.Abs(nStartShootDir.normalized.x));
+            int roundY = Mathf.RoundToInt(Mathf.Abs(nStartShootDir.normalized.y));
+
+            bool isHorizontal = roundX == 1 && roundY == 0;
+            bool isVertical = roundX == 0 && roundY == 1;
+            bool isDiagonal = roundX == 1 && roundY == 1;
+
+            Vector3Int targetCellPos = target.CellPos;
+            BaseObject nextTarget = null;
+            Vector3 hitDir = (transform.position - target.CenterPosition).normalized;
+            if (isHorizontal)
+            {
+                // --- Hit by Right
+                if (hitDir.x > 0)
+                {
+                    Debug.Log($"Hit by Right: {_targetDistance}");
+                    for (int x = 0; x < _targetDistance; ++x)
+                    {
+                        nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(x * -1, 0, 0));
+                        if (nextTarget != null)
+                            _projectileSkillTargets.Add(nextTarget);
+                    }
+                }
+                // --- Hit by Left
+                else
+                {
+                    Debug.Log($"Hit by Left: {_targetDistance}");
+                    for (int x = 0; x < _targetDistance; ++x)
+                    {
+                        nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(x, 0, 0));
+                        if (nextTarget != null)
+                            _projectileSkillTargets.Add(nextTarget);
+                    }
+                }
+            }
+            else if (isVertical)
+            {
+                // --- Hit by Up
+                if (hitDir.y > 0)
+                {
+                    Debug.Log($"Hit by Up: {_targetDistance}");
+                    for (int y = 0; y < _targetDistance; ++y)
+                    {
+                        nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(0, y * -1, 0));
+                        if (nextTarget != null)
+                            _projectileSkillTargets.Add(nextTarget);
+                    }
+                }
+                // --- Hit by Down
+                else
+                {
+                    Debug.Log($"Hit by Down: {_targetDistance}");
+                    for (int y = 0; y < _targetDistance; ++y)
+                    {
+                        nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(0, y, 0));
+                        if (nextTarget != null)
+                            _projectileSkillTargets.Add(nextTarget);
+                    }
+                }
+            }
+            else if (isDiagonal)
+            {
+                // --- Hit by LeftUp
+                if (hitDir.x < 0 && hitDir.y > 0)
+                {
+                    Debug.Log($"Hit by LeftUp: {_targetDistance}");
+                    // --- Go RightDown
+                    for (int dxy = 0; dxy < _targetDistance; ++dxy)
+                    {
+                        nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(dxy, dxy * -1, 0));
+                        if (nextTarget != null)
+                            _projectileSkillTargets.Add(nextTarget);
+                    }
+                }
+                // --- Hit by RightUp
+                else if (hitDir.x > 0 && hitDir.y > 0)
+                {
+                    Debug.Log($"Hit by RightUp: {_targetDistance}");
+                    // --- Go LeftDown
+                    for (int dxy = 0; dxy < _targetDistance; ++dxy)
+                    {
+                        nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(dxy * -1, dxy * -1, 0));
+                        if (nextTarget != null)
+                            _projectileSkillTargets.Add(nextTarget);
+                    }
+                }
+                // --- Hit by LeftDown
+                else if (hitDir.x < 0 && hitDir.y < 0)
+                {
+                    Debug.Log($"Hit by LeftDown: {_targetDistance}");
+                    // --- Go RightUp
+                    for (int dxy = 0; dxy < _targetDistance; ++dxy)
+                    {
+                        nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(dxy, dxy, 0));
+                        if (nextTarget != null)
+                            _projectileSkillTargets.Add(nextTarget);
+                    }
+                }
+                // --- Hit by RightDown
+                else if (hitDir.x > 0 && hitDir.y < 0)
+                {
+                    Debug.Log($"Hit by RightDown: {_targetDistance}");
+                    // --- Go LeftUp
+                    for (int dxy = 0; dxy < _targetDistance; ++dxy)
+                    {
+                        nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(dxy * -1, dxy, 0));
+                        if (nextTarget != null)
+                            _projectileSkillTargets.Add(nextTarget);
+                    }
+                }
+            }
+        }
+
+        private void ReserveHalfTargets(BaseObject target)
+        {
+            // ... Half Targets
+        }
+
+        // _targetDistance
+        private void ReserveAroundTargets(BaseObject target)
+        {
+            Vector3Int targetCellPos = target.CellPos;
+            for (int x = _targetDistance * -1; x <= _targetDistance; ++x)
+            {
+                for (int y = _targetDistance * -1; y <= _targetDistance; ++y)
+                {
+                    Vector3Int cellPos = new Vector3Int(targetCellPos.x + x, targetCellPos.y + y, 0);
+                    BaseObject obj = Managers.Map.GetObject(cellPos);
+                    if (obj.IsValid() && obj != null)
+                        _projectileSkillTargets.Add(obj);
+                }
             }
         }
 
@@ -161,48 +316,6 @@ namespace STELLAREST_F1
                 spawnPos: Util.GetRandomQuadPosition(target.CenterPosition),
                 startCallback: null
                 );
-            }
-        }
-
-        private void DamageToTargets()
-        {
-            for (int i = 0; i < _projectileSkillTargets.Count; ++i)
-            {
-                if (_projectileSkillTargets[i].IsValid() == false)
-                    continue;
-
-                BaseObject target = _projectileSkillTargets[i];
-                target.OnDamaged(attacker: Owner, skillByAttacker: Skill);
-                // --- Effect
-                if (Skill.SkillData.EffectIDs.Length != 0)
-                {
-                    List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
-                    effectIDs: Skill.SkillData.EffectIDs,
-                    spawnPos: Util.GetRandomQuadPosition(target.CenterPosition),
-                    startCallback: null
-                    );
-                }
-            }
-        }
-
-        // _targetDistance
-        private void ReserveHalfTargets(BaseObject target)
-        {
-        }
-
-        // _targetDistance
-        private void ReserveAroundTargets(BaseObject target)
-        {
-            Vector3Int targetCellPos = target.CellPos;
-            for (int x = _targetDistance * -1; x <= _targetDistance; ++x)
-            {
-                for (int y = _targetDistance * -1; y <= _targetDistance; ++y)
-                {
-                    Vector3Int cellPos = new Vector3Int(targetCellPos.x + x, targetCellPos.y + y, 0);
-                    BaseObject obj = Managers.Map.GetObject(cellPos);
-                    if (obj.IsValid() && obj != null)
-                        _projectileSkillTargets.Add(obj);
-                }
             }
         }
 
@@ -269,7 +382,7 @@ namespace STELLAREST_F1
             }
         }
 
-        private void StartCoDelayCollision(Collider2D other, float delayTime = 0.1f)
+        private void StartCoDelayCollision(Collider2D other, float delayTime = 0.5f)
         {
             _coCollisionDelay = StartCoroutine(CoDelayCollision(other, delayTime));
         }

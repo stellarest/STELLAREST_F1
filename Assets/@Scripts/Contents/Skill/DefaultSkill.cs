@@ -72,7 +72,6 @@ namespace STELLAREST_F1
 
             if (SkillData.ProjectileID > -1)
             {
-                // --- Generate Projectile (error)
                 Projectile projectile = GenerateProjectile(Owner, GetSpawnPos());
                 return;
             }
