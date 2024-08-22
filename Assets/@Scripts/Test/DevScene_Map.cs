@@ -84,13 +84,14 @@ namespace STELLAREST_F1
                 leaderController.Leader = firstHero;
 
                 StartCoroutine(CoContinuousSpawnMonster_Test(2.5f));
-                // StartCoroutine(CoContinuousSpawnEnv_Test(1f));
+                StartCoroutine(CoContinuousSpawnEnv_Test(1f));
 
-                // --- Test Projectile Single Targets List
+                // --- Projectile Target Range Test List
                 SpawnChicken_Test(-8, 8);
-                SpawnChicken_Test(-7, 8);
-                SpawnChicken_Test(-6, 8);
-
+                SpawnChicken_Test(-7, 8); // --> 0, 8
+                SpawnChicken_Test(-6, 8); // --> 1, 8
+                // SpawnChicken_Test(0, 8); // --> 0, 8
+                // SpawnChicken_Test(1, 8); // --> 1, 8
                 SpawnChicken_Test(-9, 10);
                 SpawnChicken_Test(-8, 10);
                 SpawnChicken_Test(-7, 10);
@@ -110,7 +111,7 @@ namespace STELLAREST_F1
                 SpawnChicken_Test(-8, 6);
                 SpawnChicken_Test(-7, 6);
                 SpawnChicken_Test(-6, 6);
-                // --- Test Projectile Single Targets List
+                // --- Projectile Target Range Test List
 
                 // SpawnChicken_Test(-9, 10);
                 // SpawnChicken_Test(-8, 10);

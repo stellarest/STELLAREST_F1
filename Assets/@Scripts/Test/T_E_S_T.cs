@@ -18,16 +18,18 @@ using UnityEditor;
 
 - Archer(Chara + Anim)(O) - Projectile(^), Straight(O), Parabola(O), Archer Attack Lower Anim(O)
 - Projectile - Single(O), Half, Around
->>> Archer Single Target 완료.
->>> Penetrate 하면 어떻게 될까?
+>>> Projectile Single
+>> Straight (O)
+>> Parabola (^), 개선 필요
 
-- Archer Attack Anim 동작을 할 때(화살을 당기고 있는 동안)는 타겟 방향을 바라보도록. OnSkillClip 발동시에 해제하면 될듯
-- EStartTargetRange, XShaped
-- Wizard - Projectile, Straight
-- Priest, Gather Ally Targets (Add Skill Heal)
-- Melee Hero, Ranged Hero AI
-- Organize Effect and Skills
-- Add Monsters
+
+>>> Archer Attack Anim 동작을 할 때(화살을 당기고 있는 동안)는 타겟 방향을 바라보도록. OnSkillClip 발동시에 해제하면 될듯
+>>> EStartTargetRange, XShaped
+>>> Wizard - Projectile, Straight
+>>> Priest, Gather Ally Targets (Add Skill Heal)
+>>> Melee Hero, Ranged Hero AI
+>>> Organize Effect and Skills
+>>> Add Monsters
 
 > Projectile, Effect쪽 그럭저럭 해결되면 조금 더 수월해지긴할듯.
 > 스테이지별로 클리어, 대충 20~30스테이지 정도까지. (Normal / Extreme으로 분리)

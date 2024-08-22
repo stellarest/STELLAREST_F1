@@ -14,6 +14,7 @@ namespace STELLAREST_F1
         protected Vector3 _targetPos = Vector3.zero;
         protected Projectile _projectile = null;
         // protected Action _endCallback = null; // event keyworld 임시로 빼둠
+        public Vector3 LaunchingDir { get; protected set; } = Vector3.zero;
 
         public void ReadyToLaunch(Vector3 startPos, Vector3 targetPos, Projectile projectile)
         {
@@ -30,11 +31,8 @@ namespace STELLAREST_F1
         protected virtual void AddEndCallback()
             => Managers.Object.Despawn(_projectile, _projectile.DataTemplateID);
 
-        protected void Rotate2D(Vector2 targetDir)
-        {
-            targetDir.Normalize();
-            transform.rotation = Quaternion.Euler(0f, 0, Mathf.Atan2(targetDir.y, targetDir.x) * Mathf.Rad2Deg);
-        }
+        protected void Rotate2D(Vector2 nDir)
+            => transform.rotation = Quaternion.Euler(0f, 0, Mathf.Atan2(nDir.y, nDir.x) * Mathf.Rad2Deg);
 
         protected abstract IEnumerator CoLaunchProjectile();
 

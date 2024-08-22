@@ -32,8 +32,9 @@ namespace STELLAREST_F1
                 float arcY = baseY + arc;
 
                 nextPos = new Vector3(baseX, arcY);
+                LaunchingDir = nextPos - transform.position;
                 if (_projectile.RotateToTarget)
-                    Rotate2D(nextPos - transform.position);
+                    Rotate2D(LaunchingDir.normalized);
 
                 transform.position = nextPos;
                 yield return null;
@@ -52,8 +53,9 @@ namespace STELLAREST_F1
                 nextPos = transform.position + localRight + downwardMovement;
 
                 // --- 방향을 향해 부드럽게 회전
-                Vector3 rotDir = (nextPos - transform.position).normalized;
-                float angle = Mathf.Atan2(rotDir.y, rotDir.x) * Mathf.Rad2Deg;
+                //Vector3 rotDir = (nextPos - transform.position).normalized;
+                LaunchingDir = nextPos - transform.position;
+                float angle = Mathf.Atan2(LaunchingDir.normalized.y, LaunchingDir.normalized.x) * Mathf.Rad2Deg;
                 Quaternion targetRotation = Quaternion.Euler(0, 0, angle);
 
                 // --- 위치, 회전 업데이트

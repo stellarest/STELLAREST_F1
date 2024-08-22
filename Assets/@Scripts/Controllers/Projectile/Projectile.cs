@@ -10,16 +10,51 @@ namespace STELLAREST_F1
 {
     public class Projectile : BaseObject
     {
+        private enum EPenetratedDir
+        {
+            Up,
+            RightUp,
+            Right,
+            RightDown,
+            Down,
+            LeftDown,
+            Left,
+            LeftUp,
+            Max
+        }
+
         public Creature Owner { get; set; } = null;
         public SkillBase Skill { get; private set; } = null;
         public ProjectileData ProjectileData { get; private set; } = null;
         public EAnimationCurveType ProjectileCurveType { get; private set; } = EAnimationCurveType.None;
-        public ProjectileMotionBase ProjectileMotion { get; private set; } = null;
         public EProjectileMotionType ProjectileMotionType { get; private set; } = EProjectileMotionType.None;
+        public ProjectileMotionBase ProjectileMotion { get; private set; } = null;
 
         public bool RotateToTarget { get; private set; } = false;
         public int CanPenetrateCount { get; private set; } = 0;
         private int _currentPenetrationCount = 0;
+        private bool[] _penetrationDirs = null;
+        private void SetPenetrationDir(EPenetratedDir dir)
+            => _penetrationDirs[(int)dir] = true;
+        private void ReleaseAllPenetrationDirs()
+        {
+            for (int i = 0; i < _penetrationDirs.Length; ++i)
+                _penetrationDirs[i] = false;
+        }
+        private bool HasPenetrationDir
+        {
+            get
+            {
+                for (int i = 0; i < _penetrationDirs.Length; ++i)
+                {
+                    if (_penetrationDirs[i])
+                        return true;
+                }
+
+                return false;
+            }
+        }
+
         public float ProjectileSpeed { get; private set; } = 0f;
         public Vector3 nStartShootDir { get; private set; } = Vector3.zero;
 
@@ -55,16 +90,17 @@ namespace STELLAREST_F1
             ProjectileData = projectileData;
             RotateToTarget = projectileData.RotateToTarget;
             CanPenetrateCount = projectileData.PenetrationCount;
+            _penetrationDirs = new bool[(int)EPenetratedDir.Max];
             ProjectileSpeed = projectileData.ProjectileSpeed;
             _projectileLifeTime = projectileData.ProjectileLifeTime;
             InitialSetProjectileSize(projectileData.ProjectileSize);
             ProjectileCurveType = projectileData.ProjectileCurveType;
             InitialSetProjectileMotion(projectileData.ProjectileMotionType);
+            ProjectileMotionType = projectileData.ProjectileMotionType;
 
             Skill = Owner.CreatureSkill.FindSkill(DataTemplateID);
             _targetRange = Skill.SkillData.TargetRange;
             _targetDistance = Skill.SkillData.TargetDistance;
-
         }
 
         protected override void EnterInGame(Vector3 spawnPos)
@@ -97,16 +133,16 @@ namespace STELLAREST_F1
             nStartShootDir = (targetPos - startPos).normalized;
 
             _currentPenetrationCount = 0;
-            
+
             RigidBody.simulated = true;
             ProjectileMotion.ReadyToLaunch(startPos, targetPos, this);
             StartCoProjectileLifeTime();
             _hitColliders.Clear();
             StopCoDelayCollision();
-            //Debug.Log("ENTER IN GAME PROJECTILE");
+            ReleaseAllPenetrationDirs();
         }
         #endregion
-        // private Coroutine _coCollisionDelay = null;
+
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (_hitColliders.Contains(other))
@@ -120,11 +156,12 @@ namespace STELLAREST_F1
             BaseObject target = other.GetComponent<BaseObject>();
             if (target.IsValid() == false)
                 return;
-            
+
             _projectileSkillTargets.Clear();
             switch (_targetRange)
             {
                 case ESkillTargetRange.Single:
+                    //ReserveSingleTargets(target);
                     ReserveSingleTargets(target);
                     break;
 
@@ -153,12 +190,228 @@ namespace STELLAREST_F1
             }
         }
 
-        /*
-            팔라딘 기준
-            "TargetRange": 1,
-            "TargetDistance": 1,
-            이것이 타겟 1개만 공격하는 것이므로, 프로젝타일에서도 TargetDistance가 1일 때, 부딪힌 녀석만 공격헌다.
-        */
+        private void AddSingleTargetsFromTarget(BaseObject target)
+        {
+            Vector3Int targetCellPos = target.CellPos;
+            BaseObject nextTarget = null;
+            float dot = Vector3.Dot(ProjectileMotion.LaunchingDir.normalized, target.transform.up);
+            // UP
+            if (dot < 0)
+            {
+                if (dot > -1f && dot < -0.9f)
+                {
+                    Debug.Log("FROM - UP");
+                    SetPenetrationDir(EPenetratedDir.Up);
+                    for (int y = 0; y < _targetDistance; ++y)
+                    {
+                        nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(0, -y, 0));
+                        if (nextTarget != null)
+                            _projectileSkillTargets.Add(nextTarget);
+                    }
+                }
+                else if (transform.position.x > target.CenterPosition.x)
+                {
+                    if (dot > -0.5f && dot < 0f)
+                    {
+                        Debug.Log("FROM - RIGHT");
+                        SetPenetrationDir(EPenetratedDir.Down);
+                        for (int x = 0; x < _targetDistance; ++x)
+                        {
+                            nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(-x, 0, 0));
+                            if (nextTarget != null)
+                                _projectileSkillTargets.Add(nextTarget);
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log("FROM - RIGHT UP");
+                        SetPenetrationDir(EPenetratedDir.RightUp);
+                        for (int dxy = 0; dxy < _targetDistance; ++dxy)
+                        {
+                            nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(-dxy, -dxy, 0));
+                            if (nextTarget != null)
+                                _projectileSkillTargets.Add(nextTarget);
+                        }
+                    }
+                }
+                else
+                {
+                    if (dot > -0.5f && dot < 0f)
+                    {
+                        Debug.Log("FROM - LEFT");
+                        SetPenetrationDir(EPenetratedDir.Left);
+                        for (int x = 0; x < _targetDistance; ++x)
+                        {
+                            nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(x, 0, 0));
+                            if (nextTarget != null)
+                                _projectileSkillTargets.Add(nextTarget);
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log("FROM - LEFT UP");
+                        SetPenetrationDir(EPenetratedDir.LeftUp);
+                        for (int dxy = 0; dxy < _targetDistance; ++dxy)
+                        {
+                            nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(dxy, -dxy, 0));
+                            if (nextTarget != null)
+                                _projectileSkillTargets.Add(nextTarget);
+                        }
+                    }
+                }
+            }
+            // DOWN
+            else
+            {
+                if (dot < 1f && dot > 0.9f)
+                {
+                    Debug.Log("FROM - DOWN");
+                    SetPenetrationDir(EPenetratedDir.Down);
+                    for (int y = 0; y < _targetDistance; ++y)
+                    {
+                        nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(0, y, 0));
+                        if (nextTarget != null)
+                            _projectileSkillTargets.Add(nextTarget);
+                    }
+                }
+                else if (transform.position.x > target.CenterPosition.x)
+                {
+                    if (dot > 0f && dot < 0.5f)
+                    {
+                        Debug.Log("FROM - RIGHT");
+                        SetPenetrationDir(EPenetratedDir.Right);
+                        for (int x = 0; x < _targetDistance; ++x)
+                        {
+                            nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(-x, 0, 0));
+                            if (nextTarget != null)
+                                _projectileSkillTargets.Add(nextTarget);
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log("FROM - RIGHT DOWN");
+                        SetPenetrationDir(EPenetratedDir.RightDown);
+                        for (int dxy = 0; dxy < _targetDistance; ++dxy)
+                        {
+                            nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(-dxy, dxy, 0));
+                            if (nextTarget != null)
+                                _projectileSkillTargets.Add(nextTarget);
+                        }
+                    }
+                }
+                else
+                {
+                    if (dot > 0f && dot < 0.5f)
+                    {
+                        Debug.Log("FROM - LEFT");
+                        SetPenetrationDir(EPenetratedDir.Left);
+                        for (int x = 0; x < _targetDistance; ++x)
+                        {
+                            nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(x, 0, 0));
+                            if (nextTarget != null)
+                                _projectileSkillTargets.Add(nextTarget);
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log("FROM - LEFT DOWN");
+                        SetPenetrationDir(EPenetratedDir.LeftDown);
+                        for (int dxy = 0; dxy < _targetDistance; ++dxy)
+                        {
+                            nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(dxy, dxy, 0));
+                            if (nextTarget != null)
+                                _projectileSkillTargets.Add(nextTarget);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void AddFixedTargetsFromTarget(BaseObject target)
+        {
+            Vector3Int targetCellPos = target.CellPos;
+            BaseObject nextTarget = null;
+            if (_penetrationDirs[(int)EPenetratedDir.Up])
+            {
+                Debug.Log("Up");
+                for (int y = 0; y < _targetDistance; ++y)
+                {
+                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(0, -y, 0));
+                    if (nextTarget != null)
+                        _projectileSkillTargets.Add(nextTarget);
+                }
+            }
+            else if (_penetrationDirs[(int)EPenetratedDir.RightUp])
+            {
+                Debug.Log("RightUp");
+                for (int dxy = 0; dxy < _targetDistance; ++dxy)
+                {
+                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(-dxy, -dxy, 0));
+                    if (nextTarget != null)
+                        _projectileSkillTargets.Add(nextTarget);
+                }
+            }
+            else if (_penetrationDirs[(int)EPenetratedDir.Right])
+            {
+                Debug.Log("Right");
+                for (int x = 0; x < _targetDistance; ++x)
+                {
+                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(-x, 0, 0));
+                    if (nextTarget != null)
+                        _projectileSkillTargets.Add(nextTarget);
+                }
+            }
+            else if (_penetrationDirs[(int)EPenetratedDir.RightDown])
+            {
+                Debug.Log("RightDown");
+                for (int dxy = 0; dxy < _targetDistance; ++dxy)
+                {
+                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(-dxy, dxy, 0));
+                    if (nextTarget != null)
+                        _projectileSkillTargets.Add(nextTarget);
+                }
+            }
+            else if (_penetrationDirs[(int)EPenetratedDir.Down])
+            {
+                Debug.Log("Down");
+                for (int y = 0; y < _targetDistance; ++y)
+                {
+                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(0, y, 0));
+                    if (nextTarget != null)
+                        _projectileSkillTargets.Add(nextTarget);
+                }
+            }
+            else if (_penetrationDirs[(int)EPenetratedDir.LeftDown])
+            {
+                Debug.Log("LeftDown");
+                for (int dxy = 0; dxy < _targetDistance; ++dxy)
+                {
+                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(dxy, dxy, 0));
+                    if (nextTarget != null)
+                        _projectileSkillTargets.Add(nextTarget);
+                }
+            }
+            else if (_penetrationDirs[(int)EPenetratedDir.Left])
+            {
+                Debug.Log("Left");
+                for (int x = 0; x < _targetDistance; ++x)
+                {
+                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(x, 0, 0));
+                    if (nextTarget != null)
+                        _projectileSkillTargets.Add(nextTarget);
+                }
+            }
+            else if (_penetrationDirs[(int)EPenetratedDir.LeftUp])
+            {
+                Debug.Log("LeftUp");
+                for (int dxy = 0; dxy < _targetDistance; ++dxy)
+                {
+                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(dxy, -dxy, 0));
+                    if (nextTarget != null)
+                        _projectileSkillTargets.Add(nextTarget);
+                }
+            }
+        }
 
         private void ReserveSingleTargets(BaseObject target)
         {
@@ -168,122 +421,260 @@ namespace STELLAREST_F1
                 return;
             }
 
-            int roundX = Mathf.RoundToInt(Mathf.Abs(nStartShootDir.normalized.x));
-            int roundY = Mathf.RoundToInt(Mathf.Abs(nStartShootDir.normalized.y));
+            if (HasPenetrationDir == false)
+                AddSingleTargetsFromTarget(target);
+            else
+                AddFixedTargetsFromTarget(target);
+        }
 
-            bool isHorizontal = roundX == 1 && roundY == 0;
-            bool isVertical = roundX == 0 && roundY == 1;
-            bool isDiagonal = roundX == 1 && roundY == 1;
+        private void ReserveSingleTargets_PREV(BaseObject target)
+        {
+            if (_targetDistance == 1)
+            {
+                _projectileSkillTargets.Add(target);
+                return;
+            }
 
             Vector3Int targetCellPos = target.CellPos;
             BaseObject nextTarget = null;
             Vector3 hitDir = (transform.position - target.CenterPosition).normalized;
-            if (isHorizontal)
+            switch (ProjectileMotionType)
             {
-                // --- Hit by Right
-                if (hitDir.x > 0)
-                {
-                    Debug.Log($"Hit by Right: {_targetDistance}");
-                    for (int x = 0; x < _targetDistance; ++x)
+                // --- Single Straight
+                case EProjectileMotionType.Straight:
                     {
-                        nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(x * -1, 0, 0));
-                        if (nextTarget != null)
-                            _projectileSkillTargets.Add(nextTarget);
+                        int roundX = Mathf.RoundToInt(Mathf.Abs(nStartShootDir.normalized.x));
+                        int roundY = Mathf.RoundToInt(Mathf.Abs(nStartShootDir.normalized.y));
+
+                        bool isHorizontal = roundX == 1 && roundY == 0;
+                        bool isVertical = roundX == 0 && roundY == 1;
+                        bool isDiagonal = roundX == 1 && roundY == 1;
+                        if (isHorizontal)
+                        {
+                            // --- Hit by Right
+                            if (hitDir.x > 0)
+                            {
+                                Debug.Log($"Hit by Right: {_targetDistance}");
+                                for (int x = 0; x < _targetDistance; ++x)
+                                {
+                                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(x * -1, 0, 0));
+                                    if (nextTarget != null)
+                                        _projectileSkillTargets.Add(nextTarget);
+                                }
+                            }
+                            // --- Hit by Left
+                            else
+                            {
+                                Debug.Log($"Hit by Left: {_targetDistance}");
+                                for (int x = 0; x < _targetDistance; ++x)
+                                {
+                                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(x, 0, 0));
+                                    if (nextTarget != null)
+                                        _projectileSkillTargets.Add(nextTarget);
+                                }
+                            }
+                        }
+                        else if (isVertical)
+                        {
+                            // --- Hit by Up
+                            if (hitDir.y > 0)
+                            {
+                                Debug.Log($"Hit by Up: {_targetDistance}");
+                                for (int y = 0; y < _targetDistance; ++y)
+                                {
+                                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(0, y * -1, 0));
+                                    if (nextTarget != null)
+                                        _projectileSkillTargets.Add(nextTarget);
+                                }
+                            }
+                            // --- Hit by Down
+                            else
+                            {
+                                Debug.Log($"Hit by Down: {_targetDistance}");
+                                for (int y = 0; y < _targetDistance; ++y)
+                                {
+                                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(0, y, 0));
+                                    if (nextTarget != null)
+                                        _projectileSkillTargets.Add(nextTarget);
+                                }
+                            }
+                        }
+                        else if (isDiagonal)
+                        {
+                            // --- Hit by LeftUp
+                            if (hitDir.x < 0 && hitDir.y > 0)
+                            {
+                                Debug.Log($"Hit by LeftUp: {_targetDistance}");
+                                // --- Go RightDown
+                                for (int dxy = 0; dxy < _targetDistance; ++dxy)
+                                {
+                                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(dxy, dxy * -1, 0));
+                                    if (nextTarget != null)
+                                        _projectileSkillTargets.Add(nextTarget);
+                                }
+                            }
+                            // --- Hit by RightUp
+                            else if (hitDir.x > 0 && hitDir.y > 0)
+                            {
+                                Debug.Log($"Hit by RightUp: {_targetDistance}");
+                                // --- Go LeftDown
+                                for (int dxy = 0; dxy < _targetDistance; ++dxy)
+                                {
+                                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(dxy * -1, dxy * -1, 0));
+                                    if (nextTarget != null)
+                                        _projectileSkillTargets.Add(nextTarget);
+                                }
+                            }
+                            // --- Hit by LeftDown
+                            else if (hitDir.x < 0 && hitDir.y < 0)
+                            {
+                                Debug.Log($"Hit by LeftDown: {_targetDistance}");
+                                // --- Go RightUp
+                                for (int dxy = 0; dxy < _targetDistance; ++dxy)
+                                {
+                                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(dxy, dxy, 0));
+                                    if (nextTarget != null)
+                                        _projectileSkillTargets.Add(nextTarget);
+                                }
+                            }
+                            // --- Hit by RightDown
+                            else if (hitDir.x > 0 && hitDir.y < 0)
+                            {
+                                Debug.Log($"Hit by RightDown: {_targetDistance}");
+                                // --- Go LeftUp
+                                for (int dxy = 0; dxy < _targetDistance; ++dxy)
+                                {
+                                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(dxy * -1, dxy, 0));
+                                    if (nextTarget != null)
+                                        _projectileSkillTargets.Add(nextTarget);
+                                }
+                            }
+                        }
                     }
-                }
-                // --- Hit by Left
-                else
-                {
-                    Debug.Log($"Hit by Left: {_targetDistance}");
-                    for (int x = 0; x < _targetDistance; ++x)
+                    break;
+
+                // --- Single Parabola
+                case EProjectileMotionType.Parabola:
                     {
-                        nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(x, 0, 0));
-                        if (nextTarget != null)
-                            _projectileSkillTargets.Add(nextTarget);
+                        int roundX = Mathf.RoundToInt(Mathf.Abs(nStartShootDir.normalized.x));
+                        int roundY = Mathf.RoundToInt(Mathf.Abs(nStartShootDir.normalized.y));
+
+                        bool isHorizontal = roundX == 1 && roundY == 0;
+                        bool isVertical = roundX == 0 && roundY == 1;
+                        bool isDiagonal = roundX == 1 && roundY == 1;
+                        if (isHorizontal)
+                        {
+                            // --- Hit by Right
+                            if (hitDir.x > 0)
+                            {
+                                Debug.Log($"Hit by Right: {_targetDistance}");
+                                for (int x = 0; x < _targetDistance; ++x)
+                                {
+                                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(x * -1, 0, 0));
+                                    if (nextTarget != null)
+                                        _projectileSkillTargets.Add(nextTarget);
+                                }
+                            }
+                            // --- Hit by Left
+                            else
+                            {
+                                Debug.Log($"Hit by Left: {_targetDistance}");
+                                for (int x = 0; x < _targetDistance; ++x)
+                                {
+                                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(x, 0, 0));
+                                    if (nextTarget != null)
+                                        _projectileSkillTargets.Add(nextTarget);
+                                }
+                            }
+                        }
+                        else if (isVertical)
+                        {
+                            // --- Hit by Up
+                            if (hitDir.y > 0)
+                            {
+                                Debug.Log($"Hit by Up: {_targetDistance}");
+                                for (int y = 0; y < _targetDistance; ++y)
+                                {
+                                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(0, y * -1, 0));
+                                    if (nextTarget != null)
+                                        _projectileSkillTargets.Add(nextTarget);
+                                }
+                            }
+                            // --- Hit by Down
+                            else
+                            {
+                                Debug.Log($"Hit by Down: {_targetDistance}");
+                                for (int y = 0; y < _targetDistance; ++y)
+                                {
+                                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(0, y, 0));
+                                    if (nextTarget != null)
+                                        _projectileSkillTargets.Add(nextTarget);
+                                }
+                            }
+                        }
+                        else if (isDiagonal)
+                        {
+                            // --- Hit by LeftUp
+                            if (hitDir.x < 0 && hitDir.y > 0)
+                            {
+                                Debug.Log($"Hit by LeftUp: {_targetDistance}");
+                                // --- Go RightDown
+                                for (int dxy = 0; dxy < _targetDistance; ++dxy)
+                                {
+                                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(dxy, dxy * -1, 0));
+                                    if (nextTarget != null)
+                                        _projectileSkillTargets.Add(nextTarget);
+                                }
+                            }
+                            // --- Hit by RightUp
+                            else if (hitDir.x > 0 && hitDir.y > 0)
+                            {
+                                Debug.Log($"Hit by RightUp: {_targetDistance}");
+                                // --- Go LeftDown
+                                for (int dxy = 0; dxy < _targetDistance; ++dxy)
+                                {
+                                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(dxy * -1, dxy * -1, 0));
+                                    if (nextTarget != null)
+                                        _projectileSkillTargets.Add(nextTarget);
+                                }
+                            }
+                            // --- Hit by LeftDown
+                            else if (hitDir.x < 0 && hitDir.y < 0)
+                            {
+                                Debug.Log($"Hit by LeftDown: {_targetDistance}");
+                                // --- Go RightUp
+                                for (int dxy = 0; dxy < _targetDistance; ++dxy)
+                                {
+                                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(dxy, dxy, 0));
+                                    if (nextTarget != null)
+                                        _projectileSkillTargets.Add(nextTarget);
+                                }
+                            }
+                            // --- Hit by RightDown
+                            else if (hitDir.x > 0 && hitDir.y < 0)
+                            {
+                                Debug.Log($"Hit by RightDown: {_targetDistance}");
+                                // --- Go LeftUp
+                                for (int dxy = 0; dxy < _targetDistance; ++dxy)
+                                {
+                                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(dxy * -1, dxy, 0));
+                                    if (nextTarget != null)
+                                        _projectileSkillTargets.Add(nextTarget);
+                                }
+                            }
+                        }
                     }
-                }
-            }
-            else if (isVertical)
-            {
-                // --- Hit by Up
-                if (hitDir.y > 0)
-                {
-                    Debug.Log($"Hit by Up: {_targetDistance}");
-                    for (int y = 0; y < _targetDistance; ++y)
-                    {
-                        nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(0, y * -1, 0));
-                        if (nextTarget != null)
-                            _projectileSkillTargets.Add(nextTarget);
-                    }
-                }
-                // --- Hit by Down
-                else
-                {
-                    Debug.Log($"Hit by Down: {_targetDistance}");
-                    for (int y = 0; y < _targetDistance; ++y)
-                    {
-                        nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(0, y, 0));
-                        if (nextTarget != null)
-                            _projectileSkillTargets.Add(nextTarget);
-                    }
-                }
-            }
-            else if (isDiagonal)
-            {
-                // --- Hit by LeftUp
-                if (hitDir.x < 0 && hitDir.y > 0)
-                {
-                    Debug.Log($"Hit by LeftUp: {_targetDistance}");
-                    // --- Go RightDown
-                    for (int dxy = 0; dxy < _targetDistance; ++dxy)
-                    {
-                        nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(dxy, dxy * -1, 0));
-                        if (nextTarget != null)
-                            _projectileSkillTargets.Add(nextTarget);
-                    }
-                }
-                // --- Hit by RightUp
-                else if (hitDir.x > 0 && hitDir.y > 0)
-                {
-                    Debug.Log($"Hit by RightUp: {_targetDistance}");
-                    // --- Go LeftDown
-                    for (int dxy = 0; dxy < _targetDistance; ++dxy)
-                    {
-                        nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(dxy * -1, dxy * -1, 0));
-                        if (nextTarget != null)
-                            _projectileSkillTargets.Add(nextTarget);
-                    }
-                }
-                // --- Hit by LeftDown
-                else if (hitDir.x < 0 && hitDir.y < 0)
-                {
-                    Debug.Log($"Hit by LeftDown: {_targetDistance}");
-                    // --- Go RightUp
-                    for (int dxy = 0; dxy < _targetDistance; ++dxy)
-                    {
-                        nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(dxy, dxy, 0));
-                        if (nextTarget != null)
-                            _projectileSkillTargets.Add(nextTarget);
-                    }
-                }
-                // --- Hit by RightDown
-                else if (hitDir.x > 0 && hitDir.y < 0)
-                {
-                    Debug.Log($"Hit by RightDown: {_targetDistance}");
-                    // --- Go LeftUp
-                    for (int dxy = 0; dxy < _targetDistance; ++dxy)
-                    {
-                        nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(dxy * -1, dxy, 0));
-                        if (nextTarget != null)
-                            _projectileSkillTargets.Add(nextTarget);
-                    }
-                }
+                    break;
             }
         }
 
         private void ReserveHalfTargets(BaseObject target)
         {
-            // ... Half Targets
+            if (_targetDistance == 1)
+            {
+                _projectileSkillTargets.Add(target);
+                return;
+            }
         }
 
         // _targetDistance
@@ -354,7 +745,7 @@ namespace STELLAREST_F1
 
                 case EProjectileMotionType.Parabola:
                     ProjectileMotion = gameObject.AddComponent<ParabolaMotion>();
-                    break;                
+                    break;
             }
         }
 
@@ -402,7 +793,6 @@ namespace STELLAREST_F1
             yield return new WaitForSeconds(delayTime);
             _hitColliders.Remove(other);
         }
-
         // public override bool Init()
         // {
         //     if (base.Init() == false)
