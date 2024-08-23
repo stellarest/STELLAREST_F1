@@ -17,13 +17,14 @@ using UnityEditor;
 - Failed Effect_OnDeadSkull (O, TEMP)
 
 - Archer(Chara + Anim)(O) - Projectile(^), Straight(O), Parabola(O), Archer Attack Lower Anim(O)
-- Projectile - Single(O), Half, Around
->>> Projectile Single
->> Straight (O)
->> Parabola (^), 개선 필요
-Projectile LastCellPos를 정확하게 받아와서 Dot을 처리하면 훨씬 도움이 될 것 같은데
-LastCellPos를 받아올 때 target의 맞은 위치와 프로젝타일의 방향을 기반으로, dot을 활용해서
-LastCellPos를 추측할 수 있을 것 같음. 아니면 단순하게 아래쪽에서 맞았는가 그러면 바로 밑인거고 이런식으로. Staight는 가능.
+- Projectile - Single(O), Half(O), Around(O)
+// --- Projectile::DamageToTarget
+// --- 이미 이전에 데미지를 받온 오브젝트를 Penetration으로 인해 데미지를 다시 주기 싫으면
+// --- 여기서 처리하면 됨. 그러나 Around Targets가 조금 어색해보여서 다시 변경함.
+// --- Around Targets는 target 기준 뒤에 있는 오브젝트에게 데미지를 전달해야 Around의 의미가 있지만
+// --- 겹쳐있는 오브젝트에 대해서 Half처럼 보이기 때문에 여기서 따로 처리 안함. (Straight, Parabola Test 완료)
+// --- _includedTarget 플래그 옵션 줘야할지. 옵션에 따라서 includedTargets 무시하고 데미지를 적용할지.
+>> Archer 바라보는 방향 수정
 
 >>> Archer Attack Anim 동작을 할 때(화살을 당기고 있는 동안)는 타겟 방향을 바라보도록. OnSkillClip 발동시에 해제하면 될듯
 >>> EStartTargetRange, XShaped

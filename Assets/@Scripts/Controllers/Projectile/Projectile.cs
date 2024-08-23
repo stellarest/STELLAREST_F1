@@ -17,6 +17,8 @@ namespace STELLAREST_F1
         public EAnimationCurveType ProjectileCurveType { get; private set; } = EAnimationCurveType.None;
         public EProjectileMotionType ProjectileMotionType { get; private set; } = EProjectileMotionType.None;
         public ProjectileMotionBase ProjectileMotion { get; private set; } = null;
+        public Vector3 nLaunchingDir => ProjectileMotion.LaunchingDir.normalized;
+        private float _dotThreshold = 0.1f;
 
         public bool RotateToTarget { get; private set; } = false;
         public int CanPenetrateCount { get; private set; } = 0;
@@ -31,6 +33,7 @@ namespace STELLAREST_F1
         protected ESkillTargetRange _targetRange = ESkillTargetRange.None;
         protected int _targetDistance = 0;
         protected List<BaseObject> _projectileSkillTargets = new List<BaseObject>();
+        protected HashSet<BaseObject> _includedTargets = new HashSet<BaseObject>();
 
         private Coroutine _coProjectileLifeTime = null;
         private Coroutine _coCollisionDelay = null;
@@ -107,6 +110,7 @@ namespace STELLAREST_F1
             StartCoProjectileLifeTime();
             _hitColliders.Clear();
             StopCoDelayCollision();
+            _includedTargets.Clear();
         }
         #endregion
 
@@ -118,8 +122,10 @@ namespace STELLAREST_F1
             if (_targetDistance < 1)
                 return;
 
+            if (_includedTargets.Contains(other.GetComponent<BaseObject>()))
+                return;
+
             StartCoDelayCollision(other);
-            // _targetRange, _targetDistance
             BaseObject target = other.GetComponent<BaseObject>();
             if (target.IsValid() == false)
                 return;
@@ -136,15 +142,16 @@ namespace STELLAREST_F1
                     break;
 
                 case ESkillTargetRange.Around:
+                    ReserveAroundTargets(target);
                     break;
             }
 
-            // Damage To Targets
+            // --- Damage To Targets
             for (int i = 0; i < _projectileSkillTargets.Count; ++i)
             {
                 if (_projectileSkillTargets[i].IsValid() == false)
                     continue;
-
+                
                 DamageToTarget(_projectileSkillTargets[i]);
             }
 
@@ -155,6 +162,15 @@ namespace STELLAREST_F1
             }
         }
 
+        private bool HitFromBottom => Vector3.Dot(nLaunchingDir, Vector3.up) > 1 - _dotThreshold;
+        private bool HitFromTop => Vector3.Dot(nLaunchingDir, Vector3.down) > 1 - _dotThreshold;
+        private bool HitFromRight => Vector3.Dot(nLaunchingDir, Vector3.left) > 1 - _dotThreshold;
+        private bool HitFromLeft => Vector3.Dot(nLaunchingDir, Vector3.right) > 1 - _dotThreshold;
+        private bool HitFromRightBottom => Vector3.Dot(nLaunchingDir, new Vector3(-1, 1, 0)) > 1 - _dotThreshold;
+        private bool HitFromLeftBottom => Vector3.Dot(nLaunchingDir, Vector3.one) > 1 - _dotThreshold;
+        private bool HitFromLeftTop => Vector3.Dot(nLaunchingDir, new Vector3(1, -1, 0)) > 1 - _dotThreshold;
+        private bool HitFromRightTop => Vector3.Dot(nLaunchingDir, Vector3.one * -1) > 1 - _dotThreshold;
+
         private void ReserveSingleTargets(BaseObject target)
         {
             if (_targetDistance == 1)
@@ -164,45 +180,51 @@ namespace STELLAREST_F1
             }
 
             Vector3Int targetCellPos = target.CellPos;
-            float threshold = 0.1f;
-            Vector3 nHitDir = ProjectileMotion.LaunchingDir.normalized;
-            if (Vector3.Dot(nHitDir, Vector3.up) > 1 - threshold)
+            if (HitFromBottom)
             {
+                // Debug.Log("HitFrom - Bottom");
                 for (int y = 0; y < _targetDistance; ++y)
                     TryAddProjectileTarget(targetCellPos + new Vector3Int(0, y, 0));
             }
-            else if (Vector3.Dot(nHitDir, Vector3.down) > 1 - threshold)
+            else if (HitFromTop)
             {
+                // Debug.Log("HitFrom - Top");
                 for (int y = 0; y < _targetDistance; ++y)
                     TryAddProjectileTarget(targetCellPos + new Vector3Int(0, -y, 0));
             }
-            else if (Vector3.Dot(nHitDir, Vector3.left) > 1 - threshold)
+            else if (HitFromRight)
             {
+                // Debug.Log("HitFrom - Right");
                 for (int x = 0; x < _targetDistance; ++x)
                     TryAddProjectileTarget(targetCellPos + new Vector3Int(-x, 0, 0));
             }
-            else if (Vector3.Dot(nHitDir, Vector3.right) > 1 - threshold)
+            else if (HitFromLeft)
             {
+                // Debug.Log("HitFrom - Left"); 
                 for (int x = 0; x < _targetDistance; ++x)
                     TryAddProjectileTarget(targetCellPos + new Vector3Int(x, 0, 0));
             }
-            else if (Vector3.Dot(nHitDir, new Vector3(-1, 1, 0).normalized) > 1 - threshold)
+            else if (HitFromRightBottom)
             {
+                // Debug.Log("HitFrom - RightBottom");
                 for (int dxy = 0; dxy < _targetDistance; ++dxy)
                     TryAddProjectileTarget(targetCellPos + new Vector3Int(-dxy, dxy, 0));
             }
-            else if (Vector3.Dot(nHitDir, new Vector3(1, 1, 0).normalized) > 1 - threshold)
+            else if (HitFromLeftBottom)
             {
+                // Debug.Log("HitFrom - LeftBottom");
                 for (int dxy = 0; dxy < _targetDistance; ++dxy)
                     TryAddProjectileTarget(targetCellPos + new Vector3Int(dxy, dxy, 0));
             }
-            else if (Vector3.Dot(nHitDir, new Vector3(1, -1, 0).normalized) > 1 - threshold)
+            else if (HitFromLeftTop)
             {
+                // Debug.Log("HitFrom - LeftTop");
                 for (int dxy = 0; dxy < _targetDistance; ++dxy)
                     TryAddProjectileTarget(targetCellPos + new Vector3Int(dxy, -dxy, 0));
             }
-            else if (Vector3.Dot(nHitDir, new Vector3(-1, -1, 0).normalized) > 1 - threshold)
+            else if (HitFromRightTop)
             {
+                // Debug.Log("HitFrom - RightTop");
                 for (int dxy = 0; dxy < _targetDistance; ++dxy)
                     TryAddProjectileTarget(targetCellPos + new Vector3Int(-dxy, -dxy, 0));
             }
@@ -211,71 +233,87 @@ namespace STELLAREST_F1
         private void ReserveHalfTargets(BaseObject target)
         {
             Vector3Int targetCellPos = target.CellPos;
-            float threshold = 0.1f;
-            Vector3 nHitDir = ProjectileMotion.LaunchingDir.normalized;
-            if (Vector3.Dot(nHitDir, Vector3.up) > 1 - threshold)
+            if (HitFromBottom)
             {
+                // Debug.Log("HitFrom - Bottom");
                 for (int x = -_targetDistance; x <= _targetDistance; ++x)
                 {
                     for (int y = 0; y <= _targetDistance; ++y)
                         TryAddProjectileTarget(targetCellPos + new Vector3Int(x, y, 0));
                 }
             }
-            else if (Vector3.Dot(nHitDir, Vector3.down) > 1 - threshold)
+            else if (HitFromTop)
             {
+                // Debug.Log("HitFrom - Top");
                 for (int x = -_targetDistance; x <= _targetDistance; ++x)
                 {
                     for (int y = 0; y >= -_targetDistance; --y)
                         TryAddProjectileTarget(targetCellPos + new Vector3Int(x, y, 0));
                 }
             }
-            else if (Vector3.Dot(nHitDir, Vector3.left) > 1 - threshold)
+            else if (HitFromRight)
             {
+                // Debug.Log("HitFrom - Right");
                 for (int x = -_targetDistance; x <= 0; ++x)
                 {
                     for (int y = -_targetDistance; y <= _targetDistance; ++y)
                         TryAddProjectileTarget(targetCellPos + new Vector3Int(x, y, 0));
                 }
             }
-            else if (Vector3.Dot(nHitDir, Vector3.right) > 1 - threshold)
+            else if (HitFromLeft)
             {
+                // Debug.Log("HitFrom - Left");
                 for (int x = 0; x <= _targetDistance; ++x)
                 {
                     for (int y = -_targetDistance; y <= _targetDistance; ++y)
                         TryAddProjectileTarget(targetCellPos + new Vector3Int(x, y, 0));
                 }
             }
-            else if (Vector3.Dot(nHitDir, new Vector3(-1 ,1, 0).normalized) > 1 - threshold)
+            else if (HitFromRightBottom)
             {
+                // Debug.Log("HitFrom - RightBottom");
                 for (int x = -_targetDistance; x <= 0; ++x)
                 {
                     for (int y = -_targetDistance; y <= _targetDistance; ++y)
                         TryAddProjectileTarget(targetCellPos + new Vector3Int(x, y, 0));
                 }
             }
-            else if (Vector3.Dot(nHitDir, new Vector3(1, 1, 0).normalized) > 1 - threshold)
+            else if (HitFromLeftBottom)
             {
+                // Debug.Log("HitFrom - LeftBottom");
                 for (int x = 0; x <= _targetDistance; ++x)
                 {
                     for (int y = -_targetDistance; y <= _targetDistance; ++y)
                         TryAddProjectileTarget(targetCellPos + new Vector3Int(x, y, 0));
                 }
             }
-            else if (Vector3.Dot(nHitDir, new Vector3(1, -1, 0).normalized) > 1 - threshold)
+            else if (HitFromLeftTop)
             {
+                // Debug.Log("HitFrom - LeftTop");
                 for (int x = 0; x <= _targetDistance; ++x)
                 {
                     for (int y = -_targetDistance; y <= _targetDistance; ++y)
                         TryAddProjectileTarget(targetCellPos + new Vector3Int(x, y, 0));
                 }
             }
-            else if (Vector3.Dot(nHitDir, new Vector3(-1, -1, 0).normalized) > 1 - threshold)
+            else if (HitFromRightTop)
             {
+                // Debug.Log("HitFrom - RightTop");
                 for (int x = -_targetDistance; x <= 0; ++x)
                 {
                     for (int y = -_targetDistance; y <= _targetDistance; ++y)
                         TryAddProjectileTarget(targetCellPos + new Vector3Int(x, y, 0));
                 }
+            }
+        }
+
+        private void ReserveAroundTargets(BaseObject target)
+        {
+            Vector3Int targetCellPos = target.CellPos;
+            for (int x = -_targetDistance; x <= _targetDistance; ++x)
+            {
+                for (int y = -_targetDistance; y <= _targetDistance; ++y)
+                    TryAddProjectileTarget(new Vector3Int(targetCellPos.x + x, targetCellPos.y + y, 0));
             }
         }
 
@@ -285,26 +323,11 @@ namespace STELLAREST_F1
             if (target != null && target.IsValid())
             {
                 _projectileSkillTargets.Add(target);
+                _includedTargets.Add(target);
                 return target;
             }
 
             return null;
-        }
-
-        // _targetDistance
-        private void ReserveAroundTargets(BaseObject target)
-        {
-            Vector3Int targetCellPos = target.CellPos;
-            for (int x = _targetDistance * -1; x <= _targetDistance; ++x)
-            {
-                for (int y = _targetDistance * -1; y <= _targetDistance; ++y)
-                {
-                    Vector3Int cellPos = new Vector3Int(targetCellPos.x + x, targetCellPos.y + y, 0);
-                    BaseObject obj = Managers.Map.GetObject(cellPos);
-                    if (obj.IsValid() && obj != null)
-                        _projectileSkillTargets.Add(obj);
-                }
-            }
         }
 
         private void DamageToTarget(BaseObject target)
