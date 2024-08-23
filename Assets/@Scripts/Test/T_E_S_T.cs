@@ -21,7 +21,9 @@ using UnityEditor;
 >>> Projectile Single
 >> Straight (O)
 >> Parabola (^), 개선 필요
-
+Projectile LastCellPos를 정확하게 받아와서 Dot을 처리하면 훨씬 도움이 될 것 같은데
+LastCellPos를 받아올 때 target의 맞은 위치와 프로젝타일의 방향을 기반으로, dot을 활용해서
+LastCellPos를 추측할 수 있을 것 같음. 아니면 단순하게 아래쪽에서 맞았는가 그러면 바로 밑인거고 이런식으로. Staight는 가능.
 
 >>> Archer Attack Anim 동작을 할 때(화살을 당기고 있는 동안)는 타겟 방향을 바라보도록. OnSkillClip 발동시에 해제하면 될듯
 >>> EStartTargetRange, XShaped

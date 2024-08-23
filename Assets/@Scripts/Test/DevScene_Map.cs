@@ -83,8 +83,8 @@ namespace STELLAREST_F1
                     dataID: ReadOnly.DataAndPoolingID.DNPID_Hero_Archer);
                 leaderController.Leader = firstHero;
 
-                StartCoroutine(CoContinuousSpawnMonster_Test(2.5f));
-                StartCoroutine(CoContinuousSpawnEnv_Test(1f));
+                // StartCoroutine(CoContinuousSpawnMonster_Test(2.5f));
+                // StartCoroutine(CoContinuousSpawnEnv_Test(1f));
 
                 // --- Projectile Target Range Test List
                 SpawnChicken_Test(-8, 8);
