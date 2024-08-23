@@ -111,6 +111,12 @@ namespace STELLAREST_F1
                 SpawnChicken_Test(-8, 6);
                 SpawnChicken_Test(-7, 6);
                 SpawnChicken_Test(-6, 6);
+
+                SpawnChicken_Test(-5, 6);
+                SpawnChicken_Test(-5, 7);
+                SpawnChicken_Test(-5, 8);
+                SpawnChicken_Test(-5, 9);
+                SpawnChicken_Test(-5, 10);
                 // --- Projectile Target Range Test List
 
                 // SpawnChicken_Test(-9, 10);

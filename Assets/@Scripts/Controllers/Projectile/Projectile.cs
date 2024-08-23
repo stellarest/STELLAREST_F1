@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using STELLAREST_F1.Data;
 using UnityEngine;
+using UnityEngine.UIElements;
 using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
@@ -131,6 +132,7 @@ namespace STELLAREST_F1
                     break;
 
                 case ESkillTargetRange.Half:
+                    ReserveHalfTargets(target);
                     break;
 
                 case ESkillTargetRange.Around:
@@ -162,87 +164,131 @@ namespace STELLAREST_F1
             }
 
             Vector3Int targetCellPos = target.CellPos;
-            BaseObject nextTarget = null;
             float threshold = 0.1f;
             Vector3 nHitDir = ProjectileMotion.LaunchingDir.normalized;
             if (Vector3.Dot(nHitDir, Vector3.up) > 1 - threshold)
             {
                 for (int y = 0; y < _targetDistance; ++y)
-                {
-                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(0, y, 0));
-                    if (nextTarget != null)
-                        _projectileSkillTargets.Add(nextTarget);
-                }
+                    TryAddProjectileTarget(targetCellPos + new Vector3Int(0, y, 0));
             }
             else if (Vector3.Dot(nHitDir, Vector3.down) > 1 - threshold)
             {
                 for (int y = 0; y < _targetDistance; ++y)
-                {
-                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(0, -y, 0));
-                    if (nextTarget != null)
-                        _projectileSkillTargets.Add(nextTarget);
-                }
+                    TryAddProjectileTarget(targetCellPos + new Vector3Int(0, -y, 0));
             }
             else if (Vector3.Dot(nHitDir, Vector3.left) > 1 - threshold)
             {
                 for (int x = 0; x < _targetDistance; ++x)
-                {
-                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(-x, 0, 0));
-                    if (nextTarget != null)
-                        _projectileSkillTargets.Add(nextTarget);
-                }
+                    TryAddProjectileTarget(targetCellPos + new Vector3Int(-x, 0, 0));
             }
             else if (Vector3.Dot(nHitDir, Vector3.right) > 1 - threshold)
             {
                 for (int x = 0; x < _targetDistance; ++x)
-                {
-                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(x, 0, 0));
-                    if (nextTarget != null)
-                        _projectileSkillTargets.Add(nextTarget);
-                }
+                    TryAddProjectileTarget(targetCellPos + new Vector3Int(x, 0, 0));
             }
             else if (Vector3.Dot(nHitDir, new Vector3(-1, 1, 0).normalized) > 1 - threshold)
             {
                 for (int dxy = 0; dxy < _targetDistance; ++dxy)
-                {
-                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(-dxy, dxy, 0));
-                    if (nextTarget != null)
-                        _projectileSkillTargets.Add(nextTarget);
-                }
+                    TryAddProjectileTarget(targetCellPos + new Vector3Int(-dxy, dxy, 0));
             }
             else if (Vector3.Dot(nHitDir, new Vector3(1, 1, 0).normalized) > 1 - threshold)
             {
                 for (int dxy = 0; dxy < _targetDistance; ++dxy)
-                {
-                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(dxy, dxy, 0));
-                    if (nextTarget != null)
-                        _projectileSkillTargets.Add(nextTarget);
-                }
+                    TryAddProjectileTarget(targetCellPos + new Vector3Int(dxy, dxy, 0));
             }
             else if (Vector3.Dot(nHitDir, new Vector3(1, -1, 0).normalized) > 1 - threshold)
             {
                 for (int dxy = 0; dxy < _targetDistance; ++dxy)
-                {
-                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(dxy, -dxy, 0));
-                    if (nextTarget != null)
-                        _projectileSkillTargets.Add(nextTarget);
-                }
+                    TryAddProjectileTarget(targetCellPos + new Vector3Int(dxy, -dxy, 0));
             }
             else if (Vector3.Dot(nHitDir, new Vector3(-1, -1, 0).normalized) > 1 - threshold)
             {
                 for (int dxy = 0; dxy < _targetDistance; ++dxy)
-                {
-                    nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(-dxy, -dxy, 0));
-                    if (nextTarget != null)
-                        _projectileSkillTargets.Add(nextTarget);
-                }
+                    TryAddProjectileTarget(targetCellPos + new Vector3Int(-dxy, -dxy, 0));
             }
         }
 
         private void ReserveHalfTargets(BaseObject target)
         {
             Vector3Int targetCellPos = target.CellPos;
-            // BaseObject nextTarget = null;
+            float threshold = 0.1f;
+            Vector3 nHitDir = ProjectileMotion.LaunchingDir.normalized;
+            if (Vector3.Dot(nHitDir, Vector3.up) > 1 - threshold)
+            {
+                for (int x = -_targetDistance; x <= _targetDistance; ++x)
+                {
+                    for (int y = 0; y <= _targetDistance; ++y)
+                        TryAddProjectileTarget(targetCellPos + new Vector3Int(x, y, 0));
+                }
+            }
+            else if (Vector3.Dot(nHitDir, Vector3.down) > 1 - threshold)
+            {
+                for (int x = -_targetDistance; x <= _targetDistance; ++x)
+                {
+                    for (int y = 0; y >= -_targetDistance; --y)
+                        TryAddProjectileTarget(targetCellPos + new Vector3Int(x, y, 0));
+                }
+            }
+            else if (Vector3.Dot(nHitDir, Vector3.left) > 1 - threshold)
+            {
+                for (int x = -_targetDistance; x <= 0; ++x)
+                {
+                    for (int y = -_targetDistance; y <= _targetDistance; ++y)
+                        TryAddProjectileTarget(targetCellPos + new Vector3Int(x, y, 0));
+                }
+            }
+            else if (Vector3.Dot(nHitDir, Vector3.right) > 1 - threshold)
+            {
+                for (int x = 0; x <= _targetDistance; ++x)
+                {
+                    for (int y = -_targetDistance; y <= _targetDistance; ++y)
+                        TryAddProjectileTarget(targetCellPos + new Vector3Int(x, y, 0));
+                }
+            }
+            else if (Vector3.Dot(nHitDir, new Vector3(-1 ,1, 0).normalized) > 1 - threshold)
+            {
+                for (int x = -_targetDistance; x <= 0; ++x)
+                {
+                    for (int y = -_targetDistance; y <= _targetDistance; ++y)
+                        TryAddProjectileTarget(targetCellPos + new Vector3Int(x, y, 0));
+                }
+            }
+            else if (Vector3.Dot(nHitDir, new Vector3(1, 1, 0).normalized) > 1 - threshold)
+            {
+                for (int x = 0; x <= _targetDistance; ++x)
+                {
+                    for (int y = -_targetDistance; y <= _targetDistance; ++y)
+                        TryAddProjectileTarget(targetCellPos + new Vector3Int(x, y, 0));
+                }
+            }
+            else if (Vector3.Dot(nHitDir, new Vector3(1, -1, 0).normalized) > 1 - threshold)
+            {
+                for (int x = 0; x <= _targetDistance; ++x)
+                {
+                    for (int y = -_targetDistance; y <= _targetDistance; ++y)
+                        TryAddProjectileTarget(targetCellPos + new Vector3Int(x, y, 0));
+                }
+            }
+            else if (Vector3.Dot(nHitDir, new Vector3(-1, -1, 0).normalized) > 1 - threshold)
+            {
+                for (int x = -_targetDistance; x <= 0; ++x)
+                {
+                    for (int y = -_targetDistance; y <= _targetDistance; ++y)
+                        TryAddProjectileTarget(targetCellPos + new Vector3Int(x, y, 0));
+                }
+            }
+        }
+
+        private BaseObject TryAddProjectileTarget(Vector3Int targetPos)
+        {
+            BaseObject target = Managers.Map.GetObject(targetPos);
+            if (target != null && target.IsValid())
+            {
+                _projectileSkillTargets.Add(target);
+                return target;
+            }
+
+            return null;
         }
 
         // _targetDistance
