@@ -70,31 +70,33 @@ namespace STELLAREST_F1
             if (Owner.IsValid() == false)
                 return;
 
+            // --- Handle Projectile
             if (SkillData.ProjectileID > -1)
             {
+                // --- 여기까지 들어왔다는건, Target이 존재한다는 의미(또는 존재했었다는 의미)
                 Projectile projectile = GenerateProjectile(Owner, GetSpawnPos());
                 return;
             }
-
-            // ******************************
-            // --- Do Projectile Later
-            // ******************************
-            for (int i = 0; i < _skillTargets.Count; ++i)
+            // --- Handle Melee Targets
+            else
             {
-                if (_skillTargets[i].IsValid() == false)
-                    continue;
-
-                BaseObject target = _skillTargets[i];
-                target.OnDamaged(attacker: Owner, skillByAttacker: this);
+                for (int i = 0; i < _skillTargets.Count; ++i)
                 {
-                    // --- Effect
-                    if (SkillData.EffectIDs.Length != 0)
+                    if (_skillTargets[i].IsValid() == false)
+                        continue;
+
+                    BaseObject target = _skillTargets[i];
+                    target.OnDamaged(attacker: Owner, skillByAttacker: this);
                     {
-                        List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
-                        effectIDs: SkillData.EffectIDs,
-                        spawnPos: Util.GetRandomQuadPosition(target.CenterPosition),
-                        startCallback: null
-                    );
+                        // --- Effect
+                        if (SkillData.EffectIDs.Length != 0)
+                        {
+                            List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
+                            effectIDs: SkillData.EffectIDs,
+                            spawnPos: Util.GetRandomQuadPosition(target.CenterPosition),
+                            startCallback: null
+                        );
+                        }
                     }
                 }
             }

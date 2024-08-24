@@ -379,8 +379,6 @@ namespace STELLAREST_F1
                 // --- Joystick + Path Finding
                 else if (_lockFindPath == false && Managers.Map.CanMove(GoToJoystickPos, ignoreObjectType: EObjectType.Hero) == false)
                     TryPathFinding(_pointer.position);
-
-                Debug.Log("A");
             }
             else if (_lockFindPath == false)
             {
@@ -461,18 +459,25 @@ namespace STELLAREST_F1
             else if (_coPathFinding == null)
             {
                 // --- MOVEMENT
-                if (_leader.CanSkill == false)
-                {
-                    if (_nMovementDir.x < 0f)
-                        Leader.LookAtDir = ELookAtDirection.Left;
-                    else
-                        Leader.LookAtDir = ELookAtDirection.Right;
-                }
+                // if (_leader.CanSkill == false)
+                // {
+                //     if (_nMovementDir.x < 0f)
+                //         Leader.LookAtDir = ELookAtDirection.Left;
+                //     else
+                //         Leader.LookAtDir = ELookAtDirection.Right;
+                // }
+                
+                if (_nMovementDir.x < 0f)
+                    Leader.LookAtDir = ELookAtDirection.Left;
+                else
+                    Leader.LookAtDir = ELookAtDirection.Right;
 
                 _leader.Moving = true;
                 _leader.transform.position = GoToJoystickPos;
                 // _leader.LerpToCellPosCompleted = false;
             }
+
+            // Debug.Log($"CanSkill: {_leader.CanSkill}");
         }
 
         [SerializeField] private bool _lockFindPath = false; // Lock Find Path 용도 외에 건드리지 말것.

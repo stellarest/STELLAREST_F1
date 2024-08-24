@@ -11,7 +11,18 @@ namespace STELLAREST_F1
 {
     public class Projectile : BaseObject
     {
-        public Creature Owner { get; set; } = null;
+        private Creature _owner = null;
+        private BaseObject _initialTarget = null;
+        public Creature Owner
+        {
+            get => _owner;
+            set
+            {
+                _owner = value;
+                _initialTarget = (_owner.Target != null && _owner.Target.IsValid()) ? _owner.Target : null;
+            }
+        }
+
         public SkillBase Skill { get; private set; } = null;
         public ProjectileData ProjectileData { get; private set; } = null;
         public EAnimationCurveType ProjectileCurveType { get; private set; } = EAnimationCurveType.None;
@@ -80,7 +91,11 @@ namespace STELLAREST_F1
                 return;
 
             if (Owner.Target.IsValid() == false)
-                return;
+            {
+                Debug.Log("<color=cyan>WTF</color>"); // TEST
+                //Debug.Break();
+                //return;
+            }
 
             _projectileSkillTargets.Clear();
             transform.position = spawnPos;
@@ -100,7 +115,11 @@ namespace STELLAREST_F1
             Collider.excludeLayers = excludeLayerMask;
 
             Vector3 startPos = Owner.GetFirePosition();
-            Vector3 targetPos = Owner.Target.CenterPosition;
+            // --- 중간에 끊어져도, s이 Target을 받을 수 있을까?
+            //Vector3 targetPos = Owner.Target.CenterPosition;
+
+            // *** _initialTarget은 최초로 무조건 null이 될 수 없다고 가정
+            Vector3 targetPos = _initialTarget.CenterPosition; 
             nStartShootDir = (targetPos - startPos).normalized;
 
             _currentPenetrationCount = 0;
