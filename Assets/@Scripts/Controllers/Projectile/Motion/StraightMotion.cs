@@ -24,7 +24,7 @@ namespace STELLAREST_F1
 
                 if (delta >= 1f)
                 {
-                    // delta가 1f를 초과했을 때, 정확히 1f 시점의 위치와 속도를 계산
+                    // --- delta가 1f를 초과했을 때, 정확히 1f 시점의 위치와 속도를 계산
                     delta = 1f;
                     Vector3 posAt1 = Vector3.Lerp(_startPos, _startPos + nDir * _projectile.ProjectileSpeed, curve.Evaluate(1f));
                     Vector3 posBefore1 = Vector3.Lerp(_startPos, _startPos + nDir * _projectile.ProjectileSpeed, curve.Evaluate(prevDelta));
@@ -41,7 +41,7 @@ namespace STELLAREST_F1
                 yield return null;
             }
 
-            // 계속해서 투사체 이동 (calculatedSpeed 사용)
+            // --- 계속해서 투사체 이동 (calculatedSpeed 사용)
             while (true)
             {
                 delta += Time.deltaTime;

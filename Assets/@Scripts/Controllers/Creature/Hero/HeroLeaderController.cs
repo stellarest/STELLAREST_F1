@@ -255,14 +255,14 @@ namespace STELLAREST_F1
             {
                 case EJoystickState.Drag:
                     {
-                        ForceMove = true;
+                        TryMove = true;
                         EnablePointer(true);
                     }
                     break;
 
                 case EJoystickState.PointerUp:
                     {
-                        ForceMove = false;
+                        TryMove = false;
                         EnablePointer(false);
                     }
                     break;
@@ -271,7 +271,7 @@ namespace STELLAREST_F1
 
         private bool SkillOrCollectEnv()
         {
-            if (ForceMove)
+            if (TryMove)
                 return false;
 
             if (_leader.CanSkill)
@@ -288,7 +288,7 @@ namespace STELLAREST_F1
             return false;
         }
 
-        [field: SerializeField] public bool ForceMove { get; private set; } = false;
+        [field: SerializeField] public bool TryMove { get; private set; } = false;
 
         #region Init Core
         public override bool Init()
@@ -371,7 +371,7 @@ namespace STELLAREST_F1
             if (SkillOrCollectEnv())
                 return;
 
-            if (ForceMove)
+            if (TryMove)
             {
                 // --- Joystick Only
                 if (_lockFindPath == false && Managers.Map.CanMove(GoToJoystickPos, ignoreObjectType: EObjectType.Hero))
@@ -379,6 +379,8 @@ namespace STELLAREST_F1
                 // --- Joystick + Path Finding
                 else if (_lockFindPath == false && Managers.Map.CanMove(GoToJoystickPos, ignoreObjectType: EObjectType.Hero) == false)
                     TryPathFinding(_pointer.position);
+
+                Debug.Log("A");
             }
             else if (_lockFindPath == false)
             {
@@ -386,7 +388,9 @@ namespace STELLAREST_F1
                 {
                     // --- Go to Target
                     if (_leader.IsInTheNearestTarget == false)
+                    {
                         TryPathFinding(_leader.Target.transform.position);
+                    }
                     // --- Stop Moving(Go to Cell Center)
                     else if (_leader.IsOnTheCellCenter == false)
                         _leader.MoveToCellCenter();
@@ -613,7 +617,7 @@ namespace STELLAREST_F1
             }
 
             // --- 타겟이 존재할 경우, 이동하면서 공격
-            if (ForceMove == false && _leader.Target.IsValid() == false)
+            if (TryMove == false && _leader.Target.IsValid() == false)
                 _leader.Moving = false;
 
             _lockFindPath = false;
