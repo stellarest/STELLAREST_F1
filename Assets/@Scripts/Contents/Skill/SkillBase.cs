@@ -49,23 +49,13 @@ namespace STELLAREST_F1
 
         protected virtual Projectile GenerateProjectile(Creature owner, Vector3 spawnPos)
         {
-            // --- 프로젝타일 객체가 없는 즉발성 원거리 스킬
-            if (SkillData.ProjectileID == -1)
-            {
-                // --- Target이 존재하지 않을 경우, Target이 있었던 CellPos에 Effect를 남기면 될지?
-
-                owner.Target.OnDamaged(owner, this);
-                // --- Generate Effect
-                return null;
-            }
-
             Projectile projectile = Managers.Object.SpawnBaseObject<Projectile>(EObjectType.Projectile, 
                 Owner.CenterPosition, SkillData.ProjectileID, owner: Owner);
             
             // Projectile projectile = Managers.Object.Spawn<Projectile>(EObjectType.Projectile, SkillData.ProjectileID);
             // projectile.transform.position = spawnPos;
             // return projectile;
-            return null;
+            return projectile;
         }
 
         private IEnumerator CoActivateSkill()

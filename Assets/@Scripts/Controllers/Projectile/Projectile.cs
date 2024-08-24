@@ -21,6 +21,8 @@ namespace STELLAREST_F1
         private float _dotThreshold = 0.1f;
 
         public bool RotateToTarget { get; private set; } = false;
+        private bool _includePrevDamagedTargets = false;
+
         public int CanPenetrateCount { get; private set; } = 0;
         private int _currentPenetrationCount = 0;
 
@@ -61,6 +63,7 @@ namespace STELLAREST_F1
             DataTemplateID = dataID;
             ProjectileData = projectileData;
             RotateToTarget = projectileData.RotateToTarget;
+            _includePrevDamagedTargets = projectileData.IncludePrevDamagedTargets;
             CanPenetrateCount = projectileData.PenetrationCount;
             ProjectileSpeed = projectileData.ProjectileSpeed;
             _projectileLifeTime = projectileData.ProjectileLifeTime;
@@ -78,11 +81,6 @@ namespace STELLAREST_F1
         {
             if (Owner.IsValid() == false)
                 return;
-
-            if (Owner.Target.IsValid() == false)
-            {
-                Debug.Log("<color=cyan>!!!</color>"); // TEST
-            }
 
             _projectileSkillTargets.Clear();
             transform.position = spawnPos;
@@ -106,7 +104,6 @@ namespace STELLAREST_F1
             //Vector3 targetPos = Owner.Target.CenterPosition;
             Vector3 targetPos = Skill.FirstTarget.CenterPosition;
             nStartShootDir = (targetPos - startPos).normalized;
-
             _currentPenetrationCount = 0;
 
             RigidBody.simulated = true;
@@ -126,11 +123,13 @@ namespace STELLAREST_F1
             if (_targetDistance < 1)
                 return;
 
-            if (_includedTargets.Contains(other.GetComponent<BaseObject>()))
+            BaseObject target = other.GetComponent<BaseObject>();
+            // --- ? Apply Flag Option (IgnoreIncludedTargets)
+
+            if (_includePrevDamagedTargets == false && _includedTargets.Contains(target))
                 return;
 
             StartCoDelayCollision(other);
-            BaseObject target = other.GetComponent<BaseObject>();
             if (target.IsValid() == false)
                 return;
 

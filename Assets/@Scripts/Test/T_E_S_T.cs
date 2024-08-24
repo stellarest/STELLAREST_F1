@@ -18,13 +18,8 @@ using UnityEditor;
 
 - Archer(Chara + Anim)(O) - Projectile(^), Straight(O), Parabola(O), Archer Attack Lower Anim(O)
 - Projectile - Single(O), Half(O), Around(O)
-// --- Projectile::DamageToTarget
-// --- 이미 이전에 데미지를 받온 오브젝트를 Penetration으로 인해 데미지를 다시 주기 싫으면
-// --- 여기서 처리하면 됨. 그러나 Around Targets가 조금 어색해보여서 다시 변경함.
-// --- Around Targets는 target 기준 뒤에 있는 오브젝트에게 데미지를 전달해야 Around의 의미가 있지만
-// --- 겹쳐있는 오브젝트에 대해서 Half처럼 보이기 때문에 여기서 따로 처리 안함. (Straight, Parabola Test 완료)
-// --- _includedTarget 플래그 옵션 줘야할지. 옵션에 따라서 includedTargets 무시하고 데미지를 적용할지.
->> Archer 바라보는 방향 수정
+// --- Archer Ranged Attack시 Dir 제대로 고치도록
+// --- 도중에 조이스틱을 누르면 어쩔 수 없지만, 그게 아닐때는 TargetDir 방향으로 바라보게 체크
 
 >>> Archer Attack Anim 동작을 할 때(화살을 당기고 있는 동안)는 타겟 방향을 바라보도록. OnSkillClip 발동시에 해제하면 될듯
 >>> EStartTargetRange, XShaped

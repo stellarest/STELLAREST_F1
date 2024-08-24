@@ -479,6 +479,7 @@ namespace STELLAREST_F1.Data
     public class ProjectileData : BaseData
     {
         public bool RotateToTarget;
+        public bool IncludePrevDamagedTargets;
         public int PenetrationCount;
         public float ProjectileSpeed;
         public float ProjectileLifeTime;

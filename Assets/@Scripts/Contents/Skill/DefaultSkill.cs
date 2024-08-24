@@ -19,7 +19,7 @@ namespace STELLAREST_F1
                 return;
 
             Owner.LookAtValidTarget();
-            if (SkillData.ProjectileID == -1)
+            if (SkillData.ProjectileID < 0)
                 GatherMeleeTargets();
             else
                 SetRangedFirstTarget(Owner.Target);
@@ -33,12 +33,17 @@ namespace STELLAREST_F1
             if (Owner.IsValid() == false)
                 return;
 
-            // --- Handle Projectile
-            if (SkillData.ProjectileID > -1)
+            // --- Handle Ranged Targets
+            if (SkillData.ProjectileID >= 0)
             {
-                // --- 여기까지 들어왔다는건, Target이 존재한다는 의미(또는 존재했었다는 의미)
                 Projectile projectile = GenerateProjectile(Owner, GetSpawnPos());
-                return;
+                if (projectile == null)
+                {
+                    // --- 프로젝타일 객체가 없는 즉발성 원거리 스킬
+                    // --- TODO: Target이 존재하지 않을 경우, Target이 있었던 CellPos에 Effect를 남기면 될지?
+                    Owner.Target.OnDamaged(Owner, this);
+                    // --- Generate Effect
+                }
             }
             // --- Handle Melee Targets
             else
