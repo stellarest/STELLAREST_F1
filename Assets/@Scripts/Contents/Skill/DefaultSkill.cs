@@ -12,54 +12,17 @@ namespace STELLAREST_F1
 {
     public class DefaultSkill : SkillBase
     {
-        // --- How to gather Allies Targets?
-        private void GatherMeleeTargets()
-        {
-            _skillTargets.Clear();
-            ELookAtDirection enteredLookAtDir = Owner.LookAtDir;
-            for (int i = 0; i < Owner.Targets.Count; ++i)
-            {
-                if (Owner.Targets[i].IsValid() == false)
-                    continue;
-
-                BaseObject target = Owner.Targets[i];
-                if (target.ObjectType == EObjectType.Env)
-                    continue;
-
-                switch (TargetRange)
-                {
-                    case ESkillTargetRange.Single:
-                        ReserveSingleTargets(enteredLookAtDir, target);
-                        break;
-
-                    case ESkillTargetRange.Half:
-                        ReserveHalfTargets(enteredLookAtDir, target);
-                        break;
-
-                    case ESkillTargetRange.Around:
-                        ReserveAroundTargets(target);
-                        break;
-                }
-            }
-
-            ReleaseAllTargetDirs();
-        }
-
         #region Events
         public override void OnSkillStateEnter()
         {
             if (Owner.IsValid() == false)
                 return;
 
-            if (Owner.Target.IsValid() == false)
-                return;
-
             Owner.LookAtValidTarget();
             if (SkillData.ProjectileID == -1)
                 GatherMeleeTargets();
-
-            // --- Projectile TargetRange, TargetDistance?
-            // OnTrigger(OnDamaged) in Projectile. (멀티샷x, 연속샷x, Default Skill은 무조건 한 발)
+            else
+                SetRangedFirstTarget(Owner.Target);
         }
 
         public override void OnSkillStateExit()
@@ -101,6 +64,43 @@ namespace STELLAREST_F1
                 }
             }
         }
+        #endregion Events
+
+        // --- How to gather Allies Targets?
+        private void GatherMeleeTargets()
+        {
+            _skillTargets.Clear();
+            ELookAtDirection enteredLookAtDir = Owner.LookAtDir;
+            for (int i = 0; i < Owner.Targets.Count; ++i)
+            {
+                if (Owner.Targets[i].IsValid() == false)
+                    continue;
+
+                BaseObject target = Owner.Targets[i];
+                if (target.ObjectType == EObjectType.Env)
+                    continue;
+
+                switch (TargetRange)
+                {
+                    case ESkillTargetRange.Single:
+                        ReserveSingleTargets(enteredLookAtDir, target);
+                        break;
+
+                    case ESkillTargetRange.Half:
+                        ReserveHalfTargets(enteredLookAtDir, target);
+                        break;
+
+                    case ESkillTargetRange.Around:
+                        ReserveAroundTargets(target);
+                        break;
+                }
+            }
+
+            ReleaseAllTargetDirs();
+        }
+
+        private void SetRangedFirstTarget(BaseObject target)
+            => _skillTargets.Add(target);
 
         // --- Prev
         // public override void OnSkillCallback()
@@ -161,6 +161,5 @@ namespace STELLAREST_F1
 
         //     ReleaseAllTargetDirs();
         // }
-        #endregion Events
     }
 }

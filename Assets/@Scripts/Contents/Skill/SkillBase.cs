@@ -52,6 +52,8 @@ namespace STELLAREST_F1
             // --- 프로젝타일 객체가 없는 즉발성 원거리 스킬
             if (SkillData.ProjectileID == -1)
             {
+                // --- Target이 존재하지 않을 경우, Target이 있었던 CellPos에 Effect를 남기면 될지?
+
                 owner.Target.OnDamaged(owner, this);
                 // --- Generate Effect
                 return null;
@@ -59,7 +61,7 @@ namespace STELLAREST_F1
 
             Projectile projectile = Managers.Object.SpawnBaseObject<Projectile>(EObjectType.Projectile, 
                 Owner.CenterPosition, SkillData.ProjectileID, owner: Owner);
-
+            
             // Projectile projectile = Managers.Object.Spawn<Projectile>(EObjectType.Projectile, SkillData.ProjectileID);
             // projectile.transform.position = spawnPos;
             // return projectile;
@@ -94,6 +96,17 @@ namespace STELLAREST_F1
         }
 
         protected List<BaseObject> _skillTargets = new List<BaseObject>();
+        public BaseObject FirstTarget
+        {
+            get
+            {
+                if (_skillTargets.Count > 0 && _skillTargets[0] != null && _skillTargets[0].IsValid())
+                    return _skillTargets[0];
+
+                return null;
+            }
+        }
+
         #region Init Core
         public override bool Init()
         {

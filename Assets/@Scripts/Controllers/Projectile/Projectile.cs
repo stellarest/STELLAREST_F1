@@ -11,18 +11,7 @@ namespace STELLAREST_F1
 {
     public class Projectile : BaseObject
     {
-        private Creature _owner = null;
-        private BaseObject _initialTarget = null;
-        public Creature Owner
-        {
-            get => _owner;
-            set
-            {
-                _owner = value;
-                _initialTarget = (_owner.Target != null && _owner.Target.IsValid()) ? _owner.Target : null;
-            }
-        }
-
+        public Creature Owner { get; set; } = null;
         public SkillBase Skill { get; private set; } = null;
         public ProjectileData ProjectileData { get; private set; } = null;
         public EAnimationCurveType ProjectileCurveType { get; private set; } = EAnimationCurveType.None;
@@ -79,7 +68,7 @@ namespace STELLAREST_F1
             ProjectileCurveType = projectileData.ProjectileCurveType;
             InitialSetProjectileMotion(projectileData.ProjectileMotionType);
             ProjectileMotionType = projectileData.ProjectileMotionType;
-
+            
             Skill = Owner.CreatureSkill.FindSkill(DataTemplateID);
             _targetRange = Skill.SkillData.TargetRange;
             _targetDistance = Skill.SkillData.TargetDistance;
@@ -92,9 +81,7 @@ namespace STELLAREST_F1
 
             if (Owner.Target.IsValid() == false)
             {
-                Debug.Log("<color=cyan>WTF</color>"); // TEST
-                //Debug.Break();
-                //return;
+                Debug.Log("<color=cyan>!!!</color>"); // TEST
             }
 
             _projectileSkillTargets.Clear();
@@ -117,9 +104,7 @@ namespace STELLAREST_F1
             Vector3 startPos = Owner.GetFirePosition();
             // --- 중간에 끊어져도, s이 Target을 받을 수 있을까?
             //Vector3 targetPos = Owner.Target.CenterPosition;
-
-            // *** _initialTarget은 최초로 무조건 null이 될 수 없다고 가정
-            Vector3 targetPos = _initialTarget.CenterPosition; 
+            Vector3 targetPos = Skill.FirstTarget.CenterPosition;
             nStartShootDir = (targetPos - startPos).normalized;
 
             _currentPenetrationCount = 0;
