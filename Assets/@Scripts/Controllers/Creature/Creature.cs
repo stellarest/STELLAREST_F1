@@ -353,6 +353,8 @@ namespace STELLAREST_F1
                 transform.position = center;
                 Moving = false;
             }
+            else if (Target.IsValid())
+                LookAtValidTarget();
             else if (dir.x < 0f)
                 LookAtDir = ELookAtDirection.Left;
             else if (dir.x > 0f)
