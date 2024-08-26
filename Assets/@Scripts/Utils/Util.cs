@@ -215,6 +215,34 @@ namespace STELLAREST_F1
             return false;
         }
 
+        public static int GetPoolingID(EObjectType objType, int dataID)
+        {
+            switch (objType)
+            {
+                case EObjectType.Hero:
+                    dataID = dataID | (1 << 31);
+                    break;
+
+                case EObjectType.Monster:
+                    dataID = dataID | (1 << 30);
+                    break;
+
+                case EObjectType.Env:
+                    dataID = dataID | (1 << 29);
+                    break;
+
+                case EObjectType.Projectile:
+                    dataID = dataID | (1 << 28);
+                    break;
+
+                case EObjectType.Effect:
+                    dataID = dataID | (1 << 27);
+                    break;
+            }
+
+            return dataID;
+        }
+
 #if UNITY_EDITOR
         [Conditional("UNITY_EDITOR")]
         public static void ClearLog()

@@ -488,14 +488,21 @@ namespace STELLAREST_F1
             {
                 public static readonly string HeroData = "HeroData";
                 public static readonly string HeroSpriteData = "HeroSpriteData";
-                public static readonly string MonsterData = "MonsterData";
+                public static readonly string HeroStatData = "HeroStatData";
 
+                public static readonly string MonsterData = "MonsterData";
                 public static readonly string BirdSpriteData = "BirdSpriteData";
                 public static readonly string QuadrupedsSpriteData = "QuadrupedsSpriteData";
+                public static readonly string MonsterStatData = "MonsterStatData";
+
                 public static readonly string EnvData = "EnvData";
                 public static readonly string TreeSpriteData = "TreeSpriteData";
                 public static readonly string RockSpriteData = "RockSpriteData";
+                public static readonly string EnvStatData = "EnvStatData";
+
+                // --- TEMP
                 public static readonly string StatData = "StatData";
+
                 public static readonly string SkillData = "SkillData";
                 public static readonly string ProjectileData = "ProjectileData";
                 public static readonly string EffectData = "EffectData";
@@ -507,34 +514,34 @@ namespace STELLAREST_F1
                 public static readonly int DNPID_DamageFont = 109;
 
                 public static readonly int DNPID_Hero_Paladin = 101000;
-                public static readonly int DNPID_Hero_Archer = 101010;
+                public static readonly int DNPID_Hero_Archer = 102000;
 
-                public static readonly int DNPID_Hero_Lancer = 101020;
-                public static readonly int DNPID_Hero_Wizard = 101030;
+                public static readonly int DNPID_Hero_Lancer = 103000;
+                public static readonly int DNPID_Hero_Wizard = 104000;
 
-                public static readonly int DNPID_Hero_Assassin = 101040;
-                public static readonly int DNPID_Hero_Gunner = 101050;
+                public static readonly int DNPID_Hero_Assassin = 105000;
+                public static readonly int DNPID_Hero_Gunner = 106000;
 
-                public static readonly int DNPID_Hero_Trickster = 101060;
-                public static readonly int DNPID_Hero_Druid = 101070;
+                public static readonly int DNPID_Hero_Trickster = 107000;
+                public static readonly int DNPID_Hero_Druid = 108000;
 
-                public static readonly int DNPID_Hero_Barbarian = 101080;
-                public static readonly int DNPID_Hero_Ninja = 101090;
+                public static readonly int DNPID_Hero_Barbarian = 109000;
+                public static readonly int DNPID_Hero_Ninja = 110000;
 
-                public static readonly int DNPID_Hero_PhantomKnight = 101100;
-                public static readonly int DNPID_Hero_FrostWeaver = 101110;
+                public static readonly int DNPID_Hero_PhantomKnight = 111000;
+                public static readonly int DNPID_Hero_FrostWeaver = 112000;
 
-                public static readonly int DNPID_Hero_Queen = 101120;
-                public static readonly int DNPID_Hero_Hunter = 101130;
+                public static readonly int DNPID_Hero_Queen = 113000;
+                public static readonly int DNPID_Hero_Hunter = 114000;
 
-                public static readonly int DNPID_Hero_Gladiator = 101140;
-                public static readonly int DNPID_Hero_Priest = 101150;
+                public static readonly int DNPID_Hero_Gladiator = 115000;
+                public static readonly int DNPID_Hero_Priest = 116000;
 
-                public static readonly int DNPID_Hero_Berserker = 101160;
-                public static readonly int DNPID_Hero_Witch = 101170;
+                public static readonly int DNPID_Hero_Berserker = 117000;
+                public static readonly int DNPID_Hero_Witch = 118000;
 
-                public static readonly int DNPID_Hero_DragonKnight = 101180;
-                public static readonly int DNPID_Hero_Alchemist = 101190;
+                public static readonly int DNPID_Hero_DragonKnight = 119000;
+                public static readonly int DNPID_Hero_Alchemist = 120000;
                 // ---------------------------------------------------------------------- // 20 Heroes
                 // + Monk
                 // + Blood Mage
@@ -553,31 +560,31 @@ namespace STELLAREST_F1
                 // ---------------------------------------------------------------------- // 30 Heroes
 
                 // --- Monsters
-                public static readonly int DNPID_Monster_Chicken = 102000;
-                public static readonly int DNPID_Monster_Turkey = 102001;
-                public static readonly int DNPID_Monster_Bunny = 102002;
-                public static readonly int DNPID_Monster_Pug = 102003;
+                public static readonly int DNPID_Monster_Chicken = 101000;
+                public static readonly int DNPID_Monster_Turkey = 101001;
+                public static readonly int DNPID_Monster_Bunny = 101002;
+                public static readonly int DNPID_Monster_Pug = 101003;
                 // --- Envs
-                public static readonly int DNPID_Env_AshTree = 103000;
-                public static readonly int DNPID_Env_BlackOakTree = 103001;
-                public static readonly int DNPID_Env_GreenAppleTree = 103002;
-                public static readonly int DNPID_Env_IvyTree = 103003;
-                public static readonly int DNPID_Env_ManticoreTree = 103004;
-                public static readonly int DNPID_Env_MapleTree = 103005;
-                public static readonly int DNPID_Env_OakTree = 103006;
-                public static readonly int DNPID_Env_RedAppleTree = 103007;
-                public static readonly int DNPID_Env_RedSandalTree = 103008;
-                public static readonly int DNPID_Env_WillowTree = 103009;
-                public static readonly int DNPID_Env_YewTree = 103010;
-                public static readonly int DNPID_Env_CopperRock = 103011;
-                public static readonly int DNPID_Env_GoldRock = 103012;
-                public static readonly int DNPID_Env_IronRock = 103013;
-                public static readonly int DNPID_Env_LimestoneRock = 103014;
-                public static readonly int DNPID_Env_SilverRock = 103015;
-                public static readonly int DNPID_Env_StoneRock = 103016;
-                public static readonly int DNPID_Env_TinRock = 103017;
-                public static readonly int DNPID_Env_WhetstoneRock = 103018;
-                public static readonly int DNPID_Env_ZincRock = 103019;
+                public static readonly int DNPID_Env_AshTree = 101000;
+                public static readonly int DNPID_Env_BlackOakTree = 101001;
+                public static readonly int DNPID_Env_GreenAppleTree = 101002;
+                public static readonly int DNPID_Env_IvyTree = 101003;
+                public static readonly int DNPID_Env_ManticoreTree = 101004;
+                public static readonly int DNPID_Env_MapleTree = 101005;
+                public static readonly int DNPID_Env_OakTree = 101006;
+                public static readonly int DNPID_Env_RedAppleTree = 101007;
+                public static readonly int DNPID_Env_RedSandalTree = 101008;
+                public static readonly int DNPID_Env_WillowTree = 101009;
+                public static readonly int DNPID_Env_YewTree = 101010;
+                public static readonly int DNPID_Env_CopperRock = 101011;
+                public static readonly int DNPID_Env_GoldRock = 101012;
+                public static readonly int DNPID_Env_IronRock = 101013;
+                public static readonly int DNPID_Env_LimestoneRock = 101014;
+                public static readonly int DNPID_Env_SilverRock = 101015;
+                public static readonly int DNPID_Env_StoneRock = 101016;
+                public static readonly int DNPID_Env_TinRock = 101017;
+                public static readonly int DNPID_Env_WhetstoneRock = 101018;
+                public static readonly int DNPID_Env_ZincRock = 101019;
 
                 // --- Effects(VFX)
                 public static readonly int DNPID_Effect_TeleportRed = 301001;

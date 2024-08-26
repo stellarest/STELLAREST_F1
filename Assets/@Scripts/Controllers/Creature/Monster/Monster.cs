@@ -1,15 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using static STELLAREST_F1.Define;
+using STELLAREST_F1.Data;
 
 namespace STELLAREST_F1
 {
     public class Monster : Creature
     {
-        public Data.MonsterData MonsterData { get; private set; } = null;
+        public MonsterData MonsterData { get; private set; } = null;
+        public MonsterStatData MonsterStatData { get; private set; } = null;
         [SerializeField] private MonsterBody _monsterBody = null;
         public MonsterBody MonsterBody
         {
@@ -88,7 +89,8 @@ namespace STELLAREST_F1
             base.InitialSetInfo(dataID);
             _monsterAI = CreatureAI as MonsterAI;
             MonsterData = Managers.Data.MonsterDataDict[dataID];
-            _maxLevel = dataID;
+            MonsterStatData = StatData as MonsterStatData;
+            _maxLevelID = dataID;
 
             MonsterType = MonsterData.MonsterType;
             gameObject.name += $"_{MonsterData.DevTextID.Replace(" ", "")}";

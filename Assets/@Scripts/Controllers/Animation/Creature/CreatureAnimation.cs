@@ -18,6 +18,8 @@ namespace STELLAREST_F1
             => _canEnterAnimStates[(int)animState] = false;
         public bool CanEnterAnimState(ECreatureAnimState animState)
             => _canEnterAnimStates[(int)animState];
+        public bool IsEnteredAnimState(ECreatureAnimState animState)
+            => _canEnterAnimStates[(int)animState] == false;
         public void ReleaseAnimState(ECreatureAnimState animState)
             => _canEnterAnimStates[(int)animState] = true;
         public void ReleaseAllAnimStates()

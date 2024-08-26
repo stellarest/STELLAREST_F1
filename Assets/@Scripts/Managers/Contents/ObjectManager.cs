@@ -60,7 +60,7 @@ namespace STELLAREST_F1
                 case EObjectType.Hero:
                     {
                         HeroData data = Managers.Data.HeroDataDict[dataID];
-                        go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: HeroRoot, poolingID: dataID);
+                        go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: HeroRoot, poolingID: Util.GetPoolingID(EObjectType.Hero, dataID));
                         if (go == null)
                         {
                             Debug.LogError($"{nameof(SpawnBaseObject)}, {nameof(EObjectType.Hero)}, Input: \"{dataID}\"");
@@ -80,14 +80,13 @@ namespace STELLAREST_F1
                         };
                         DevManager.Instance.CellObjs.Add(cellObj);
 #endif
-
                         return hero as T;
                     }
 
                 case EObjectType.Monster:
                     {
                         MonsterData data = Managers.Data.MonsterDataDict[dataID];
-                        go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: MonsterRoot, poolingID: dataID);
+                        go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: MonsterRoot, poolingID:  Util.GetPoolingID(EObjectType.Monster, dataID));
                         if (go == null)
                         {
                             Debug.LogError($"{nameof(SpawnBaseObject)}, {nameof(EObjectType.Monster)}, Input: \"{dataID}\"");
@@ -107,14 +106,13 @@ namespace STELLAREST_F1
                         };
                         DevManager.Instance.CellObjs.Add(cellObj);
 #endif
-
                         return monster as T;
                     }
 
                 case EObjectType.Env:
                     {
                         EnvData data = Managers.Data.EnvDataDict[dataID];
-                        go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: EnvRoot, poolingID: dataID);
+                        go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: EnvRoot, poolingID:  Util.GetPoolingID(EObjectType.Env, dataID));
                         if (go == null)
                         {
                             Debug.LogError($"{nameof(SpawnBaseObject)}, {nameof(EObjectType.Env)}, Input: \"{dataID}\"");
@@ -135,14 +133,13 @@ namespace STELLAREST_F1
                         };
                         DevManager.Instance.CellObjs.Add(cellObj);
 #endif
-
                         return env as T;
                     }
 
                 case EObjectType.Projectile:
                     {
                         ProjectileData data = Managers.Data.ProjectileDataDict[dataID];
-                        go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: ProjectileRoot, poolingID: dataID);
+                        go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: ProjectileRoot, poolingID:  Util.GetPoolingID(EObjectType.Projectile, dataID));
                         if (go == null)
                         {
                             Debug.LogError($"{nameof(SpawnBaseObject)}, {nameof(EObjectType.Projectile)}, Input: \"{dataID}\"");
@@ -158,7 +155,7 @@ namespace STELLAREST_F1
                 case EObjectType.Effect:
                     {
                         EffectData data = Managers.Data.EffectDataDict[dataID];
-                        go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: EffectRoot, poolingID: dataID);
+                        go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: EffectRoot, poolingID:  Util.GetPoolingID(EObjectType.Effect, dataID));
                         if (go == null)
                         {
                             Debug.LogError($"{nameof(SpawnBaseObject)}, {nameof(EObjectType.Effect)}, Input: \"{dataID}\"");
@@ -314,27 +311,37 @@ namespace STELLAREST_F1
         //     }
         // }
 
-        public void Despawn<T>(T obj, int poolingID) where T : BaseObject
+        public void Despawn<T>(T obj, int dataID) where T : BaseObject
         {
             switch (obj.ObjectType)
             {
                 case EObjectType.Hero:
                     Heroes.Remove(obj as Hero);
                     Managers.Map.RemoveObject(obj as Hero);
+                    Managers.Resource.Destroy(go: obj.gameObject, poolingID: Util.GetPoolingID(EObjectType.Hero, dataID));
                     break;
 
                 case EObjectType.Monster:
                     Monsters.Remove(obj as Monster);
                     Managers.Map.RemoveObject(obj as Monster);
+                    Managers.Resource.Destroy(go: obj.gameObject, poolingID: Util.GetPoolingID(EObjectType.Monster, dataID));
                     break;
 
                 case EObjectType.Env:
                     Envs.Remove(obj as Env);
                     Managers.Map.RemoveObject(obj as Env);
+                    Managers.Resource.Destroy(go: obj.gameObject, poolingID: Util.GetPoolingID(EObjectType.Env, dataID));
+                    break;
+
+                case EObjectType.Projectile:
+                    Managers.Resource.Destroy(go: obj.gameObject, poolingID: Util.GetPoolingID(EObjectType.Projectile, dataID));
+                    break;
+
+                case EObjectType.Effect:
+                    Managers.Resource.Destroy(go: obj.gameObject, Util.GetPoolingID(EObjectType.Effect, dataID));
                     break;
             }
 
-            Managers.Resource.Destroy(obj.gameObject, poolingID);
 
 #if UNITY_EDITOR
             CellObject cellObj = DevManager.Instance.CellObjs.Find(n => n.CellObj == obj);

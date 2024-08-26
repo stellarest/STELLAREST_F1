@@ -32,7 +32,7 @@ namespace STELLAREST_F1
                 _lockTargetDirs[i] = false;
         }
 
-        private float _remainCoolTime = 0f;
+        [SerializeField] private float _remainCoolTime = 0f;
         public virtual float RemainCoolTime
         {
             get => _remainCoolTime;
@@ -40,10 +40,21 @@ namespace STELLAREST_F1
         }
         public virtual void DoSkill()
         {
+            // --- OK
+            if (Owner.CreatureAnim.IsEnteredAnimState(ECreatureAnimState.Upper_CollectEnv))
+            {
+                Debug.Log("<color=cyan>WAIT</color>");
+                return;
+            }
+
             if (Owner.CreatureSkill != null)
                 Owner.CreatureSkill.ActiveSkills.Remove(this);
 
+            Debug.Log($"<color=white>{nameof(DoSkill)}</color>");
             Owner.CreatureAnim.Skill(this.SkillType);
+            // --- 이게 먼저 실행이 되고 바로, CanSkill을 가서 그런것임 (*** OnTrigger문제 ***, OnTrigger, 애니메이션 문제임)
+            // --- CollectEnv하다가 갑자기 팍 넘어가면 미사일 쏴야하는데, 애니메이션에서 이걸 인식 못하는 것임
+            // --- OnCollectEnv와 UpperSkillA가 연결이 안되어있어서 그런듯. 그니까 코드 문제는 아님. 애니메이션 문제.
             StartCoroutine(CoActivateSkill());
         }
 

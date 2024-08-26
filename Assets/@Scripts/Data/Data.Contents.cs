@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using Unity.VisualScripting;
 using UnityEngine;
 using static STELLAREST_F1.Define;
 
@@ -10,6 +11,7 @@ namespace STELLAREST_F1.Data
     public class BaseData
     {
         public int DataID;
+        public int PoolingID;
         public string PrefabLabel;
         public string DevTextID;
         public string NameTextID;
@@ -420,8 +422,6 @@ namespace STELLAREST_F1.Data
     }
     #endregion
 
-
-    [Serializable]
     public class StatData : BaseData
     {
         public float MaxHp;
@@ -430,6 +430,63 @@ namespace STELLAREST_F1.Data
         public float CriticalRate;
         public float DodgeRate;
         public float MovementSpeed;
+    }
+
+    [Serializable]
+    public class HeroStatData : StatData
+    {
+    }
+
+    public class HeroStatDataLoader : ILoader<int, HeroStatData>
+    {
+        public List<HeroStatData> HeroesStats = new List<HeroStatData>();
+
+        public Dictionary<int, HeroStatData> MakeDict()
+        {
+            Dictionary<int, HeroStatData> dict = new Dictionary<int, HeroStatData>();
+            foreach (HeroStatData data in HeroesStats)
+                dict.Add(data.DataID, data);
+
+            return dict;
+        }
+    }
+
+    [Serializable]
+    public class MonsterStatData : StatData
+    {
+    }
+
+    public class MonsterStatDataLoader : ILoader<int, MonsterStatData>
+    {
+        public List<MonsterStatData> MonstersStats = new List<MonsterStatData>();
+
+        public Dictionary<int, MonsterStatData> MakeDict()
+        {
+            Dictionary<int, MonsterStatData> dict = new Dictionary<int, MonsterStatData>();
+            foreach (MonsterStatData data in MonstersStats)
+                dict.Add(data.DataID, data);
+
+            return dict;
+        }
+    }
+
+    [Serializable]
+    public class EnvStatData : StatData
+    {
+    }
+
+    public class EnvStatDataLoader : ILoader<int, EnvStatData>
+    {
+        public List<EnvStatData> EnvsStats = new List<EnvStatData>();
+
+        public Dictionary<int, EnvStatData> MakeDict()
+        {
+            Dictionary<int, EnvStatData> dict = new Dictionary<int, EnvStatData>();
+            foreach (EnvStatData data in EnvsStats)
+                dict.Add(data.DataID, data);
+
+            return dict;
+        }
     }
 
     public class StatDataLoader : ILoader<int, StatData>

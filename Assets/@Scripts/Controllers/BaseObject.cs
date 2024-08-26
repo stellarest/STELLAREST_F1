@@ -40,14 +40,14 @@ namespace STELLAREST_F1
             }
         }
 
-        public StatData StatData { get; private set; } = null;
+        [field: SerializeField] public StatData StatData { get; private set; } = null;
 
-        [SerializeField] protected int _level = 0; // ---> _levelID로 변경해야함
-        public int Level => (_level % DataTemplateID) + 1;
+        [SerializeField] protected int _levelID = 0;
+        public int Level => (_levelID % DataTemplateID) + 1;
 
-        [SerializeField] protected int _maxLevel = 0; // ---> _maxLevelID로 변경해야함
-        public int MaxLevel => (_maxLevel % DataTemplateID) + 1;
-        protected bool IsMaxLevel => _level == _maxLevel;
+        [SerializeField] protected int _maxLevelID = 0;
+        public int MaxLevel => (_maxLevelID % DataTemplateID) + 1;
+        protected bool IsMaxLevel => _levelID == _maxLevelID;
 
         protected void SetStat(StatData statData)
         {
@@ -78,7 +78,6 @@ namespace STELLAREST_F1
         [field: SerializeField] public float MaxHp { get; set; } = 0f;
         [field: SerializeField] public float MinAtk { get; set; } = 0f;
         [field: SerializeField] public float MaxAtk { get; set; } = 0f;
-        [field: SerializeField] public int AtkRange { get; set; } = 0;
         [field: SerializeField] public float CriticalRate { get; set; } = 0f;
         [field: SerializeField] public float DodgeRate { get; set; } = 0f;
         [field: SerializeField] public float MovementSpeed { get; set; } = 0f;
@@ -147,14 +146,6 @@ namespace STELLAREST_F1
             if (Managers.Map.AddObject(this, currentCellPos))
                 CellPos = currentCellPos;
         }
-
-        // public void UpdateCellPos(Vector3 worldPos)
-        // {
-        //     Vector3Int currentCellPos = Managers.Map.WorldToCell(worldPos);
-        //     Managers.Map.RemoveObject(this);
-        //     Managers.Map.AddObject(this, currentCellPos);
-        //     CellPos = currentCellPos;
-        // }
 
         public bool IsOnTheCellCenter
         {
@@ -260,15 +251,24 @@ namespace STELLAREST_F1
             BaseEffect = gameObject.GetOrAddComponent<EffectComponent>();
             BaseEffect.InitialSetInfo(this);
 
-            // --- InitStat
-            if (Managers.Data.StatDataDict.TryGetValue(dataID, out StatData statData) == false)
-                return;
+            // --- Init Stat Data
+            switch (ObjectType)
+            {
+                case EObjectType.Hero:
+                    StatData = Managers.Data.HeroStatDataDict[dataID];
+                    break;
 
-            StatData = statData;
+                case EObjectType.Monster:
+                    StatData = Managers.Data.MonsterStatDataDict[dataID];
+                    break;
 
-            _level = DataTemplateID;
+                case EObjectType.Env:
+                    StatData = Managers.Data.EnvStatDataDict[dataID];
+                    break;
+            }
+
+            _levelID = DataTemplateID;
             Hp = StatData.MaxHp;
-
             MaxHp = MaxHpBase = StatData.MaxHp;
             MinAtk = MinAtkBase = StatData.MinAtk;
             MaxAtk = MaxAtkBase = StatData.MaxAtk;
@@ -288,7 +288,12 @@ namespace STELLAREST_F1
             Managers.Map.ForceMove(baseObj: this, cellPos: SpawnedCellPos, ignoreObjectType: EObjectType.None);
             MaxHp = StatData.MaxHp;
             Hp = StatData.MaxHp;
-            Debug.Log($"<color=white>{gameObject.name}, {nameof(EnterInGame)}</color>");
+            // Debug.Log($"<color=white>{gameObject.name}, {nameof(EnterInGame)}</color>");
+
+            Debug.Log($"Name: {gameObject.name}");
+            Debug.Log($"LvID: {_levelID}");
+            Debug.Log($"MaxLvID: {_maxLevelID}");
+            Debug.Log("==============================");
         }
         #endregion
 

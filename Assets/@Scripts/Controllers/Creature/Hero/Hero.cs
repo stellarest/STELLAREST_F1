@@ -13,24 +13,8 @@ namespace STELLAREST_F1
 {
     public class Hero : Creature
     {
-        // private void Update()
-        // {
-        //    // Debug.Log($"LookAtDir: {(int)LookAtDir}");
-        //     if (Input.GetKeyDown("5"))
-        //     {
-        //         //LevelUp();
-        //         // BaseEffect.GenerateEffect(ReadOnly.DataAndPoolingID.DNPID_Effect_TeleportRed, 
-        //         //     Managers.Map.GetCenterWorld(Vector3Int.up + CellPos));
-        //     }
-        // }
-
-        private void Update()
-        {
-            if (_coUpdateAI != null)
-                Debug.Log("Valid AI TICK.");
-        }
-
         public HeroData HeroData { get; private set; } = null;
+        public HeroStatData HeroStatData { get; private set; } = null;
         public HeroAnimation HeroAnim { get; private set; } = null;
         public HeroAI HeroAI { get; private set; } = null;
         [SerializeField] private HeroBody _heroBody = null;
@@ -190,12 +174,12 @@ namespace STELLAREST_F1
             if (this.IsValid() == false)
                 return;
 
-            if (_level < _maxLevel)
+            if (_levelID < _maxLevelID)
             {
-                _level = Mathf.Clamp(_level + 1, DataTemplateID, _maxLevel);
+                _levelID = Mathf.Clamp(_levelID + 1, DataTemplateID, _maxLevelID);
                 Debug.Log($"<color=white>++LV: {Level}</color>");
 
-                if (Managers.Data.StatDataDict.TryGetValue(_level, out Data.StatData statData))
+                if (Managers.Data.HeroStatDataDict.TryGetValue(_levelID, out HeroStatData statData))
                     SetStat(statData);
             }
 
@@ -203,7 +187,7 @@ namespace STELLAREST_F1
             {
                 Debug.Log("<color=yellow>Try ChangeSpriteSet</color>");
                 CreatureRarity = ECreatureRarity.Elite;
-                HeroBody.ChangeSpriteSet(Managers.Data.HeroSpriteDataDict[_level]);
+                HeroBody.ChangeSpriteSet(Managers.Data.HeroSpriteDataDict[_levelID]);
             }
         }
 
@@ -256,13 +240,9 @@ namespace STELLAREST_F1
             base.InitialSetInfo(dataID);
             HeroAI = CreatureAI as HeroAI;
             HeroData = Managers.Data.HeroDataDict[dataID];
+            HeroStatData = StatData as HeroStatData;
             for (int i = DataTemplateID; i < DataTemplateID + ReadOnly.Util.HeroMaxLevel;)
-            {
-                if (Managers.Data.StatDataDict.ContainsKey(i) == false)
-                    break;
-
-                _maxLevel = i++;
-            }
+                _maxLevelID = i++;
 
             gameObject.name += $"_{HeroData.DevTextID.Replace(" ", "")}";
         }
@@ -273,9 +253,6 @@ namespace STELLAREST_F1
             LookAtDir = ELookAtDirection.Right; // --- Default Heroes Dir: Right
             CreatureAIState = ECreatureAIState.Move;
 
-            // Managers.Game.OnJoystickStateChangedHandler -= OnJoystickStateChanged;
-            // Managers.Game.OnJoystickStateChangedHandler += OnJoystickStateChanged;
-            
             base.EnterInGame(spawnPos);
             StartCoroutine(CoInitialReleaseLeaderHeroAI());
         }
@@ -301,24 +278,3 @@ namespace STELLAREST_F1
         }
     }
 }
-
-/*
-        // private void OnJoystickStateChanged(EJoystickState joystickState)
-        // {   
-        //     if (this.IsValid() == false)
-        //         return;
-
-        //     switch (joystickState)
-        //     {
-        //         case EJoystickState.Drag:
-        //             ForceMove = true;
-        //             Managers.Object.HeroLeaderController.EnablePointer(true);
-        //             break;
-
-        //         case EJoystickState.PointerUp:
-        //             ForceMove = false;
-        //             Managers.Object.HeroLeaderController.EnablePointer(false);
-        //             break;
-        //     }
-        // }
-*/

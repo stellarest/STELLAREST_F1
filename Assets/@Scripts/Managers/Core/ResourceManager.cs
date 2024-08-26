@@ -61,6 +61,7 @@ namespace STELLAREST_F1
 
             // BanditLightArmor.sprite -> BanditLightArmor.sprite[BanditLightArmor]
             // texture to sprite : EXPGem_01.sprite -> EXPGem_01.sprite[EXPGem_01]
+            // HeroAnim_Lancer
             string loadKey = key;
             if (key.Contains(".sprite"))
                 loadKey = $"{key}[{key.Replace(".sprite", "")}]";

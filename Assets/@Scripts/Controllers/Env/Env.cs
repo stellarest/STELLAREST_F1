@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using static STELLAREST_F1.Define;
+using STELLAREST_F1.Data;
 
 namespace STELLAREST_F1
 {
     public class Env : BaseObject
     {
-        public Data.EnvData EnvData { get; private set; } = null;
+        public EnvData EnvData { get; private set; } = null;
+        public EnvStatData EnvStatData { get; private set; } = null;
         [SerializeField] private EEnvState _envState = EEnvState.None;
         public EEnvState EnvState
         {
@@ -46,11 +48,11 @@ namespace STELLAREST_F1
         protected override void InitialSetInfo(int dataID)
         {
             base.InitialSetInfo(dataID);
-            _maxLevel = dataID;
-
             EnvData = Managers.Data.EnvDataDict[dataID];
-            EnvType = EnvData.EnvType;
+            EnvStatData = StatData as EnvStatData;
+            _maxLevelID = dataID;
 
+            EnvType = EnvData.EnvType;
             gameObject.name += $"_{EnvData.DevTextID.Replace(" ", "")}";
         }
 

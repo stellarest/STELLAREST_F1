@@ -25,7 +25,6 @@ namespace STELLAREST_F1
                 Animator.runtimeAnimatorController = animController;
 
             _envOwner = owner as Env;
-            Debug.Log("EnvAnim::InitialSetInfo");
         }
     }
 }

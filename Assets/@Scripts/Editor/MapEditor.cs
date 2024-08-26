@@ -134,7 +134,7 @@ namespace STELLAREST_F1
             Dictionary<int, MonsterData> monsterDataDict = LoadJson<MonsterDataLoader, int, MonsterData>(ReadOnly.DataSet.MonsterData).MakeDict();
             foreach (var data in monsterDataDict.Values)
             {
-                string name = $"{data.DataID}_{data.DescriptionTextID}";;
+                string name = $"{data.DataID}_{data.DevTextID}";;
                 string assetPath = Path.Combine("Assets/@Resources/TileMaps/Dev/Monsters", $"{name}.asset");
                 if (assetPath == "")
                 {

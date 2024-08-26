@@ -41,18 +41,22 @@ namespace STELLAREST_F1
             {
                 yield return new WaitUntil(() => Managers.Object.Envs.Count == 0);
                 yield return new WaitForSeconds(waitTime);
-                if (_spawnEnvTypeFlag == false)
-                {
-                    Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
-                       spawnPos: Managers.Map.CellToCenteredWorld(new Vector3Int(-6, 11, 0)),
-                       dataID: ReadOnly.DataAndPoolingID.DNPID_Env_AshTree);
-                }
-                else
-                {
-                    Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
-                       spawnPos: Managers.Map.CellToCenteredWorld(new Vector3Int(-3, 11, 0)),
-                       dataID: ReadOnly.DataAndPoolingID.DNPID_Env_GoldRock);
-                }
+                Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
+                    spawnPos: Managers.Map.CellToCenteredWorld(new Vector3Int(-6, 11, 0)),
+                    dataID: ReadOnly.DataAndPoolingID.DNPID_Env_AshTree);
+                
+                // if (_spawnEnvTypeFlag == false)
+                // {
+                //     Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
+                //        spawnPos: Managers.Map.CellToCenteredWorld(new Vector3Int(-6, 11, 0)),
+                //        dataID: ReadOnly.DataAndPoolingID.DNPID_Env_AshTree);
+                // }
+                // else
+                // {
+                //     Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
+                //        spawnPos: Managers.Map.CellToCenteredWorld(new Vector3Int(-3, 11, 0)),
+                //        dataID: ReadOnly.DataAndPoolingID.DNPID_Env_GoldRock);
+                // }
 
                 _spawnEnvTypeFlag = !_spawnEnvTypeFlag;
             }
@@ -83,53 +87,53 @@ namespace STELLAREST_F1
                     dataID: ReadOnly.DataAndPoolingID.DNPID_Hero_Wizard);
                 leaderController.Leader = firstHero;
 
-                // StartCoroutine(CoContinuousSpawnMonster_Test(2.5f));
-                // StartCoroutine(CoContinuousSpawnEnv_Test(1f));
+                StartCoroutine(CoContinuousSpawnMonster_Test(5.5f));
+                StartCoroutine(CoContinuousSpawnEnv_Test(1f));
 
-                // --- Projectile Target Range Test List
-                SpawnChicken_Test(-8, 8);
-                SpawnChicken_Test(-7, 8); // --> 0, 8
-                SpawnChicken_Test(-6, 8); // --> 1, 8
-                // SpawnChicken_Test(0, 8); // --> 0, 8
-                // SpawnChicken_Test(1, 8); // --> 1, 8
-                SpawnChicken_Test(-9, 10);
-                SpawnChicken_Test(-8, 10);
-                SpawnChicken_Test(-7, 10);
-                SpawnChicken_Test(-6, 10);
+                // // --- Projectile Target Range Test List
+                // SpawnChicken_Test(-8, 8);
+                // SpawnChicken_Test(-7, 8); // --> 0, 8
+                // SpawnChicken_Test(-6, 8); // --> 1, 8
+                // // SpawnChicken_Test(0, 8); // --> 0, 8
+                // // SpawnChicken_Test(1, 8); // --> 1, 8
+                // SpawnChicken_Test(-9, 10);
+                // SpawnChicken_Test(-8, 10);
+                // SpawnChicken_Test(-7, 10);
+                // SpawnChicken_Test(-6, 10);
 
-                SpawnChicken_Test(-9, 9);
-                SpawnChicken_Test(-8, 9);
-                SpawnChicken_Test(-7, 9);
-                SpawnChicken_Test(-6, 9);
+                // SpawnChicken_Test(-9, 9);
+                // SpawnChicken_Test(-8, 9);
+                // SpawnChicken_Test(-7, 9);
+                // SpawnChicken_Test(-6, 9);
 
-                SpawnChicken_Test(-9, 7);
-                SpawnChicken_Test(-8, 7);
-                SpawnChicken_Test(-7, 7);
-                SpawnChicken_Test(-6, 7);
+                // SpawnChicken_Test(-9, 7);
+                // SpawnChicken_Test(-8, 7);
+                // SpawnChicken_Test(-7, 7);
+                // SpawnChicken_Test(-6, 7);
 
-                SpawnChicken_Test(-9, 6);
-                SpawnChicken_Test(-8, 6);
-                SpawnChicken_Test(-7, 6);
-                SpawnChicken_Test(-6, 6);
+                // SpawnChicken_Test(-9, 6);
+                // SpawnChicken_Test(-8, 6);
+                // SpawnChicken_Test(-7, 6);
+                // SpawnChicken_Test(-6, 6);
 
-                SpawnChicken_Test(-5, 6);
-                SpawnChicken_Test(-5, 7);
-                SpawnChicken_Test(-5, 8);
-                SpawnChicken_Test(-5, 9);
-                SpawnChicken_Test(-5, 10);
+                // SpawnChicken_Test(-5, 6);
+                // SpawnChicken_Test(-5, 7);
+                // SpawnChicken_Test(-5, 8);
+                // SpawnChicken_Test(-5, 9);
+                // SpawnChicken_Test(-5, 10);
 
-                SpawnChicken_Test(-4, 6);
-                SpawnChicken_Test(-4, 7);
-                SpawnChicken_Test(-4, 8);
-                SpawnChicken_Test(-4, 9);
-                SpawnChicken_Test(-4, 10);
+                // SpawnChicken_Test(-4, 6);
+                // SpawnChicken_Test(-4, 7);
+                // SpawnChicken_Test(-4, 8);
+                // SpawnChicken_Test(-4, 9);
+                // SpawnChicken_Test(-4, 10);
 
-                SpawnChicken_Test(-9, 5);
-                SpawnChicken_Test(-8, 5);
-                SpawnChicken_Test(-7, 5);
-                SpawnChicken_Test(-6, 5);
-                SpawnChicken_Test(-5, 5);
-                SpawnChicken_Test(-4, 5);
+                // SpawnChicken_Test(-9, 5);
+                // SpawnChicken_Test(-8, 5);
+                // SpawnChicken_Test(-7, 5);
+                // SpawnChicken_Test(-6, 5);
+                // SpawnChicken_Test(-5, 5);
+                // SpawnChicken_Test(-4, 5);
 
                 // --- Add
                 // SpawnChicken_Test(-3, 10);
