@@ -370,7 +370,7 @@ namespace STELLAREST_F1
                 case EObjectSize.VeryLarge:
                     break;
 
-                case EObjectSize.PresetSize:
+                case EObjectSize.RefPreset:
                     return;
             }
         }

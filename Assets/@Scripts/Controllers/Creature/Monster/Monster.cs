@@ -91,7 +91,7 @@ namespace STELLAREST_F1
             _maxLevel = dataID;
 
             MonsterType = MonsterData.MonsterType;
-            gameObject.name += $"_{MonsterData.NameTextID.Replace(" ", "")}";
+            gameObject.name += $"_{MonsterData.DevTextID.Replace(" ", "")}";
         }
 
         protected override void EnterInGame(Vector3 spawnPos)

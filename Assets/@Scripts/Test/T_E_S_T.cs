@@ -18,8 +18,9 @@ using UnityEditor;
 
 - Archer(Chara + Anim)(O) - Projectile(^), Straight(O), Parabola(O), Archer Attack Lower Anim(O)
 - Projectile - Single(O), Half(O), Around(O)
-// --- Lancer Spawn, Test
-// --- Wizard Spawn, Test
+- Lancer Spawn, Play Test(O)
+- Wizard Spawn, Projectile Test(^)
+- Seperate Hero Stat Data, Monster Stat Data, Env Stat Data
 // --- Hero AI, Monster AI
 
 >>> Archer Attack Anim 동작을 할 때(화살을 당기고 있는 동안)는 타겟 방향을 바라보도록. OnSkillClip 발동시에 해제하면 될듯

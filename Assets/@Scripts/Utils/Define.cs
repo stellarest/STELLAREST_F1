@@ -34,7 +34,7 @@ namespace STELLAREST_F1
             Medium,
             Large,
             VeryLarge,
-            PresetSize
+            RefPreset,
         }
 
         public enum EScene

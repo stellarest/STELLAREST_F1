@@ -48,9 +48,9 @@ namespace STELLAREST_F1
             if (SkillArray == null)
                 SkillArray = new SkillBase[(int)ESkillType.Max];
 
-            AddSkill(creatureData.Skill_Attack_ID);
             AddSkill(creatureData.Skill_A_ID);
             AddSkill(creatureData.Skill_B_ID);
+            AddSkill(creatureData.Skill_C_ID);
             // --- Check Validation
             {
                 int skillCount = 0;
@@ -76,9 +76,9 @@ namespace STELLAREST_F1
             if (SkillArray == null)
                 SkillArray = new SkillBase[(int)ESkillType.Max];
 
-            AddSkill(creatureData.Skill_Attack_ID);
             AddSkill(creatureData.Skill_A_ID);
             AddSkill(creatureData.Skill_B_ID);
+            AddSkill(creatureData.Skill_C_ID);
             // --- Check Validation
             {
                 int skillCount = 0;

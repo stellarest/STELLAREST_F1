@@ -51,7 +51,7 @@ namespace STELLAREST_F1
             EnvData = Managers.Data.EnvDataDict[dataID];
             EnvType = EnvData.EnvType;
 
-            gameObject.name += $"_{EnvData.NameTextID.Replace(" ", "")}";
+            gameObject.name += $"_{EnvData.DevTextID.Replace(" ", "")}";
         }
 
         protected override void EnterInGame(Vector3 spawnPos)

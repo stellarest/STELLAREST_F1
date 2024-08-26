@@ -11,6 +11,7 @@ namespace STELLAREST_F1.Data
     {
         public int DataID;
         public string PrefabLabel;
+        public string DevTextID;
         public string NameTextID;
         public string DescriptionTextID;
         public string IconImage;
@@ -24,9 +25,9 @@ namespace STELLAREST_F1.Data
         public string AnimatorLabel;
         public float ColliderRadius;
         public Vector2 ColliderOffset;
-        public int Skill_Attack_ID;
         public int Skill_A_ID;
         public int Skill_B_ID;
+        public int Skill_C_ID;
     }
 
     [Serializable]

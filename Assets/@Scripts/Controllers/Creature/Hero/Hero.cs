@@ -264,7 +264,7 @@ namespace STELLAREST_F1
                 _maxLevel = i++;
             }
 
-            gameObject.name += $"_{HeroData.NameTextID.Replace(" ", "")}";
+            gameObject.name += $"_{HeroData.DevTextID.Replace(" ", "")}";
         }
 
         protected override void EnterInGame(Vector3 spawnPos)
