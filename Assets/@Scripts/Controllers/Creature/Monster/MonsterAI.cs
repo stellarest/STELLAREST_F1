@@ -77,7 +77,7 @@ namespace STELLAREST_F1
                 return;
 
             _monsterOwner.LookAtValidTarget();
-            if (_monsterOwner.CanSkill)
+            if (IsEndMoveAnim && _monsterOwner.CanSkill)
             {
                 _monsterOwner.CreatureSkill.CurrentSkill.DoSkill();
                 return;
@@ -106,12 +106,6 @@ namespace STELLAREST_F1
                 _monsterOwner.CreatureAIState = ECreatureAIState.Idle;
                 return;
             }
-
-            // if (_monsterOwner.CanSkill || result == EFindPathResult.Fail_LerpCell)
-            // {
-            //     _monsterOwner.CreatureAIState = ECreatureAIState.Idle;
-            //     return;
-            // }
         }
 
         public override void OnDead()

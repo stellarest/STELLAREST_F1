@@ -40,7 +40,7 @@ namespace STELLAREST_F1
         }
         public virtual void DoSkill()
         {
-            // --- OK
+            // --- OK (Heroes)
             if (Owner.CreatureAnim.IsEnteredAnimState(ECreatureAnimState.Upper_CollectEnv))
                 return;
 

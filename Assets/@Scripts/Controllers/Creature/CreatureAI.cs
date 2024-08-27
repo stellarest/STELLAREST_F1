@@ -125,6 +125,18 @@ namespace STELLAREST_F1
             StopCoFindTargets();
         }
 
+        protected bool IsEndMoveAnim
+        {
+            get
+            {
+                if (Owner.IsValid() == false)
+                    return false;
+
+                return Owner.CreatureAnim.IsEnteredAnimState(ECreatureAnimState.Upper_Move) == false;
+            }
+        }
+
+
         public bool PauseFindTargets { get; protected set; } = false;
         private Coroutine _coFindTargets = null;
         protected virtual IEnumerator CoFindTargets() // --- Virtual로 바꿔도 될 것 같은데...

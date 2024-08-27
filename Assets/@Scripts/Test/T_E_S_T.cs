@@ -22,9 +22,10 @@ using UnityEditor;
 - Hero Level Up Test (O)
 - Seperate Hero Stat Data(O), Monster Stat Data(O), Env Stat Data(O)
 - CollectEnv -> DoSkill Immediately (O)
-- DataFile 분리ㅡ DataID 검토, 테스트(^) -> 완료 후 push(Feat, Seperate Skill Data)
-- Monster Body Attack 약간 뜸들이는듯(Paladin으로 그리드 위치 바꿔가면서 Chicken 주변에 서성일 때 BodyAttack 제대로 동작하는지 테스트)
->> 맞음. Wizard로 테스트해본 결과, 위자드 그리드까지 오고 나서 멈추고, 그 이후에 쿨타임 체크하고 떄리는 것 같음. 고쳐야함.
+- Seperate DataFile, Organize, Check Data ID (O)
+- Check Monster BodyAttack (O)
+- Spawn Turkey, Bunny, Pug
+- Paladin Double Attack -> Shield
 
 >>> Hero AI, Monster AI
 >>> EStartTargetRange, XShaped

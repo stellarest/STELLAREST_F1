@@ -119,7 +119,7 @@ namespace STELLAREST_F1
             base.OnDeadFadeOutCompleted();
         }
 
-        public override bool CanCollectEnv
+        public bool CanCollectEnv
         {
             get
             {
@@ -239,7 +239,6 @@ namespace STELLAREST_F1
             ObjectType = EObjectType.Hero;
             HeroBody = CreatureBody as HeroBody;
             HeroAnim = CreatureAnim as HeroAnimation;
-
             return true;
         }
 
