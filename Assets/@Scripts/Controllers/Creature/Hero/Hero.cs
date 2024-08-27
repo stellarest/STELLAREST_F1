@@ -13,6 +13,14 @@ namespace STELLAREST_F1
 {
     public class Hero : Creature
     {
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.T))
+            {
+                LevelUp();
+            }
+        }
+
         public HeroData HeroData { get; private set; } = null;
         public HeroStatData HeroStatData { get; private set; } = null;
         public HeroAnimation HeroAnim { get; private set; } = null;
@@ -174,14 +182,14 @@ namespace STELLAREST_F1
             if (this.IsValid() == false)
                 return;
 
-            if (_levelID < _maxLevelID)
-            {
-                _levelID = Mathf.Clamp(_levelID + 1, DataTemplateID, _maxLevelID);
-                Debug.Log($"<color=white>++LV: {Level}</color>");
+            if (IsMaxLevel)
+                return;
 
-                if (Managers.Data.HeroStatDataDict.TryGetValue(_levelID, out HeroStatData statData))
-                    SetStat(statData);
-            }
+            _levelID = Mathf.Clamp(_levelID + 1, DataTemplateID, _maxLevelID);
+            Debug.Log($"<color=white>Lv: {Level} / MaxLv: {MaxLevel}</color>");
+
+            if (Managers.Data.HeroStatDataDict.TryGetValue(key: _levelID, value: out HeroStatData statData))
+                SetStat(statData);
 
             if (IsMaxLevel)
             {

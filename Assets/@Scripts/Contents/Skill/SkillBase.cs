@@ -42,19 +42,12 @@ namespace STELLAREST_F1
         {
             // --- OK
             if (Owner.CreatureAnim.IsEnteredAnimState(ECreatureAnimState.Upper_CollectEnv))
-            {
-                Debug.Log("<color=cyan>WAIT</color>");
                 return;
-            }
 
             if (Owner.CreatureSkill != null)
                 Owner.CreatureSkill.ActiveSkills.Remove(this);
 
-            Debug.Log($"<color=white>{nameof(DoSkill)}</color>");
             Owner.CreatureAnim.Skill(this.SkillType);
-            // --- 이게 먼저 실행이 되고 바로, CanSkill을 가서 그런것임 (*** OnTrigger문제 ***, OnTrigger, 애니메이션 문제임)
-            // --- CollectEnv하다가 갑자기 팍 넘어가면 미사일 쏴야하는데, 애니메이션에서 이걸 인식 못하는 것임
-            // --- OnCollectEnv와 UpperSkillA가 연결이 안되어있어서 그런듯. 그니까 코드 문제는 아님. 애니메이션 문제.
             StartCoroutine(CoActivateSkill());
         }
 
@@ -125,7 +118,12 @@ namespace STELLAREST_F1
         {
             Owner = owner as Creature;
             DataTemplateID = dataID;
-            SkillData = Managers.Data.SkillDataDict[dataID];
+
+            if (owner.ObjectType == EObjectType.Hero)
+                SkillData = Managers.Data.HeroSkillDataDict[dataID];
+            else if (owner.ObjectType == EObjectType.Monster)
+                SkillData = Managers.Data.MonsterSkillDataDict[dataID];
+
             InvokeRange = SkillData.InvokeRange;
             TargetRange = SkillData.TargetRange;
             TargetDistance = SkillData.TargetDistance;

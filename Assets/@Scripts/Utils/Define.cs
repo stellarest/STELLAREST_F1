@@ -489,21 +489,23 @@ namespace STELLAREST_F1
                 public static readonly string HeroData = "HeroData";
                 public static readonly string HeroSpriteData = "HeroSpriteData";
                 public static readonly string HeroStatData = "HeroStatData";
+                public static readonly string HeroSkillData = "HeroSkillData";
 
                 public static readonly string MonsterData = "MonsterData";
-                public static readonly string BirdSpriteData = "BirdSpriteData";
-                public static readonly string QuadrupedsSpriteData = "QuadrupedsSpriteData";
+                public static readonly string MonsterBirdSpriteData = "MonsterBirdSpriteData";
+                public static readonly string MonsterQuadrupedSpriteData = "MonsterQuadrupedSpriteData";
                 public static readonly string MonsterStatData = "MonsterStatData";
+                public static readonly string MonsterSkillData = "MonsterSkillData";
 
                 public static readonly string EnvData = "EnvData";
-                public static readonly string TreeSpriteData = "TreeSpriteData";
-                public static readonly string RockSpriteData = "RockSpriteData";
+                public static readonly string EnvTreeSpriteData = "EnvTreeSpriteData";
+                public static readonly string EnvRockSpriteData = "EnvRockSpriteData";
                 public static readonly string EnvStatData = "EnvStatData";
 
                 // --- TEMP
-                public static readonly string StatData = "StatData";
+                // public static readonly string StatData = "StatData";
+                // public static readonly string SkillData = "SkillData";
 
-                public static readonly string SkillData = "SkillData";
                 public static readonly string ProjectileData = "ProjectileData";
                 public static readonly string EffectData = "EffectData";
             }
@@ -587,11 +589,11 @@ namespace STELLAREST_F1
                 public static readonly int DNPID_Env_ZincRock = 101019;
 
                 // --- Effects(VFX)
-                public static readonly int DNPID_Effect_TeleportRed = 301001;
-                public static readonly int DNPID_Effect_TeleportGreen = 301002;
-                public static readonly int DNPID_Effect_TeleportBlue = 301003;
-                public static readonly int DNPID_Effect_Dust = 301004;
-                public static readonly int DNPID_Effect_OnDeadSkull = 301005;
+                public static readonly int DNPID_Effect_TeleportRed = 1001;
+                public static readonly int DNPID_Effect_TeleportGreen = 1002;
+                public static readonly int DNPID_Effect_TeleportBlue = 1003;
+                public static readonly int DNPID_Effect_Dust = 1004;
+                public static readonly int DNPID_Effect_OnDeadSkull = 1005;
             }
 
             public static class AnimationParams

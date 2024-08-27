@@ -240,7 +240,7 @@ namespace STELLAREST_F1.Data
     }
 
     [Serializable]
-    public class BirdSpriteData : MonsterSpriteData
+    public class MonsterBirdSpriteData : MonsterSpriteData
     {
         public string Body;
         public Vector3 BodyPosition;
@@ -267,14 +267,14 @@ namespace STELLAREST_F1.Data
         public int TailSortingOrder;
     }
 
-    public class BirdSpriteDataLoader : ILoader<int, BirdSpriteData>
+    public class MonsterBirdSpriteDataLoader : ILoader<int, MonsterBirdSpriteData>
     {
-        public List<BirdSpriteData> BirdsSprites = new List<BirdSpriteData>();
+        public List<MonsterBirdSpriteData> MonsterBirdsSprites = new List<MonsterBirdSpriteData>();
 
-        public Dictionary<int, BirdSpriteData> MakeDict()
+        public Dictionary<int, MonsterBirdSpriteData> MakeDict()
         {
-            Dictionary<int, BirdSpriteData> dict = new Dictionary<int, BirdSpriteData>();
-            foreach (BirdSpriteData data in BirdsSprites)
+            Dictionary<int, MonsterBirdSpriteData> dict = new Dictionary<int, MonsterBirdSpriteData>();
+            foreach (MonsterBirdSpriteData data in MonsterBirdsSprites)
                 dict.Add(data.DataID, data);
 
             return dict;
@@ -282,7 +282,7 @@ namespace STELLAREST_F1.Data
     }
 
     [Serializable]
-    public class QuadrupedsSpriteData : MonsterSpriteData
+    public class MonsterQuadrupedsSpriteData : MonsterSpriteData
     {
         public string Body;
         public Vector3 BodyPosition;
@@ -313,14 +313,14 @@ namespace STELLAREST_F1.Data
         public int TailSortingOrder;
     }
 
-    public class QuadrupedsSpriteDataLoader : ILoader<int, QuadrupedsSpriteData>
+    public class MonsterQuadrupedsSpriteDataLoader : ILoader<int, MonsterQuadrupedsSpriteData>
     {
-        public List<QuadrupedsSpriteData> QuadrupedsSprites = new List<QuadrupedsSpriteData>();
+        public List<MonsterQuadrupedsSpriteData> MonsterQuadrupedsSprites = new List<MonsterQuadrupedsSpriteData>();
 
-        public Dictionary<int, QuadrupedsSpriteData> MakeDict()
+        public Dictionary<int, MonsterQuadrupedsSpriteData> MakeDict()
         {
-            Dictionary<int, QuadrupedsSpriteData> dict = new Dictionary<int, QuadrupedsSpriteData>();
-            foreach (QuadrupedsSpriteData data in QuadrupedsSprites)
+            Dictionary<int, MonsterQuadrupedsSpriteData> dict = new Dictionary<int, MonsterQuadrupedsSpriteData>();
+            foreach (MonsterQuadrupedsSpriteData data in MonsterQuadrupedsSprites)
                 dict.Add(data.DataID, data);
 
             return dict;
@@ -352,7 +352,7 @@ namespace STELLAREST_F1.Data
 
     #region Env Sprite Data
     [Serializable]
-    public class TreeSpriteData
+    public class EnvTreeSpriteData
     {
         public int DataID;
         public string Tag;
@@ -374,14 +374,14 @@ namespace STELLAREST_F1.Data
         public string EndParticleMaterial;
     }
 
-    public class TreeSpriteDataLoader : ILoader<int, TreeSpriteData>
+    public class EnvTreeSpriteDataLoader : ILoader<int, EnvTreeSpriteData>
     {
-        public List<TreeSpriteData> TreesSprites = new List<TreeSpriteData>();
+        public List<EnvTreeSpriteData> EnvTreesSprites = new List<EnvTreeSpriteData>();
 
-        public Dictionary<int, TreeSpriteData> MakeDict()
+        public Dictionary<int, EnvTreeSpriteData> MakeDict()
         {
-            Dictionary<int, TreeSpriteData> dict = new Dictionary<int, TreeSpriteData>();
-            foreach (TreeSpriteData data in TreesSprites)
+            Dictionary<int, EnvTreeSpriteData> dict = new Dictionary<int, EnvTreeSpriteData>();
+            foreach (EnvTreeSpriteData data in EnvTreesSprites)
                 dict.Add(data.DataID, data);
 
             return dict;
@@ -389,7 +389,7 @@ namespace STELLAREST_F1.Data
     }
 
     [Serializable]
-    public class RockSpriteData
+    public class EnvRockSpriteData
     {
         public int DataID;
         public string Tag;
@@ -407,14 +407,14 @@ namespace STELLAREST_F1.Data
         public bool[] FragmentsFlipXs;
     }
 
-    public class RockSpriteDataLoader : ILoader<int, RockSpriteData>
+    public class RockSpriteDataLoader : ILoader<int, EnvRockSpriteData>
     {
-        public List<RockSpriteData> RocksSprites = new List<RockSpriteData>();
+        public List<EnvRockSpriteData> EnvRocksSprites = new List<EnvRockSpriteData>();
 
-        public Dictionary<int, RockSpriteData> MakeDict()
+        public Dictionary<int, EnvRockSpriteData> MakeDict()
         {
-            Dictionary<int, RockSpriteData> dict = new Dictionary<int, RockSpriteData>();
-            foreach (RockSpriteData data in RocksSprites)
+            Dictionary<int, EnvRockSpriteData> dict = new Dictionary<int, EnvRockSpriteData>();
+            foreach (EnvRockSpriteData data in EnvRocksSprites)
                 dict.Add(data.DataID, data);
 
             return dict;
@@ -489,22 +489,20 @@ namespace STELLAREST_F1.Data
         }
     }
 
-    public class StatDataLoader : ILoader<int, StatData>
-    {
-        public List<StatData> Stats = new List<StatData>();
+    // public class StatDataLoader : ILoader<int, StatData>
+    // {
+    //     public List<StatData> Stats = new List<StatData>();
 
-        public Dictionary<int, StatData> MakeDict()
-        {
-            Dictionary<int, StatData> dict = new Dictionary<int, StatData>();
-            foreach (StatData data in Stats)
-                dict.Add(data.DataID, data);
+    //     public Dictionary<int, StatData> MakeDict()
+    //     {
+    //         Dictionary<int, StatData> dict = new Dictionary<int, StatData>();
+    //         foreach (StatData data in Stats)
+    //             dict.Add(data.DataID, data);
 
-            return dict;
-        }
-    }
+    //         return dict;
+    //     }
+    // }
 
-    // 201000 ~ ...
-    [Serializable]
     public class SkillData : BaseData
     {
         public ESkillType SkillType;
@@ -518,14 +516,53 @@ namespace STELLAREST_F1.Data
         public int[] EffectIDs;
     }
 
-    public class SkillDataLoader : ILoader<int, SkillData>
-    {
-        public List<SkillData> Skills = new List<SkillData>();
+    // -- DELETE 예정
+    // public class SkillDataLoader : ILoader<int, SkillData>
+    // {
+    //     public List<SkillData> Skills = new List<SkillData>();
 
-        public Dictionary<int, SkillData> MakeDict()
+    //     public Dictionary<int, SkillData> MakeDict()
+    //     {
+    //         Dictionary<int, SkillData> dict = new Dictionary<int, SkillData>();
+    //         foreach (SkillData data in Skills)
+    //             dict.Add(data.DataID, data);
+
+    //         return dict;
+    //     }
+    // }
+
+    [Serializable]
+    public class HeroSkillData : SkillData
+    {
+    }
+
+    public class HeroSkillDataLoader : ILoader<int, HeroSkillData>
+    {
+        public List<HeroSkillData> HeroesSkills = new List<HeroSkillData>();
+
+        public Dictionary<int, HeroSkillData> MakeDict()
         {
-            Dictionary<int, SkillData> dict = new Dictionary<int, SkillData>();
-            foreach (SkillData data in Skills)
+            Dictionary<int, HeroSkillData> dict = new Dictionary<int, HeroSkillData>();
+            foreach (HeroSkillData data in HeroesSkills)
+                dict.Add(data.DataID, data);
+
+            return dict;
+        }
+    }
+
+    [Serializable]
+    public class MonsterSkillData : SkillData
+    {
+    }
+
+    public class MonsterSkillDataLoader : ILoader<int, MonsterSkillData>
+    {
+        public List<MonsterSkillData> MonstersSkills = new List<MonsterSkillData>();
+
+        public Dictionary<int, MonsterSkillData> MakeDict()
+        {
+            Dictionary<int, MonsterSkillData> dict = new Dictionary<int, MonsterSkillData>();
+            foreach (MonsterSkillData data in MonstersSkills)
                 dict.Add(data.DataID, data);
 
             return dict;

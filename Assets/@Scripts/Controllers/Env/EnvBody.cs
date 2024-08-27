@@ -179,7 +179,7 @@ namespace STELLAREST_F1
                     {
                         // --- Tree
                         _treeBodyDict = new Dictionary<ETreeBody, BodyContainer>();
-                        TreeSpriteData tree = Managers.Data.TreeSpriteDataDict[dataID];
+                        EnvTreeSpriteData tree = Managers.Data.EnvTreeSpriteDataDict[dataID];
 
                         // --- Trunk
                         string tag = Util.GetStringFromEnum(ETreeBody.Trunk);
@@ -371,7 +371,7 @@ namespace STELLAREST_F1
                     {
                         // --- Rock
                         _rockBodyDict = new Dictionary<ERockBody, BodyContainer>();
-                        RockSpriteData rock = Managers.Data.RockSpriteDataDict[dataID];
+                        EnvRockSpriteData rock = Managers.Data.RockSpriteDataDict[dataID];
 
                         // --- Rock(Body)
                         // Material matRockFragments = Managers.Resource.Load<Material>(ReadOnly.Materials.Mat_RockFragments);

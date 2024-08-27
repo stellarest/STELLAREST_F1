@@ -41,22 +41,22 @@ namespace STELLAREST_F1
             {
                 yield return new WaitUntil(() => Managers.Object.Envs.Count == 0);
                 yield return new WaitForSeconds(waitTime);
-                Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
-                    spawnPos: Managers.Map.CellToCenteredWorld(new Vector3Int(-6, 11, 0)),
-                    dataID: ReadOnly.DataAndPoolingID.DNPID_Env_AshTree);
+                // Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
+                //     spawnPos: Managers.Map.CellToCenteredWorld(new Vector3Int(-6, 11, 0)),
+                //     dataID: ReadOnly.DataAndPoolingID.DNPID_Env_AshTree);
                 
-                // if (_spawnEnvTypeFlag == false)
-                // {
-                //     Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
-                //        spawnPos: Managers.Map.CellToCenteredWorld(new Vector3Int(-6, 11, 0)),
-                //        dataID: ReadOnly.DataAndPoolingID.DNPID_Env_AshTree);
-                // }
-                // else
-                // {
-                //     Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
-                //        spawnPos: Managers.Map.CellToCenteredWorld(new Vector3Int(-3, 11, 0)),
-                //        dataID: ReadOnly.DataAndPoolingID.DNPID_Env_GoldRock);
-                // }
+                if (_spawnEnvTypeFlag == false)
+                {
+                    Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
+                       spawnPos: Managers.Map.CellToCenteredWorld(new Vector3Int(-6, 11, 0)),
+                       dataID: ReadOnly.DataAndPoolingID.DNPID_Env_AshTree);
+                }
+                else
+                {
+                    Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
+                       spawnPos: Managers.Map.CellToCenteredWorld(new Vector3Int(-3, 11, 0)),
+                       dataID: ReadOnly.DataAndPoolingID.DNPID_Env_GoldRock);
+                }
 
                 _spawnEnvTypeFlag = !_spawnEnvTypeFlag;
             }
@@ -135,7 +135,7 @@ namespace STELLAREST_F1
                 // SpawnChicken_Test(-5, 5);
                 // SpawnChicken_Test(-4, 5);
 
-                // --- Add
+                // // --- Add
                 // SpawnChicken_Test(-3, 10);
                 // SpawnChicken_Test(-3, 9);
                 // SpawnChicken_Test(-3, 8);

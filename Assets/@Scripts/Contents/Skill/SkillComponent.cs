@@ -102,14 +102,20 @@ namespace STELLAREST_F1
             if (skillDataID == -1)
                 return;
 
-            if (Managers.Data.SkillDataDict.TryGetValue(skillDataID, out Data.SkillData skillData) == false)
-            {
-                Debug.LogError($"{nameof(SkillComponent)}, {nameof(AddSkill)}, Input : \"{skillDataID}\"");
-                Debug.Break();
-                return;
-            }
+            Data.SkillData skillData = null;
+            if (_owner.ObjectType == EObjectType.Hero)
+                skillData = Managers.Data.HeroSkillDataDict[skillDataID];
+            else if (_owner.ObjectType == EObjectType.Monster)
+                skillData = Managers.Data.MonsterSkillDataDict[skillDataID];
+            // --- SkillData.. and Stat Data... How to organize?
+            // if (Managers.Data.SkillDataDict.TryGetValue(skillDataID, out Data.SkillData skillData) == false)
+            // {
+            //     Debug.LogError($"{nameof(SkillComponent)}, {nameof(AddSkill)}, Input : \"{skillDataID}\"");
+            //     Debug.Break();
+            //     return;
+            // }
 
-            System.Type skillClassType = Util.GetTypeFromName(skillData.ClassName);
+            Type skillClassType = Util.GetTypeFromName(skillData.ClassName);
             SkillBase skill = gameObject.AddComponent(skillClassType) as SkillBase;
             if (skill == null)
             {

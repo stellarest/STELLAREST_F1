@@ -210,7 +210,7 @@ namespace STELLAREST_F1
                     {
                         // --- Bird
                         _birdBodyDict = new Dictionary<EBirdBody, BodyContainer>();
-                        BirdSpriteData bird = Managers.Data.BirdSpriteDataDict[dataID];
+                        MonsterBirdSpriteData bird = Managers.Data.MonsterBirdSpriteDataDict[dataID];
 
                         // --- Body
                         string tag = Util.GetStringFromEnum(EBirdBody.Body);
@@ -384,7 +384,7 @@ namespace STELLAREST_F1
                     {
                         // --- Quadrupeds
                         _quadrupedsBodyDict = new Dictionary<EQuadrupedsBody, BodyContainer>();
-                        QuadrupedsSpriteData quadrupeds = Managers.Data.QuadrupedsSpriteDataDict[dataID];
+                        MonsterQuadrupedsSpriteData quadrupeds = Managers.Data.MonsterQuadrupedSpriteDataDict[dataID];
 
                         // --- Body
                         string tag = Util.GetStringFromEnum(EQuadrupedsBody.Body);

@@ -49,6 +49,7 @@ namespace STELLAREST_F1
         public int MaxLevel => (_maxLevelID % DataTemplateID) + 1;
         protected bool IsMaxLevel => _levelID == _maxLevelID;
 
+        // --- TODO CHANGE: Seperate Refresh, and Set
         protected void SetStat(StatData statData)
         {
             StatData = statData; // Refresh
@@ -290,10 +291,10 @@ namespace STELLAREST_F1
             Hp = StatData.MaxHp;
             // Debug.Log($"<color=white>{gameObject.name}, {nameof(EnterInGame)}</color>");
 
-            Debug.Log($"Name: {gameObject.name}");
-            Debug.Log($"LvID: {_levelID}");
-            Debug.Log($"MaxLvID: {_maxLevelID}");
-            Debug.Log("==============================");
+            // Debug.Log($"Name: {gameObject.name}");
+            // Debug.Log($"LvID: {_levelID}");
+            // Debug.Log($"MaxLvID: {_maxLevelID}");
+            // Debug.Log("==============================");
         }
         #endregion
 
