@@ -171,6 +171,7 @@ namespace STELLAREST_F1
                 
             Vector3 destPos = Managers.Map.CellToCenteredWorld(NextCellPos);
             Vector3 dir = destPos - transform.position;
+            // LookAtValidTarget이랑 엇갈릴지도
             if (dir.x < 0f)
                 LookAtDir = ELookAtDirection.Left;
             else if (dir.x > 0f)

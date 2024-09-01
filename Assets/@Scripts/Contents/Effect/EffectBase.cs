@@ -5,6 +5,7 @@ using UnityEngine;
 using static STELLAREST_F1.Define;
 using STELLAREST_F1.Data;
 using UnityEditor;
+using System.Data;
 
 namespace STELLAREST_F1
 {
@@ -24,6 +25,12 @@ namespace STELLAREST_F1
         [field: SerializeField] public float Remains { get; protected set; } = 0f; // 지속시간이 얼마나 남았는지
         public bool IsLoop { get; protected set; } = false;
 
+        protected ParticleSystem[] _particles = null;
+        protected ParticleSystemRenderer[] _particleRenderers = null;
+        protected Vector3 _startPos = Vector3.zero;
+        protected Vector3 _enteredDir = Vector3.zero;
+        protected int _enteredSignX = 0;
+
         public override bool Init()
         {
             if (base.Init() == false)
@@ -39,9 +46,15 @@ namespace STELLAREST_F1
             DataTemplateID = dataID;
             EffectData = Managers.Data.EffectDataDict[dataID];
             IsLoop = EffectData.IsLoop;
-            // Amount
-            // PercentAdd
-            // PercentMulti
+
+            _particles = GetComponentsInChildren<ParticleSystem>();
+            _particleRenderers = GetComponentsInChildren<ParticleSystemRenderer>();
+
+            // --- TODO LATER LIST
+            // - Amount
+            // - PercentAdd
+            // - PercentMulti
+
             EffectSpawnType = EffectData.EffectSpawnType;
             if (EffectSpawnType == EEffectSpawnType.External)
                 Remains = float.MaxValue;
@@ -80,54 +93,25 @@ namespace STELLAREST_F1
             else
                 Remains = EffectData.Duration;
 
+            if (EffectData.ApplyOnStartCallback)
+            {
+                _startPos = spawnPos;
+                gameObject.SetActive(false);
+                return;
+            }
+
             transform.position = spawnPos;
             ApplyEffect();
-            // --- Prev            
-            // Vector3Int cellPos = Managers.Map.WorldToCell(spawnPos);
-            // transform.position = Managers.Map.GetCenterWorld(cellPos);
-            // ApplyEffect();
         }
 
-        // public override bool SetInfo(int dataID, BaseObject owner, BaseObject source)
-        // {
-        //     if (base.SetInfo(dataID, owner, source))
-        //     {
-        //         gameObject.name = $"@{gameObject.name}";
-        //         Owner = owner as Creature;
-        //         Source = source;
-        //         EffectData = Managers.Data.EffectDataDict[dataID];
-        //         DataTemplateID = dataID;
-
-        //         IsLoop = EffectData.IsLoop;
-        //         EffectType = EffectData.EffectType;
-        //         switch (EffectData.EffectSize)
-        //         {
-        //             case EObjectSize.None:
-        //                 break;
-        //             case EObjectSize.VerySmall:
-        //                 break;
-        //             case EObjectSize.Small:
-        //                 transform.localScale = new Vector3(0.4F, 0.4F, 1F);
-        //                 break;
-        //             case EObjectSize.Medium:
-        //                 break;
-        //             case EObjectSize.Large:
-        //                 break;
-        //             case EObjectSize.VeryLarge:
-        //                 break;
-        //         }
-
-        //         EffectSpawnType = EffectData.EffectSpawnType;
-        //         if (EffectSpawnType == EEffectSpawnType.External)
-        //             Remains = float.MaxValue;
-        //         else
-        //             Remains = EffectData.Duration;
-        //         return false;
-        //     }
-
-        //     Source = source;
-        //     return true;
-        // }
+        public void ActivateSelf(Vector3 enteredStartPos, Vector3 enteredDir, int enteredSignX)
+        {
+            gameObject.SetActive(true);
+            transform.position = enteredStartPos;
+            _enteredDir = enteredDir;
+            _enteredSignX = enteredSignX;
+            ApplyEffect();
+        }
 
         public virtual void ApplyEffect()
         {
@@ -136,32 +120,6 @@ namespace STELLAREST_F1
             // 여기에다가 도트 뎀, 도트 힐, 패시브 영구적, 힘 버프, 체력 버프, 민첩 버프 등등을 적용시킨다.
             // 힘 버프(Buff, TypeID:1), 체력 버프(Buff, TypeID:2) 이런식..
         }
-
-        // protected void ShowEffect()
-        // {
-        //     if (Source.IsValid() == false)
-        //         return;
-
-        //     if (Source.ObjectType == EObjectType.Hero || Source.ObjectType == EObjectType.Monster)
-        //     {
-        //         transform.position = GetRandomSpawnPosition(Managers.Map.GetCenterWorld(Source.CellPos), cellSize: 1);
-        //     }
-        // }
-
-        // protected Vector3 GetRandomSpawnPosition(Vector3 cellCenter, float cellSize)
-        // {
-        //     float offset = cellSize / 4.0f;
-        //     Vector3[] quadCenters = new Vector3[4];
-        //     quadCenters[0] = cellCenter + new Vector3(offset, offset, 0);  // --- 1사분면 중앙
-        //     quadCenters[1] = cellCenter + new Vector3(-offset, offset, 0);   // --- 2사분면 중앙
-        //     quadCenters[2] = cellCenter + new Vector3(-offset, -offset, 0); // --- 3사분면 중앙
-        //     quadCenters[3] = cellCenter + new Vector3(offset, -offset, 0);  // --- 4사분면 중앙
-        //     int randIdx = Random.Range(0, quadCenters.Length + 1);
-        //     if (randIdx == quadCenters.Length)
-        //         return cellCenter;
-
-        //     return quadCenters[randIdx];
-        // }
 
         protected virtual void ProcessDot() { }
 
@@ -193,6 +151,7 @@ namespace STELLAREST_F1
                     yield return null;
                 }
             }
+
             Remains = 0f;
             ClearEffect(EEffectClearType.TimeOut);
         }
@@ -248,3 +207,97 @@ namespace STELLAREST_F1
         }
     }
 }
+
+/*
+// protected void ApplyParticleInfo()
+        // {
+        //     if (EffectData.DataID != 1008)
+        //         return;
+        //     // if (_particles == null && _particleRenderers == null)
+        //     //     return;
+        //     // if (Owner.IsValid() == false || Owner.Target.IsValid() == false)
+        //     //     return;
+
+        //     for (int i = 0; i < _particles.Length; ++i)
+        //     {
+        //         var main = _particles[i].main;
+        //         // Ref Joystick Angle
+        //         Vector3 nDir = Owner.Target.CellPos - Owner.CellPos;
+        //         float angle = Mathf.Atan2(-nDir.normalized.x, nDir.normalized.y) * Mathf.Rad2Deg;
+        //         if (angle < 0)
+        //         {
+        //              angle += 360f;
+        //         }
+        //         Debug.Log($"Angle: {angle}");
+        //         main.startRotation = (angle + (Owner as Hero).TestOffset) * Mathf.Deg2Rad * -1;
+        //         //main.flipRotation = (int)Owner.LookAtDir * -1;
+        //     }
+        // }
+
+        // public override bool SetInfo(int dataID, BaseObject owner, BaseObject source)
+        // {
+        //     if (base.SetInfo(dataID, owner, source))
+        //     {
+        //         gameObject.name = $"@{gameObject.name}";
+        //         Owner = owner as Creature;
+        //         Source = source;
+        //         EffectData = Managers.Data.EffectDataDict[dataID];
+        //         DataTemplateID = dataID;
+
+        //         IsLoop = EffectData.IsLoop;
+        //         EffectType = EffectData.EffectType;
+        //         switch (EffectData.EffectSize)
+        //         {
+        //             case EObjectSize.None:
+        //                 break;
+        //             case EObjectSize.VerySmall:
+        //                 break;
+        //             case EObjectSize.Small:
+        //                 transform.localScale = new Vector3(0.4F, 0.4F, 1F);
+        //                 break;
+        //             case EObjectSize.Medium:
+        //                 break;
+        //             case EObjectSize.Large:
+        //                 break;
+        //             case EObjectSize.VeryLarge:
+        //                 break;
+        //         }
+
+        //         EffectSpawnType = EffectData.EffectSpawnType;
+        //         if (EffectSpawnType == EEffectSpawnType.External)
+        //             Remains = float.MaxValue;
+        //         else
+        //             Remains = EffectData.Duration;
+        //         return false;
+        //     }
+
+        //     Source = source;
+        //     return true;
+        // }
+
+        // protected void ShowEffect()
+        // {
+        //     if (Source.IsValid() == false)
+        //         return;
+
+        //     if (Source.ObjectType == EObjectType.Hero || Source.ObjectType == EObjectType.Monster)
+        //     {
+        //         transform.position = GetRandomSpawnPosition(Managers.Map.GetCenterWorld(Source.CellPos), cellSize: 1);
+        //     }
+        // }
+
+        // protected Vector3 GetRandomSpawnPosition(Vector3 cellCenter, float cellSize)
+        // {
+        //     float offset = cellSize / 4.0f;
+        //     Vector3[] quadCenters = new Vector3[4];
+        //     quadCenters[0] = cellCenter + new Vector3(offset, offset, 0);  // --- 1사분면 중앙
+        //     quadCenters[1] = cellCenter + new Vector3(-offset, offset, 0);   // --- 2사분면 중앙
+        //     quadCenters[2] = cellCenter + new Vector3(-offset, -offset, 0); // --- 3사분면 중앙
+        //     quadCenters[3] = cellCenter + new Vector3(offset, -offset, 0);  // --- 4사분면 중앙
+        //     int randIdx = Random.Range(0, quadCenters.Length + 1);
+        //     if (randIdx == quadCenters.Length)
+        //         return cellCenter;
+
+        //     return quadCenters[randIdx];
+        // }
+*/

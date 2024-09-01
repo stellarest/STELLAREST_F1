@@ -14,6 +14,9 @@ namespace STELLAREST_F1
         public List<SkillBase> ActiveSkills { get; } = new List<SkillBase>();
         public SkillBase FindSkill(int dataID) => Skills.FirstOrDefault(n => n.DataTemplateID == dataID);
         public SkillBase[] SkillArray { get; private set; } = new SkillBase[(int)ESkillType.Max]; // --- Caching
+        
+        public ESkillType CurrentSkillType { get; set; } = ESkillType.None;
+        private SkillBase _currentSkill = null;
         public SkillBase CurrentSkill
         {
             get
@@ -48,10 +51,20 @@ namespace STELLAREST_F1
             if (SkillArray == null)
                 SkillArray = new SkillBase[(int)ESkillType.Max];
 
-            AddSkill(creatureData.Skill_A_ID);
-            AddSkill(creatureData.Skill_B_ID);
-            AddSkill(creatureData.Skill_C_ID);
-            // --- Check Validation
+            // --- Default Skill(A)
+            SkillArray[(int)ESkillType.Skill_A] = AddSkill(creatureData.Skill_A_ID);
+
+            // --- Active Skill1(B)
+            SkillArray[(int)ESkillType.Skill_B] = AddSkill(creatureData.Skill_B_ID);
+            if (SkillArray[(int)ESkillType.Skill_B] != null)
+                ActiveSkills.Add(SkillArray[(int)ESkillType.Skill_B]);
+
+            // --- Active Skill2(C)
+            SkillArray[(int)ESkillType.Skill_C] = AddSkill(creatureData.Skill_C_ID);
+            if (SkillArray[(int)ESkillType.Skill_C] != null)
+                ActiveSkills.Add(SkillArray[(int)ESkillType.Skill_C]);
+
+            // --- Check Validation (All Creatures must have one skill at least.)
             {
                 int skillCount = 0;
                 for (int i = 0; i < SkillArray.Length; ++i)
@@ -63,39 +76,71 @@ namespace STELLAREST_F1
 
                 if (skillCount == 0)
                 {
-                    Debug.LogError($"{nameof(SkillComponent)}, {nameof(SetInfo)}");
+                    Debug.LogError($"{nameof(SkillComponent)}");
                     Debug.Break();
                 }
             }
         }
 
-        public void SetInfo(Creature owner, Data.CreatureData creatureData)
+        private SkillBase AddSkill(int skillDataID)
         {
-            _owner = owner;
+            if (skillDataID == -1)
+                return null;
 
-            if (SkillArray == null)
-                SkillArray = new SkillBase[(int)ESkillType.Max];
+            Data.SkillData skillData = null;
+            if (_owner.ObjectType == EObjectType.Hero)
+                skillData = Managers.Data.HeroSkillDataDict[skillDataID];
+            else if (_owner.ObjectType == EObjectType.Monster)
+                skillData = Managers.Data.MonsterSkillDataDict[skillDataID];
 
-            AddSkill(creatureData.Skill_A_ID);
-            AddSkill(creatureData.Skill_B_ID);
-            AddSkill(creatureData.Skill_C_ID);
-            // --- Check Validation
+            Type skillClassType = Util.GetTypeFromName(skillData.ClassName);
+            SkillBase skill = gameObject.AddComponent(skillClassType) as SkillBase;
+            if (skill == null)
             {
-                int skillCount = 0;
-                for (int i = 0; i < SkillArray.Length; ++i)
-                {
-                    SkillBase skill = SkillArray[i];
-                    if (skill != null)
-                        ++skillCount;
-                }
-
-                if (skillCount == 0)
-                {
-                    Debug.LogError($"{nameof(SkillComponent)}, {nameof(SetInfo)}");
-                    Debug.Break();
-                }
+                Debug.LogError($"{nameof(AddSkill)}, You have a SkillDataID, but Add Failed.");
+                Debug.Break();
+                return null;
             }
+
+            skill.InitialSetInfo(dataID: skillDataID, owner: _owner);
+            Skills.Add(skill);
+
+            return skill;
         }
+
+        public void OnSkillStateEnter(ESkillType skillType)
+                => SkillArray[(int)skillType]?.OnSkillStateEnter();
+        public void OnSkillStateExit(ESkillType skillType)
+                => SkillArray[(int)skillType]?.OnSkillStateExit();
+
+        private void OnDisable()
+        {
+        }
+    }
+}
+
+/*
+    [Prev]
+      // --- PREV
+        // public override bool SetInfo(BaseObject owner, List<int> skillDataIDs) // CreatureData로 받아볼까.
+        // {
+        //     // --- Creature는 최소한 스킬 1개를 무조건 가지고 있어야한다.
+        //     if (skillDataIDs.Count == 0)
+        //     {
+        //         Debug.LogError($"{nameof(SkillComponent)}, {nameof(SetInfo)}, Input : \"{skillDataIDs.Count}, Skills zero count\"");
+        //         Debug.Break();
+        //         return false;
+        //     }
+
+        //     _owner = owner as Creature;
+        //     foreach (int skillDataID in skillDataIDs)
+        //         AddSkill(skillDataID);
+
+        //     if (SkillArray == null)
+        //         SkillArray = new SkillBase[(int)ESkillType.Max];
+
+        //     return true;
+        // }
 
         private void AddSkill(int skillDataID)
         {
@@ -150,41 +195,5 @@ namespace STELLAREST_F1
         // {
         //     float skillInvokeRatio = SkillArray[(int)skillState - ReadOnly.Numeric.MaxActiveSkillsCount].InvokeRatioOnUpdate;
         //     return UnityEngine.Mathf.Clamp(skillInvokeRatio, 0.01f, 0.99f);
-        // }
-
-        public void OnSkillStateEnter(ESkillType skillType)
-                => SkillArray[(int)skillType]?.OnSkillStateEnter();
-        // public void OnSkillStateUpdate(ESkillType skillType)
-        //         => SkillArray[(int)skillType]?.OnSkillStateUpdate();
-        public void OnSkillStateExit(ESkillType skillType)
-                => SkillArray[(int)skillType]?.OnSkillStateExit();
-
-        private void OnDisable()
-        {
-        }
-    }
-}
-
-/*
-    [Prev]
-      // --- PREV
-        // public override bool SetInfo(BaseObject owner, List<int> skillDataIDs) // CreatureData로 받아볼까.
-        // {
-        //     // --- Creature는 최소한 스킬 1개를 무조건 가지고 있어야한다.
-        //     if (skillDataIDs.Count == 0)
-        //     {
-        //         Debug.LogError($"{nameof(SkillComponent)}, {nameof(SetInfo)}, Input : \"{skillDataIDs.Count}, Skills zero count\"");
-        //         Debug.Break();
-        //         return false;
-        //     }
-
-        //     _owner = owner as Creature;
-        //     foreach (int skillDataID in skillDataIDs)
-        //         AddSkill(skillDataID);
-
-        //     if (SkillArray == null)
-        //         SkillArray = new SkillBase[(int)ESkillType.Max];
-
-        //     return true;
         // }
 */

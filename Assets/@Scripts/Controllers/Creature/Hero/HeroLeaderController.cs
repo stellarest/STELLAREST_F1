@@ -481,7 +481,7 @@ namespace STELLAREST_F1
         }
 
         [SerializeField] private bool _lockFindPath = false; // Lock Find Path 용도 외에 건드리지 말것.
-        [SerializeField] private bool _arriveToTarget = false;
+        // [SerializeField] private bool _arriveToTarget = false;
         private void SetLeader(Hero newLeader)
         {
             if (_leader == newLeader)

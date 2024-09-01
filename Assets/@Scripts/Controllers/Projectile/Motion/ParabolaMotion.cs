@@ -20,7 +20,7 @@ namespace STELLAREST_F1
             float journeyLength = Vector2.Distance(_startPos, _targetPos);
             float totalTime = journeyLength / _projectile.ProjectileSpeed; // 거리를 속도로 나누면 시간
 
-            AnimationCurve curve = Managers.Contents.Curve(_projectile.ProjectileCurveType);
+            AnimationCurve curve = Managers.MonoContents.Curve(_projectile.ProjectileCurveType);
             Vector3 nextPos = Vector3.zero;
             while (Time.time - startTime < totalTime)
             {

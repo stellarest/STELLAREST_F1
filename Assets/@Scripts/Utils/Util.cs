@@ -91,6 +91,9 @@ namespace STELLAREST_F1
                 case EClassName.DefaultSkill:
                     return typeof(DefaultSkill);
 
+                case EClassName.ContinuousAttack:
+                    return typeof(ContinuousAttack);
+
                 case EClassName.Projectile:
                     return typeof(Projectile);
 

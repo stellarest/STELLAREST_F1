@@ -345,6 +345,7 @@ namespace STELLAREST_F1
         public enum EClassName
         {
             DefaultSkill,
+            ContinuousAttack,
             Projectile,
             StraightMotion,
             ParabolaMotion,
@@ -449,19 +450,24 @@ namespace STELLAREST_F1
         {
             // Upper
             None = -1,
+
             Upper_Idle,
             Upper_Move,
             Upper_SkillA,
             Upper_SkillB,
             Upper_SkillC,
             Upper_CollectEnv,
+            // --- 나중에 Sick, Healthy 추가
             Upper_Dead,
             
-            // Lower
-            Lower_Idle,
-            Lower_Move,
+            Max = Upper_Dead + 1
 
-            Max = Lower_Move + 1
+            // --- Prev
+            // Lower
+            // Lower_Idle,
+            // Lower_Move,
+            //Max = Lower_Move + 1
+            
         }
 
         // ####################################################
@@ -602,6 +608,7 @@ namespace STELLAREST_F1
                 public static readonly string Upper_Idle = "Upper_Idle";
                 public static readonly string Upper_Move = "Upper_Move";
                 public static readonly string Upper_SkillA = "Upper_SkillA";
+                public static readonly string Upper_SkillB = "Upper_SkillB";
                 public static readonly string Upper_CollectEnv = "Upper_CollectEnv";
                 public static readonly string Upper_Dead = "Upper_Dead";
 

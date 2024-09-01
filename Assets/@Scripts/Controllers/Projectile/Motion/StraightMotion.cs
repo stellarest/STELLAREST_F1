@@ -10,7 +10,7 @@ namespace STELLAREST_F1
     {
         protected override IEnumerator CoLaunchProjectile()
         {
-            AnimationCurve curve = Managers.Contents.Curve(_projectile.ProjectileCurveType);
+            AnimationCurve curve = Managers.MonoContents.Curve(_projectile.ProjectileCurveType);
             LaunchingDir = _targetPos - _startPos;
             Vector3 nDir = (_targetPos - _startPos).normalized;
             transform.rotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(nDir.y, nDir.x) * Mathf.Rad2Deg);

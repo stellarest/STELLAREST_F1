@@ -32,17 +32,6 @@ namespace STELLAREST_F1
             }
         }
 
-        // [SerializeField] protected EFindPathResult _findPathResult = EFindPathResult.None;
-        
-        // [field: SerializeField] public bool ForceMove { get; set; } = false;
-
-        // public bool IsAtCurrentCellCenter
-        //     =>  Mathf.Approximately(transform.position.x, Managers.Map.GetCenterWorld(CellPos).x) && 
-        //         Mathf.Approximately(transform.position.y, Managers.Map.GetCenterWorld(CellPos).y);
-
-        // public bool CanEnterSkillAState
-        //     => CreatureAnim.CanEnterSkillAState;
-
         public bool CanSkill
         {
             get
@@ -59,14 +48,23 @@ namespace STELLAREST_F1
                     return false;
                 }
 
+                if (CanEnterSkillBState == false)
+                {
+                    CreatureAnim.ReadySkill = false;
+                    return false;
+                }
+
                 if (Target.IsValid() == false)
                 {
                     CreatureAnim.ReadySkill = false;
                     return false;
                 }
 
+                // --- 스킬이 2개 이상일 경우, 
+                // --- CanSkill에서 B가 선택이 되었는데
+                // --- DO SKILL에서 C가 선택이 될 위험이 있다.
                 SkillBase currentSkill = CreatureSkill.CurrentSkill;
-                if (currentSkill.RemainCoolTime > 0f)
+                if (currentSkill == null || currentSkill.RemainCoolTime > 0f)
                 {
                     CreatureAnim.ReadySkill = false;
                     return false;
@@ -310,6 +308,10 @@ namespace STELLAREST_F1
 
         private bool CanEnterSkillAState
             => CreatureAnim.CanEnterAnimState(ECreatureAnimState.Upper_SkillA);
+        private bool CanEnterSkillBState
+            => CreatureAnim.CanEnterAnimState(ECreatureAnimState.Upper_SkillB);
+        public void CancelPlayAnimations() 
+            => CreatureAnim.CancelPlayAnimations();
 
         #region Init Core
         public override bool Init()
@@ -409,30 +411,30 @@ namespace STELLAREST_F1
         protected Coroutine _coUpdateAI = null;
         protected IEnumerator CoUpdateAI()
         {
-            // if (ObjectType == EObjectType.Monster)
-            //     yield break;
+            if (ObjectType == EObjectType.Monster)
+                yield break;
 
-            while (true)
-            {
-                if (CreatureAI.ForceWaitCompleted == false)
-                {
-                    yield return null;
-                    continue;
-                }
+            // while (true)
+            // {
+            //     if (CreatureAI.ForceWaitCompleted == false)
+            //     {
+            //         yield return null;
+            //         continue;
+            //     }
 
-                switch (CreatureAIState)
-                {
-                    case ECreatureAIState.Idle:
-                        CreatureAI.UpdateIdle();
-                        break;
+            //     switch (CreatureAIState)
+            //     {
+            //         case ECreatureAIState.Idle:
+            //             CreatureAI.UpdateIdle();
+            //             break;
 
-                    case ECreatureAIState.Move:
-                        CreatureAI.UpdateMove();
-                        break;
-                }
+            //         case ECreatureAIState.Move:
+            //             CreatureAI.UpdateMove();
+            //             break;
+            //     }
 
-                yield return null;
-            }
+            //     yield return null;
+            // }
         }
 
         public void StartCoUpdateAI()

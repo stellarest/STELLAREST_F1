@@ -21,22 +21,22 @@ namespace STELLAREST_F1
             if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle)
                 OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_Idle);
 
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Move)
+            else if (stateInfo.shortNameHash == _creatureAnim.Upper_Move)
                 OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_Move);
 
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_SkillA)
+            else if (stateInfo.shortNameHash == _creatureAnim.Upper_SkillA)
                 OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_SkillA);
 
-            // if (stateInfo.shortNameHash == _creatureAnim.Upper_SkillB)
-            //     OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_SkillB);
+            else if (stateInfo.shortNameHash == _creatureAnim.Upper_SkillB)
+                OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_SkillB);
 
             // if (stateInfo.shortNameHash == _creatureAnim.Upper_SkillC)
             //     OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_SkillC);
 
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_CollectEnv)
+            else if (stateInfo.shortNameHash == _creatureAnim.Upper_CollectEnv)
                 OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_CollectEnv);
 
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Dead)
+            else if (stateInfo.shortNameHash == _creatureAnim.Upper_Dead)
                 OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_Dead);
         }
 
@@ -49,22 +49,22 @@ namespace STELLAREST_F1
             if (stateInfo.shortNameHash == _creatureAnim.Upper_Idle)
                 OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_Idle);
 
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Move)
+            else if (stateInfo.shortNameHash == _creatureAnim.Upper_Move)
                 OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_Move);
 
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_SkillA)
+            else if (stateInfo.shortNameHash == _creatureAnim.Upper_SkillA)
                 OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_SkillA);
 
-            // if (stateInfo.shortNameHash == _creatureAnim.Upper_SkillB)
-            //     OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_SkillB);
+            else if (stateInfo.shortNameHash == _creatureAnim.Upper_SkillB)
+                OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_SkillB);
 
             // if (stateInfo.shortNameHash == _creatureAnim.Upper_SkillC)
             //     OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_SkillC);
 
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_CollectEnv)
+            else if (stateInfo.shortNameHash == _creatureAnim.Upper_CollectEnv)
                 OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_CollectEnv);
 
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_Dead)
+            else if (stateInfo.shortNameHash == _creatureAnim.Upper_Dead)
                 OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_Dead);
         }
     }

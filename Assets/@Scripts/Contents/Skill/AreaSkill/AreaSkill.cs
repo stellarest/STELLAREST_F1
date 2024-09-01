@@ -9,8 +9,9 @@ namespace STELLAREST_F1
         public SpellIndicator Indicator { get; protected set; } = null;
 
         #region Events
-        public override void OnSkillCallback() { }
-        public override void OnSkillStateEnter() { }
+        public override bool OnSkillStateEnter()
+            => base.OnSkillStateEnter();
+        // public override void OnSkillCallback() { }
         public override void OnSkillStateExit() { }
         #endregion
     }

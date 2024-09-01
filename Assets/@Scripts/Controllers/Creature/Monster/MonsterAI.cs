@@ -12,8 +12,8 @@ namespace STELLAREST_F1
         public Monster _monsterOwner { get; private set; } = null;
         private float _patrolDelta = 0f;
         private float _desiredStartPatrolTime = 0f;
-        public override Vector3Int CellChasePos 
-        { 
+        public override Vector3Int CellChasePos
+        {
             get
             {
                 if (IsValidTarget)
@@ -99,7 +99,6 @@ namespace STELLAREST_F1
             if (_monsterOwner.IsValid() == false)
                 return;
 
-            _monsterOwner.LookAtValidTarget();
             EFindPathResult result = _monsterOwner.FindPathAndMoveToCellPos(destPos: CellChasePos, maxDepth: ReadOnly.Util.MonsterDefaultMoveDepth);
             if (result == EFindPathResult.Fail_LerpCell)
             {

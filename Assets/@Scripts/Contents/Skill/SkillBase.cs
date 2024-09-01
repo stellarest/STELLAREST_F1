@@ -8,7 +8,8 @@ using System;
 
 namespace STELLAREST_F1
 {
-    public abstract class SkillBase : InitBase
+    // Abstract로 하면 안될 것 같은데,,,
+    public class SkillBase : InitBase
     {
         public Creature Owner { get; private set; } = null;
         protected bool IsValidOwner => Owner.IsValid();
@@ -36,8 +37,44 @@ namespace STELLAREST_F1
         public virtual float RemainCoolTime
         {
             get => _remainCoolTime;
-            set => _remainCoolTime = value;
+            private set
+            {
+                _remainCoolTime = value;
+                if (value == 0f)
+                    CheckReleaseSkillAnimState(SkillType);
+            }
         }
+
+        // --- 보통은 애니메이션보다, 스킬 쿨타임이 길어서 가능할 것 같긴 함.
+        private void CheckReleaseSkillAnimState(ESkillType skillType)
+        {
+            if (Owner.IsValid() == false)
+                return;
+
+            CreatureAnimation creatureAnim = Owner.CreatureAnim;
+            switch (skillType)
+            {
+                case ESkillType.Skill_A:
+                    {
+                        if (creatureAnim.IsEnteredAnimState(ECreatureAnimState.Upper_SkillA))
+                            creatureAnim.ReleaseAnimState(ECreatureAnimState.Upper_SkillA);
+                    }
+                    break;
+                case ESkillType.Skill_B:
+                    {
+                        if (creatureAnim.IsEnteredAnimState(ECreatureAnimState.Upper_SkillB))
+                            creatureAnim.ReleaseAnimState(ECreatureAnimState.Upper_SkillB);
+                    }
+                    break;
+                case ESkillType.Skill_C:
+                    {
+                        if (creatureAnim.IsEnteredAnimState(ECreatureAnimState.Upper_SkillC))
+                            creatureAnim.ReleaseAnimState(ECreatureAnimState.Upper_SkillC);
+                    }
+                    break;
+            }
+        }
+
         public virtual void DoSkill()
         {
             // --- OK (Heroes)
@@ -45,9 +82,12 @@ namespace STELLAREST_F1
                 return;
 
             if (Owner.CreatureSkill != null)
+            {
                 Owner.CreatureSkill.ActiveSkills.Remove(this);
-
-            Owner.CreatureAnim.Skill(this.SkillType);
+                Owner.CreatureSkill.CurrentSkillType = SkillType;
+            }
+            
+            Owner.CreatureAnim.Skill(SkillType);
             StartCoroutine(CoActivateSkill());
         }
 
@@ -90,16 +130,9 @@ namespace STELLAREST_F1
         }
 
         protected List<BaseObject> _skillTargets = new List<BaseObject>();
-        public BaseObject FirstTarget
-        {
-            get
-            {
-                if (_skillTargets.Count > 0 && _skillTargets[0] != null && _skillTargets[0].IsValid())
-                    return _skillTargets[0];
-
-                return null;
-            }
-        }
+        private Vector3 _firstTargetPos = Vector3.zero;
+        public void SetFirstTargetPos(Vector3 pos) => _firstTargetPos = pos;
+        public Vector3 FirstTargetPos => _firstTargetPos;
 
         #region Init Core
         public override bool Init()
@@ -128,15 +161,84 @@ namespace STELLAREST_F1
             TargetRange = SkillData.TargetRange;
             TargetDistance = SkillData.TargetDistance;
             SkillType = SkillData.SkillType;
+            // --- AttachmentPoint: 필요할까??
             SkillFromPoint = Util.GetEnumFromString<EAttachmentPoint>(SkillData.AttachmentPoint);
         }
         #endregion
 
         #region Events
-        public abstract void OnSkillStateEnter();
-        public abstract void OnSkillStateExit();
-        public abstract void OnSkillCallback();
+        protected ESkillType _currentSkillType= ESkillType.None;
+        public virtual bool OnSkillStateEnter()
+        {
+            if (Owner.IsValid() == false || Owner.Target.IsValid() == false)
+            {
+                Owner.CreatureAnim.CancelPlayAnimations();
+                return false;
+            }
+
+            return true;
+        }
+
+        public virtual void OnSkillCallback()
+        {
+
+        }
+
+        public virtual void OnSkillStateExit()
+        {
+            _skillTargets.Clear();
+            // Owner.CreatureSkill.ReleaseCurrentSkillType();
+        }
         #endregion Events
+
+        protected bool IsCanEnterSkill
+        {
+            get
+            {
+
+                return true;
+            }
+        }
+
+        protected void GatherMeleeTargets()
+        {
+            _skillTargets.Clear();
+            ELookAtDirection enteredLookAtDir = Owner.LookAtDir;
+            for (int i = 0; i < Owner.Targets.Count; ++i)
+            {
+                if (Owner.Targets[i].IsValid() == false)
+                    continue;
+
+                BaseObject target = Owner.Targets[i];
+                if (target.ObjectType == EObjectType.Env)
+                    continue;
+
+                switch (TargetRange)
+                {
+                    case ESkillTargetRange.Single:
+                        ReserveSingleTargets(enteredLookAtDir, target);
+                        break;
+
+                    case ESkillTargetRange.Half:
+                        ReserveHalfTargets(enteredLookAtDir, target);
+                        break;
+
+                    case ESkillTargetRange.Around:
+                        ReserveAroundTargets(target);
+                        break;
+                }
+            }
+
+            ReleaseAllTargetDirs();
+        }
+
+        protected BaseObject GetFirstTarget()
+        {
+            if (Owner.IsValid() == false)
+                return null;
+
+            return Owner.Target;
+        }
 
         private const float c_angleDiagonal = 45f;
         protected virtual void ReserveSingleTargets(ELookAtDirection enteredLookAtDir, BaseObject target)

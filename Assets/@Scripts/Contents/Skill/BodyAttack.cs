@@ -19,6 +19,9 @@ namespace STELLAREST_F1
         }
 
         #region Events
+        public override bool OnSkillStateEnter()
+            => base.OnSkillStateEnter();
+
         public override void OnSkillCallback()
         {
             if (IsValidOwner == false || IsValidTarget == false)
@@ -30,7 +33,7 @@ namespace STELLAREST_F1
             StopCoBodyAttack();
             _coBodyAttack = StartCoroutine(CoBodyAttack());
         }
-        public override void OnSkillStateEnter() { }
+
         public override void OnSkillStateExit() { }
         #endregion Events
 

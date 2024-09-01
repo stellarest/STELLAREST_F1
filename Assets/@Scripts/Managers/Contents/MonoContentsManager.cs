@@ -24,7 +24,6 @@ namespace STELLAREST_F1
             Instance = this;
         }
 
-        private int _trySpawnCount = 0;
         private const int _tryMaxSpawnCount = 999;
         public Vector3Int Spawn(Vector3 spawnPos)
         {

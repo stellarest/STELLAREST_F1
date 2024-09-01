@@ -151,7 +151,9 @@ namespace STELLAREST_F1
                                 .ThenBy(n => (transform.position - n.transform.position).sqrMagnitude)
                                 .ToList();
 
-                yield return new WaitForSeconds(scanTick);
+                //yield return new WaitForSeconds(scanTick);
+                yield return null;
+
             }
         }
 

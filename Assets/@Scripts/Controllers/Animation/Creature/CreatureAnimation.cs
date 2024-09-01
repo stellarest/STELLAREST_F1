@@ -14,6 +14,7 @@ namespace STELLAREST_F1
         private CreatureAnimationCallback _creatureAnimCallback = null;
 
         [SerializeField] private bool[] _canEnterAnimStates = null;
+        public bool[] CanEnterAnimStates => _canEnterAnimStates;
         public void EnteredAnimState(ECreatureAnimState animState)
             => _canEnterAnimStates[(int)animState] = false;
         public bool CanEnterAnimState(ECreatureAnimState animState)
@@ -28,14 +29,24 @@ namespace STELLAREST_F1
                 _canEnterAnimStates[i] = true;
         }
 
+        public void CancelPlayAnimations()
+        {
+            Debug.Log($"Cancel Anim,,");
+            ReleaseAllAnimStates();
+            ResetAllTriggers();
+            Animator.Play(Upper_Idle);
+        }
+
         // --- Upper Layer (New)
         public readonly int Upper_Idle = Animator.StringToHash(ReadOnly.AnimationParams.Upper_Idle);
         public readonly int Upper_Move = Animator.StringToHash(ReadOnly.AnimationParams.Upper_Move);
         public readonly int Upper_SkillA = Animator.StringToHash(ReadOnly.AnimationParams.Upper_SkillA);
+        public readonly int Upper_SkillB = Animator.StringToHash(ReadOnly.AnimationParams.Upper_SkillB);
         public readonly int Upper_CollectEnv = Animator.StringToHash(ReadOnly.AnimationParams.Upper_CollectEnv);
         public readonly int Upper_Dead = Animator.StringToHash(ReadOnly.AnimationParams.Upper_Dead);
 
-        // --- Lower Layer (New)
+        // --- Lower Layer (New), 이건 해쉬값만 있지. 이벤트는 없지 않나 ??
+        // --- ELoweR_Idle, ELower_Move는 지워도 될듯,,,
         public readonly int Lower_Idle = Animator.StringToHash(ReadOnly.AnimationParams.Lower_Idle);
         public readonly int Lower_Move = Animator.StringToHash(ReadOnly.AnimationParams.Lower_Move);
 
@@ -56,13 +67,17 @@ namespace STELLAREST_F1
         public bool ReadySkill
         {
             get => Animator.GetBool(CanSkill);
-            set => Animator.SetBool(CanSkill, value);
+            set 
+            {
+                Animator.SetBool(CanSkill, value);
+            }
         }
-
         
         public void Skill(ESkillType skillType)
         {
             ResetAllTriggers();
+            // Debug.Log("SType: " + skillType);
+            // Invoke 될 때 만 어떤 스킬인지만 알면 될 것 같긴한데,,,
             switch (skillType)
             {
                 case ESkillType.Skill_A:
@@ -114,7 +129,7 @@ namespace STELLAREST_F1
         // --- BaseAnimation으로 옮김
         //public void Dead() => Animator.SetTrigger(OnDead);
 
-        #region Core
+        #region Init Core
         public override bool Init()
         {
             if (base.Init() == false)
@@ -210,21 +225,32 @@ namespace STELLAREST_F1
                     break;
             }
         }
-        protected virtual void OnUpperIdleEnter() 
-            => EnteredAnimState(ECreatureAnimState.Upper_Idle);
+        protected virtual void OnUpperIdleEnter()
+        {
+            //_creatureOwner.CreatureSkill.ReleaseCurrentSkillType();
+            EnteredAnimState(ECreatureAnimState.Upper_Idle);
+        }
+            
         protected virtual void OnUpperMoveEnter()
-            => EnteredAnimState(ECreatureAnimState.Upper_Move);
+        {
+            EnteredAnimState(ECreatureAnimState.Upper_Move);
+        }
         protected virtual void OnUpperSkillAEnter()
         {
             EnteredAnimState(ECreatureAnimState.Upper_SkillA);
             _creatureOwner.LookAtValidTarget();
             _creatureOwner.CreatureSkill.OnSkillStateEnter(ESkillType.Skill_A);
         }
-        protected virtual void OnUpperSkillBEnter() 
-            => EnteredAnimState(ECreatureAnimState.Upper_SkillB);
-        protected virtual void OnUpperSkillCEnter() 
+        protected virtual void OnUpperSkillBEnter()
+        {
+            EnteredAnimState(ECreatureAnimState.Upper_SkillB);
+            _creatureOwner.LookAtValidTarget();
+            _creatureOwner.CreatureSkill.OnSkillStateEnter(ESkillType.Skill_B);
+        }
+
+        protected virtual void OnUpperSkillCEnter()
             => EnteredAnimState(ECreatureAnimState.Upper_SkillC);
-        protected virtual void OnUpperCollectEnvEnter() 
+        protected virtual void OnUpperCollectEnvEnter()
             => EnteredAnimState(ECreatureAnimState.Upper_CollectEnv);
         protected virtual void OnUpperDeadEnter() 
         {

@@ -41,22 +41,22 @@ namespace STELLAREST_F1
             {
                 yield return new WaitUntil(() => Managers.Object.Envs.Count == 0);
                 yield return new WaitForSeconds(waitTime);
-                // Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
-                //     spawnPos: Managers.Map.CellToCenteredWorld(new Vector3Int(-6, 11, 0)),
-                //     dataID: ReadOnly.DataAndPoolingID.DNPID_Env_AshTree);
+                Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
+                    spawnPos: Managers.Map.CellToCenteredWorld(new Vector3Int(-6, 11, 0)),
+                    dataID: ReadOnly.DataAndPoolingID.DNPID_Env_AshTree);
                 
-                if (_spawnEnvTypeFlag == false)
-                {
-                    Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
-                       spawnPos: Managers.Map.CellToCenteredWorld(new Vector3Int(-6, 11, 0)),
-                       dataID: ReadOnly.DataAndPoolingID.DNPID_Env_AshTree);
-                }
-                else
-                {
-                    Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
-                       spawnPos: Managers.Map.CellToCenteredWorld(new Vector3Int(-3, 11, 0)),
-                       dataID: ReadOnly.DataAndPoolingID.DNPID_Env_GoldRock);
-                }
+                // if (_spawnEnvTypeFlag == false)
+                // {
+                //     Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
+                //        spawnPos: Managers.Map.CellToCenteredWorld(new Vector3Int(-6, 11, 0)),
+                //        dataID: ReadOnly.DataAndPoolingID.DNPID_Env_AshTree);
+                // }
+                // else
+                // {
+                //     Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
+                //        spawnPos: Managers.Map.CellToCenteredWorld(new Vector3Int(-3, 11, 0)),
+                //        dataID: ReadOnly.DataAndPoolingID.DNPID_Env_GoldRock);
+                // }
 
                 _spawnEnvTypeFlag = !_spawnEnvTypeFlag;
             }
@@ -84,18 +84,18 @@ namespace STELLAREST_F1
                 // --- First Hero
                 Hero firstHero = Managers.Object.SpawnBaseObject<Hero>(objectType: EObjectType.Hero,
                     spawnPos: Vector3.zero,
-                    dataID: ReadOnly.DataAndPoolingID.DNPID_Hero_Wizard);
+                    dataID: ReadOnly.DataAndPoolingID.DNPID_Hero_Paladin);
                 leaderController.Leader = firstHero;
 
                 StartCoroutine(CoContinuousSpawnMonster_Test(5.5f));
                 StartCoroutine(CoContinuousSpawnEnv_Test(1f));
 
-                // // --- Projectile Target Range Test List
+                // // // --- Projectile Target Range Test List
                 // SpawnChicken_Test(-8, 8);
                 // SpawnChicken_Test(-7, 8); // --> 0, 8
                 // SpawnChicken_Test(-6, 8); // --> 1, 8
-                // // SpawnChicken_Test(0, 8); // --> 0, 8
-                // // SpawnChicken_Test(1, 8); // --> 1, 8
+                // // // SpawnChicken_Test(0, 8); // --> 0, 8
+                // // // SpawnChicken_Test(1, 8); // --> 1, 8
                 // SpawnChicken_Test(-9, 10);
                 // SpawnChicken_Test(-8, 10);
                 // SpawnChicken_Test(-7, 10);

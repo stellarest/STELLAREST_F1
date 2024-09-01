@@ -13,11 +13,14 @@ namespace STELLAREST_F1
 {
     public class Hero : Creature
     {
+        public float TestOffset = 0f;
+
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.T))
             {
-                LevelUp();
+                //LevelUp();
+                HeroAnim.CancelPlayAnimations();
             }
         }
 

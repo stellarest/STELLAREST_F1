@@ -9,6 +9,7 @@ using UnityEditor;
 
 /*
 ********************************************************************
+// --- DID LIST
 - Monster ForceWait When Spawned (O)
 - ENV Test (O)
 - Leader LookAtValidTarget Off when using Joystick (TODO: Out Leader CoPathFinding Immediately (O)
@@ -24,8 +25,22 @@ using UnityEditor;
 - CollectEnv -> DoSkill Immediately (O)
 - Seperate DataFile, Organize, Check Data ID (O)
 - Check Monster BodyAttack (O)
-- Spawn Turkey, Bunny, Pug
+- Effect Swing Flip Test (O)
+
+// --- TODO LIST
+- Next Commit: Add Projectile Start Effects 
+- Melee Swing Particle Fixed Enter Dir vs Projectile Melee Swing Skill
+- Effect Swing Melee -> Projectile (need to add projectile effect)
+
+// --- LATER LIST
+- 몬스터가 Hero에게 이동할 때, 길이 막혀있는 경우 무한 와리가리하다가 자리를 찾아 오는 경우가 있음(심각한 버그는 아님)
+- How to gather Allies Targets?
+
+// --- NOTE
+- 스킬 데이터 예시, 쉴드 궁극기 같은 경우는 같은편에게는 쉴드 효과를 걸어주고, 적에게는 스턴 효과를 줄려면
+- TargetToEnemyEffectIDs, TargetToAllyEffectIDs. 이펙트로 효과 먹여도 되긴함.
 - Paladin Double Attack -> Shield
+- Spawn Turkey, Bunny, Pug
 
 >>> Hero AI, Monster AI
 >>> EStartTargetRange, XShaped
@@ -34,9 +49,6 @@ using UnityEditor;
 >>> Organize Effect, Skills
 >>> Next Skill ID in Hero Stat Data?
 >>> Add Monsters
-
-// --- Note
-> Projectile, Effect쪽 그럭저럭 해결되면 조금 더 수월해지긴할듯.
 
 // --- 이 방식이 제일 직관적이고 깔끔한듯.
 // --- 스킬까지 스킬 포인트로 따로 찍게 하는 것은 조금 오바스러운 것 같음

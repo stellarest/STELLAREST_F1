@@ -81,6 +81,8 @@ namespace STELLAREST_F1
             _heroOwner.HeroBody.HeroEmoji = EHeroEmoji.Idle;
             if (CanEnterAnimState(ECreatureAnimState.Upper_SkillA) == false)
                 ReleaseAnimState(ECreatureAnimState.Upper_SkillA);
+            if (CanEnterAnimState(ECreatureAnimState.Upper_SkillB) == false)
+                ReleaseAnimState(ECreatureAnimState.Upper_SkillB);
 
             base.OnUpperIdleEnter();
         }
@@ -108,6 +110,7 @@ namespace STELLAREST_F1
             if (IsValidOwner == false)
                 return;
 
+            _heroOwner.HeroBody.HeroEmoji = EHeroEmoji.Skill_B;
             base.OnUpperSkillBEnter();
         }
 

@@ -100,9 +100,8 @@ namespace STELLAREST_F1
             Collider.excludeLayers = excludeLayerMask;
 
             Vector3 startPos = Owner.GetFirePosition();
-            // --- 중간에 끊어져도, s이 Target을 받을 수 있을까?
-            //Vector3 targetPos = Owner.Target.CenterPosition;
-            Vector3 targetPos = Skill.FirstTarget.CenterPosition;
+            Vector3 targetPos = Skill.FirstTargetPos;
+
             nStartShootDir = (targetPos - startPos).normalized;
             _currentPenetrationCount = 0;
 
@@ -112,6 +111,17 @@ namespace STELLAREST_F1
             _hitColliders.Clear();
             StopCoDelayCollision();
             _includedTargets.Clear();
+
+            // --- Spawn Enter Effect on Projectile(TEMP)
+            // --- Need to change SkillData.EnterEffectIDs -> ProjectileData.EffectIDs ???
+            // if (Skill.SkillData.EnterEffectIDs.Length != 0)
+            // {
+            //     List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
+            //         effectIDs: Skill.SkillData.EnterEffectIDs,
+            //         spawnPos: transform.position,
+            //         startCallback: null
+            //     );
+            // }
         }
         #endregion
 
@@ -125,7 +135,7 @@ namespace STELLAREST_F1
 
             BaseObject target = other.GetComponent<BaseObject>();
             // --- ? Apply Flag Option (IgnoreIncludedTargets)
-
+            
             if (_includePrevDamagedTargets == false && _includedTargets.Contains(target))
                 return;
 
@@ -340,10 +350,10 @@ namespace STELLAREST_F1
 
             target.OnDamaged(attacker: Owner, skillByAttacker: Skill);
             // --- Effect
-            if (Skill.SkillData.EffectIDs.Length != 0)
+            if (Skill.SkillData.HitEffectIDs.Length != 0)
             {
                 List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
-                effectIDs: Skill.SkillData.EffectIDs,
+                effectIDs: Skill.SkillData.HitEffectIDs,
                 spawnPos: Util.GetRandomQuadPosition(target.CenterPosition),
                 startCallback: null
                 );

@@ -6,8 +6,12 @@ namespace STELLAREST_F1
 {
     public class Shield : SkillBase
     {
-        public override void OnSkillCallback() { }
-        public override void OnSkillStateEnter() { }
+        #region Events
+        public override bool OnSkillStateEnter()
+            => base.OnSkillStateEnter();
+
+        // public override void OnSkillCallback() { }
         public override void OnSkillStateExit() { }
+        #endregion
     }
 }

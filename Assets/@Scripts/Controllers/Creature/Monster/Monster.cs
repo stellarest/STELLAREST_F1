@@ -9,6 +9,10 @@ namespace STELLAREST_F1
 {
     public class Monster : Creature
     {
+        #if UNITY_EDITOR
+        private static int SpawnNumber = 0;
+        #endif
+
         public MonsterData MonsterData { get; private set; } = null;
         public MonsterStatData MonsterStatData { get; private set; } = null;
         [SerializeField] private MonsterBody _monsterBody = null;
@@ -93,7 +97,7 @@ namespace STELLAREST_F1
             _maxLevelID = dataID;
 
             MonsterType = MonsterData.MonsterType;
-            gameObject.name += $"_{MonsterData.DevTextID.Replace(" ", "")}";
+            gameObject.name += $"_{MonsterData.DevTextID.Replace(" ", "")}_{SpawnNumber++}";
         }
 
         protected override void EnterInGame(Vector3 spawnPos)

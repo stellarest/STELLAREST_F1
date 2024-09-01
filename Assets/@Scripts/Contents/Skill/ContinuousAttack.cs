@@ -1,20 +1,26 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 using UnityEngine;
 using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
-    public class DefaultSkill : SkillBase
+    public class ContinuousAttack : SkillBase
     {
+        private Vector3 _enteredStartPos = Vector3.zero;
+        private Vector3 _enteredDir = Vector3.zero;
+        private int _enteredSignX = 0;
+        private int _enteredSignY = 0;
+
         #region Events
         public override bool OnSkillStateEnter()
         {
             if (base.OnSkillStateEnter() == false)
                 return false;
+
+            _enteredStartPos = Owner.Target.CenterPosition;
+            _enteredDir = Owner.Target.CellPos - Owner.CellPos;
+            _enteredSignX = (Owner.LookAtDir == Define.ELookAtDirection.Left) ? 1 : 0;
 
             Owner.LookAtValidTarget();
             if (SkillData.ProjectileID < 0)
@@ -29,7 +35,7 @@ namespace STELLAREST_F1
         {
             if (Owner.CreatureSkill.CurrentSkillType != SkillType)
             {
-                Debug.Log("No DefaultSkill.");
+                Debug.Log("No ContinuousAttack.");
                 return;
             }
 
@@ -37,14 +43,13 @@ namespace STELLAREST_F1
             if (SkillData.EnterEffectIDs.Length != 0)
             {
                 List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
-                effectIDs: SkillData.EnterEffectIDs,
-                spawnPos: Owner.CenterPosition,
-                startCallback: null
+                    effectIDs: SkillData.EnterEffectIDs,
+                    spawnPos: Owner.CenterPosition,
+                    startCallback: () => Managers.Contents.ActivateEffects(Owner.BaseEffect, _enteredStartPos, _enteredDir, _enteredSignX)
                 );
             }
 
-            // Debug.Log($"SkillType: {this.SkillType}");
-            // --- Handle Ranged Targets
+            // --- Handle: Ranged Targets
             if (SkillData.ProjectileID >= 0)
             {
                 Projectile projectile = GenerateProjectile(Owner, GetSpawnPos());
@@ -56,15 +61,9 @@ namespace STELLAREST_F1
                     // --- Generate Effect
                 }
             }
-            // --- Handle Melee Targets
+            // --- Handle: Melee Targets
             else
             {
-                // // --- DEBUG
-                // if (_skillTargets.Count == 0)
-                // {
-                //     Debug.LogWarning("???");
-                // }
-
                 for (int i = 0; i < _skillTargets.Count; ++i)
                 {
                     if (_skillTargets[i].IsValid() == false)
@@ -77,10 +76,10 @@ namespace STELLAREST_F1
                         if (SkillData.HitEffectIDs.Length != 0)
                         {
                             List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
-                            effectIDs: SkillData.HitEffectIDs,
-                            spawnPos: Util.GetRandomQuadPosition(target.CenterPosition),
-                            startCallback: null
-                        );
+                                effectIDs: SkillData.HitEffectIDs,
+                                spawnPos: Util.GetRandomQuadPosition(target.CenterPosition),
+                                startCallback: null
+                            );
                         }
                     }
                 }
@@ -90,6 +89,5 @@ namespace STELLAREST_F1
         public override void OnSkillStateExit()
             => base.OnSkillStateExit();
         #endregion Events
-
     }
 }
