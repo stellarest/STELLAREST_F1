@@ -1,9 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements.Experimental;
 using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
@@ -49,6 +46,7 @@ namespace STELLAREST_F1
         public readonly int Upper_Move = Animator.StringToHash(ReadOnly.AnimationParams.Upper_Move);
         public readonly int Upper_SkillA = Animator.StringToHash(ReadOnly.AnimationParams.Upper_SkillA);
         public readonly int Upper_SkillB = Animator.StringToHash(ReadOnly.AnimationParams.Upper_SkillB);
+        public readonly int Upper_SkillC = Animator.StringToHash(ReadOnly.AnimationParams.Upper_SkillC);
         public readonly int Upper_CollectEnv = Animator.StringToHash(ReadOnly.AnimationParams.Upper_CollectEnv);
         public readonly int Upper_Dead = Animator.StringToHash(ReadOnly.AnimationParams.Upper_Dead);
 
@@ -86,7 +84,6 @@ namespace STELLAREST_F1
         {
             // --- 임시 제거
             //ResetAllTriggers();
-
             CanSkillTrigger = false;
             switch (skillType)
             {
@@ -149,7 +146,6 @@ namespace STELLAREST_F1
             _creatureAnimCallback = GetComponent<CreatureAnimationCallback>();
             _canEnterAnimStates = new bool[(int)ECreatureAnimState.Max];
             ReleaseAllAnimStates();
-
             return true;
         }
 
@@ -241,8 +237,8 @@ namespace STELLAREST_F1
         {
             EnteredAnimState(ECreatureAnimState.Upper_Idle);
 
-            // --- 모든 스킬은 반드시 종료 이후, 또는 중간에 끊겼을 경우 반드시 UpperStateEnter로 경유해야함.
-            // --- (나중에 Dead State도 반드시 Idle -> Dead로 갈 수 있도록 할 것)
+            // --- *** 모든 스킬은 반드시 종료 이후, 또는 중간에 끊겼을 경우 반드시 UpperStateEnter로 경유해야함. ***
+            // --- *** (나중에 Dead State도 반드시 Idle -> Dead로 갈 수 있도록 할 것) ***
             ReleaseAllSkillsAnimStates();
             ResetAllTriggers();
             OnSkillExit(_creatureOwner.CreatureSkill.CurrentSkillType);
@@ -346,24 +342,6 @@ namespace STELLAREST_F1
                 return;
 
             _creatureOwner.CreatureSkill.OnSkillStateExit(skillType);
-        }
-
-        public bool IsPlayingSkillAnimation(ESkillType skillType)
-        {
-            switch (skillType)
-            {
-                case ESkillType.Skill_A:
-                    return _canEnterAnimStates[(int)ECreatureAnimState.Upper_SkillA] == false;
-                
-                case ESkillType.Skill_B:
-                    return _canEnterAnimStates[(int)ECreatureAnimState.Upper_SkillB] == false;
-
-                case ESkillType.Skill_C:
-                    return _canEnterAnimStates[(int)ECreatureAnimState.Upper_SkillC] == false;
-
-                default:
-                    return false;
-            }
         }
     }
 }

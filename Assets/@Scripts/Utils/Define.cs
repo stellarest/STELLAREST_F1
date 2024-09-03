@@ -345,6 +345,7 @@ namespace STELLAREST_F1
         public enum EClassName
         {
             DefaultSkill,
+            Shield,
             Projectile,
             StraightMotion,
             ParabolaMotion,
@@ -420,12 +421,11 @@ namespace STELLAREST_F1
             Pull,
         }
 
-        public enum EEffectSourceType
+        public enum EEffectEnterType // 변수 이름이 마음에 안드는데,,
         {
             None = -1,
             Owner,
             Target,
-            Projectile,
         }
 
         public enum EEffectSpawnType
@@ -466,7 +466,6 @@ namespace STELLAREST_F1
             Upper_CollectEnv,
             // --- 나중에 Sick, Healthy 추가
             Upper_Dead,
-            
             Max = Upper_Dead + 1
 
             // --- Prev
@@ -474,7 +473,13 @@ namespace STELLAREST_F1
             // Lower_Idle,
             // Lower_Move,
             //Max = Lower_Move + 1
-            
+        }
+
+        public enum ECalcStatType
+        {
+            None = -1,
+            AddAmount = 1,
+            AddPercent = 2
         }
 
         // ####################################################
@@ -616,6 +621,7 @@ namespace STELLAREST_F1
                 public static readonly string Upper_Move = "Upper_Move";
                 public static readonly string Upper_SkillA = "Upper_SkillA";
                 public static readonly string Upper_SkillB = "Upper_SkillB";
+                public static readonly string Upper_SkillC = "Upper_SkillC";
                 public static readonly string Upper_CollectEnv = "Upper_CollectEnv";
                 public static readonly string Upper_Dead = "Upper_Dead";
 

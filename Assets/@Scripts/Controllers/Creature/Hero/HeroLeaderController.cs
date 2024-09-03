@@ -274,9 +274,11 @@ namespace STELLAREST_F1
             if (TryMove)
                 return false;
 
+            // --- GetSkill은 CanSkill에서만 호출
             if (_leader.CanSkill)
             {
-                _leader.CreatureSkill.GetSkill?.DoSkill();
+                // _leader.CreatureSkill.GetSkill?.DoSkill();
+                _leader.CreatureSkill.CurrentSkill?.DoSkill();
                 return true;
             }
             else if (_leader.CanCollectEnv)

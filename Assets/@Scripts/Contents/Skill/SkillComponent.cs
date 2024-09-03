@@ -11,11 +11,14 @@ namespace STELLAREST_F1
     {
         private Creature _owner = null;
         public List<SkillBase> Skills { get; } = new List<SkillBase>();
-        [field: SerializeField] public List<SkillBase> ActiveSkills { get; private set; } = new List<SkillBase>();
+        // public List<SkillBase> ActiveSkills { get; } = new List<SkillBase>();
+
+        // --- DEV 
+        public List<SkillBase> ActiveSkills = new List<SkillBase>();
+
         public SkillBase FindSkill(int dataID) => Skills.FirstOrDefault(n => n.DataTemplateID == dataID);
         public SkillBase[] SkillArray { get; private set; } = new SkillBase[(int)ESkillType.Max]; // --- Caching
-        
-        public ESkillType CurrentSkillType { get; set; } = ESkillType.None;
+        [field: SerializeField] public ESkillType CurrentSkillType { get; set; } = ESkillType.None;
         public SkillBase CurrentSkill
         {
             get
@@ -34,7 +37,17 @@ namespace STELLAREST_F1
                 if (ActiveSkills.Count == 0)
                     return SkillArray[(int)ESkillType.Skill_A];
 
-                return ActiveSkills[UnityEngine.Random.Range(0, ActiveSkills.Count)];
+                int rand = UnityEngine.Random.Range(0, ActiveSkills.Count);
+                SkillBase getSkill = ActiveSkills[rand];
+                if (getSkill.RemainCoolTime > 0f)
+                {
+                    getSkill = ActiveSkills[rand == 0 ? ++rand : --rand];
+                    if (getSkill.RemainCoolTime > 0f)
+                        return SkillArray[(int)ESkillType.Skill_A];
+                }
+
+                return getSkill;
+                //return ActiveSkills[UnityEngine.Random.Range(0, ActiveSkills.Count)];
             }
         }
 
@@ -116,7 +129,7 @@ namespace STELLAREST_F1
             if (skill.SkillType == ESkillType.Skill_A)
                 return;
 
-            // Debug.Log($"<color=cyan>ADD: {skill.Dev_TextID}</color>");
+            Debug.Log($"<color=cyan>Ready(Add): {skill.Dev_TextID}</color>");
             ActiveSkills.Add(skill);
         }
 
@@ -125,7 +138,7 @@ namespace STELLAREST_F1
             if (skill.SkillType == ESkillType.Skill_A)
                 return;
 
-            // Debug.Log($"<color=cyan>REMOVE: {skill.Dev_TextID}</color>");
+            Debug.Log($"<color=cyan>End(Remove): {skill.Dev_TextID}</color>");
             ActiveSkills.Remove(skill);
         }
 

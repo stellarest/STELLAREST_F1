@@ -91,20 +91,23 @@ namespace STELLAREST_F1
 
             if (Owner.CreatureAnim.CanSkillTrigger == false)
             {
-                Debug.Log($"<color=white>OOPS !!: {Dev_TextID}</color>");
+                // Debug.Log($"<color=white>OOPS !!: {Dev_TextID}</color>");
                 return;
             }
 
+            // --- REAL ACTIVATE SKILL,,
             Owner.CreatureSkill.RemoveActiveSkill(this);
-            Owner.CreatureSkill.CurrentSkillType = SkillType;
+            // Owner.CreatureSkill.CurrentSkillType = SkillType;
 
-            Owner.CreatureAnim.Skill(SkillType);
+            // Owner.CreatureAnim.Skill(SkillType);
+            Owner.CreatureAnim.Skill(Owner.CreatureSkill.CurrentSkillType);
             StartCoroutine(CoActivateSkill());
         }
 
         private IEnumerator CoActivateSkill()
         {
             RemainCoolTime = SkillData.CoolTime;
+
             yield return new WaitForSeconds(SkillData.CoolTime);
             RemainCoolTime = 0f;
             Owner.CreatureSkill.AddActiveSkill(this);
@@ -194,6 +197,7 @@ namespace STELLAREST_F1
             EnteredTargetPos = Owner.Target.CenterPosition;
             EnteredTargetDir = Owner.Target.CellPos - Owner.CellPos;
             EnteredSignX = (Owner.LookAtDir == ELookAtDirection.Left) ? 1 : 0;
+            Owner.Moving = false;
             return true;
         }
 

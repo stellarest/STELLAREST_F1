@@ -8,10 +8,21 @@ namespace STELLAREST_F1
     {
         #region Events
         public override bool OnSkillStateEnter()
-            => base.OnSkillStateEnter();
+        {
+            if (base.OnSkillStateEnter() == false)
+                return false;
 
-        // public override void OnSkillCallback() { }
-        public override void OnSkillStateExit() { }
+            Owner.Moving = false;
+            return true;
+        }
+
+        public override bool OnSkillCallback()
+        {
+            return base.OnSkillCallback();
+        }
+
+        public override void OnSkillStateExit()
+            => base.OnSkillStateExit();
         #endregion
     }
 }

@@ -1,14 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
-    public class EffectVFXSwing : EffectBase
+    public class VFXSwing : VFXBase
     {
-        private const float c_movementSpeed = 4.0F;
+        protected override void EnterInGame(Vector3 spawnPos)
+        {
+            base.EnterInGame(spawnPos);
+            _movementSpeed = 4.0f;
+        }
 
         public override void ApplyEffect()
         {
@@ -29,10 +31,10 @@ namespace STELLAREST_F1
             }
         }
 
-        // --- 눈속임 용도, 충돌x
-        private void LateUpdate()
-        {
-            transform.position += _enteredDir.normalized * c_movementSpeed * Time.deltaTime;
-        }
+        // // --- 눈속임 용도, 충돌x
+        // private void LateUpdate()
+        // {
+        //     transform.position += _enteredDir.normalized * _movementSpeed * Time.deltaTime;
+        // }
     }
 }

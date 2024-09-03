@@ -91,20 +91,20 @@ namespace STELLAREST_F1
                 StartCoroutine(CoContinuousSpawnEnv_Test(1f));
 
                 // // // // --- Projectile Target Range Test List
-                // SpawnChicken_Test(-8, 8);
-                // SpawnChicken_Test(-7, 8); // --> 0, 8
-                // SpawnChicken_Test(-6, 8); // --> 1, 8
-                // // // SpawnChicken_Test(0, 8); // --> 0, 8
-                // // // SpawnChicken_Test(1, 8); // --> 1, 8
-                // SpawnChicken_Test(-9, 10);
-                // SpawnChicken_Test(-8, 10);
-                // SpawnChicken_Test(-7, 10);
-                // SpawnChicken_Test(-6, 10);
+                SpawnChicken_Test(-8, 8);
+                SpawnChicken_Test(-7, 8); // --> 0, 8
+                SpawnChicken_Test(-6, 8); // --> 1, 8
+                // // SpawnChicken_Test(0, 8); // --> 0, 8
+                // // SpawnChicken_Test(1, 8); // --> 1, 8
+                SpawnChicken_Test(-9, 10);
+                SpawnChicken_Test(-8, 10);
+                SpawnChicken_Test(-7, 10);
+                SpawnChicken_Test(-6, 10);
 
-                // SpawnChicken_Test(-9, 9);
-                // SpawnChicken_Test(-8, 9);
-                // SpawnChicken_Test(-7, 9);
-                // SpawnChicken_Test(-6, 9);
+                SpawnChicken_Test(-9, 9);
+                SpawnChicken_Test(-8, 9);
+                SpawnChicken_Test(-7, 9);
+                SpawnChicken_Test(-6, 9);
 
                 // SpawnChicken_Test(-9, 7);
                 // SpawnChicken_Test(-8, 7);

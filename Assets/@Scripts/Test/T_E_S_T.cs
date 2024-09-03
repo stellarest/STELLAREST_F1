@@ -26,12 +26,14 @@ using UnityEditor;
 - Seperate DataFile, Organize, Check Data ID (O)
 - Check Monster BodyAttack (O)
 - Effect Swing Flip Test (O)
+- Fix Skill Trggers (O)
 
 // --- TODO LIST
-- Next Commit: [Feat]Paladin Skill_B(Double Attack Projectile)
+- Skill_C 넣으면 동작 또 이상해짐...
+- BaseStat 1차 정리
 - Next Commit: [Feat]Paladin Skill_C(Shield)
-- 문제 발생, Skill_A의 쿨타임을 극단적으로 줄이면 Skill_B가 안나가거나 이상하게 나감. (뭐지? 문제 없어 보이는데...)
-- 또한 Skill_A의 원래 쿨타임(1.25, 팔라딘 Skill_A)을 적용하면 뭔가 느릿느릿함.
+- Add Skill Value
+- ...
 
 // --- LATER LIST
 - 몬스터가 Hero에게 이동할 때, 길이 막혀있는 경우 무한 와리가리하다가 자리를 찾아 오는 경우가 있음(심각한 버그는 아님)
@@ -43,7 +45,7 @@ using UnityEditor;
 - Effect Swing도 처음에는 target Range1, 그 다음에는 Swing의 크기를 늘린 것으로 target range2 이런식으로 해야할까
 - 투명 프로젝타일 못맞추면 엉뚱한 녀석이 맞는데 크기를 키워야되나. 아니면 그냥 Melee Swing으로 할까.
 - MeleeSwing으로 고친다고해도 Projectile Effect 설정하는 부분 덕분에 많은 부분을 고칠 수 있게 되긴 함.
-
+- ex. Paladin_Skill_B Effect에 AddPercent같은거 붙여서 추가 데미지 줘야할지 (SourceDmg + AddPercentEffect)
 
 // --- HERO NOTE
 - Paladin (101000)

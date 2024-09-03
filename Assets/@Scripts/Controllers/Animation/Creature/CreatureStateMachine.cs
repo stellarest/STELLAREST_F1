@@ -30,8 +30,8 @@ namespace STELLAREST_F1
             else if (stateInfo.shortNameHash == _creatureAnim.Upper_SkillB)
                 OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_SkillB);
 
-            // if (stateInfo.shortNameHash == _creatureAnim.Upper_SkillC)
-            //     OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_SkillC);
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_SkillC)
+                OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_SkillC);
 
             else if (stateInfo.shortNameHash == _creatureAnim.Upper_CollectEnv)
                 OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_CollectEnv);
@@ -58,8 +58,8 @@ namespace STELLAREST_F1
             else if (stateInfo.shortNameHash == _creatureAnim.Upper_SkillB)
                 OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_SkillB);
 
-            // if (stateInfo.shortNameHash == _creatureAnim.Upper_SkillC)
-            //     OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_SkillC);
+            if (stateInfo.shortNameHash == _creatureAnim.Upper_SkillC)
+                OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_SkillC);
 
             else if (stateInfo.shortNameHash == _creatureAnim.Upper_CollectEnv)
                 OnAnimStateExitHandler?.Invoke(ECreatureAnimState.Upper_CollectEnv);

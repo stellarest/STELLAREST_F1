@@ -22,6 +22,7 @@ namespace STELLAREST_F1
             else
                 SetFirstTargetPos(Owner.Target.CenterPosition);
 
+            Owner.Moving = false;
             return true;
         }
 

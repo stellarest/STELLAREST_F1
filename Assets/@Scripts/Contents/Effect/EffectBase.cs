@@ -104,18 +104,21 @@ namespace STELLAREST_F1
                 _enteredSignX = _fromSkillEffect.EnteredSignX;
             }
 
-            if (EffectData.StartSourceType == EEffectSourceType.None)
+            if (EffectData.EffectEnterType == EEffectEnterType.None)
             {
                 transform.position = spawnPos;
             }
             else
-                transform.position = SetStartPos(EffectData.StartSourceType);
+                transform.position = SetStartPos(EffectData.EffectEnterType);
 
             ApplyEffect();
         }
 
         private SkillBase SetSkill()
         {
+            if (Owner == null)
+                return null;
+
             Creature creatureOwner = Owner.GetComponent<Creature>();
             if (creatureOwner == null)
                 return null;
@@ -124,17 +127,17 @@ namespace STELLAREST_F1
             return creatureOwner.CreatureSkill.CurrentSkill;
         }
 
-        private Vector3 SetStartPos(EEffectSourceType startSourceType)
+        private Vector3 SetStartPos(EEffectEnterType eEnterType)
         {
-            switch (startSourceType)
+            switch (eEnterType)
             {
-                case EEffectSourceType.None:
+                case EEffectEnterType.None:
                     return Vector3.zero;
 
-                case EEffectSourceType.Owner:
+                case EEffectEnterType.Owner:
                     return _fromSkillEffect.EnteredOwnerPos;
 
-                case EEffectSourceType.Target:
+                case EEffectEnterType.Target:
                     return _fromSkillEffect.EnteredTargetPos;
 
                 default:

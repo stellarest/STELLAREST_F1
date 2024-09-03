@@ -42,17 +42,17 @@ namespace STELLAREST_F1
                     return false;
                 }
 
-                if (CanEnterSkillAState == false)
-                {
-                    CreatureAnim.ReadySkill = false;
-                    return false;
-                }
+                // if (CanEnterSkillAState == false)
+                // {
+                //     CreatureAnim.ReadySkill = false;
+                //     return false;
+                // }
 
-                if (CanEnterSkillBState == false)
-                {
-                    CreatureAnim.ReadySkill = false;
-                    return false;
-                }
+                // if (CanEnterSkillBState == false)
+                // {
+                //     CreatureAnim.ReadySkill = false;
+                //     return false;
+                // }
 
                 if (Target.IsValid() == false)
                 {
@@ -60,7 +60,22 @@ namespace STELLAREST_F1
                     return false;
                 }
 
-                // --- 스킬이 2개 이상일 경우, 
+                // --- 스킬이 진행중일 수도 있음
+                if (CreatureAnim.CanSkillTrigger == false)
+                {
+                    // Debug.Log($"<color=white>OOPS !!: {Dev_TextID}</color>");
+                    return false;
+                }
+
+                // --- 스킬이 진행중일 수도 있음
+                // if (CreatureSkill.CurrentSkillType != ESkillType.None)
+                // {
+                //     // --- 또 타서 안됨...
+                //     // CreatureAnim.ReadySkill = false;
+                //     return false;
+                // }
+
+                // --- 스킬이 2개 이상일 경우, (염려했었던 문제가 발생함)
                 // --- CanSkill에서 B가 선택이 되었는데
                 // --- DO SKILL에서 C가 선택이 될 위험이 있다.
                 SkillBase currentSkill = CreatureSkill.GetSkill;
@@ -79,6 +94,9 @@ namespace STELLAREST_F1
                 {
                     if (dx <= invokeRange && dy <= invokeRange)
                     {
+                        // Skill_C인데 왜 Skill_B가 나감???
+                        // Debug.Log($"CurrentSkill: {currentSkill.Dev_TextID}");
+                        CreatureSkill.CurrentSkillType = currentSkill.SkillType;
                         CreatureAnim.ReadySkill = true;
                         return true;
                     }
