@@ -25,25 +25,20 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public override void OnSkillCallback()
+        public override bool OnSkillCallback()
         {
-            if (Owner.CreatureSkill.CurrentSkillType != SkillType)
-            {
-                Debug.Log("No DefaultSkill.");
-                return;
-            }
+            if (base.OnSkillCallback() == false)
+                return false;
 
-            // Debug.Log($"OnSkill: {SkillType}");
             if (SkillData.EnterEffectIDs.Length != 0)
             {
                 List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
-                effectIDs: SkillData.EnterEffectIDs,
-                spawnPos: Owner.CenterPosition,
-                startCallback: null
+                    effectIDs: SkillData.EnterEffectIDs,
+                    spawnPos: Owner.CenterPosition,
+                    startCallback: null
                 );
             }
 
-            // Debug.Log($"SkillType: {this.SkillType}");
             // --- Handle Ranged Targets
             if (SkillData.ProjectileID >= 0)
             {
@@ -59,12 +54,6 @@ namespace STELLAREST_F1
             // --- Handle Melee Targets
             else
             {
-                // // --- DEBUG
-                // if (_skillTargets.Count == 0)
-                // {
-                //     Debug.LogWarning("???");
-                // }
-
                 for (int i = 0; i < _skillTargets.Count; ++i)
                 {
                     if (_skillTargets[i].IsValid() == false)
@@ -77,14 +66,16 @@ namespace STELLAREST_F1
                         if (SkillData.HitEffectIDs.Length != 0)
                         {
                             List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
-                            effectIDs: SkillData.HitEffectIDs,
-                            spawnPos: Util.GetRandomQuadPosition(target.CenterPosition),
-                            startCallback: null
-                        );
+                                effectIDs: SkillData.HitEffectIDs,
+                                spawnPos: Util.GetRandomQuadPosition(target.CenterPosition),
+                                startCallback: null
+                            );
                         }
                     }
                 }
             }
+
+            return true;
         }
 
         public override void OnSkillStateExit()

@@ -22,16 +22,20 @@ namespace STELLAREST_F1
         public override bool OnSkillStateEnter()
             => base.OnSkillStateEnter();
 
-        public override void OnSkillCallback()
+        public override bool OnSkillCallback()
         {
+            if (base.OnSkillCallback() == false)
+                return false;
+
             if (IsValidOwner == false || IsValidTarget == false)
             {
                 StopCoBodyAttack();
-                return;
+                return true;
             }
 
             StopCoBodyAttack();
             _coBodyAttack = StartCoroutine(CoBodyAttack());
+            return true;
         }
 
         public override void OnSkillStateExit() { }

@@ -11,25 +11,29 @@ namespace STELLAREST_F1
     {
         private Creature _owner = null;
         public List<SkillBase> Skills { get; } = new List<SkillBase>();
-        public List<SkillBase> ActiveSkills { get; } = new List<SkillBase>();
+        [field: SerializeField] public List<SkillBase> ActiveSkills { get; private set; } = new List<SkillBase>();
         public SkillBase FindSkill(int dataID) => Skills.FirstOrDefault(n => n.DataTemplateID == dataID);
         public SkillBase[] SkillArray { get; private set; } = new SkillBase[(int)ESkillType.Max]; // --- Caching
         
         public ESkillType CurrentSkillType { get; set; } = ESkillType.None;
-        private SkillBase _currentSkill = null;
         public SkillBase CurrentSkill
         {
             get
             {
-                /*
-                    ###########################################################
-                    ##### ActiveSkills가 없으면 무조건 자동으로 Default Attack. #####
-                    ###########################################################
-                */
+                if (CurrentSkillType == ESkillType.None)
+                    return null;
+
+                return SkillArray[(int)CurrentSkillType];
+            }
+        }
+
+        public SkillBase GetSkill
+        {
+            get
+            {
                 if (ActiveSkills.Count == 0)
                     return SkillArray[(int)ESkillType.Skill_A];
 
-                // SkillArray로 떔빵 할 수 있을 것 같긴 한데
                 return ActiveSkills[UnityEngine.Random.Range(0, ActiveSkills.Count)];
             }
         }
@@ -52,15 +56,15 @@ namespace STELLAREST_F1
                 SkillArray = new SkillBase[(int)ESkillType.Max];
 
             // --- Default Skill(A)
-            SkillArray[(int)ESkillType.Skill_A] = AddSkill(creatureData.Skill_A_ID);
+            SkillArray[(int)ESkillType.Skill_A] = InitialAddSkill(creatureData.Skill_A_ID);
 
             // --- Active Skill1(B)
-            SkillArray[(int)ESkillType.Skill_B] = AddSkill(creatureData.Skill_B_ID);
+            SkillArray[(int)ESkillType.Skill_B] = InitialAddSkill(creatureData.Skill_B_ID);
             if (SkillArray[(int)ESkillType.Skill_B] != null)
                 ActiveSkills.Add(SkillArray[(int)ESkillType.Skill_B]);
 
             // --- Active Skill2(C)
-            SkillArray[(int)ESkillType.Skill_C] = AddSkill(creatureData.Skill_C_ID);
+            SkillArray[(int)ESkillType.Skill_C] = InitialAddSkill(creatureData.Skill_C_ID);
             if (SkillArray[(int)ESkillType.Skill_C] != null)
                 ActiveSkills.Add(SkillArray[(int)ESkillType.Skill_C]);
 
@@ -82,7 +86,7 @@ namespace STELLAREST_F1
             }
         }
 
-        private SkillBase AddSkill(int skillDataID)
+        private SkillBase InitialAddSkill(int skillDataID)
         {
             if (skillDataID == -1)
                 return null;
@@ -97,15 +101,32 @@ namespace STELLAREST_F1
             SkillBase skill = gameObject.AddComponent(skillClassType) as SkillBase;
             if (skill == null)
             {
-                Debug.LogError($"{nameof(AddSkill)}, You have a SkillDataID, but Add Failed.");
+                Debug.LogError($"{nameof(InitialAddSkill)}, You have a SkillDataID, but Add Failed.");
                 Debug.Break();
                 return null;
             }
 
             skill.InitialSetInfo(dataID: skillDataID, owner: _owner);
             Skills.Add(skill);
-
             return skill;
+        }
+
+        public void AddActiveSkill(SkillBase skill)
+        {
+            if (skill.SkillType == ESkillType.Skill_A)
+                return;
+
+            // Debug.Log($"<color=cyan>ADD: {skill.Dev_TextID}</color>");
+            ActiveSkills.Add(skill);
+        }
+
+        public void RemoveActiveSkill(SkillBase skill)
+        {
+            if (skill.SkillType == ESkillType.Skill_A)
+                return;
+
+            // Debug.Log($"<color=cyan>REMOVE: {skill.Dev_TextID}</color>");
+            ActiveSkills.Remove(skill);
         }
 
         public void OnSkillStateEnter(ESkillType skillType)

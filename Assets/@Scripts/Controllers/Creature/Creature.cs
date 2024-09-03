@@ -63,7 +63,7 @@ namespace STELLAREST_F1
                 // --- 스킬이 2개 이상일 경우, 
                 // --- CanSkill에서 B가 선택이 되었는데
                 // --- DO SKILL에서 C가 선택이 될 위험이 있다.
-                SkillBase currentSkill = CreatureSkill.CurrentSkill;
+                SkillBase currentSkill = CreatureSkill.GetSkill;
                 if (currentSkill == null || currentSkill.RemainCoolTime > 0f)
                 {
                     CreatureAnim.ReadySkill = false;
@@ -311,7 +311,7 @@ namespace STELLAREST_F1
         private bool CanEnterSkillBState
             => CreatureAnim.CanEnterAnimState(ECreatureAnimState.Upper_SkillB);
         public void CancelPlayAnimations() 
-            => CreatureAnim.CancelPlayAnimations();
+            => CreatureAnim.ResetAnimation();
 
         #region Init Core
         public override bool Init()

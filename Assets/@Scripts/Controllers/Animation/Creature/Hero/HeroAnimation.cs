@@ -60,14 +60,14 @@ namespace STELLAREST_F1
             if (IsValidOwner == false)
                 return;
 
-            Vector3 spawnPos = _heroOwner.HeroBody.GetContainer(EHeroBody_Lower.LegR).TR.position;
-            EffectBase dustEffect = Managers.Object.SpawnBaseObject<EffectBase>(
-                objectType: EObjectType.Effect,
-                spawnPos: spawnPos,
-                dataID: ReadOnly.DataAndPoolingID.DNPID_Effect_Dust,
-                owner: _heroOwner
-            );
-            dustEffect.SortingGroup.sortingOrder = ReadOnly.SortingLayers.SLOrder_BaseObject;
+            // Vector3 spawnPos = _heroOwner.HeroBody.GetContainer(EHeroBody_Lower.LegR).TR.position;
+            // EffectBase dustEffect = Managers.Object.SpawnBaseObject<EffectBase>(
+            //     objectType: EObjectType.Effect,
+            //     spawnPos: spawnPos,
+            //     dataID: ReadOnly.DataAndPoolingID.DNPID_Effect_Dust,
+            //     owner: _heroOwner
+            // );
+            // dustEffect.SortingGroup.sortingOrder = ReadOnly.SortingLayers.SLOrder_BaseObject;
         }
         #endregion
 

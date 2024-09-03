@@ -345,7 +345,6 @@ namespace STELLAREST_F1
         public enum EClassName
         {
             DefaultSkill,
-            ContinuousAttack,
             Projectile,
             StraightMotion,
             ParabolaMotion,
@@ -419,6 +418,14 @@ namespace STELLAREST_F1
             Freeze,
             Stun,
             Pull,
+        }
+
+        public enum EEffectSourceType
+        {
+            None = -1,
+            Owner,
+            Target,
+            Projectile,
         }
 
         public enum EEffectSpawnType

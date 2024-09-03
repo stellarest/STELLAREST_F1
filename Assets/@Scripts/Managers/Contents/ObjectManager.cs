@@ -164,6 +164,7 @@ namespace STELLAREST_F1
 
                         EffectBase effect = go.GetComponent<EffectBase>();
                         effect.Owner = owner;
+                        //effect.Skill = owner.GetComponent<Creature>().CreatureSkill.CurrentSkill;
                         effect.SetInfo(dataID, spawnPos);
                         return effect as T;
                     }

@@ -20,7 +20,7 @@ namespace STELLAREST_F1
             if (Input.GetKeyDown(KeyCode.T))
             {
                 //LevelUp();
-                HeroAnim.CancelPlayAnimations();
+                HeroAnim.ResetAnimation();
             }
         }
 

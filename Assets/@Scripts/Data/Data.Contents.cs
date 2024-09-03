@@ -604,7 +604,7 @@ namespace STELLAREST_F1.Data
     {
         // FollowOwner: 프로젝타일 스킬이라면 프로젝타일을 따라가고
         // 아니라면 Owner 자체를 따라가게? 아니면 프로젝타일 effectID로 하는것은 프로젝타일을 따라가도록
-        public bool ApplyOnStartCallback;
+        public EEffectSourceType StartSourceType;
         public bool IsLoop;
         public float Amount;
         public float PercentAdd;

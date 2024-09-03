@@ -17,6 +17,9 @@ namespace STELLAREST_F1
     {
         //public Creature Owner { get; set; } = null;
         public BaseObject Owner { get; set; } = null;
+        protected SkillBase _fromSkillEffect = null;
+        //public SkillBase Skill { get; set; } = null;
+
         public BaseObject Source { get; set; } = null;
         public EffectData EffectData { get; private set; } = null;
         public EEffectType EffectType { get; private set; } = EEffectType.None;
@@ -27,7 +30,6 @@ namespace STELLAREST_F1
 
         protected ParticleSystem[] _particles = null;
         protected ParticleSystemRenderer[] _particleRenderers = null;
-        protected Vector3 _startPos = Vector3.zero;
         protected Vector3 _enteredDir = Vector3.zero;
         protected int _enteredSignX = 0;
 
@@ -84,6 +86,8 @@ namespace STELLAREST_F1
                 case EObjectSize.RefPreset:
                     break;
             }
+
+            _fromSkillEffect = SetSkill();
         }
 
         protected override void EnterInGame(Vector3 spawnPos)
@@ -93,26 +97,52 @@ namespace STELLAREST_F1
             else
                 Remains = EffectData.Duration;
 
-            if (EffectData.ApplyOnStartCallback)
+            // VFX Teleport, Dust 같은 것들 때문에
+            if (_fromSkillEffect != null)
             {
-                _startPos = spawnPos;
-                gameObject.SetActive(false);
-                return;
+                _enteredDir = _fromSkillEffect.EnteredTargetDir;
+                _enteredSignX = _fromSkillEffect.EnteredSignX;
             }
 
-            transform.position = spawnPos;
+            if (EffectData.StartSourceType == EEffectSourceType.None)
+            {
+                transform.position = spawnPos;
+            }
+            else
+                transform.position = SetStartPos(EffectData.StartSourceType);
+
             ApplyEffect();
         }
 
-        public void ActivateSelf(Vector3 enteredStartPos, Vector3 enteredDir, int enteredSignX)
+        private SkillBase SetSkill()
         {
-            gameObject.SetActive(true);
-            transform.position = enteredStartPos;
-            _enteredDir = enteredDir;
-            _enteredSignX = enteredSignX;
-            ApplyEffect();
+            Creature creatureOwner = Owner.GetComponent<Creature>();
+            if (creatureOwner == null)
+                return null;
+
+            // --- Simple VFX(ex. teleport, dust)는 스킬이 아니므로 null을 리턴한다.
+            return creatureOwner.CreatureSkill.CurrentSkill;
         }
 
+        private Vector3 SetStartPos(EEffectSourceType startSourceType)
+        {
+            switch (startSourceType)
+            {
+                case EEffectSourceType.None:
+                    return Vector3.zero;
+
+                case EEffectSourceType.Owner:
+                    return _fromSkillEffect.EnteredOwnerPos;
+
+                case EEffectSourceType.Target:
+                    return _fromSkillEffect.EnteredTargetPos;
+
+                default:
+                    return Vector3.zero;
+            }
+        }
+
+        protected Vector3 _nTargetDir = Vector3.zero;
         public virtual void ApplyEffect()
         {
             //ShowEffect();

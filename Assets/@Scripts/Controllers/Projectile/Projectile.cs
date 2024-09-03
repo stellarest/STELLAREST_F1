@@ -100,13 +100,18 @@ namespace STELLAREST_F1
             Collider.excludeLayers = excludeLayerMask;
 
             Vector3 startPos = Owner.GetFirePosition();
-            Vector3 targetPos = Skill.FirstTargetPos;
+            Vector3 targetPos = Vector3.zero;
+            if (Owner.Target.IsValid())
+                targetPos = Owner.Target.CenterPosition;
+            else
+                targetPos = Skill.FirstTargetPos;
 
             nStartShootDir = (targetPos - startPos).normalized;
             _currentPenetrationCount = 0;
 
             RigidBody.simulated = true;
             ProjectileMotion.ReadyToLaunch(startPos, targetPos, this);
+
             StartCoProjectileLifeTime();
             _hitColliders.Clear();
             StopCoDelayCollision();

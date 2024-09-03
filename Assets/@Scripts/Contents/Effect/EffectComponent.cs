@@ -12,14 +12,13 @@ namespace STELLAREST_F1
         //private Creature _owner = null;
         public BaseObject Owner { get; private set; } = null;
         public List<EffectBase> ActiveEffects { get; } = new List<EffectBase>();
+        // public override bool Init()
+        // {
+        //     if (base.Init() == false)
+        //         return false;
 
-        public override bool Init()
-        {
-            if (base.Init() == false)
-                return false;
-
-            return true;
-        }
+        //     return true;
+        // }
 
         public void InitialSetInfo(BaseObject owner) => Owner = owner;
 
@@ -35,7 +34,6 @@ namespace STELLAREST_F1
                     owner: Owner
                 );
 
-                //startCallback?.Invoke();
                 generatedEffects.Add(effect);
                 ActiveEffects.Add(effect);
             }

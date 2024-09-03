@@ -23,15 +23,22 @@ namespace STELLAREST_F1
             => _canEnterAnimStates[(int)animState] == false;
         public void ReleaseAnimState(ECreatureAnimState animState)
             => _canEnterAnimStates[(int)animState] = true;
-        public void ReleaseAllAnimStates()
+        private void ReleaseAllAnimStates()
         {
             for (int i = 0; i < _canEnterAnimStates.Length; ++i)
                 _canEnterAnimStates[i] = true;
         }
 
-        public void CancelPlayAnimations()
+        private void ReleaseAllSkillsAnimStates()
         {
-            Debug.Log($"Cancel Anim,,");
+            _canEnterAnimStates[(int)ECreatureAnimState.Upper_SkillA] = true;
+            _canEnterAnimStates[(int)ECreatureAnimState.Upper_SkillB] = true;
+            _canEnterAnimStates[(int)ECreatureAnimState.Upper_SkillC] = true;
+        }
+
+        public void ResetAnimation()
+        {
+            Debug.Log($"<color=red>Cancel Anim</color>");
             ReleaseAllAnimStates();
             ResetAllTriggers();
             Animator.Play(Upper_Idle);
@@ -72,12 +79,15 @@ namespace STELLAREST_F1
                 Animator.SetBool(CanSkill, value);
             }
         }
+
+        public bool CanSkillTrigger { get; private set; } = false;
         
         public void Skill(ESkillType skillType)
         {
-            ResetAllTriggers();
-            // Debug.Log("SType: " + skillType);
-            // Invoke 될 때 만 어떤 스킬인지만 알면 될 것 같긴한데,,,
+            // --- 임시 제거
+            //ResetAllTriggers();
+
+            CanSkillTrigger = false;
             switch (skillType)
             {
                 case ESkillType.Skill_A:
@@ -124,6 +134,7 @@ namespace STELLAREST_F1
             Animator.ResetTrigger(OnSkillB);
             Animator.ResetTrigger(OnSkillC);
             Animator.ResetTrigger(OnCollectEnv);
+            CanSkillTrigger = true;
         }
 
         // --- BaseAnimation으로 옮김
@@ -146,6 +157,7 @@ namespace STELLAREST_F1
         {
             base.InitialSetInfo(dataID, owner);
             _creatureOwner = owner as Creature;
+            CanSkillTrigger = true;
         }
 
         public override void EnterInGame()
@@ -227,8 +239,13 @@ namespace STELLAREST_F1
         }
         protected virtual void OnUpperIdleEnter()
         {
-            //_creatureOwner.CreatureSkill.ReleaseCurrentSkillType();
             EnteredAnimState(ECreatureAnimState.Upper_Idle);
+
+            // --- 모든 스킬은 반드시 종료 이후, 또는 중간에 끊겼을 경우 반드시 UpperStateEnter로 경유해야함.
+            // --- (나중에 Dead State도 반드시 Idle -> Dead로 갈 수 있도록 할 것)
+            ReleaseAllSkillsAnimStates();
+            ResetAllTriggers();
+            OnSkillExit(_creatureOwner.CreatureSkill.CurrentSkillType);
         }
             
         protected virtual void OnUpperMoveEnter()
@@ -238,13 +255,13 @@ namespace STELLAREST_F1
         protected virtual void OnUpperSkillAEnter()
         {
             EnteredAnimState(ECreatureAnimState.Upper_SkillA);
-            _creatureOwner.LookAtValidTarget();
+            // _creatureOwner.LookAtValidTarget(); --- 굳이 여기서 해야하나?
             _creatureOwner.CreatureSkill.OnSkillStateEnter(ESkillType.Skill_A);
         }
         protected virtual void OnUpperSkillBEnter()
         {
             EnteredAnimState(ECreatureAnimState.Upper_SkillB);
-            _creatureOwner.LookAtValidTarget();
+            // _creatureOwner.LookAtValidTarget(); // --- 굳이 여기서 해야하나?
             _creatureOwner.CreatureSkill.OnSkillStateEnter(ESkillType.Skill_B);
         }
 
@@ -294,21 +311,25 @@ namespace STELLAREST_F1
         { 
             ReleaseAnimState(ECreatureAnimState.Upper_Move);
         }
+
+        // ---> OnUpperIdleEnter
         protected virtual void OnUpperSkillAExit() 
         {
-            ReleaseAnimState(ECreatureAnimState.Upper_SkillA);
-            _creatureOwner.CreatureSkill.OnSkillStateExit(ESkillType.Skill_A);
+            // ReleaseAnimState(ECreatureAnimState.Upper_SkillA);
+            // _creatureOwner.CreatureSkill.OnSkillStateExit(ESkillType.Skill_A);
         }
         protected virtual void OnUpperSkillBExit() 
         {
-            ReleaseAnimState(ECreatureAnimState.Upper_SkillB);
-            _creatureOwner.CreatureSkill.OnSkillStateExit(ESkillType.Skill_B);
+            // ReleaseAnimState(ECreatureAnimState.Upper_SkillB);
+            // _creatureOwner.CreatureSkill.OnSkillStateExit(ESkillType.Skill_B);
         }
         protected virtual void OnUpperSkillCExit() 
         {
-            ReleaseAnimState(ECreatureAnimState.Upper_SkillC);
-            _creatureOwner.CreatureSkill.OnSkillStateExit(ESkillType.Skill_C);
+            // ReleaseAnimState(ECreatureAnimState.Upper_SkillC);
+            // _creatureOwner.CreatureSkill.OnSkillStateExit(ESkillType.Skill_C);
         }
+
+
         protected virtual void OnUpperCollectEnvExit() 
         { 
             ReleaseAnimState(ECreatureAnimState.Upper_CollectEnv);
@@ -318,6 +339,32 @@ namespace STELLAREST_F1
             ReleaseAnimState(ECreatureAnimState.Upper_Dead);
         }
         #endregion
+
+        private void OnSkillExit(ESkillType skillType)
+        {
+            if (skillType == ESkillType.None)
+                return;
+
+            _creatureOwner.CreatureSkill.OnSkillStateExit(skillType);
+        }
+
+        public bool IsPlayingSkillAnimation(ESkillType skillType)
+        {
+            switch (skillType)
+            {
+                case ESkillType.Skill_A:
+                    return _canEnterAnimStates[(int)ECreatureAnimState.Upper_SkillA] == false;
+                
+                case ESkillType.Skill_B:
+                    return _canEnterAnimStates[(int)ECreatureAnimState.Upper_SkillB] == false;
+
+                case ESkillType.Skill_C:
+                    return _canEnterAnimStates[(int)ECreatureAnimState.Upper_SkillC] == false;
+
+                default:
+                    return false;
+            }
+        }
     }
 }
 

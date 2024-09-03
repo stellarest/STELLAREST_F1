@@ -276,7 +276,7 @@ namespace STELLAREST_F1
 
             if (_leader.CanSkill)
             {
-                _leader.CreatureSkill.CurrentSkill.DoSkill();
+                _leader.CreatureSkill.GetSkill?.DoSkill();
                 return true;
             }
             else if (_leader.CanCollectEnv)

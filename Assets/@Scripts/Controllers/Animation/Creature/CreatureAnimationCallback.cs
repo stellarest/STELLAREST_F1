@@ -13,7 +13,7 @@ namespace STELLAREST_F1
         public event System.Action OnDustEffectHandler = null;
         public void OnDustEffect() => OnDustEffectHandler?.Invoke();
         
-        public event System.Action OnSkillHandler = null;
+        public event System.Func<bool> OnSkillHandler = null;
         public void OnSkill() => OnSkillHandler?.Invoke();
 
         public event System.Action OnCollectEnvHandler = null;

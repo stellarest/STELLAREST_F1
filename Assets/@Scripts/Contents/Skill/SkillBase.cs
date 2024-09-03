@@ -8,9 +8,17 @@ using System;
 
 namespace STELLAREST_F1
 {
-    // Abstract로 하면 안될 것 같은데,,,
     public class SkillBase : InitBase
     {
+        public Vector3 EnteredOwnerPos { get; protected set; } = Vector3.zero;
+        public Vector3 EnteredTargetPos { get; protected set; } = Vector3.zero;
+        public Vector3 EnteredTargetDir { get; protected set; } = Vector3.zero;
+        public int EnteredSignX { get; protected set; } = 0;
+
+        #if UNITY_EDITOR
+        public string Dev_TextID = null;
+        #endif
+
         public Creature Owner { get; private set; } = null;
         protected bool IsValidOwner => Owner.IsValid();
         protected bool IsValidTarget => Owner.Target.IsValid();
@@ -81,14 +89,25 @@ namespace STELLAREST_F1
             if (Owner.CreatureAnim.IsEnteredAnimState(ECreatureAnimState.Upper_CollectEnv))
                 return;
 
-            if (Owner.CreatureSkill != null)
+            if (Owner.CreatureAnim.CanSkillTrigger == false)
             {
-                Owner.CreatureSkill.ActiveSkills.Remove(this);
-                Owner.CreatureSkill.CurrentSkillType = SkillType;
+                Debug.Log($"<color=white>OOPS !!: {Dev_TextID}</color>");
+                return;
             }
-            
+
+            Owner.CreatureSkill.RemoveActiveSkill(this);
+            Owner.CreatureSkill.CurrentSkillType = SkillType;
+
             Owner.CreatureAnim.Skill(SkillType);
             StartCoroutine(CoActivateSkill());
+        }
+
+        private IEnumerator CoActivateSkill()
+        {
+            RemainCoolTime = SkillData.CoolTime;
+            yield return new WaitForSeconds(SkillData.CoolTime);
+            RemainCoolTime = 0f;
+            Owner.CreatureSkill.AddActiveSkill(this);
         }
 
         protected virtual Projectile GenerateProjectile(Creature owner, Vector3 spawnPos)
@@ -100,15 +119,6 @@ namespace STELLAREST_F1
             // projectile.transform.position = spawnPos;
             // return projectile;
             return projectile;
-        }
-
-        private IEnumerator CoActivateSkill()
-        {
-            RemainCoolTime = SkillData.CoolTime;
-            yield return new WaitForSeconds(SkillData.CoolTime);
-            RemainCoolTime = 0f;
-            if (Owner.CreatureSkill != null)
-                Owner.CreatureSkill.ActiveSkills.Add(this);
         }
 
         protected Vector3 GetSpawnPos() // --- Ref: Fire Socket
@@ -157,6 +167,10 @@ namespace STELLAREST_F1
             else if (owner.ObjectType == EObjectType.Monster)
                 SkillData = Managers.Data.MonsterSkillDataDict[dataID];
 
+            #if UNITY_EDITOR
+            Dev_TextID = SkillData.DevTextID;
+            #endif
+
             InvokeRange = SkillData.InvokeRange;
             TargetRange = SkillData.TargetRange;
             TargetDistance = SkillData.TargetDistance;
@@ -172,33 +186,29 @@ namespace STELLAREST_F1
         {
             if (Owner.IsValid() == false || Owner.Target.IsValid() == false)
             {
-                Owner.CreatureAnim.CancelPlayAnimations();
+                Owner.CreatureAnim.ResetAnimation();
                 return false;
             }
 
+            EnteredOwnerPos = Owner.CenterPosition;
+            EnteredTargetPos = Owner.Target.CenterPosition;
+            EnteredTargetDir = Owner.Target.CellPos - Owner.CellPos;
+            EnteredSignX = (Owner.LookAtDir == ELookAtDirection.Left) ? 1 : 0;
             return true;
         }
 
-        public virtual void OnSkillCallback()
-        {
-
-        }
-
+        private bool IsCorrectSkillType
+            => Owner.CreatureSkill.CurrentSkillType == SkillType;
+        
+        public virtual bool OnSkillCallback() 
+            => IsCorrectSkillType;
+        
         public virtual void OnSkillStateExit()
         {
+            // Debug.Log(Owner.CreatureSkill.CurrentSkillType + " OOPS");
             _skillTargets.Clear();
-            // Owner.CreatureSkill.ReleaseCurrentSkillType();
         }
         #endregion Events
-
-        protected bool IsCanEnterSkill
-        {
-            get
-            {
-
-                return true;
-            }
-        }
 
         protected void GatherMeleeTargets()
         {
