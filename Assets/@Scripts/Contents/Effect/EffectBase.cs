@@ -13,23 +13,24 @@ namespace STELLAREST_F1
     // Ex. TickTime: 1, TickCount: 5 -> 1초 마다 5번 실행하겠다. 근데 난 그냥 Duration, Period로
     // Monster와 다르게 Effect 여러가지 상속 구조로 가기 위해 베이스 클래스가 이렇게 구성되어 있음. Effect의 핵심은 "상속"
     // --- 단순 VFX, Buff/DeBuff, Dot, CC
+
+    // --- Effect도 Collider랑 Rigidbody, Sorting Group만 필요할 것 같은데
     public class EffectBase : BaseObject
     {
         //public Creature Owner { get; set; } = null;
         public BaseObject Owner { get; set; } = null;
-        protected SkillBase _fromSkillEffect = null;
-        //public SkillBase Skill { get; set; } = null;
+        public SkillBase Skill { get; private set; } = null;
 
-        public BaseObject Source { get; set; } = null;
         public EffectData EffectData { get; private set; } = null;
+        public bool IsLoop { get; private set; } = false;
+        public float Amount { get; private set; } = 0.0f;
+        public float Percent { get; private set; } = 0.0f;
+        public float Remains { get; private set; } = 0.0f;
+        public float Period { get; private set; } = 0.0f;
         public EEffectType EffectType { get; private set; } = EEffectType.None;
-        public EEffectSpawnType EffectSpawnType { get; protected set; } = EEffectSpawnType.None;
-        [field: SerializeField] public float Period { get; protected set; } = -1;
-        [field: SerializeField] public float Remains { get; protected set; } = 0f; // 지속시간이 얼마나 남았는지
-        public bool IsLoop { get; protected set; } = false;
+        public EEffectSpawnType EffectSpawnType { get; private set; } = EEffectSpawnType.None;
+        public EApplyStatType ApplyStateType { get; private set; } = EApplyStatType.None;
 
-        protected ParticleSystem[] _particles = null;
-        protected ParticleSystemRenderer[] _particleRenderers = null;
         protected Vector3 _enteredDir = Vector3.zero;
         protected int _enteredSignX = 0;
 
@@ -48,24 +49,42 @@ namespace STELLAREST_F1
             DataTemplateID = dataID;
             EffectData = Managers.Data.EffectDataDict[dataID];
             IsLoop = EffectData.IsLoop;
+            Amount = EffectData.AddAmount;
+            Percent = EffectData.AddPercent;
+            Remains = EffectData.Duration * EffectData.Period;
+            Period = EffectData.Period;
+            EffectType = EffectData.EffectType;
+            InitialSetSize(EffectData.EffectSize);
+            Skill = SetSkill();
+        }
 
-            _particles = GetComponentsInChildren<ParticleSystem>();
-            _particleRenderers = GetComponentsInChildren<ParticleSystemRenderer>();
-
-            // --- TODO LATER LIST
-            // - Amount
-            // - PercentAdd
-            // - PercentMulti
-
-            EffectSpawnType = EffectData.EffectSpawnType;
+        protected override void EnterInGame(Vector3 spawnPos)
+        {
             if (EffectSpawnType == EEffectSpawnType.External)
                 Remains = float.MaxValue;
             else
                 Remains = EffectData.Duration;
 
-            Period = EffectData.Period;
-            EffectType = EffectData.EffectType;
-            switch (EffectData.EffectSize)
+            // VFX Teleport, Dust 같은 것들 때문에
+            if (Skill != null)
+            {
+                _enteredDir = Skill.EnteredTargetDir;
+                _enteredSignX = Skill.EnteredSignX;
+            }
+
+            // if (EffectData.EffectEnterTargetType == EEffectEnterTargetType.None)
+            // {
+            //     transform.position = spawnPos;
+            // }
+            // else
+            //     transform.position = SetStartPos(EffectData.EffectEnterTargetType);
+            
+            ApplyEffect();
+        }
+
+        private void InitialSetSize(EObjectSize objSize)
+        {
+            switch (objSize)
             {
                 case EObjectSize.VerySmall:
                     break;
@@ -83,35 +102,9 @@ namespace STELLAREST_F1
                 case EObjectSize.VeryLarge:
                     break;
 
-                case EObjectSize.RefPreset:
+                case EObjectSize.UsePreset:
                     break;
             }
-
-            _fromSkillEffect = SetSkill();
-        }
-
-        protected override void EnterInGame(Vector3 spawnPos)
-        {
-            if (EffectSpawnType == EEffectSpawnType.External)
-                Remains = float.MaxValue;
-            else
-                Remains = EffectData.Duration;
-
-            // VFX Teleport, Dust 같은 것들 때문에
-            if (_fromSkillEffect != null)
-            {
-                _enteredDir = _fromSkillEffect.EnteredTargetDir;
-                _enteredSignX = _fromSkillEffect.EnteredSignX;
-            }
-
-            if (EffectData.EffectEnterType == EEffectEnterType.None)
-            {
-                transform.position = spawnPos;
-            }
-            else
-                transform.position = SetStartPos(EffectData.EffectEnterType);
-
-            ApplyEffect();
         }
 
         private SkillBase SetSkill()
@@ -127,18 +120,18 @@ namespace STELLAREST_F1
             return creatureOwner.CreatureSkill.CurrentSkill;
         }
 
-        private Vector3 SetStartPos(EEffectEnterType eEnterType)
+        private Vector3 SetStartPos(EEffectEnterTargetType enterTargetType)
         {
-            switch (eEnterType)
+            switch (enterTargetType)
             {
-                case EEffectEnterType.None:
+                case EEffectEnterTargetType.None:
                     return Vector3.zero;
 
-                case EEffectEnterType.Owner:
-                    return _fromSkillEffect.EnteredOwnerPos;
+                case EEffectEnterTargetType.Owner:
+                    return Skill.EnteredOwnerPos;
 
-                case EEffectEnterType.Target:
-                    return _fromSkillEffect.EnteredTargetPos;
+                case EEffectEnterTargetType.Target:
+                    return Skill.EnteredTargetPos;
 
                 default:
                     return Vector3.zero;
@@ -146,6 +139,8 @@ namespace STELLAREST_F1
         }
 
         protected Vector3 _nTargetDir = Vector3.zero;
+
+        // --- 왜 protected로 안하고 public으로 했지??? 
         public virtual void ApplyEffect()
         {
             //ShowEffect();

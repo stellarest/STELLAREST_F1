@@ -9,6 +9,54 @@ using UnityEditor;
 
 /*
 ********************************************************************
+// --- TODO LIST
+- LEVEL UP TEST
+- InitBaseError 이 부분 고치기
+- SimpleVFX(EffectType)도 EffectComponent로 무조건 호출
+
+// --- DID NOTE
+- Collider, Rigid는 일단 모두 다 붙여줌(Effect도 언젠가 필요한 녀석이 생길지도)
+- Stat은 BaseCellObject에서 관리
+
+
+- *** 지금 게임 실행 불가. Effect 대국적으로 수정해야함 ***
+- Skill이 가지고 있는 EffectType부터 생각해봐야할듯.
+
+        Instant,    // --- DotBase
+        Buff,       // --- BuffBase
+        Debuff,     // --- BuffBase
+        Dot,        // --- DotBase
+        Infinite,   // --- BuffBase
+        Knockback,  // --- CCBase
+        Airborne,   // --- CCBase
+        Freeze,     // --- CCBase
+        Stun,       // --- CCBase
+        Pull,       // --- CCBase
+
+Double Slash
+- Instant
+Shield
+- Buff(Infinite)
+와 진짜 개쩌네 ;; 이펙트
+
+- 크게 수정하지 말고, 일단 GenerateEffect부터.
+- 그 다음 GenerateProjectile.
+- 그 다음 구조 생각해보기
+- Effect 쪽 1차 수정, 이펙트 스탯 적용
+- Effect를 애초에 Base Owner에 붙인다??
+
+// --- KEY WORD NOTE
+- From InitBaseError (Effect)
+
+// --- LATER LIST
+- Archer Muzzle Effect
+
+// --- NOTE
+- 결국 Effect 주도(중심)의 게임
+- Heroes + Monsters + Skill + Effect만 무한정 찍어낼 수 있으면 싸구려 게임(최대 3300)으로써 중간 이상은 갈 수 있을지도.
+- 사실 이정도면 잘 해도 3300 판매 가능.
+- Skill, Effect부터 차례대로 적용하고 가장 나중에 Hero AI, Monster AI 적용
+********************************************************************
 // --- DID LIST
 - Monster ForceWait When Spawned (O)
 - ENV Test (O)
@@ -46,6 +94,8 @@ using UnityEditor;
 - 투명 프로젝타일 못맞추면 엉뚱한 녀석이 맞는데 크기를 키워야되나. 아니면 그냥 Melee Swing으로 할까.
 - MeleeSwing으로 고친다고해도 Projectile Effect 설정하는 부분 덕분에 많은 부분을 고칠 수 있게 되긴 함.
 - ex. Paladin_Skill_B Effect에 AddPercent같은거 붙여서 추가 데미지 줘야할지 (SourceDmg + AddPercentEffect)
+- Paladin Skill_C(Shield) 대략 완성하고 Effect Stat 대략적으로 잡고 캐릭터, 스킬 레벨업하는거 잡기(진화 스킬까지)
+- 이런식으로 캐릭터 선형으로 추가해나가기(Druid까지, Barbarian까지 할 수 있으면 더 좋고)
 
 // --- HERO NOTE
 - Paladin (101000)

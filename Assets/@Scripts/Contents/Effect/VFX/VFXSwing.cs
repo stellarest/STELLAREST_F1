@@ -6,10 +6,16 @@ namespace STELLAREST_F1
 {
     public class VFXSwing : VFXBase
     {
+        private ParticleSystem[] _particles = null;
+        private ParticleSystemRenderer[] _particleRenderers = null;
+
         protected override void EnterInGame(Vector3 spawnPos)
         {
             base.EnterInGame(spawnPos);
             _movementSpeed = 4.0f;
+
+            _particles = GetComponentsInChildren<ParticleSystem>();
+            _particleRenderers = GetComponentsInChildren<ParticleSystemRenderer>();
         }
 
         public override void ApplyEffect()

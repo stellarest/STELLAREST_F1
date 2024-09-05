@@ -17,8 +17,9 @@ namespace STELLAREST_F1
 
         // --- 현재 사용하고 있는 이 Cell에 쿼드트리를 얹히면 좋다고 함(TODO LIST)
         // --- 스타크래프트 유닛은 아마 일일이 칸 단위로 찾진 않을것임, 갈 수 있는지 큼지막하게 먼저 판단하고 먼저 갈수있는 기본적인것부터 셋팅하는 등의 방법을 썼을 것이라고 함
-        private Dictionary<Vector3Int, BaseObject> _cells = new Dictionary<Vector3Int, BaseObject>();
-        public Dictionary<Vector3Int, BaseObject> Cells => _cells;
+        // private Dictionary<Vector3Int, BaseObject> _cells = new Dictionary<Vector3Int, BaseObject>();
+        private Dictionary<Vector3Int, BaseCellObject> _cells = new Dictionary<Vector3Int, BaseCellObject>();
+        public Dictionary<Vector3Int, BaseCellObject> Cells => _cells;
 
         public int MinX { get; private set; } = 0;
         public int MaxX { get; private set; } = 0;
@@ -44,7 +45,7 @@ namespace STELLAREST_F1
             CellGrid = map.GetComponent<Grid>();
 
             ParseCollisionData(map, mapName);
-            SpawnObjectsByData(map, mapName);
+            // SpawnCellObjectsByData(map, mapName);
         }
 
         private void ParseCollisionData(GameObject map, string mapName, string tileMap = "Tilemap_Collision")
@@ -88,7 +89,7 @@ namespace STELLAREST_F1
             }
         }
 
-        private void SpawnObjectsByData(GameObject map, string mapName, string tilemap = "Tilemap_Object")
+        private void SpawnCellObjectsByData(GameObject map, string mapName, string tilemap = "Tilemap_Object")
         {
             Tilemap tm = Util.FindChild<Tilemap>(map, tilemap, true);
             if (tm != null)
@@ -308,7 +309,7 @@ namespace STELLAREST_F1
                 for (int y = minY; y <= maxY; ++y)
                 {
                     Vector3Int tilePos = new Vector3Int(x, y, 0);
-                    T obj = GetObject(tilePos) as T;
+                    T obj = GetCellObject(tilePos) as T;
                     if (obj == null)
                         continue;
                     else
@@ -320,42 +321,47 @@ namespace STELLAREST_F1
         }
 
         // START
-        public bool ForceMove(BaseObject baseObj, Vector3 worldPos, EObjectType ignoreObjectType = EObjectType.None)
-            => ForceMove(baseObj, Managers.Map.WorldToCell(worldPos), ignoreObjectType);
+        public bool ForceMove(BaseCellObject cellObj, Vector3 worldPos, EObjectType ignoreCellObjType = EObjectType.None)
+            => ForceMove(cellObj, Managers.Map.WorldToCell(worldPos), ignoreCellObjType);
 
-        public bool ForceMove(BaseObject baseObj, Vector3Int cellPos, EObjectType ignoreObjectType = EObjectType.None)
+        public bool ForceMove(BaseCellObject cellObj, Vector3Int cellPos, EObjectType ignoreCellObjType = EObjectType.None)
         {
-            if (CanMove(cellPos, ignoreObjectType) == false)
+            if (CanMove(cellPos, ignoreCellObjType) == false)
                 return false;
 
-            baseObj.SetCellPos(cellPos);
+            cellObj.SetCellPos(cellPos);
             return true;
         }
 
-        public bool TryMove(Creature creature, Vector3 worldPos, EObjectType ignoreObjectType = EObjectType.None)
-            => TryMove(creature, Managers.Map.WorldToCell(worldPos), ignoreObjectType);
+        public bool TryMove(BaseCellObject cellObj, Vector3 worldPos, EObjectType ignoreCellObjType = EObjectType.None)
+            => TryMove(cellObj, Managers.Map.WorldToCell(worldPos), ignoreCellObjType);
 
-        public bool TryMove(Creature creature, Vector3Int cellPos, EObjectType ignoreObjectType = EObjectType.None)
+        public bool TryMove(BaseCellObject cellObj, Vector3Int cellPos, EObjectType ignoreCellObjType = EObjectType.None)
         {
-            if (CanMove(cellPos, ignoreObjectType) == false)
+            if (ForceMove(cellObj, cellPos, ignoreCellObjType) == false)
                 return false;
 
+            // if (CanMove(cellPos, ignoreObjectType) == false)
+            //     return false;
             return true;
         }
 
         #region Helpers
-        public BaseObject GetObject(Vector3Int cellPos)
-            => _cells.TryGetValue(cellPos, out BaseObject value) ? value : null;
+        // public BaseObject GetObject(Vector3Int cellPos)
+        //     => _cells.TryGetValue(cellPos, out BaseObject value) ? value : null;
 
-        public BaseObject GetObject(Vector3 worldPos)
+        public BaseCellObject GetCellObject(Vector3Int cellPos)
+            => _cells.TryGetValue(cellPos, out BaseCellObject value) ? value : null;
+
+        public BaseObject GetCellObject(Vector3 worldPos)
         {
             Vector3Int cellPos = WorldToCell(worldPos);
-            return GetObject(cellPos);
+            return GetCellObject(cellPos);
         }
 
-        public void RemoveObject(BaseObject obj)
+        public void RemoveCellObject(BaseCellObject obj)
         {
-            BaseObject prev = GetObject(obj.CellPos);
+            BaseCellObject prev = GetCellObject(obj.CellPos);
 
             // 지우려고하는데, obj자기 자신이 아니라면
             if (prev.IsValid() && prev != obj)
@@ -365,16 +371,16 @@ namespace STELLAREST_F1
             return;
         }
 
-        public bool AddObject(BaseObject obj, Vector3Int cellPos)
+        public bool AddCellObject(BaseCellObject obj, Vector3Int cellPos)
         {
             if (CanMove(cellPos) == false)
                 return false;
 
-            BaseObject prev = GetObject(cellPos);
+            BaseCellObject prev = GetCellObject(cellPos);
             if (prev != null)
                 return false;
 
-            RemoveObject(obj);
+            RemoveCellObject(obj);
             _cells[cellPos] = obj;
             return true;
         }
@@ -382,7 +388,7 @@ namespace STELLAREST_F1
         public bool CanMove(Vector3 worldPos, EObjectType ignoreObjectType)
             => CanMove(WorldToCell(worldPos), ignoreObjectType);
 
-        public bool CanMove(Vector3Int cellPos, EObjectType ignoreObjectType)
+        public bool CanMove(Vector3Int cellPos, EObjectType ignoreCellObjType)
         {
             int x = cellPos.x - MinX;
             int y = MaxY - cellPos.y - 1;
@@ -392,13 +398,13 @@ namespace STELLAREST_F1
             if (_cellCollisionType[y, x] == ECellCollisionType.SemiBlock)
                 return false;
 
-            BaseObject obj = GetObject(cellPos);
-            if (ignoreObjectType == EObjectType.None)
+            BaseCellObject obj = GetCellObject(cellPos);
+            if (ignoreCellObjType == EObjectType.None)
             {
                 if (obj != null)
                     return false;
             }
-            else if (obj != null && obj.ObjectType != ignoreObjectType)
+            else if (obj != null && obj.ObjectType != ignoreCellObjType)
                 return false;
 
             if (_cellCollisionType[y, x] == ECellCollisionType.CanMove)
@@ -424,8 +430,8 @@ namespace STELLAREST_F1
 
             if (ignoreObjects == false)
             {
-                BaseObject obj = GetObject(cellPos);
-                if (obj != null)
+                BaseCellObject cellObj = GetCellObject(cellPos);
+                if (cellObj != null)
                     return false;
             }
 
@@ -484,7 +490,7 @@ namespace STELLAREST_F1
         // 그리고 몬스터는 maxDepth를 크게 줄 이유가 없긴함.
         // 또한, 현재 캐릭터가 무조건 8방향으로만 움직이기 때문에 지금처럼 CampDest가 중간에 끼면 와리가리할 수 있는 문제가 발생할 수 있음.
         // 하지만 이제 길찾기를 완성하게 됨으로써 알아서 둘러싸게 됨.
-        public List<Vector3Int> FindPath(Vector3Int startCellPos, Vector3Int destCellPos, int maxDepth = 10, EObjectType ignoreObjectType = EObjectType.None)
+        public List<Vector3Int> FindPath(Vector3Int startCellPos, Vector3Int destCellPos, int maxDepth = 10, EObjectType ignoreCellObjType = EObjectType.None)
         {
             Dictionary<Vector3Int, int> best = new Dictionary<Vector3Int, int>(); // key: pos = value: huristic
 
@@ -528,7 +534,7 @@ namespace STELLAREST_F1
                     // if (CanMove(next, ignoreObjects: ignoreObjects) == false) // 갈 수 없는 곳이면 오픈셋에 넣지 않는다.
                     //     continue;
 
-                    if (CanMove(next, ignoreObjectType) == false) // 갈 수 없는 곳이면 오픈셋에 넣지 않는다.
+                    if (CanMove(next, ignoreCellObjType) == false) // 갈 수 없는 곳이면 오픈셋에 넣지 않는다.
                         continue;
 
                     int h = (dest - next).sqrMagnitude; // 인접노드에서 도착점에 대한 Heuristic 계산

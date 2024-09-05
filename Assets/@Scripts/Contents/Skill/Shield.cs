@@ -12,13 +12,15 @@ namespace STELLAREST_F1
             if (base.OnSkillStateEnter() == false)
                 return false;
 
-            Owner.Moving = false;
             return true;
         }
 
         public override bool OnSkillCallback()
         {
-            return base.OnSkillCallback();
+            if (base.OnSkillCallback() == false)
+                return false;
+
+            return true;
         }
 
         public override void OnSkillStateExit()

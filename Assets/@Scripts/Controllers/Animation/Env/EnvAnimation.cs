@@ -16,7 +16,7 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public override void InitialSetInfo(int dataID, BaseObject owner)
+        public override void InitialSetInfo(int dataID, BaseCellObject owner)
         {
             base.InitialSetInfo(dataID, owner);
             string animatorTextID = Managers.Data.EnvDataDict[dataID].AnimatorLabel;

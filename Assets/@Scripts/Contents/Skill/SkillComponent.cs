@@ -47,7 +47,6 @@ namespace STELLAREST_F1
                 }
 
                 return getSkill;
-                //return ActiveSkills[UnityEngine.Random.Range(0, ActiveSkills.Count)];
             }
         }
 

@@ -22,20 +22,15 @@ namespace STELLAREST_F1
 
         public bool RotateToTarget { get; private set; } = false;
         private bool _includePrevDamagedTargets = false;
-
         public int CanPenetrateCount { get; private set; } = 0;
         private int _currentPenetrationCount = 0;
-
         public float ProjectileSpeed { get; private set; } = 0f;
         public Vector3 nStartShootDir { get; private set; } = Vector3.zero;
-        private Vector3Int _lastCellPos = Vector3Int.zero;
-       
-
         protected float _projectileLifeTime = 0f;
         protected ESkillTargetRange _targetRange = ESkillTargetRange.None;
         protected int _targetDistance = 0;
-        protected List<BaseObject> _projectileSkillTargets = new List<BaseObject>();
-        protected HashSet<BaseObject> _includedTargets = new HashSet<BaseObject>();
+        protected List<BaseCellObject> _projectileSkillTargets = new List<BaseCellObject>();
+        protected HashSet<BaseCellObject> _includedTargets = new HashSet<BaseCellObject>();
 
         private Coroutine _coProjectileLifeTime = null;
         private Coroutine _coCollisionDelay = null;
@@ -138,7 +133,7 @@ namespace STELLAREST_F1
             if (_targetDistance < 1)
                 return;
 
-            BaseObject target = other.GetComponent<BaseObject>();
+            BaseCellObject target = other.GetComponent<BaseCellObject>();
             // --- ? Apply Flag Option (IgnoreIncludedTargets)
             
             if (_includePrevDamagedTargets == false && _includedTargets.Contains(target))
@@ -189,7 +184,7 @@ namespace STELLAREST_F1
         private bool HitFromLeftTop => Vector3.Dot(nLaunchingDir, new Vector3(1, -1, 0)) > 1 - _dotThreshold;
         private bool HitFromRightTop => Vector3.Dot(nLaunchingDir, Vector3.one * -1) > 1 - _dotThreshold;
 
-        private void ReserveSingleTargets(BaseObject target)
+        private void ReserveSingleTargets(BaseCellObject target)
         {
             if (_targetDistance == 1)
             {
@@ -248,7 +243,7 @@ namespace STELLAREST_F1
             }
         }
 
-        private void ReserveHalfTargets(BaseObject target)
+        private void ReserveHalfTargets(BaseCellObject target)
         {
             Vector3Int targetCellPos = target.CellPos;
             if (HitFromBottom)
@@ -325,7 +320,7 @@ namespace STELLAREST_F1
             }
         }
 
-        private void ReserveAroundTargets(BaseObject target)
+        private void ReserveAroundTargets(BaseCellObject target)
         {
             Vector3Int targetCellPos = target.CellPos;
             for (int x = -_targetDistance; x <= _targetDistance; ++x)
@@ -337,7 +332,7 @@ namespace STELLAREST_F1
 
         private BaseObject TryAddProjectileTarget(Vector3Int targetPos)
         {
-            BaseObject target = Managers.Map.GetObject(targetPos);
+            BaseCellObject target = Managers.Map.GetCellObject(targetPos);
             if (target != null && target.IsValid())
             {
                 _projectileSkillTargets.Add(target);
@@ -348,7 +343,7 @@ namespace STELLAREST_F1
             return null;
         }
 
-        private void DamageToTarget(BaseObject target)
+        private void DamageToTarget(BaseCellObject target)
         {
             if (target.IsValid() == false)
                 return;
@@ -385,7 +380,7 @@ namespace STELLAREST_F1
                 case EObjectSize.VeryLarge:
                     break;
 
-                case EObjectSize.RefPreset:
+                case EObjectSize.UsePreset:
                     return;
             }
         }

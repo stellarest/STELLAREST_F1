@@ -33,7 +33,6 @@ namespace STELLAREST_F1
         public Dictionary<int, EnvData> EnvDataDict { get; private set; } = new Dictionary<int, EnvData>();
         public Dictionary<int, EnvTreeSpriteData> EnvTreeSpriteDataDict { get; private set; } = new Dictionary<int, EnvTreeSpriteData>();
         public Dictionary<int, EnvRockSpriteData> RockSpriteDataDict { get; private set; } = new Dictionary<int, EnvRockSpriteData>();
-        public Dictionary<int, EnvStatData> EnvStatDataDict { get; private set; } = new Dictionary<int, EnvStatData>();
         #endregion
 
         // --- TEMP
@@ -66,7 +65,7 @@ namespace STELLAREST_F1
             EnvDataDict = LoadJson<EnvDataLoader, int, EnvData>(ReadOnly.DataSet.EnvData).MakeDict();
             EnvTreeSpriteDataDict = LoadJson<EnvTreeSpriteDataLoader, int, EnvTreeSpriteData>(ReadOnly.DataSet.EnvTreeSpriteData).MakeDict();
             RockSpriteDataDict = LoadJson<RockSpriteDataLoader, int, EnvRockSpriteData>(ReadOnly.DataSet.EnvRockSpriteData).MakeDict();
-            EnvStatDataDict = LoadJson<EnvStatDataLoader, int, EnvStatData>(ReadOnly.DataSet.EnvStatData).MakeDict();
+            //EnvStatDataDict = LoadJson<EnvStatDataLoader, int, EnvStatData>(ReadOnly.DataSet.EnvStatData).MakeDict();
 
             // --- TEMP
             // StatDataDict = LoadJson<StatDataLoader, int, StatData>(ReadOnly.DataSet.StatData).MakeDict();

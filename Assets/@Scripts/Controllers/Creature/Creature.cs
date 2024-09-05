@@ -1,36 +1,21 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq.Expressions;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
+using STELLAREST_F1.Data;
 using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
-    public class Creature : BaseObject // ---> Abstract가 나을 것 같긴해.
+    public class Creature : BaseCellObject
     {
         public Data.CreatureData CreatureData { get; private set; } = null;
         public CreatureAI CreatureAI { get; protected set; } = null;
         [field: SerializeField] public ECreatureRarity CreatureRarity { get; protected set; } = ECreatureRarity.None;
         public SkillComponent CreatureSkill { get; protected set; } = null; // Skills
-        //public EffectComponent CreatureEffect { get; protected set; } = null; // Effects --> Move To BaseEffect
         public CreatureBody CreatureBody { get; protected set; } = null;
         public CreatureAnimation CreatureAnim { get; private set; } = null;
         public CreatureAnimationCallback CreatureAnimCallback { get; private set; } = null;
-
-        // --- NO SETTER
-        public virtual Vector3Int ChaseCellPos 
-        {
-            get
-            {
-                if (Target.IsValid())
-                    return Target.CellPos;
-                else
-                    return CellPos;
-            }
-        }
 
         public bool CanSkill
         {
@@ -42,18 +27,6 @@ namespace STELLAREST_F1
                     return false;
                 }
 
-                // if (CanEnterSkillAState == false)
-                // {
-                //     CreatureAnim.ReadySkill = false;
-                //     return false;
-                // }
-
-                // if (CanEnterSkillBState == false)
-                // {
-                //     CreatureAnim.ReadySkill = false;
-                //     return false;
-                // }
-
                 if (Target.IsValid() == false)
                 {
                     CreatureAnim.ReadySkill = false;
@@ -62,22 +35,8 @@ namespace STELLAREST_F1
 
                 // --- 스킬이 진행중일 수도 있음
                 if (CreatureAnim.CanSkillTrigger == false)
-                {
-                    // Debug.Log($"<color=white>OOPS !!: {Dev_TextID}</color>");
                     return false;
-                }
 
-                // --- 스킬이 진행중일 수도 있음
-                // if (CreatureSkill.CurrentSkillType != ESkillType.None)
-                // {
-                //     // --- 또 타서 안됨...
-                //     // CreatureAnim.ReadySkill = false;
-                //     return false;
-                // }
-
-                // --- 스킬이 2개 이상일 경우, (염려했었던 문제가 발생함)
-                // --- CanSkill에서 B가 선택이 되었는데
-                // --- DO SKILL에서 C가 선택이 될 위험이 있다.
                 SkillBase currentSkill = CreatureSkill.GetSkill;
                 if (currentSkill == null || currentSkill.RemainCoolTime > 0f)
                 {
@@ -94,8 +53,6 @@ namespace STELLAREST_F1
                 {
                     if (dx <= invokeRange && dy <= invokeRange)
                     {
-                        // Skill_C인데 왜 Skill_B가 나감???
-                        // Debug.Log($"CurrentSkill: {currentSkill.Dev_TextID}");
                         CreatureSkill.CurrentSkillType = currentSkill.SkillType;
                         CreatureAnim.ReadySkill = true;
                         return true;
@@ -125,83 +82,6 @@ namespace STELLAREST_F1
             }
         }
 
-        public bool IsValid(BaseObject bo) => bo.IsValid();
-
-        public EFindPathResult FindPathAndMoveToCellPos(Vector3 destPos, int maxDepth, EObjectType ignoreObjectType = EObjectType.None)
-        {
-            Vector3Int destCellPos = Managers.Map.WorldToCell(destPos);
-            return FindPathAndMoveToCellPos(destCellPos, maxDepth, ignoreObjectType);
-        }
-
-        // public bool IsAtCenter(Vector3Int destPos)
-        // {
-        //     Vector3 center = Managers.Map.GetCenterWorld(destPos);
-        //     Vector3 dir = center - transform.position;
-
-        //     float threshold = 0.1f;
-        //     if (dir.sqrMagnitude < threshold * threshold)
-        //     {
-        //         transform.position = center;
-        //         return true;
-        //     }
-
-        //     return false;
-        // }
-
-        public EFindPathResult FindPathAndMoveToCellPos(Vector3Int destPos, int maxDepth, EObjectType ignoreObjectType = EObjectType.None)
-        {
-            if (IsForceMovingPingPongObject)
-                return EFindPathResult.Fail_ForceMove;
-
-            // 움직임 진행중..
-            // if (LerpToCellPosCompleted == false)
-            //     return EFindPathResult.Success;
-
-            // if (CreatureAIState == ECreatureAIState.Idle)
-            //     return EFindPathResult.Fail_LerpCell;
-
-            // if (_coLerpToCellPos == null)
-            // {
-            //     // Managers.Map.RemoveObject(this);
-            //     // Managers.Map.AddObject(this, CellPos);
-            //     return EFindPathResult.Fail_LerpCell;
-            // }
-
-            // // 움직임 진행중
-            // if (LerpToCellPosCompleted == false)
-            // {
-            //     return EFindPathResult.Fail_LerpCell;
-            // }
-
-            // A*
-            List<Vector3Int> path = Managers.Map.FindPath(startCellPos: CellPos, destPos, maxDepth, ignoreObjectType);
-            if (path.Count == 1)
-            {
-                if (IsOnTheCellCenter == false)
-                {
-                    NextCellPos = path[0];
-                    LerpToCellPosCompleted = false;
-                    return EFindPathResult.Success;
-                }
-                else if (LerpToCellPosCompleted) // --- 무조건 가운데까지 간다.
-                    return EFindPathResult.Fail_LerpCell;
-            }
-
-            else if (path.Count > 1)
-            {
-                Vector3Int dirCellPos = path[1] - CellPos;
-                Vector3Int nextPos = CellPos + dirCellPos;
-
-                if (Managers.Map.TryMove(creature: this, cellPos: nextPos, ignoreObjectType: ignoreObjectType) == false)
-                    return EFindPathResult.Fail_MoveTo;
-
-                NextCellPos = nextPos;
-                LerpToCellPosCompleted = false;
-            }
-
-            return EFindPathResult.Success;
-        }
-
         public virtual bool Moving
         {
             get => CreatureAnim.Moving;
@@ -212,14 +92,6 @@ namespace STELLAREST_F1
         {
             get => CreatureAnim.ReadySkill;
             set => CreatureAnim.ReadySkill = value;
-        }
-
-        public void Skill(ESkillType skillType) => CreatureAnim.Skill(skillType);
-        public void CollectEnv() => CreatureAnim.CollectEnv();
-        public void Dead()
-        {
-            // CreatureAnim.ReleaseAllAnimStates();
-            CreatureAnim.Dead();
         }
 
         public bool IsInTheNearestTarget
@@ -276,7 +148,120 @@ namespace STELLAREST_F1
             }
         }
 
-        public virtual Vector3 GetFirePosition() => CenterPosition;
+        #region Core
+        public override bool Init()
+        {
+            if (base.Init() == false)
+                return false;
+
+            CreatureBody = BaseBody as CreatureBody;
+            CreatureAnim = BaseAnim as CreatureAnimation;
+            CreatureAnimCallback = CreatureAnim.GetComponent<CreatureAnimationCallback>();
+            return true;
+        }
+
+        protected override void InitialSetInfo(int dataID)
+        {
+            base.InitialSetInfo(dataID);
+            if (ObjectType == EObjectType.Hero)
+                CreatureData = Managers.Data.HeroDataDict[dataID];
+            else if (ObjectType == EObjectType.Monster)
+                CreatureData = Managers.Data.MonsterDataDict[dataID];
+
+            CreatureRarity = CreatureData.CreatureRarity;
+            Type aiClassType = Util.GetTypeFromName(CreatureData.AIClassName);
+            CreatureAI = gameObject.AddComponent(aiClassType) as CreatureAI;
+            CreatureAI.InitialSetInfo(this);
+
+            Collider.radius = CreatureData.ColliderRadius;
+            Collider.offset = CreatureData.ColliderOffset;
+
+            CreatureSkill = gameObject.GetOrAddComponent<SkillComponent>();
+            CreatureSkill.InitialSetInfo(owner: this, creatureData: CreatureData);
+            CreatureAnimCallback.InitialSetInfo(this);
+        }
+
+        protected override void EnterInGame(Vector3 spawnPos)
+        {
+            StartCoWait(waitCondition: () => BaseAnim.IsPlay() == false,
+                      callbackWaitCompleted: () =>
+                      {
+                          base.EnterInGame(spawnPos);
+                          CreatureAI.EnterInGame();
+                          CreatureAnim.EnterInGame();
+                          StartCoUpdateAI();
+                          StartCoLerpToCellPos();
+                          RigidBody.simulated = true;
+                      });
+        }
+
+        private void LateUpdate()
+            => UpdateCellPos();
+
+        public override void OnDamaged(BaseCellObject attacker, SkillBase skillByAttacker)
+        {
+            if (CreatureAIState == ECreatureAIState.Dead)
+                return;
+
+            if (attacker.IsValid() == false)
+                return;
+
+            float damage = UnityEngine.Random.Range(attacker.MinAtk, attacker.MaxAtk);
+            float finalDamage = Mathf.FloorToInt(damage);
+
+            Hp = Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
+            bool isCritical = false;
+            Managers.Object.ShowDamageFont(position: this.CenterPosition, damage: finalDamage, isCritical: isCritical);
+
+            // --- Critical
+            // if (UnityEngine.Random.Range(0f, 100f) >= 50f)
+            //     isCritical = true;
+
+            if (skillByAttacker.SkillData.HitEffectIDs.Length != 0)
+            {
+                List<EffectBase> effects = BaseEffect.GenerateEffects(
+                    effectIDs: skillByAttacker.SkillData.HitEffectIDs,
+                    spawnPos: Util.GetRandomQuadPosition(CenterPosition),
+                    startCallback: null
+                );
+            }
+
+            if (Hp <= 0f)
+            {
+                Hp = 0f;
+                OnDead(attacker, skillByAttacker);
+            }
+            else
+                BaseBody.StartCoHurtFlashEffect(isCritical: isCritical);
+        }
+
+        public override void OnDead(BaseCellObject attacker, SkillBase skillFromAttacker)
+        {
+            Moving = false;
+            StopCoLerpToCellPos(); // --- Stop Path Finding
+            StopCoUpdateAI(); // --- Stop AI Tick
+            CreatureAIState = ECreatureAIState.Dead;
+            attacker.Targets.Remove(this);
+            base.OnDead(attacker, skillFromAttacker);
+            CreatureBody.StartCoFadeOutEffect(
+                startCallback: () =>
+                {
+                    // --- From InitBaseError
+                    // Managers.Object.SpawnBaseObject<EffectBase>(
+                    //     objectType: EObjectType.Effect,
+                    //     spawnPos: CenterPosition,
+                    //     dataID: ReadOnly.DataAndPoolingID.DNPID_Effect_OnDeadSkull
+                    // );
+                },
+                endCallback: () => OnDeadFadeOutCompleted()
+            );
+        }
+        #endregion Core
+
+        #region Background
+        // --- TEMP
+        public virtual Vector3 GetFirePosition() 
+            => CenterPosition;
 
         public void MoveToCellCenter()
         {
@@ -315,7 +300,7 @@ namespace STELLAREST_F1
             // else
             // {
             //     if (dir.x < 0f)
-            //         LookAtDir = ELookAtDirection.Left;
+            //         LookAtDir = ELookAtDirection.
             //     else if (dir.x > 0f)
             //         LookAtDir = ELookAtDirection.Right;
 
@@ -323,107 +308,69 @@ namespace STELLAREST_F1
             //     LerpToCellPosCompleted = false;
             // }
         }
+        
+        public void CollectEnv()
+            => CreatureAnim.CollectEnv();
+        public void Dead()
+            => CreatureAnim.Dead();
 
-        private bool CanEnterSkillAState
-            => CreatureAnim.CanEnterAnimState(ECreatureAnimState.Upper_SkillA);
-        private bool CanEnterSkillBState
-            => CreatureAnim.CanEnterAnimState(ECreatureAnimState.Upper_SkillB);
-        public void CancelPlayAnimations() 
-            => CreatureAnim.ResetAnimation();
+        public EFindPathResult FindPathAndMoveToCellPos(Vector3 destPos, int maxDepth, EObjectType ignoreCellObjType = EObjectType.None)
+            => FindPathAndMoveToCellPos(Managers.Map.WorldToCell(destPos), maxDepth, ignoreCellObjType);
 
-        #region Init Core
-        public override bool Init()
+        public EFindPathResult FindPathAndMoveToCellPos(Vector3Int destPos, int maxDepth, EObjectType ignoreCellObjType = EObjectType.None)
         {
-            if (base.Init() == false)
-                return false;
+            if (IsForceMovingPingPongObject)
+                return EFindPathResult.Fail_ForceMove;
 
-            CreatureBody = BaseBody as CreatureBody;
-            CreatureAnim = BaseAnim as CreatureAnimation;
-            CreatureAnimCallback = CreatureAnim.GetComponent<CreatureAnimationCallback>();
-            
-            return true;
-        }
+            // 움직임 진행중..
+            // if (LerpToCellPosCompleted == false)
+            //     return EFindPathResult.Success;
 
-        protected override void InitialSetInfo(int dataID)
-        {
-            base.InitialSetInfo(dataID);
-            if (ObjectType == EObjectType.Hero)
-                CreatureData = Managers.Data.HeroDataDict[dataID];
-            else if (ObjectType == EObjectType.Monster)
-                CreatureData = Managers.Data.MonsterDataDict[dataID];
+            // if (CreatureAIState == ECreatureAIState.Idle)
+            //     return EFindPathResult.Fail_LerpCell;
 
-            CreatureRarity = CreatureData.CreatureRarity;
-            Type aiClassType = Util.GetTypeFromName(CreatureData.AIClassName);
-            CreatureAI = gameObject.AddComponent(aiClassType) as CreatureAI;
-            CreatureAI.InitialSetInfo(this);
+            // if (_coLerpToCellPos == null)
+            // {
+            //     // Managers.Map.RemoveObject(this);
+            //     // Managers.Map.AddObject(this, CellPos);
+            //     return EFindPathResult.Fail_LerpCell;
+            // }
 
-            Collider.radius = CreatureData.ColliderRadius;
-            Collider.offset = CreatureData.ColliderOffset;
-            
-            CreatureSkill = gameObject.GetOrAddComponent<SkillComponent>();
-            CreatureSkill.InitialSetInfo(owner: this, creatureData: CreatureData);
-            CreatureAnimCallback.InitialSetInfo(this);
+            // // 움직임 진행중
+            // if (LerpToCellPosCompleted == false)
+            // {
+            //     return EFindPathResult.Fail_LerpCell;
+            // }
 
-            // --> Change to BaseEffect
-            // CreatureEffect = gameObject.GetOrAddComponent<EffectComponent>();
-            // CreatureEffect.InitialSetInfo(this);
-        }
-
-        protected override void EnterInGame(Vector3 spawnPos)
-        {
-            base.EnterInGame(spawnPos);
-            RigidBody.simulated = false;
-            Targets.Clear();
-            StartCoWait(waitCondition: () => BaseAnim.IsPlay() == false,
-                      callbackWaitCompleted: () =>
-                      {
-                          //CreatureBody.ResetMaterialsAndColors();
-                          CreatureAI.EnterInGame();
-                          //CreatureAnim.AddAnimClipEvents();
-                          //CreatureAnim.AddAnimStateEvents();
-                          CreatureAnim.EnterInGame();
-                          StartCoUpdateAI();
-                          StartCoLerpToCellPos();
-                          RigidBody.simulated = true;
-                      });
-        }
-        #endregion Init Core
-
-        private void LateUpdate()
-            => UpdateCellPos();
-
-        public override void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
-        {
-            if (CreatureAIState == ECreatureAIState.Dead)
-                return;
-
-            base.OnDamaged(attacker, skillFromAttacker);
-            // if (skillFromAttacker.SkillData.EffectIDs != null)
-            //     CreatureEffect.GenerateEffect(skillFromAttacker.SkillData.EffectIDs, EEffectSpawnType.Skill, this);
-        }
-
-        public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
-        {
-            Moving = false;
-            StopCoLerpToCellPos(); // --- Stop Path Finding
-            StopCoUpdateAI(); // --- Stop AI Tick
-            CreatureAIState = ECreatureAIState.Dead;
-            attacker.Targets.Remove(this);
-            base.OnDead(attacker, skillFromAttacker);
-            CreatureBody.StartCoFadeOutEffect(
-                startCallback: () => 
+            // A*
+            List<Vector3Int> path = Managers.Map.FindPath(startCellPos: CellPos, destPos, maxDepth, ignoreCellObjType);
+            if (path.Count == 1)
+            {
+                if (IsOnTheCellCenter == false)
                 {
-                    Managers.Object.SpawnBaseObject<EffectBase>(
-                        objectType: EObjectType.Effect,
-                        spawnPos: CenterPosition,
-                        dataID: ReadOnly.DataAndPoolingID.DNPID_Effect_OnDeadSkull
-                    );
-                },
-                endCallback: () => OnDeadFadeOutCompleted()
-            );
-        }
+                    NextCellPos = path[0];
+                    LerpToCellPosCompleted = false;
+                    return EFindPathResult.Success;
+                }
+                else if (LerpToCellPosCompleted) // --- 무조건 가운데까지 간다.
+                    return EFindPathResult.Fail_LerpCell;
+            }
 
-        protected override void OnDisable() { } // --- TEMP
+            else if (path.Count > 1)
+            {
+                Vector3Int dirCellPos = path[1] - CellPos;
+                Vector3Int nextPos = CellPos + dirCellPos;
+
+                if (Managers.Map.TryMove(cellObj: this, cellPos: nextPos, ignoreCellObjType: ignoreCellObjType) == false)
+                    return EFindPathResult.Fail_MoveTo;
+
+                NextCellPos = nextPos;
+                LerpToCellPosCompleted = false;
+            }
+
+            return EFindPathResult.Success;
+        }
+        #endregion Background
 
         public bool IsRunningAITick => _coUpdateAI != null;
         protected Coroutine _coUpdateAI = null;
@@ -465,7 +412,7 @@ namespace STELLAREST_F1
         {
             if (_coUpdateAI != null)
                 StopCoroutine(_coUpdateAI);
-            
+
             _coUpdateAI = null;
         }
 
@@ -665,3 +612,21 @@ namespace STELLAREST_F1
         }
     }
 }
+
+/*
+
+        // public bool IsAtCenter(Vector3Int destPos)
+        // {
+        //     Vector3 center = Managers.Map.GetCenterWorld(destPos);
+        //     Vector3 dir = center - transform.position;
+
+        //     float threshold = 0.1f;
+        //     if (dir.sqrMagnitude < threshold * threshold)
+        //     {
+        //         transform.position = center;
+        //         return true;
+        //     }
+
+        //     return false;
+        // }
+*/

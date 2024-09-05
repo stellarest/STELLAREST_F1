@@ -10,9 +10,9 @@ namespace STELLAREST_F1
 {
     public class BaseAnimation : InitBase
     {
-        private BaseObject _baseOwner = null;
-        protected bool IsValidOwner => _baseOwner.IsValid();
-        protected bool IsValidTarget => _baseOwner.Target.IsValid();
+        protected BaseCellObject _owner = null;
+        // protected bool IsValidOwner => _baseOwner.IsValid();
+        // protected bool IsValidTarget => _baseOwner.Target.IsValid();
         
         public Animator Animator { get; private set; } = null;
    
@@ -25,8 +25,8 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public virtual void InitialSetInfo(int dataID, BaseObject owner)
-            => _baseOwner = owner;
+        public virtual void InitialSetInfo(int dataID, BaseCellObject owner)
+            => _owner = owner;
 
         public virtual void EnterInGame() { }
 

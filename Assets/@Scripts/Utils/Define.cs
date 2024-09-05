@@ -34,7 +34,7 @@ namespace STELLAREST_F1
             Medium,
             Large,
             VeryLarge,
-            RefPreset,
+            UsePreset,
         }
 
         public enum EScene
@@ -406,9 +406,11 @@ namespace STELLAREST_F1
             ForceStop
         }
 
+        // --- 이것부터 제대로 정의해야할듯.
         public enum EEffectType
         {
             None = -1,
+            SimpleVFX = 1,
             Instant,
             Infinite,
             Buff,
@@ -421,18 +423,18 @@ namespace STELLAREST_F1
             Pull,
         }
 
-        public enum EEffectEnterType // 변수 이름이 마음에 안드는데,,
+        public enum EEffectSpawnType
+        {
+            None = -1,
+            Skill,
+            External,           
+        }
+
+        public enum EEffectEnterTargetType
         {
             None = -1,
             Owner,
             Target,
-        }
-
-        public enum EEffectSpawnType
-        {
-            None = -1,
-            Internal,           // 지속시간이 있는 기본적인 이펙트 
-            External,           // 외부(장판스킬)에서 이펙트를 관리(지속시간에 영향을 받지않음)
         }
 
         public enum EEffectClearType
@@ -475,11 +477,17 @@ namespace STELLAREST_F1
             //Max = Lower_Move + 1
         }
 
-        public enum ECalcStatType
+        public enum EStatModeType
         {
             None = -1,
             AddAmount = 1,
             AddPercent = 2
+        }
+
+        public enum EApplyStatType
+        {
+            None = -1,
+            Atk = 1,
         }
 
         // ####################################################
@@ -518,7 +526,7 @@ namespace STELLAREST_F1
                 public static readonly string EnvData = "EnvData";
                 public static readonly string EnvTreeSpriteData = "EnvTreeSpriteData";
                 public static readonly string EnvRockSpriteData = "EnvRockSpriteData";
-                public static readonly string EnvStatData = "EnvStatData";
+                // public static readonly string EnvStatData = "EnvStatData";
 
                 // --- TEMP
                 // public static readonly string StatData = "StatData";
@@ -749,7 +757,6 @@ namespace STELLAREST_F1
 
                 // --- [ FLOATING ]
                 public static readonly float CoForceWaitTime = 2.5F;
-
                 public static readonly float CheckFarFromHeroesLeaderTick = 1.0F;
                 public static readonly float CheckFarFromHeroesLeaderDistanceForWarp = 30.0F; // 15F(15칸, 상하좌우 기준) -> 30칸
                 //public static readonly float WaitMovementDistanceSQRFromLeader = 2.4F;

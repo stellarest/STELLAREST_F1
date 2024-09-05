@@ -277,7 +277,6 @@ namespace STELLAREST_F1
             // --- GetSkill은 CanSkill에서만 호출
             if (_leader.CanSkill)
             {
-                // _leader.CreatureSkill.GetSkill?.DoSkill();
                 _leader.CreatureSkill.CurrentSkill?.DoSkill();
                 return true;
             }
@@ -445,7 +444,7 @@ namespace STELLAREST_F1
             List<Vector3Int> path = Managers.Map.FindPath(startCellPos: startCellPos,
                                                         destCellPos: targetCellPos,
                                                         maxDepth: depth,
-                                                        ignoreObjectType: EObjectType.Hero);
+                                                        ignoreCellObjType: EObjectType.Hero);
             _leaderPath.Clear();
             for (int i = 0; i < path.Count; ++i)
                 _leaderPath.Enqueue(path[i]);
@@ -545,7 +544,7 @@ namespace STELLAREST_F1
         {
             // --- Sorting heroes in same cellpos for leader
             {
-                BaseObject obj = Managers.Map.GetObject(_leader.CellPos);
+                BaseObject obj = Managers.Map.GetCellObject(_leader.CellPos);
                 if (obj.IsValid() && obj.ObjectType == EObjectType.Hero)
                 {
                     if (obj != _leader)

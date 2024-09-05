@@ -89,11 +89,11 @@ namespace STELLAREST_F1
             if (Owner.CreatureAnim.IsEnteredAnimState(ECreatureAnimState.Upper_CollectEnv))
                 return;
 
-            if (Owner.CreatureAnim.CanSkillTrigger == false)
-            {
-                // Debug.Log($"<color=white>OOPS !!: {Dev_TextID}</color>");
-                return;
-            }
+            // if (Owner.CreatureAnim.CanSkillTrigger == false)
+            // {
+            //     // Debug.Log($"<color=white>OOPS !!: {Dev_TextID}</color>");
+            //     return;
+            // }
 
             // --- REAL ACTIVATE SKILL,,
             Owner.CreatureSkill.RemoveActiveSkill(this);
@@ -142,7 +142,7 @@ namespace STELLAREST_F1
             return Owner.CenterPosition;
         }
 
-        protected List<BaseObject> _skillTargets = new List<BaseObject>();
+        protected List<BaseCellObject> _skillTargets = new List<BaseCellObject>();
         private Vector3 _firstTargetPos = Vector3.zero;
         public void SetFirstTargetPos(Vector3 pos) => _firstTargetPos = pos;
         public Vector3 FirstTargetPos => _firstTargetPos;
@@ -160,7 +160,7 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public virtual void InitialSetInfo(int dataID, BaseObject owner)
+        public virtual void InitialSetInfo(int dataID, BaseCellObject owner)
         {
             Owner = owner as Creature;
             DataTemplateID = dataID;
@@ -189,7 +189,7 @@ namespace STELLAREST_F1
         {
             if (Owner.IsValid() == false || Owner.Target.IsValid() == false)
             {
-                Owner.CreatureAnim.ResetAnimation();
+                Owner.CreatureAnim.ResetAllAnimations();
                 return false;
             }
 
@@ -198,19 +198,50 @@ namespace STELLAREST_F1
             EnteredTargetDir = Owner.Target.CellPos - Owner.CellPos;
             EnteredSignX = (Owner.LookAtDir == ELookAtDirection.Left) ? 1 : 0;
             Owner.Moving = false;
+            if (SkillData.EnterStateEffectIDs.Length != 0)
+            {
+                List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
+                    effectIDs: SkillData.EnterStateEffectIDs,
+                    spawnPos: Owner.CenterPosition,
+                    startCallback: null
+                );
+            }
+
             return true;
         }
 
         private bool IsCorrectSkillType
             => Owner.CreatureSkill.CurrentSkillType == SkillType;
         
-        public virtual bool OnSkillCallback() 
-            => IsCorrectSkillType;
+        public virtual bool OnSkillCallback()
+        {
+            if (IsCorrectSkillType)
+            {
+                if (SkillData.OnStateEffectIDs.Length != 0)
+                {
+                    List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
+                        effectIDs: SkillData.OnStateEffectIDs,
+                        spawnPos: Owner.CenterPosition,
+                        startCallback: null
+                    );
+                }
+                return true;
+            }
+
+            return false;
+        }
         
         public virtual void OnSkillStateExit()
         {
-            // Debug.Log(Owner.CreatureSkill.CurrentSkillType + " OOPS");
             _skillTargets.Clear();
+            if (SkillData.EndStateEffectIDs.Length != 0)
+            {
+                List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
+                    effectIDs: SkillData.EndStateEffectIDs,
+                    spawnPos: Owner.CenterPosition,
+                    startCallback: null
+                );
+            }
         }
         #endregion Events
 
@@ -223,7 +254,7 @@ namespace STELLAREST_F1
                 if (Owner.Targets[i].IsValid() == false)
                     continue;
 
-                BaseObject target = Owner.Targets[i];
+                BaseCellObject target = Owner.Targets[i];
                 if (target.ObjectType == EObjectType.Env)
                     continue;
 
@@ -255,7 +286,7 @@ namespace STELLAREST_F1
         }
 
         private const float c_angleDiagonal = 45f;
-        protected virtual void ReserveSingleTargets(ELookAtDirection enteredLookAtDir, BaseObject target)
+        protected virtual void ReserveSingleTargets(ELookAtDirection enteredLookAtDir, BaseCellObject target)
         {
             Vector3 nLookAtDir = new Vector3((int)enteredLookAtDir, 0, 0);
             Vector3 nTargetDir = target.CellPos - Owner.CellPos;
@@ -346,7 +377,7 @@ namespace STELLAREST_F1
             }
         }
 
-        protected virtual void ReserveVerticalBothTargets(ELookAtDirection enteredLookAtDir, BaseObject target)
+        protected virtual void ReserveVerticalBothTargets(ELookAtDirection enteredLookAtDir, BaseCellObject target)
         {
             Vector3 nLookAtDir = new Vector3((int)enteredLookAtDir, 0, 0);
             Vector3 nTargetDir = target.CellPos - Owner.CellPos;
@@ -363,7 +394,7 @@ namespace STELLAREST_F1
             }
         }
 
-        protected virtual void ReserveHalfTargets(ELookAtDirection enteredLookAtDir, BaseObject target)
+        protected virtual void ReserveHalfTargets(ELookAtDirection enteredLookAtDir, BaseCellObject target)
         {
             Vector3 nLookAtDir = new Vector3((int)enteredLookAtDir, 0, 0);
             //Vector3 nTargetDir = (target.transform.position - Owner.transform.position).normalized;
@@ -382,7 +413,7 @@ namespace STELLAREST_F1
             }
         }
 
-        protected virtual void ReserveAroundTargets(BaseObject target)
+        protected virtual void ReserveAroundTargets(BaseCellObject target)
         {
             int dx = Mathf.Abs(target.CellPos.x - Owner.CellPos.x);
             int dy = Mathf.Abs(target.CellPos.y - Owner.CellPos.y);

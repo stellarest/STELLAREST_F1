@@ -11,15 +11,13 @@ namespace STELLAREST_F1.Data
     public class BaseData
     {
         public int DataID;
-        public int PoolingID;
-        public string PrefabLabel;
         public string DevTextID;
+        public string PrefabLabel;
         public string NameTextID;
         public string DescriptionTextID;
         public string IconImage;
     }
 
-    // 101000 ~ ...
     public class CreatureData : BaseData
     {
         public ECreatureRarity CreatureRarity;
@@ -49,7 +47,6 @@ namespace STELLAREST_F1.Data
         }
     }
 
-    #region Hero Sprite Data
     [Serializable]
     public class HeroSpriteData
     {
@@ -209,7 +206,6 @@ namespace STELLAREST_F1.Data
             return dict;
         }
     }
-    #endregion
 
     [Serializable]
     public class MonsterData : CreatureData
@@ -233,7 +229,6 @@ namespace STELLAREST_F1.Data
         }
     }
 
-    #region Monster Sprite Data
     [Serializable]
     public class MonsterSpriteData : BaseData
     {
@@ -326,13 +321,13 @@ namespace STELLAREST_F1.Data
             return dict;
         }
     }
-    #endregion
 
     [Serializable]
     public class EnvData : BaseData
     {
         public EEnvType EnvType;
         public string AnimatorLabel;
+        public float MaxHp;
         public int DropItemID;
     }
 
@@ -350,7 +345,6 @@ namespace STELLAREST_F1.Data
         }
     }
 
-    #region Env Sprite Data
     [Serializable]
     public class EnvTreeSpriteData
     {
@@ -420,7 +414,6 @@ namespace STELLAREST_F1.Data
             return dict;
         }
     }
-    #endregion
 
     public class StatData : BaseData
     {
@@ -470,33 +463,18 @@ namespace STELLAREST_F1.Data
         }
     }
 
-    [Serializable]
-    public class EnvStatData : StatData
-    {
-    }
-
-    public class EnvStatDataLoader : ILoader<int, EnvStatData>
-    {
-        public List<EnvStatData> EnvsStats = new List<EnvStatData>();
-
-        public Dictionary<int, EnvStatData> MakeDict()
-        {
-            Dictionary<int, EnvStatData> dict = new Dictionary<int, EnvStatData>();
-            foreach (EnvStatData data in EnvsStats)
-                dict.Add(data.DataID, data);
-
-            return dict;
-        }
-    }
-
-    // public class StatDataLoader : ILoader<int, StatData>
+    // [Serializable]
+    // public class EnvStatData : StatData
     // {
-    //     public List<StatData> Stats = new List<StatData>();
+    // }
+    // public class EnvStatDataLoader : ILoader<int, EnvStatData>
+    // {
+    //     public List<EnvStatData> EnvsStats = new List<EnvStatData>();
 
-    //     public Dictionary<int, StatData> MakeDict()
+    //     public Dictionary<int, EnvStatData> MakeDict()
     //     {
-    //         Dictionary<int, StatData> dict = new Dictionary<int, StatData>();
-    //         foreach (StatData data in Stats)
+    //         Dictionary<int, EnvStatData> dict = new Dictionary<int, EnvStatData>();
+    //         foreach (EnvStatData data in EnvsStats)
     //             dict.Add(data.DataID, data);
 
     //         return dict;
@@ -513,24 +491,11 @@ namespace STELLAREST_F1.Data
         public int TargetDistance;
         public int ProjectileID;
 		public float CoolTime;
-        public int[] EnterEffectIDs;
+        public int[] EnterStateEffectIDs;
+        public int[] OnStateEffectIDs;
+        public int[] EndStateEffectIDs;
         public int[] HitEffectIDs;
     }
-
-    // -- DELETE 예정
-    // public class SkillDataLoader : ILoader<int, SkillData>
-    // {
-    //     public List<SkillData> Skills = new List<SkillData>();
-
-    //     public Dictionary<int, SkillData> MakeDict()
-    //     {
-    //         Dictionary<int, SkillData> dict = new Dictionary<int, SkillData>();
-    //         foreach (SkillData data in Skills)
-    //             dict.Add(data.DataID, data);
-
-    //         return dict;
-    //     }
-    // }
 
     [Serializable]
     public class HeroSkillData : SkillData
@@ -570,7 +535,6 @@ namespace STELLAREST_F1.Data
         }
     }
 
-    // 201000 ~ ...
     [Serializable]
     public class ProjectileData : BaseData
     {
@@ -598,22 +562,18 @@ namespace STELLAREST_F1.Data
         }
     }
 
-    // 301000 ~ ...
     [Serializable]
     public class EffectData : BaseData
     {
-        // FollowOwner: 프로젝타일 스킬이라면 프로젝타일을 따라가고
-        // 아니라면 Owner 자체를 따라가게? 아니면 프로젝타일 effectID로 하는것은 프로젝타일을 따라가도록
         public bool IsLoop;
-        public float Amount;
-        public float PercentAdd;            // --- TODO NEXT
-        public float PercentMulti;          // --- TODO NEXT
+        public float AddAmount;
+        public float AddPercent;
         public float Duration;
         public float Period;
         public EEffectType EffectType;
         public EObjectSize EffectSize;
-        public EEffectSpawnType EffectSpawnType;
-        public EEffectEnterType EffectEnterType;
+        public EApplyStatType ApplyStatType;
+        // public EEffectEnterTargetType EffectEnterTargetType; // --- 이게 띠껍...
     }
 
     public class EffectDataLoader : ILoader<int, EffectData>
@@ -629,27 +589,4 @@ namespace STELLAREST_F1.Data
             return dict;
         }
     }
-
-    // [Serializable]
-    // public class ProjectileInfoData 
-    // {
-    //     public int DataID;
-    //     public string Tag;
-    //     public string BodyColor;
-    //     public string Body;
-    // }
-
-    // public class ProjectileInfoDataLoader : ILoader<int, ProjectileInfoData>
-    // {
-    //     public List<ProjectileInfoData> ProjectileInfos = new List<ProjectileInfoData>();
-
-    //     public Dictionary<int, ProjectileInfoData> MakeDict()
-    //     {
-    //         Dictionary<int, ProjectileInfoData> dict = new Dictionary<int, ProjectileInfoData>();
-    //         foreach (ProjectileInfoData data in ProjectileInfos)
-    //             dict.Add(data.DataID, data);
-
-    //         return dict;
-    //     }
-    // }
 }

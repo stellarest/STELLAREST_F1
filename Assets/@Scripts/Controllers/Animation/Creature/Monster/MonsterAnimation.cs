@@ -8,7 +8,7 @@ namespace STELLAREST_F1
     public class MonsterAnimation : CreatureAnimation
     {
         private Monster _monsterOwner = null;
-        public override void InitialSetInfo(int dataID, BaseObject owner)
+        public override void InitialSetInfo(int dataID, BaseCellObject owner)
         {
             base.InitialSetInfo(dataID, owner);
             string animatorTextID = Managers.Data.MonsterDataDict[dataID].AnimatorLabel;
@@ -31,20 +31,19 @@ namespace STELLAREST_F1
         // --- Enter
         protected override void OnUpperIdleEnter()
         {
-            if (IsValidOwner == false)
+            if (_owner.IsValid() == false)
                 return;
 
             // if (_monsterOwner.Target.IsValid() == false)
             //     _monsterOwner.MonsterBody.MonsterEmoji = EMonsterEmoji.Normal;
             // else
             //     _monsterOwner.MonsterBody.MonsterEmoji = EMonsterEmoji.Angry;
-            
             base.OnUpperIdleEnter();
         }
 
         protected override void OnUpperMoveEnter()
         {
-            if (IsValidOwner == false)
+            if (_owner.IsValid() == false)
                 return;
 
             // _monsterOwner.MonsterBody.MonsterEmoji = EMonsterEmoji.Normal;
@@ -55,7 +54,7 @@ namespace STELLAREST_F1
 
         protected override void OnUpperSkillAEnter()
         {
-            if (IsValidOwner == false)
+            if (_owner.IsValid() == false)
                 return;
 
             // _monsterOwner.MonsterBody.MonsterEmoji = EMonsterEmoji.Angry;
@@ -73,35 +72,35 @@ namespace STELLAREST_F1
         // --- Exit
         protected override void OnUpperIdleExit()
         {
-            if (IsValidOwner == false)
+            if (_owner.IsValid() == false)
                 return;
 
             base.OnUpperIdleExit();
         }
         protected override void OnUpperMoveExit()
         {
-            if (IsValidOwner == false)
+            if (_owner.IsValid() == false)
                 return;
 
             base.OnUpperMoveExit();
         }
         protected override void OnUpperSkillAExit()
         {
-            if (IsValidOwner == false)
+            if (_owner.IsValid() == false)
                 return;
 
             base.OnUpperSkillAExit();
         }
         protected override void OnUpperSkillBExit()
         {
-            if (IsValidOwner == false)
+            if (_owner.IsValid() == false)
                 return;
 
             base.OnUpperSkillBExit();
         }
         protected override void OnUpperSkillCExit()
         {
-            if (IsValidOwner == false)
+            if (_owner.IsValid() == false)
                 return;
 
             base.OnUpperSkillCExit();

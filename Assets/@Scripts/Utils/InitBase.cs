@@ -10,13 +10,13 @@ namespace STELLAREST_F1
         private void Awake() 
             => Init();
 
-        protected bool _init = false;
+        protected bool _awake = false;
         public virtual bool Init()
         {
-            if (_init)
+            if (_awake)
                 return false;
 
-            _init = true;
+            _awake = true;
             return true;
         }
     }

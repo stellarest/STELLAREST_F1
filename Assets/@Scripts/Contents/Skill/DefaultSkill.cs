@@ -22,7 +22,6 @@ namespace STELLAREST_F1
             else
                 SetFirstTargetPos(Owner.Target.CenterPosition);
 
-            Owner.Moving = false;
             return true;
         }
 
@@ -30,15 +29,6 @@ namespace STELLAREST_F1
         {
             if (base.OnSkillCallback() == false)
                 return false;
-
-            if (SkillData.EnterEffectIDs.Length != 0)
-            {
-                List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
-                    effectIDs: SkillData.EnterEffectIDs,
-                    spawnPos: Owner.CenterPosition,
-                    startCallback: null
-                );
-            }
 
             // --- Handle Ranged Targets
             if (SkillData.ProjectileID >= 0)
@@ -60,19 +50,16 @@ namespace STELLAREST_F1
                     if (_skillTargets[i].IsValid() == false)
                         continue;
 
-                    BaseObject target = _skillTargets[i];
+                    BaseCellObject target = _skillTargets[i];
                     target.OnDamaged(attacker: Owner, skillByAttacker: this);
-                    {
-                        // --- Effect
-                        if (SkillData.HitEffectIDs.Length != 0)
-                        {
-                            List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
-                                effectIDs: SkillData.HitEffectIDs,
-                                spawnPos: Util.GetRandomQuadPosition(target.CenterPosition),
-                                startCallback: null
-                            );
-                        }
-                    }
+                    // if (SkillData.HitEffectIDs.Length != 0)
+                    // {
+                    //     List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
+                    //         effectIDs: SkillData.HitEffectIDs,
+                    //         spawnPos: Util.GetRandomQuadPosition(target.CenterPosition),
+                    //         startCallback: null
+                    //     );
+                    // }
                 }
             }
 

@@ -12,7 +12,7 @@ namespace STELLAREST_F1
         private float _desiredTimeToReturn = 0.65f;
         private float _sqrTargetDist = 0f;
 
-        public override void InitialSetInfo(int dataID, BaseObject owner)
+        public override void InitialSetInfo(int dataID, BaseCellObject owner)
         {
             base.InitialSetInfo(dataID, owner);
             _sqrTargetDist = TargetDistance * 3f;

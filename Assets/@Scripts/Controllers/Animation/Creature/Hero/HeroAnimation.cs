@@ -14,7 +14,7 @@ namespace STELLAREST_F1
     public class HeroAnimation : CreatureAnimation
     {
         private Hero _heroOwner = null;
-        public override void InitialSetInfo(int dataID, BaseObject owner)
+        public override void InitialSetInfo(int dataID, BaseCellObject owner)
         {
             base.InitialSetInfo(dataID, owner);
             string animatorTextID = Managers.Data.HeroDataDict[dataID].AnimatorLabel;
@@ -38,10 +38,10 @@ namespace STELLAREST_F1
         #region Anim Clip Callbacks
         public override void OnCollectEnvCallback()
         {
-            if (IsValidOwner == false)
+            if (_owner.IsValid() == false)
                 return;
 
-            if (IsValidTarget == false)
+            if (_owner.Target.IsValid() == false)
                 return;
 
             if (_heroOwner.Target.ObjectType != EObjectType.Env)
@@ -57,17 +57,18 @@ namespace STELLAREST_F1
 
         public override void OnDustEffectCallback()
         {
-            if (IsValidOwner == false)
+            if (_owner.IsValid() == false)
                 return;
 
-            Vector3 spawnPos = _heroOwner.HeroBody.GetContainer(EHeroBody_Lower.LegR).TR.position;
-            EffectBase dustEffect = Managers.Object.SpawnBaseObject<EffectBase>(
-                objectType: EObjectType.Effect,
-                spawnPos: spawnPos,
-                dataID: ReadOnly.DataAndPoolingID.DNPID_Effect_Dust,
-                owner: _heroOwner
-            );
-            dustEffect.SortingGroup.sortingOrder = ReadOnly.SortingLayers.SLOrder_BaseObject;
+            // --- From InitBaseError
+            // Vector3 spawnPos = _heroOwner.HeroBody.GetContainer(EHeroBody_Lower.LegR).TR.position;
+            // EffectBase dustEffect = Managers.Object.SpawnBaseObject<EffectBase>(
+            //     objectType: EObjectType.Effect,
+            //     spawnPos: spawnPos,
+            //     dataID: ReadOnly.DataAndPoolingID.DNPID_Effect_Dust,
+            //     owner: _heroOwner
+            // );
+            // dustEffect.SortingGroup.sortingOrder = ReadOnly.SortingLayers.SLOrder_BaseObject;
         }
         #endregion
 
@@ -75,7 +76,7 @@ namespace STELLAREST_F1
         // --- Enter
         protected override void OnUpperIdleEnter()
         {
-            if (IsValidOwner == false)
+            if (_owner.IsValid() == false)
                 return;
 
             _heroOwner.HeroBody.HeroEmoji = EHeroEmoji.Idle;
@@ -89,7 +90,7 @@ namespace STELLAREST_F1
 
         protected override void OnUpperMoveEnter()
         {
-            if (IsValidOwner == false)
+            if (_owner.IsValid() == false)
                 return;
 
             _heroOwner.HeroBody.HeroEmoji = EHeroEmoji.Move;
@@ -98,7 +99,7 @@ namespace STELLAREST_F1
 
         protected override void OnUpperSkillAEnter()
         {
-            if (IsValidOwner == false)
+            if (_owner.IsValid() == false)
                 return;
 
             _heroOwner.HeroBody.HeroEmoji = EHeroEmoji.Skill_A;
@@ -107,7 +108,7 @@ namespace STELLAREST_F1
 
         protected override void OnUpperSkillBEnter()
         {
-            if (IsValidOwner == false)
+            if (_owner.IsValid() == false)
                 return;
 
             _heroOwner.HeroBody.HeroEmoji = EHeroEmoji.Skill_B;
@@ -116,15 +117,16 @@ namespace STELLAREST_F1
 
         protected override void OnUpperSkillCEnter()
         {
-            if (IsValidOwner == false)
+            if (_owner.IsValid() == false)
                 return;
 
+            _heroOwner.HeroBody.HeroEmoji = EHeroEmoji.Skill_C;
             base.OnUpperSkillCEnter();
         }
 
         protected override void OnUpperCollectEnvEnter()
         {
-            if (IsValidOwner == false)
+            if (_owner.IsValid() == false)
                 return;
 
             // Debug.Log($"<color=white>{nameof(OnUpperCollectEnvEnter)}</color>");
@@ -156,7 +158,7 @@ namespace STELLAREST_F1
         // --- Exit
         protected override void OnUpperIdleExit()
         {
-            if (IsValidOwner == false)
+            if (_owner.IsValid() == false)
                 return;
 
             base.OnUpperIdleExit();
@@ -164,7 +166,7 @@ namespace STELLAREST_F1
 
         protected override void OnUpperMoveExit()
         {
-            if (IsValidOwner == false)
+            if (_owner.IsValid() == false)
                 return;
 
             base.OnUpperMoveExit();
@@ -172,7 +174,7 @@ namespace STELLAREST_F1
 
         protected override void OnUpperSkillAExit()
         {
-            if (IsValidOwner == false)
+            if (_owner.IsValid() == false)
                 return;
 
             base.OnUpperSkillAExit();
@@ -180,7 +182,7 @@ namespace STELLAREST_F1
 
         protected override void OnUpperSkillBExit()
         {
-            if (IsValidOwner == false)
+            if (_owner.IsValid() == false)
                 return;
 
             base.OnUpperSkillBExit();
@@ -188,7 +190,7 @@ namespace STELLAREST_F1
 
         protected override void OnUpperSkillCExit()
         {
-            if (IsValidOwner == false)
+            if (_owner.IsValid() == false)
                 return;
 
             base.OnUpperSkillCExit();
@@ -196,7 +198,7 @@ namespace STELLAREST_F1
 
         protected override void OnUpperCollectEnvExit()
         {
-            if (IsValidOwner == false)
+            if (_owner.IsValid() == false)
                 return;
 
             // Debug.Log($"<color=white>{nameof(OnUpperCollectEnvExit)}</color>");

@@ -33,7 +33,7 @@ namespace STELLAREST_F1
             _canEnterAnimStates[(int)ECreatureAnimState.Upper_SkillC] = true;
         }
 
-        public void ResetAnimation()
+        public void ResetAllAnimations()
         {
             Debug.Log($"<color=red>Cancel Anim</color>");
             ReleaseAllAnimStates();
@@ -149,7 +149,7 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public override void InitialSetInfo(int dataID, BaseObject owner)
+        public override void InitialSetInfo(int dataID, BaseCellObject owner)
         {
             base.InitialSetInfo(dataID, owner);
             _creatureOwner = owner as Creature;
@@ -262,7 +262,11 @@ namespace STELLAREST_F1
         }
 
         protected virtual void OnUpperSkillCEnter()
-            => EnteredAnimState(ECreatureAnimState.Upper_SkillC);
+        {
+            EnteredAnimState(ECreatureAnimState.Upper_SkillC);
+            _creatureOwner.CreatureSkill.OnSkillStateEnter(ESkillType.Skill_C);
+        }
+
         protected virtual void OnUpperCollectEnvEnter()
             => EnteredAnimState(ECreatureAnimState.Upper_CollectEnv);
         protected virtual void OnUpperDeadEnter() 

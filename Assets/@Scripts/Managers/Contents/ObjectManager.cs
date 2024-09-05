@@ -38,6 +38,22 @@ namespace STELLAREST_F1
         private bool IsCellObject(EObjectType objectType)
             => objectType == EObjectType.Hero || objectType == EObjectType.Monster || objectType == EObjectType.Env;
 
+        public Projectile SpawnProjectile(Vector3 spawnPos, int dataID)
+        {
+            ProjectileData data = Managers.Data.ProjectileDataDict[dataID];
+            GameObject go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: ProjectileRoot, poolingID: Util.GetPoolingID(EObjectType.Projectile, dataID));
+            if (go == null)
+            {
+                Debug.LogError($"{nameof(SpawnBaseObject)}, {nameof(EObjectType.Projectile)}, Input: \"{dataID}\"");
+                return null;
+            }
+
+            Projectile projectile = go.GetComponent<Projectile>();
+            // projectile.Owner = owner.GetComponent<Creature>();
+            projectile.SetInfo(dataID, spawnPos);
+            return projectile;
+        }
+
         public T SpawnBaseObject<T>(EObjectType objectType, Vector3 spawnPos, int dataID = -1, BaseObject owner = null) where T : BaseObject
         {
             Vector3Int cellSpawnPos = Vector3Int.zero;
@@ -152,21 +168,22 @@ namespace STELLAREST_F1
                         return projectile as T;
                     }
 
+                // --- TEMP
                 case EObjectType.Effect:
                     {
                         EffectData data = Managers.Data.EffectDataDict[dataID];
-                        go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: EffectRoot, poolingID:  Util.GetPoolingID(EObjectType.Effect, dataID));
+                        go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: EffectRoot, poolingID: Util.GetPoolingID(EObjectType.Effect, dataID));
                         if (go == null)
                         {
                             Debug.LogError($"{nameof(SpawnBaseObject)}, {nameof(EObjectType.Effect)}, Input: \"{dataID}\"");
                             return null;
                         }
 
-                        EffectBase effect = go.GetComponent<EffectBase>();
-                        effect.Owner = owner;
-                        //effect.Skill = owner.GetComponent<Creature>().CreatureSkill.CurrentSkill;
-                        effect.SetInfo(dataID, spawnPos);
-                        return effect as T;
+                        return go.GetComponent<EffectBase>() as T;
+                        // EffectBase effect = go.GetComponent<EffectBase>();
+                        // effect.Owner = owner;
+                        // effect.SetInfo(dataID, spawnPos);
+                        // return effect as T;
                     }
             }
 
@@ -318,19 +335,19 @@ namespace STELLAREST_F1
             {
                 case EObjectType.Hero:
                     Heroes.Remove(obj as Hero);
-                    Managers.Map.RemoveObject(obj as Hero);
+                    Managers.Map.RemoveCellObject(obj as Hero);
                     Managers.Resource.Destroy(go: obj.gameObject, poolingID: Util.GetPoolingID(EObjectType.Hero, dataID));
                     break;
 
                 case EObjectType.Monster:
                     Monsters.Remove(obj as Monster);
-                    Managers.Map.RemoveObject(obj as Monster);
+                    Managers.Map.RemoveCellObject(obj as Monster);
                     Managers.Resource.Destroy(go: obj.gameObject, poolingID: Util.GetPoolingID(EObjectType.Monster, dataID));
                     break;
 
                 case EObjectType.Env:
                     Envs.Remove(obj as Env);
-                    Managers.Map.RemoveObject(obj as Env);
+                    Managers.Map.RemoveCellObject(obj as Env);
                     Managers.Resource.Destroy(go: obj.gameObject, poolingID: Util.GetPoolingID(EObjectType.Env, dataID));
                     break;
 

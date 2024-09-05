@@ -14,7 +14,6 @@ namespace STELLAREST_F1
         #endif
 
         public MonsterData MonsterData { get; private set; } = null;
-        public MonsterStatData MonsterStatData { get; private set; } = null;
         [SerializeField] private MonsterBody _monsterBody = null;
         public MonsterBody MonsterBody
         {
@@ -58,14 +57,14 @@ namespace STELLAREST_F1
             }
         }
 
-        public override BaseObject Target
+        public override BaseCellObject Target
         {
             get
             {
                 if (this.IsValid() == false)
                     return null;
 
-                BaseObject target = base.Target;
+                BaseCellObject target = base.Target;
                 // --- base에서 null을 리턴하므로 null 체크를 먼저 해야함
                 if (target != null && target.IsValid())
                     MonsterBody.MonsterEmoji = EMonsterEmoji.Angry;
@@ -76,7 +75,7 @@ namespace STELLAREST_F1
             }
         }
 
-        #region Init Core
+        #region Core
         public override bool Init()
         {
             if (base.Init() == false)
@@ -93,7 +92,6 @@ namespace STELLAREST_F1
             base.InitialSetInfo(dataID);
             _monsterAI = CreatureAI as MonsterAI;
             MonsterData = Managers.Data.MonsterDataDict[dataID];
-            MonsterStatData = StatData as MonsterStatData;
             _maxLevelID = dataID;
 
             MonsterType = MonsterData.MonsterType;
@@ -109,23 +107,29 @@ namespace STELLAREST_F1
             base.EnterInGame(spawnPos);
             MonsterBody.StartCoFadeInEffect(startCallback: () => 
             {
-                Managers.Object.SpawnBaseObject<EffectBase>(
-                    objectType: EObjectType.Effect,
-                    spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos),
-                    dataID: ReadOnly.DataAndPoolingID.DNPID_Effect_TeleportRed,
-                    owner: this);
+                // --- From InitBaseError
+                // Managers.Object.SpawnBaseObject<EffectBase>(
+                //     objectType: EObjectType.Effect,
+                //     spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos),
+                //     dataID: ReadOnly.DataAndPoolingID.DNPID_Effect_TeleportRed,
+                //     owner: this);
             });
         }
-        #endregion
 
-        public override void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
+        public override void OnDamaged(BaseCellObject attacker, SkillBase skillFromAttacker)
         {
             base.OnDamaged(attacker, skillFromAttacker);
             HitShakeMovement(duration: 0.05f, power: 0.5f, vibrato: 10); // --- TEMP
         }
-        public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
+        
+        public override void OnDead(BaseCellObject attacker, SkillBase skillFromAttacker)
             => base.OnDead(attacker, skillFromAttacker);
+
         protected override void OnDisable()
             => base.OnDisable();
+        #endregion Core
+
+        #region Background
+        #endregion Background
     }
 }

@@ -3,29 +3,26 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Linq;
-using STELLAREST_F1.Data;
 using UnityEngine;
-using UnityEngine.UIElements;
+using STELLAREST_F1.Data;
 using static STELLAREST_F1.Define;
-using Unity.VisualScripting;
+
 
 namespace STELLAREST_F1
 {
     public class Hero : Creature
     {
-        public float TestOffset = 0f;
-
+        #if UNITY_EDITOR
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.T))
             {
-                //LevelUp();
-                HeroAnim.ResetAnimation();
+                LevelUp();
             }
         }
+        #endif
 
         public HeroData HeroData { get; private set; } = null;
-        public HeroStatData HeroStatData { get; private set; } = null;
         public HeroAnimation HeroAnim { get; private set; } = null;
         public HeroAI HeroAI { get; private set; } = null;
         [SerializeField] private HeroBody _heroBody = null;
@@ -71,38 +68,6 @@ namespace STELLAREST_F1
             }
         }
 
-        public override void LerpToCellPos(float movementSpeed)
-        {
-            if (IsLeader)
-                return;
-
-            Hero leader = Managers.Object.HeroLeaderController.Leader;
-            if (LerpToCellPosCompleted && leader.Moving == false)
-            {
-                Moving = false;
-                return;
-            }
-
-            Vector3 destPos = Managers.Map.CellToCenteredWorld(CellPos); // 이동은 가운데로.
-            Vector3 dir = destPos - transform.position;
-
-            if (dir.x < 0f)
-                LookAtDir = ELookAtDirection.Left;
-            else if (dir.x > 0f)
-                LookAtDir = ELookAtDirection.Right;
-
-            if (dir.sqrMagnitude < 0.001f)
-            {
-                transform.position = destPos;
-                LerpToCellPosCompleted = true;
-                return;
-            }
-
-            Moving = true;
-            float moveDist = Mathf.Min(dir.magnitude, movementSpeed * Time.deltaTime);
-            transform.position += dir.normalized * moveDist;
-        }
-
         public override bool Moving
         {
             get => base.Moving;
@@ -112,14 +77,6 @@ namespace STELLAREST_F1
                 if (value && HeroWeaponType != EHeroWeaponType.Default)
                     HeroWeaponType = EHeroWeaponType.Default;
             }
-        }
-
-        protected override void OnDeadFadeOutCompleted()
-        {
-            if (IsLeader)
-                Managers.Game.ChangeHeroLeader(autoChangeFromDead: true);
-
-            base.OnDeadFadeOutCompleted();
         }
 
         public bool CanCollectEnv
@@ -180,26 +137,125 @@ namespace STELLAREST_F1
             }
         }
 
+        #region Core
+        public override bool Init()
+        {
+            if (base.Init() == false)
+                return false;
+
+            ObjectType = EObjectType.Hero;
+            HeroBody = CreatureBody as HeroBody;
+            HeroAnim = CreatureAnim as HeroAnimation;
+            return true;
+        }
+
+        protected override void InitialSetInfo(int dataID)
+        {
+            base.InitialSetInfo(dataID);
+            HeroAI = CreatureAI as HeroAI;
+            HeroData = Managers.Data.HeroDataDict[dataID];
+            for (int i = DataTemplateID; i < DataTemplateID + ReadOnly.Util.HeroMaxLevel;)
+                _maxLevelID = i++;
+
+            gameObject.name += $"_{HeroData.DevTextID.Replace(" ", "")}";
+        }
+
+        protected override void EnterInGame(Vector3 spawnPos)
+        {
+            HeroBody.HeroEmoji = EHeroEmoji.Idle;
+            LookAtDir = ELookAtDirection.Right; // --- Default Heroes Dir: Right
+            CreatureAIState = ECreatureAIState.Move;
+
+            base.EnterInGame(spawnPos);
+            StartCoroutine(CoInitialReleaseLeaderHeroAI());
+        }
+
+        public override void OnDamaged(BaseCellObject attacker, SkillBase skillFromAttacker)
+            => base.OnDamaged(attacker, skillFromAttacker);
+            
+        public override void OnDead(BaseCellObject attacker, SkillBase skillFromAttacker)
+        {
+            if (IsLeader)
+            {
+                Managers.Object.HeroLeaderController.EnableLeaderMark(false);
+                Managers.Object.HeroLeaderController.EnablePointer(false);
+            }
+
+            base.OnDead(attacker, skillFromAttacker);
+        }
+        #endregion Core
+
+        #region Background
+        public override void LerpToCellPos(float movementSpeed)
+        {
+            if (IsLeader)
+                return;
+
+            Hero leader = Managers.Object.HeroLeaderController.Leader;
+            if (LerpToCellPosCompleted && leader.Moving == false)
+            {
+                Moving = false;
+                return;
+            }
+
+            Vector3 destPos = Managers.Map.CellToCenteredWorld(CellPos); // 이동은 가운데로.
+            Vector3 dir = destPos - transform.position;
+
+            if (dir.x < 0f)
+                LookAtDir = ELookAtDirection.Left;
+            else if (dir.x > 0f)
+                LookAtDir = ELookAtDirection.Right;
+
+            if (dir.sqrMagnitude < 0.001f)
+            {
+                transform.position = destPos;
+                LerpToCellPosCompleted = true;
+                return;
+            }
+
+            Moving = true;
+            float moveDist = Mathf.Min(dir.magnitude, movementSpeed * Time.deltaTime);
+            transform.position += dir.normalized * moveDist;
+        }
+
+        protected override void OnDeadFadeOutCompleted()
+        {
+            if (IsLeader)
+                Managers.Game.ChangeHeroLeader(autoChangeFromDead: true);
+
+            base.OnDeadFadeOutCompleted();
+        }
+
         public void LevelUp()
         {
             if (this.IsValid() == false)
                 return;
 
             if (IsMaxLevel)
+            {
+                Debug.Log($"<color=magenta>MAX LEVEL !!{gameObject.name}</color>");
                 return;
+            }
 
             _levelID = Mathf.Clamp(_levelID + 1, DataTemplateID, _maxLevelID);
             Debug.Log($"<color=white>Lv: {Level} / MaxLv: {MaxLevel}</color>");
-
             if (Managers.Data.HeroStatDataDict.TryGetValue(key: _levelID, value: out HeroStatData statData))
-                SetStat(statData);
+            {
+                SetStat(_levelID);
+                SetHeroSkill(_levelID);
+            }
 
             if (IsMaxLevel)
             {
-                Debug.Log("<color=yellow>Try ChangeSpriteSet</color>");
+                Debug.Log("<color=yellow>CHANGE: ELITE HERO</color>");
                 CreatureRarity = ECreatureRarity.Elite;
                 HeroBody.ChangeSpriteSet(Managers.Data.HeroSpriteDataDict[_levelID]);
             }
+        }
+
+        private void SetHeroSkill(int _levelID)
+        {
+            // LOAD HERO SKILLS,,,
         }
 
         private IEnumerator CoInitialReleaseLeaderHeroAI()
@@ -232,59 +288,6 @@ namespace STELLAREST_F1
                 // HeroBody.GetContainer(EHeroWeapon.WeaponL_Armor).TR.gameObject.SetActive(false);
             }
         }
-
-        #region Init Core
-        public override bool Init()
-        {
-            if (base.Init() == false)
-                return false;
-
-            ObjectType = EObjectType.Hero;
-            HeroBody = CreatureBody as HeroBody;
-            HeroAnim = CreatureAnim as HeroAnimation;
-            return true;
-        }
-
-        protected override void InitialSetInfo(int dataID)
-        {
-            base.InitialSetInfo(dataID);
-            HeroAI = CreatureAI as HeroAI;
-            HeroData = Managers.Data.HeroDataDict[dataID];
-            HeroStatData = StatData as HeroStatData;
-            for (int i = DataTemplateID; i < DataTemplateID + ReadOnly.Util.HeroMaxLevel;)
-                _maxLevelID = i++;
-
-            gameObject.name += $"_{HeroData.DevTextID.Replace(" ", "")}";
-        }
-
-        protected override void EnterInGame(Vector3 spawnPos)
-        {
-            HeroBody.HeroEmoji = EHeroEmoji.Idle;
-            LookAtDir = ELookAtDirection.Right; // --- Default Heroes Dir: Right
-            CreatureAIState = ECreatureAIState.Move;
-
-            base.EnterInGame(spawnPos);
-            StartCoroutine(CoInitialReleaseLeaderHeroAI());
-        }
-        #endregion Init Core
-
-        public override void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
-            => base.OnDamaged(attacker, skillFromAttacker);
-        public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
-        {
-            if (IsLeader)
-            {
-                Managers.Object.HeroLeaderController.EnableLeaderMark(false);
-                Managers.Object.HeroLeaderController.EnablePointer(false);
-            }
-
-            base.OnDead(attacker, skillFromAttacker);
-        }
-        protected override void OnDisable()
-        {
-            base.OnDisable();
-            if (Managers.Game == null)
-                return;
-        }
+        #endregion Background
     }
 }

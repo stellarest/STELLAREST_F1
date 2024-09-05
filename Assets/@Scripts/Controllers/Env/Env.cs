@@ -7,10 +7,11 @@ using STELLAREST_F1.Data;
 
 namespace STELLAREST_F1
 {
-    public class Env : BaseObject
+    // --- How to Collider Remove From BaseObject ???
+    // --- ColliderBody
+    public class Env : BaseCellObject
     {
         public EnvData EnvData { get; private set; } = null;
-        public EnvStatData EnvStatData { get; private set; } = null;
         [SerializeField] private EEnvState _envState = EEnvState.None;
         public EEnvState EnvState
         {
@@ -41,7 +42,6 @@ namespace STELLAREST_F1
 
             EnvBody = BaseBody as EnvBody;
             EnvAnim = BaseAnim as EnvAnimation;
-
             return true;
         }
 
@@ -49,41 +49,40 @@ namespace STELLAREST_F1
         {
             base.InitialSetInfo(dataID);
             EnvData = Managers.Data.EnvDataDict[dataID];
-            EnvStatData = StatData as EnvStatData;
-            _maxLevelID = dataID;
-
             EnvType = EnvData.EnvType;
+            _maxLevelID = dataID;
             gameObject.name += $"_{EnvData.DevTextID.Replace(" ", "")}";
         }
 
         protected override void EnterInGame(Vector3 spawnPos)
         {
-            //EnvBody.ResetMaterialsAndColors();
-            base.EnterInGame(spawnPos);
+            base.EnterInGame(spawnPos);;
             switch (EnvType)
             {
                 case EEnvType.Tree:
                     {
                         EnvBody.StartCoFadeInEffect(startCallback: () => 
                         {
-                            Managers.Object.SpawnBaseObject<EffectBase>(
-                                objectType: EObjectType.Effect,
-                                spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos),
-                                dataID: ReadOnly.DataAndPoolingID.DNPID_Effect_TeleportGreen,
-                                owner: this
-                            );
+                            // --- From InitBaseError
+                            // Managers.Object.SpawnBaseObject<EffectBase>(
+                            //     objectType: EObjectType.Effect,
+                            //     spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos),
+                            //     dataID: ReadOnly.DataAndPoolingID.DNPID_Effect_TeleportGreen,
+                            //     owner: this
+                            // );
                         });
                     }
                     break;
 
                 case EEnvType.Rock:
                     {
-                        Managers.Object.SpawnBaseObject<EffectBase>(
-                            objectType: EObjectType.Effect,
-                            spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos),
-                            dataID: ReadOnly.DataAndPoolingID.DNPID_Effect_TeleportBlue,
-                            owner: this
-                        );
+                        // --- From InitBaseError
+                        // Managers.Object.SpawnBaseObject<EffectBase>(
+                        //     objectType: EObjectType.Effect,
+                        //     spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos),
+                        //     dataID: ReadOnly.DataAndPoolingID.DNPID_Effect_TeleportBlue,
+                        //     owner: this
+                        // );
                     }
                     break;
             }
@@ -91,13 +90,15 @@ namespace STELLAREST_F1
             EnvState = EEnvState.Idle;
         }
 
-        public override void OnDamaged(BaseObject attacker, SkillBase skillFromAttacker)
+        public override void OnDamaged(BaseCellObject attacker, SkillBase skillFromAttacker)
         {
-            if (EnvState == EEnvState.Dead)
+            if (this.IsValid() == false)
                 return;
 
             float finalDamage = 1f;
-            if ((attacker as Hero).CreatureRarity == ECreatureRarity.Elite) // TEMP
+
+            // --- TEMP
+            if ((attacker as Hero).CreatureRarity == ECreatureRarity.Elite)
                 finalDamage++;
 
             Hp = Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
@@ -115,7 +116,7 @@ namespace STELLAREST_F1
             }
         }
 
-        public override void OnDead(BaseObject attacker, SkillBase skillFromAttacker)
+        public override void OnDead(BaseCellObject attacker, SkillBase skillFromAttacker)
         {
             //EnvBody.ResetMaterialsAndColors(); ---> BaseObject::EnterInGame
             EnvState = EEnvState.Dead;

@@ -72,7 +72,6 @@ namespace STELLAREST_F1
         {
             // if (Owner.ForceMove)
             //     return;
-
             {
                 List<Vector3Int> path = Managers.Map.FindPath(Owner.CellPos, CellChasePos, 2);
                 if (path.Count > 0)
@@ -113,17 +112,13 @@ namespace STELLAREST_F1
         }
 
         public virtual void InitialSetInfo(Creature owner) => Owner = owner;
-        public virtual void EnterInGame() 
-        { 
-            StartCoFindTargets();
-        }
+        public virtual void EnterInGame()
+            => StartCoFindTargets();
         #endregion Init Core
         public virtual void UpdateIdle() { }
         public virtual void UpdateMove() { }
         public virtual void OnDead()
-        {
-            StopCoFindTargets();
-        }
+            => StopCoFindTargets();
 
         protected bool IsEndMoveAnim
         {

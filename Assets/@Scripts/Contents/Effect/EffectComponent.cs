@@ -42,6 +42,31 @@ namespace STELLAREST_F1
             return generatedEffects;
         }
 
+        public List<EffectBase> GenerateEffects(IEnumerable<int> effectIDs, BaseObject owner, EEffectSpawnType effectSpawnType)
+        {
+            if (owner.IsValid() == false)
+                return null;
+
+            List<EffectBase> generatedEffects = new List<EffectBase>();
+            foreach (var id in effectIDs)
+            {
+                EffectData data = Managers.Data.EffectDataDict[id];
+                EEffectType type = data.EffectType;
+                
+                
+                EffectBase effect = Managers.Object.SpawnBaseObject<EffectBase>(
+                    objectType: EObjectType.Effect,
+                    spawnPos: owner.CenterPosition,
+                    dataID: id
+                );
+
+                generatedEffects.Add(effect);
+                ActiveEffects.Add(effect);
+            }
+
+            return null;
+        }
+
         public void RemoveEffect(EffectBase effect)
         {
             ActiveEffects.Remove(effect);

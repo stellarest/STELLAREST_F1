@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace STELLAREST_F1
 {
+    // --- Simple VFX
     // --- 필요시 상속 받아서 정의
     public class VFXBase : EffectBase
     {
