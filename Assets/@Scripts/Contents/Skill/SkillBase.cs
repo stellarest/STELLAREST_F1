@@ -199,6 +199,12 @@ namespace STELLAREST_F1
             EnteredSignX = (Owner.LookAtDir == ELookAtDirection.Left) ? 1 : 0;
             Owner.Moving = false;
 
+            if (SkillData.EnterStateEffectIDs.Length != 0)
+            {
+                List<EffectBase> enterStateEffects = GenerateSkillEffects(effectIDs: SkillData.EnterStateEffectIDs);
+                // --- DO SOMETHING AFTER IF YOU WANT TO
+            }
+
             // --- InitBaseError
             // if (SkillData.EnterStateEffectIDs.Length != 0)
             // {
@@ -243,6 +249,12 @@ namespace STELLAREST_F1
         public virtual void OnSkillStateExit()
         {
             _skillTargets.Clear();
+            if (SkillData.EndStateEffectIDs.Length != 0)
+            {
+                List<EffectBase> endStateEffects = GenerateSkillEffects(effectIDs: SkillData.EndStateEffectIDs);
+                // --- DO SOMETHING AFTER IF YOU WANT TO
+            }
+
             // --- InitBaseError
             // if (SkillData.EndStateEffectIDs.Length != 0)
             // {
@@ -255,7 +267,7 @@ namespace STELLAREST_F1
         }
         #endregion Events
 
-        protected List<EffectBase> GenerateSkillEffects(IEnumerable<int> effectIDs)
+        public List<EffectBase> GenerateSkillEffects(IEnumerable<int> effectIDs)
         {
             if (Owner.IsValid() == false)
                 return null;
@@ -263,7 +275,7 @@ namespace STELLAREST_F1
             return Owner.BaseEffect.GenerateEffects(effectIDs);
         }
 
-        protected List<EffectBase> GenerateSkillEffects(IEnumerable<int> effectIDs, Vector3 spawnPos)
+        public List<EffectBase> GenerateSkillEffects(IEnumerable<int> effectIDs, Vector3 spawnPos)
         {
             if (Owner.IsValid() == false)
                 return null;

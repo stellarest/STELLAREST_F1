@@ -99,7 +99,7 @@ namespace STELLAREST_F1
                 // SpawnChicken_Test(-9, 10);
                 // SpawnChicken_Test(-8, 10);
                 // SpawnChicken_Test(-7, 10);
-                SpawnChicken_Test(-6, 10);
+                // SpawnChicken_Test(-6, 10);
 
                 // SpawnChicken_Test(-9, 9);
                 // SpawnChicken_Test(-8, 9);

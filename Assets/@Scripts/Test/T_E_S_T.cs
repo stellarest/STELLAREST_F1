@@ -10,8 +10,10 @@ using UnityEditor;
 /*
 ********************************************************************
 // --- TODO LIST
-- InitBaseError 이 부분 고치기 
+- InitBaseError 이 부분 고치기 (진행중, 결정적으로, 쉴드해야함)
 - SimpleVFX(EffectType)도 EffectComponent로 무조건 호출
+- 내일 무조건 팔라딘 쉴드
+- 아쳐 머즐이펙트, 발바닥 Dust(랜서, 위자드 포함)
 
 // --- DID NOTE
 - Collider, Rigid는 일단 모두 다 붙여줌(Effect도 언젠가 필요한 녀석이 생길지도)
