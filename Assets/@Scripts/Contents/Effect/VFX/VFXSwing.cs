@@ -6,22 +6,26 @@ namespace STELLAREST_F1
 {
     public class VFXSwing : VFXBase
     {
+        protected float _movementSpeed = 0.0f;
         private ParticleSystem[] _particles = null;
         private ParticleSystemRenderer[] _particleRenderers = null;
 
-        protected override void EnterInGame(Vector3 spawnPos)
+        protected override void InitialSetInfo(int dataID)
         {
-            base.EnterInGame(spawnPos);
+            base.InitialSetInfo(dataID);
             _movementSpeed = 4.0f;
-
             _particles = GetComponentsInChildren<ParticleSystem>();
             _particleRenderers = GetComponentsInChildren<ParticleSystemRenderer>();
         }
 
+        // protected override void EnterInGame(Vector3 spawnPos)
+        // {
+        //     base.EnterInGame(spawnPos);
+        // }
+
         public override void ApplyEffect()
         {
             base.ApplyEffect();
-
             if (_particles == null || _particleRenderers == null)
                 return;
 
@@ -37,10 +41,9 @@ namespace STELLAREST_F1
             }
         }
 
-        // // --- 눈속임 용도, 충돌x
-        // private void LateUpdate()
-        // {
-        //     transform.position += _enteredDir.normalized * _movementSpeed * Time.deltaTime;
-        // }
+        private void LateUpdate()
+        {
+            transform.position += _enteredDir.normalized * _movementSpeed * Time.deltaTime;
+        }
     }
 }

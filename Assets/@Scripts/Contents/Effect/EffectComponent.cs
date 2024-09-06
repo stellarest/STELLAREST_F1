@@ -7,22 +7,70 @@ using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
+    /// <summary>
+    /// All of BaseCellObject have this component.
+    /// </summary> <summary>
     public class EffectComponent : InitBase
     {
-        //private Creature _owner = null;
-        public BaseObject Owner { get; private set; } = null;
+        private const string EffectPoolingRootName = "";
+        private BaseCellObject _owner = null;
         public List<EffectBase> ActiveEffects { get; } = new List<EffectBase>();
-        // public override bool Init()
-        // {
-        //     if (base.Init() == false)
-        //         return false;
+        private Transform EffectPoolingRoot
+        {
+            get => null;
+        }
 
-        //     return true;
-        // }
+        public void InitialSetInfo(BaseObject owner)
+        {
+            _owner = owner.GetComponent<BaseCellObject>();
+        }
 
-        public void InitialSetInfo(BaseObject owner) => Owner = owner;
+        public EffectBase GenerateEffect(int effectID)
+        {
+            EffectBase effect = Managers.Object.SpawnBaseObject<EffectBase>(
+                    objectType: EObjectType.Effect,
+                    spawnPos: _owner.CenterPosition,
+                    dataID: effectID,
+                    owner: _owner
+                    );
 
-        public List<EffectBase> GenerateEffects(IEnumerable<int> effectIDs, Vector3 spawnPos, Action startCallback = null)
+            ActiveEffects.Add(effect);
+            return effect;
+        }
+
+        public EffectBase GenerateEffect(int effectID, Vector3 spawnPos)
+        {
+            EffectBase effect = Managers.Object.SpawnBaseObject<EffectBase>(
+                                objectType: EObjectType.Effect,
+                                spawnPos: spawnPos,
+                                dataID: effectID,
+                                owner: _owner
+                                );
+
+            ActiveEffects.Add(effect);
+            return effect;
+        }
+
+        public List<EffectBase> GenerateEffects(IEnumerable<int> effectIDs)
+        {
+            List<EffectBase> generatedEffects = new List<EffectBase>();
+            foreach (var id in effectIDs)
+            {
+                EffectBase effect = Managers.Object.SpawnBaseObject<EffectBase>(
+                    objectType: EObjectType.Effect,
+                    spawnPos: _owner.CenterPosition,
+                    dataID: id,
+                    owner: _owner
+                );
+
+                generatedEffects.Add(effect);
+                ActiveEffects.Add(effect);
+            }
+
+            return generatedEffects;
+        }
+
+        public List<EffectBase> GenerateEffects(IEnumerable<int> effectIDs, Vector3 spawnPos)
         {
             List<EffectBase> generatedEffects = new List<EffectBase>();
             foreach (var id in effectIDs)
@@ -31,41 +79,59 @@ namespace STELLAREST_F1
                     objectType: EObjectType.Effect,
                     spawnPos: spawnPos,
                     dataID: id,
-                    owner: Owner
+                    owner: _owner
                 );
 
                 generatedEffects.Add(effect);
                 ActiveEffects.Add(effect);
             }
 
-            startCallback?.Invoke();
             return generatedEffects;
         }
 
-        public List<EffectBase> GenerateEffects(IEnumerable<int> effectIDs, BaseObject owner, EEffectSpawnType effectSpawnType)
-        {
-            if (owner.IsValid() == false)
-                return null;
+        // public List<EffectBase> GenerateEffects(IEnumerable<int> effectIDs, Vector3 spawnPos, Action startCallback = null)
+        // {
+        //     List<EffectBase> generatedEffects = new List<EffectBase>();
+        //     foreach (var id in effectIDs)
+        //     {
+        //         EffectBase effect = Managers.Object.SpawnBaseObject<EffectBase>(
+        //             objectType: EObjectType.Effect,
+        //             spawnPos: spawnPos,
+        //             dataID: id,
+        //             owner: _owner
+        //         );
 
-            List<EffectBase> generatedEffects = new List<EffectBase>();
-            foreach (var id in effectIDs)
-            {
-                EffectData data = Managers.Data.EffectDataDict[id];
-                EEffectType type = data.EffectType;
-                
-                
-                EffectBase effect = Managers.Object.SpawnBaseObject<EffectBase>(
-                    objectType: EObjectType.Effect,
-                    spawnPos: owner.CenterPosition,
-                    dataID: id
-                );
+        //         generatedEffects.Add(effect);
+        //         ActiveEffects.Add(effect);
+        //     }
 
-                generatedEffects.Add(effect);
-                ActiveEffects.Add(effect);
-            }
+        //     startCallback?.Invoke();
+        //     return generatedEffects;
+        // }
 
-            return null;
-        }
+        // public List<EffectBase> GenerateEffects(IEnumerable<int> effectIDs, BaseObject owner, EEffectSpawnType effectSpawnType)
+        // {
+        //     if (owner.IsValid() == false)
+        //         return null;
+
+        //     List<EffectBase> generatedEffects = new List<EffectBase>();
+        //     foreach (var id in effectIDs)
+        //     {
+        //         EffectData data = Managers.Data.EffectDataDict[id];
+        //         // EEffectType type = data.EffectType;
+
+        //         EffectBase effect = Managers.Object.SpawnBaseObject<EffectBase>(
+        //             objectType: EObjectType.Effect,
+        //             spawnPos: owner.CenterPosition,
+        //             dataID: id
+        //         );
+
+        //         generatedEffects.Add(effect);
+        //         ActiveEffects.Add(effect);
+        //     }
+
+        //     return null;
+        // }
 
         public void RemoveEffect(EffectBase effect)
         {

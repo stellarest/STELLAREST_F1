@@ -426,16 +426,16 @@ namespace STELLAREST_F1
         public enum EEffectSpawnType
         {
             None = -1,
-            Skill,
-            External,           
+            SkillFromOwner = 1,
+            SkillFromTarget = 2
         }
 
-        public enum EEffectEnterTargetType
-        {
-            None = -1,
-            Owner,
-            Target,
-        }
+        // public enum EEffectEnterTargetType
+        // {
+        //     None = -1,
+        //     Owner,
+        //     Target,
+        // }
 
         public enum EEffectClearType
         {
@@ -615,11 +615,12 @@ namespace STELLAREST_F1
                 public static readonly int DNPID_Env_ZincRock = 101019;
 
                 // --- Effects(VFX)
-                public static readonly int DNPID_Effect_TeleportRed = 1001;
-                public static readonly int DNPID_Effect_TeleportGreen = 1002;
-                public static readonly int DNPID_Effect_TeleportBlue = 1003;
-                public static readonly int DNPID_Effect_Dust = 1004;
-                public static readonly int DNPID_Effect_OnDeadSkull = 1005;
+                public static readonly int DNPID_Effect_TeleportRed = 1001;     // --- MONSTER
+                public static readonly int DNPID_Effect_TeleportGreen = 1002;   // --- ENV
+                public static readonly int DNPID_Effect_TeleportBlue = 1003;    // --- HERO + PET(Allies)
+                public static readonly int DNPID_Effect_TeleportPurple = 1004;  // --- BOSS
+                public static readonly int DNPID_Effect_Dust = 1005;
+                public static readonly int DNPID_Effect_OnDeadSkull = 1006;
             }
 
             public static class AnimationParams

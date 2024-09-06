@@ -350,14 +350,15 @@ namespace STELLAREST_F1
 
             target.OnDamaged(attacker: Owner, skillByAttacker: Skill);
             // --- Effect
-            if (Skill.SkillData.HitEffectIDs.Length != 0)
-            {
-                List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
-                effectIDs: Skill.SkillData.HitEffectIDs,
-                spawnPos: Util.GetRandomQuadPosition(target.CenterPosition),
-                startCallback: null
-                );
-            }
+            // --- InitBaseError
+            // if (Skill.SkillData.HitEffectIDs.Length != 0)
+            // {
+            //     List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
+            //     effectIDs: Skill.SkillData.HitEffectIDs,
+            //     spawnPos: Util.GetRandomQuadPosition(target.CenterPosition),
+            //     startCallback: null
+            //     );
+            // }
         }
 
         private void InitialSetProjectileSize(EObjectSize size)

@@ -213,18 +213,19 @@ namespace STELLAREST_F1
             bool isCritical = false;
             Managers.Object.ShowDamageFont(position: this.CenterPosition, damage: finalDamage, isCritical: isCritical);
 
-            // --- Critical
+            // --- TEMP: Critical
             // if (UnityEngine.Random.Range(0f, 100f) >= 50f)
             //     isCritical = true;
 
-            if (skillByAttacker.SkillData.HitEffectIDs.Length != 0)
-            {
-                List<EffectBase> effects = BaseEffect.GenerateEffects(
-                    effectIDs: skillByAttacker.SkillData.HitEffectIDs,
-                    spawnPos: Util.GetRandomQuadPosition(CenterPosition),
-                    startCallback: null
-                );
-            }
+            // --- InitBaseError
+            // if (skillByAttacker.SkillData.HitEffectIDs.Length != 0)
+            // {
+            //     List<EffectBase> effects = BaseEffect.GenerateEffects(
+            //         effectIDs: skillByAttacker.SkillData.HitEffectIDs,
+            //         spawnPos: Util.GetRandomQuadPosition(CenterPosition),
+            //         startCallback: null
+            //     );
+            // }
 
             if (Hp <= 0f)
             {
@@ -246,12 +247,10 @@ namespace STELLAREST_F1
             CreatureBody.StartCoFadeOutEffect(
                 startCallback: () =>
                 {
-                    // --- From InitBaseError
-                    // Managers.Object.SpawnBaseObject<EffectBase>(
-                    //     objectType: EObjectType.Effect,
-                    //     spawnPos: CenterPosition,
-                    //     dataID: ReadOnly.DataAndPoolingID.DNPID_Effect_OnDeadSkull
-                    // );
+                    BaseEffect.GenerateEffect(
+                            effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_OnDeadSkull,
+                            spawnPos: CenterPosition
+                            );
                 },
                 endCallback: () => OnDeadFadeOutCompleted()
             );

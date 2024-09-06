@@ -105,14 +105,12 @@ namespace STELLAREST_F1
             CreatureAIState = ECreatureAIState.Idle;
             
             base.EnterInGame(spawnPos);
-            MonsterBody.StartCoFadeInEffect(startCallback: () => 
+            MonsterBody.StartCoFadeInEffect(startCallback: () =>
             {
-                // --- From InitBaseError
-                // Managers.Object.SpawnBaseObject<EffectBase>(
-                //     objectType: EObjectType.Effect,
-                //     spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos),
-                //     dataID: ReadOnly.DataAndPoolingID.DNPID_Effect_TeleportRed,
-                //     owner: this);
+                BaseEffect.GenerateEffect(
+                            effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_TeleportRed,
+                            spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos)
+                            );
             });
         }
 

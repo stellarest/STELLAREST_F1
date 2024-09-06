@@ -14,7 +14,6 @@ namespace STELLAREST_F1
         public int DataTemplateID { get; protected set; } = -1;
         public EObjectType ObjectType { get; protected set; } = EObjectType.None;
         public SortingGroup SortingGroup { get; private set; } = null;
-        public EffectComponent BaseEffect { get; private set; } = null;
         public CircleCollider2D Collider { get; private set; } = null;
         public Rigidbody2D RigidBody { get; private set; } = null;
         public float ColliderRadius { get => Collider != null ? Collider.radius : 0.0f; }
@@ -64,8 +63,6 @@ namespace STELLAREST_F1
         protected virtual void InitialSetInfo(int dataID)
         {
             DataTemplateID = dataID;
-            BaseEffect = gameObject.GetOrAddComponent<EffectComponent>();
-            BaseEffect.InitialSetInfo(this);
         }
 
         protected virtual void EnterInGame(Vector3 spawnPos)

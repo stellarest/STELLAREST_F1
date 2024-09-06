@@ -1,24 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
-    // --- Simple VFX
-    // --- 필요시 상속 받아서 정의
     public class VFXBase : EffectBase
     {
-        protected float _movementSpeed = 0f;
-
-        protected override void EnterInGame(Vector3 spawnPos)
+        protected override void InitialSetInfo(int dataID)
         {
-            base.EnterInGame(spawnPos);
-        }
-
-        // --- 눈속임 용도, 충돌x
-        private void LateUpdate()
-        {
-            transform.position += _enteredDir.normalized * _movementSpeed * Time.deltaTime;
+            base.InitialSetInfo(dataID);
+            EffectType = EEffectType.SimpleVFX;
         }
     }
 }

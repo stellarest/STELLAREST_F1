@@ -167,6 +167,13 @@ namespace STELLAREST_F1
             CreatureAIState = ECreatureAIState.Move;
 
             base.EnterInGame(spawnPos);
+            HeroBody.StartCoFadeInEffect(startCallback: () =>
+            {
+                BaseEffect.GenerateEffect(
+                            effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_TeleportBlue,
+                            spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos)
+                            );
+            });
             StartCoroutine(CoInitialReleaseLeaderHeroAI());
         }
 

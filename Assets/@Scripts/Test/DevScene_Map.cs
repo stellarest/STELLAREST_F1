@@ -87,7 +87,7 @@ namespace STELLAREST_F1
                     dataID: ReadOnly.DataAndPoolingID.DNPID_Hero_Paladin);
                 leaderController.Leader = firstHero;
 
-                // StartCoroutine(CoContinuousSpawnMonster_Test(5.5f));
+                StartCoroutine(CoContinuousSpawnMonster_Test(5.5f));
                 StartCoroutine(CoContinuousSpawnEnv_Test(1f));
 
                 // // // // // --- Projectile Target Range Test List
@@ -99,7 +99,7 @@ namespace STELLAREST_F1
                 // SpawnChicken_Test(-9, 10);
                 // SpawnChicken_Test(-8, 10);
                 // SpawnChicken_Test(-7, 10);
-                // SpawnChicken_Test(-6, 10);
+                SpawnChicken_Test(-6, 10);
 
                 // SpawnChicken_Test(-9, 9);
                 // SpawnChicken_Test(-8, 9);

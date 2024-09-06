@@ -194,18 +194,20 @@ namespace STELLAREST_F1
             }
 
             EnteredOwnerPos = Owner.CenterPosition;
-            EnteredTargetPos = Owner.Target.CenterPosition;
+            EnteredTargetPos = Owner.Target.CenterPosition; // FOR PROJECTILE,,,
             EnteredTargetDir = Owner.Target.CellPos - Owner.CellPos;
             EnteredSignX = (Owner.LookAtDir == ELookAtDirection.Left) ? 1 : 0;
             Owner.Moving = false;
-            if (SkillData.EnterStateEffectIDs.Length != 0)
-            {
-                List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
-                    effectIDs: SkillData.EnterStateEffectIDs,
-                    spawnPos: Owner.CenterPosition,
-                    startCallback: null
-                );
-            }
+
+            // --- InitBaseError
+            // if (SkillData.EnterStateEffectIDs.Length != 0)
+            // {
+            //     List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
+            //         effectIDs: SkillData.EnterStateEffectIDs,
+            //         spawnPos: Owner.CenterPosition,
+            //         startCallback: null
+            //     );
+            // }
 
             return true;
         }
@@ -219,12 +221,19 @@ namespace STELLAREST_F1
             {
                 if (SkillData.OnStateEffectIDs.Length != 0)
                 {
-                    List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
-                        effectIDs: SkillData.OnStateEffectIDs,
-                        spawnPos: Owner.CenterPosition,
-                        startCallback: null
-                    );
+                    List<EffectBase> onStateEffects = GenerateSkillEffects(effectIDs: SkillData.OnStateEffectIDs);
+                    // --- DO SOMETHING AFTER IF YOU WANT TO
                 }
+
+                // --- InitBaseError
+                // if (SkillData.OnStateEffectIDs.Length != 0)
+                // {
+                //     List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
+                //         effectIDs: SkillData.OnStateEffectIDs,
+                //         spawnPos: Owner.CenterPosition,
+                //         startCallback: null
+                //     );
+                // }
                 return true;
             }
 
@@ -234,16 +243,33 @@ namespace STELLAREST_F1
         public virtual void OnSkillStateExit()
         {
             _skillTargets.Clear();
-            if (SkillData.EndStateEffectIDs.Length != 0)
-            {
-                List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
-                    effectIDs: SkillData.EndStateEffectIDs,
-                    spawnPos: Owner.CenterPosition,
-                    startCallback: null
-                );
-            }
+            // --- InitBaseError
+            // if (SkillData.EndStateEffectIDs.Length != 0)
+            // {
+            //     List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
+            //         effectIDs: SkillData.EndStateEffectIDs,
+            //         spawnPos: Owner.CenterPosition,
+            //         startCallback: null
+            //     );
+            // }
         }
         #endregion Events
+
+        protected List<EffectBase> GenerateSkillEffects(IEnumerable<int> effectIDs)
+        {
+            if (Owner.IsValid() == false)
+                return null;
+
+            return Owner.BaseEffect.GenerateEffects(effectIDs);
+        }
+
+        protected List<EffectBase> GenerateSkillEffects(IEnumerable<int> effectIDs, Vector3 spawnPos)
+        {
+            if (Owner.IsValid() == false)
+                return null;
+
+            return Owner.BaseEffect.GenerateEffects(effectIDs, spawnPos);
+        }
 
         protected void GatherMeleeTargets()
         {

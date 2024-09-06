@@ -8,7 +8,6 @@ using STELLAREST_F1.Data;
 namespace STELLAREST_F1
 {
     // --- How to Collider Remove From BaseObject ???
-    // --- ColliderBody
     public class Env : BaseCellObject
     {
         public EnvData EnvData { get; private set; } = null;
@@ -56,38 +55,40 @@ namespace STELLAREST_F1
 
         protected override void EnterInGame(Vector3 spawnPos)
         {
-            base.EnterInGame(spawnPos);;
-            switch (EnvType)
-            {
-                case EEnvType.Tree:
-                    {
-                        EnvBody.StartCoFadeInEffect(startCallback: () => 
+            base.EnterInGame(spawnPos);
+            EnvBody.StartCoFadeInEffect(startCallback: () =>
                         {
-                            // --- From InitBaseError
-                            // Managers.Object.SpawnBaseObject<EffectBase>(
-                            //     objectType: EObjectType.Effect,
-                            //     spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos),
-                            //     dataID: ReadOnly.DataAndPoolingID.DNPID_Effect_TeleportGreen,
-                            //     owner: this
-                            // );
+                            BaseEffect.GenerateEffect(
+                                    effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_TeleportGreen,
+                                    spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos)
+                                    );
                         });
-                    }
-                    break;
-
-                case EEnvType.Rock:
-                    {
-                        // --- From InitBaseError
-                        // Managers.Object.SpawnBaseObject<EffectBase>(
-                        //     objectType: EObjectType.Effect,
-                        //     spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos),
-                        //     dataID: ReadOnly.DataAndPoolingID.DNPID_Effect_TeleportBlue,
-                        //     owner: this
-                        // );
-                    }
-                    break;
-            }
-
+                        
             EnvState = EEnvState.Idle;
+
+            // switch (EnvType)
+            // {
+            //     case EEnvType.Tree:
+            //         {
+            //             EnvBody.StartCoFadeInEffect(startCallback: () => 
+            //             {
+            //                 BaseEffect.GenerateEffect(
+            //                             effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_TeleportGreen,
+            //                             spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos)
+            //                             );
+            //             });
+            //         }
+            //         break;
+            //     case EEnvType.Rock:
+            //         {
+            //             BaseEffect.GenerateEffect(
+            //                         effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_TeleportPurple,
+            //                         spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos)
+            //                         );
+            //         }
+            //         break;
+            // }
+
         }
 
         public override void OnDamaged(BaseCellObject attacker, SkillBase skillFromAttacker)

@@ -568,12 +568,11 @@ namespace STELLAREST_F1.Data
         public bool IsLoop;
         public float AddAmount;
         public float AddPercent;
-        public float Duration;
         public float Period;
-        public EEffectType EffectType;
+        public float Duration;
         public EObjectSize EffectSize;
+        public EEffectSpawnType EffectSpawnType;
         public EApplyStatType ApplyStatType;
-        // public EEffectEnterTargetType EffectEnterTargetType; // --- 이게 띠껍...
     }
 
     public class EffectDataLoader : ILoader<int, EffectData>

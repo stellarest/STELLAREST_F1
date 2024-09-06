@@ -10,15 +10,15 @@ using UnityEditor;
 /*
 ********************************************************************
 // --- TODO LIST
-- LEVEL UP TEST
-- InitBaseError 이 부분 고치기
+- InitBaseError 이 부분 고치기 
 - SimpleVFX(EffectType)도 EffectComponent로 무조건 호출
 
 // --- DID NOTE
 - Collider, Rigid는 일단 모두 다 붙여줌(Effect도 언젠가 필요한 녀석이 생길지도)
 - Stat은 BaseCellObject에서 관리
+- HERO LEVEL UP TEST
 
-
+// --- NOTE
 - *** 지금 게임 실행 불가. Effect 대국적으로 수정해야함 ***
 - Skill이 가지고 있는 EffectType부터 생각해봐야할듯.
 
@@ -44,9 +44,6 @@ Shield
 - 그 다음 구조 생각해보기
 - Effect 쪽 1차 수정, 이펙트 스탯 적용
 - Effect를 애초에 Base Owner에 붙인다??
-
-// --- KEY WORD NOTE
-- From InitBaseError (Effect)
 
 // --- LATER LIST
 - Archer Muzzle Effect

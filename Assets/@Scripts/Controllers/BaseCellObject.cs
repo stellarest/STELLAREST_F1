@@ -14,6 +14,9 @@ namespace STELLAREST_F1
     {
         public BaseBody BaseBody { get; private set; } = null;
         public BaseAnimation BaseAnim { get; private set; } = null;
+        public EffectComponent BaseEffect { get; private set; } = null;
+
+
 
         [SerializeField] private ELookAtDirection _lookAtDir = ELookAtDirection.Right;
         public virtual ELookAtDirection LookAtDir
@@ -110,6 +113,8 @@ namespace STELLAREST_F1
             base.InitialSetInfo(dataID);
             BaseBody.InitialSetInfo(dataID, this);
             BaseAnim.InitialSetInfo(dataID, this);
+            BaseEffect = gameObject.GetOrAddComponent<EffectComponent>();
+            BaseEffect.InitialSetInfo(this);
             _levelID = dataID;
         }
 

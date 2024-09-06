@@ -85,7 +85,6 @@ namespace STELLAREST_F1
 
                         Hero hero = go.GetComponent<Hero>();
                         hero.SetInfo(dataID, spawnPos);
-                        // Managers.Map.ForceMove(baseObj: hero, cellPos: cellSpawnPos);
                         Heroes.Add(hero);
 
 #if UNITY_EDITOR
@@ -111,7 +110,6 @@ namespace STELLAREST_F1
 
                         Monster monster = go.GetComponent<Monster>();
                         monster.SetInfo(dataID, spawnPos);
-                        // Managers.Map.ForceMove(baseObj: monster, cellPos: cellSpawnPos);
                         Monsters.Add(monster);
 
 #if UNITY_EDITOR
@@ -137,8 +135,6 @@ namespace STELLAREST_F1
 
                         Env env = go.GetComponent<Env>();
                         env.SetInfo(dataID, spawnPos);
-                        // env.SetCellPos(position: spawnPos, forceMove: true);
-                        // env.UpdateCellPos(spawnPos);
                         Envs.Add(env);
 
 #if UNITY_EDITOR
@@ -152,6 +148,7 @@ namespace STELLAREST_F1
                         return env as T;
                     }
 
+                // --- TODO,,,Projectile, Effect
                 case EObjectType.Projectile:
                     {
                         ProjectileData data = Managers.Data.ProjectileDataDict[dataID];
@@ -179,11 +176,10 @@ namespace STELLAREST_F1
                             return null;
                         }
 
-                        return go.GetComponent<EffectBase>() as T;
-                        // EffectBase effect = go.GetComponent<EffectBase>();
-                        // effect.Owner = owner;
-                        // effect.SetInfo(dataID, spawnPos);
-                        // return effect as T;
+                        EffectBase effect = go.GetComponent<EffectBase>();
+                        effect.Owner = owner.GetComponent<BaseCellObject>();
+                        effect.SetInfo(dataID, spawnPos);
+                        return effect as T;
                     }
             }
 

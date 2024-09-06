@@ -531,7 +531,10 @@ namespace STELLAREST_F1
             // 일단 원인은 이게 맞았음
             // newLeader.CreatureAIState = ECreatureAIState.None; // --- 리더는 항상 None, 아니면 Dead
             Managers.Object.CameraController.Target = newLeader;
-            EnableLeaderMark(true);
+            
+            // --- TEMP
+            //EnableLeaderMark(true);
+            EnableLeaderMark(false);
         }
 
         public void EnableLeaderMark(bool enable)

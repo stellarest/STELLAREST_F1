@@ -13,27 +13,43 @@ namespace STELLAREST_F1
     // Ex. TickTime: 1, TickCount: 5 -> 1초 마다 5번 실행하겠다. 근데 난 그냥 Duration, Period로
     // Monster와 다르게 Effect 여러가지 상속 구조로 가기 위해 베이스 클래스가 이렇게 구성되어 있음. Effect의 핵심은 "상속"
     // --- 단순 VFX, Buff/DeBuff, Dot, CC
-
-    // --- Effect도 Collider랑 Rigidbody, Sorting Group만 필요할 것 같은데
     public class EffectBase : BaseObject
     {
-        //public Creature Owner { get; set; } = null;
-        public BaseObject Owner { get; set; } = null;
-        public SkillBase Skill { get; private set; } = null;
+        private BaseCellObject _owner = null;
+        public BaseCellObject Owner 
+        {
+            get => _owner;
+            set
+            {
+                if (_owner == null || _owner != value)
+                    _owner = value;
+            }
+        }
+
+        private SkillBase _skill = null;
+        public SkillBase Skill
+        {
+            get => _skill;
+            private set
+            {
+                if (_skill == null || _skill != value)
+                    _skill = value;
+            }
+        }
 
         public EffectData EffectData { get; private set; } = null;
         public bool IsLoop { get; private set; } = false;
         public float Amount { get; private set; } = 0.0f;
         public float Percent { get; private set; } = 0.0f;
-        public float Remains { get; private set; } = 0.0f;
         public float Period { get; private set; } = 0.0f;
-        public EEffectType EffectType { get; private set; } = EEffectType.None;
+        public float Remains { get; private set; } = 0.0f;
+        public EEffectType EffectType { get; protected set; } = EEffectType.None;
         public EEffectSpawnType EffectSpawnType { get; private set; } = EEffectSpawnType.None;
         public EApplyStatType ApplyStateType { get; private set; } = EApplyStatType.None;
-
         protected Vector3 _enteredDir = Vector3.zero;
         protected int _enteredSignX = 0;
 
+        #region Core
         public override bool Init()
         {
             if (base.Init() == false)
@@ -46,40 +62,14 @@ namespace STELLAREST_F1
 
         protected override void InitialSetInfo(int dataID)
         {
-            DataTemplateID = dataID;
+            base.InitialSetInfo(dataID);
+            EffectType = EEffectType.None;
             EffectData = Managers.Data.EffectDataDict[dataID];
             IsLoop = EffectData.IsLoop;
             Amount = EffectData.AddAmount;
             Percent = EffectData.AddPercent;
-            Remains = EffectData.Duration * EffectData.Period;
             Period = EffectData.Period;
-            EffectType = EffectData.EffectType;
             InitialSetSize(EffectData.EffectSize);
-            Skill = SetSkill();
-        }
-
-        protected override void EnterInGame(Vector3 spawnPos)
-        {
-            if (EffectSpawnType == EEffectSpawnType.External)
-                Remains = float.MaxValue;
-            else
-                Remains = EffectData.Duration;
-
-            // VFX Teleport, Dust 같은 것들 때문에
-            if (Skill != null)
-            {
-                _enteredDir = Skill.EnteredTargetDir;
-                _enteredSignX = Skill.EnteredSignX;
-            }
-
-            // if (EffectData.EffectEnterTargetType == EEffectEnterTargetType.None)
-            // {
-            //     transform.position = spawnPos;
-            // }
-            // else
-            //     transform.position = SetStartPos(EffectData.EffectEnterTargetType);
-            
-            ApplyEffect();
         }
 
         private void InitialSetSize(EObjectSize objSize)
@@ -107,43 +97,42 @@ namespace STELLAREST_F1
             }
         }
 
-        private SkillBase SetSkill()
+        protected override void EnterInGame(Vector3 spawnPos)
         {
-            if (Owner == null)
-                return null;
-
-            Creature creatureOwner = Owner.GetComponent<Creature>();
-            if (creatureOwner == null)
-                return null;
-
-            // --- Simple VFX(ex. teleport, dust)는 스킬이 아니므로 null을 리턴한다.
-            return creatureOwner.CreatureSkill.CurrentSkill;
+            base.EnterInGame(spawnPos);
+            Remains = EffectData.Duration * EffectData.Period;
+            transform.position = EffectSpawnInfo(EffectData.EffectSpawnType);
+            ApplyEffect();
         }
 
-        private Vector3 SetStartPos(EEffectEnterTargetType enterTargetType)
+        private Vector3 EffectSpawnInfo(EEffectSpawnType effectSpawnType)
         {
-            switch (enterTargetType)
+            if (effectSpawnType == EEffectSpawnType.None)
+                return SpawnedPos;
+
+            Skill = Owner.GetComponent<Creature>().CreatureSkill.CurrentSkill;
+            _enteredDir = Skill.EnteredTargetDir;
+            _enteredSignX = Skill.EnteredSignX;
+
+            if (effectSpawnType == EEffectSpawnType.SkillFromOwner)
             {
-                case EEffectEnterTargetType.None:
-                    return Vector3.zero;
-
-                case EEffectEnterTargetType.Owner:
-                    return Skill.EnteredOwnerPos;
-
-                case EEffectEnterTargetType.Target:
-                    return Skill.EnteredTargetPos;
-
-                default:
-                    return Vector3.zero;
+                SpawnedPos = Skill.EnteredOwnerPos;
+                return Skill.EnteredOwnerPos;
             }
+            else if (effectSpawnType == EEffectSpawnType.SkillFromTarget)
+            {
+                SpawnedPos = Skill.EnteredTargetPos;
+                return  Skill.EnteredTargetPos;
+            }
+
+            return SpawnedPos;
         }
+        #endregion
 
-        protected Vector3 _nTargetDir = Vector3.zero;
-
-        // --- 왜 protected로 안하고 public으로 했지??? 
+        // --- 왜 protected로 안하고 public으로 했지???
+        // --- 아마도 나중에 EffectComp(ActiveEffects)로 따로 처리할듯.
         public virtual void ApplyEffect()
         {
-            //ShowEffect();
             StartCoroutine(CoStartTimer());
             // 여기에다가 도트 뎀, 도트 힐, 패시브 영구적, 힘 버프, 체력 버프, 민첩 버프 등등을 적용시킨다.
             // 힘 버프(Buff, TypeID:1), 체력 버프(Buff, TypeID:2) 이런식..
@@ -184,7 +173,6 @@ namespace STELLAREST_F1
             ClearEffect(EEffectClearType.TimeOut);
         }
 
-        // StatModifier 부분은 생략
         public virtual bool ClearEffect(EEffectClearType clearType)
         {
             // --- TEMP
@@ -208,11 +196,11 @@ namespace STELLAREST_F1
                 case EEffectClearType.ClearSkill:
                 {
                     // Aoe 범위 안에 있는 경우 해제x
-                    if (EffectSpawnType != EEffectSpawnType.External)
-                    {
-                        Managers.Object.Despawn(this, DataTemplateID);
-                        return true;
-                    }
+                    // if (EffectSpawnType != EEffectSpawnType.External)
+                    // {
+                    //     Managers.Object.Despawn(this, DataTemplateID);
+                    //     return true;
+                    // }
                     break;
                 }
             }
