@@ -17,6 +17,8 @@ namespace STELLAREST_F1
         public CreatureAnimation CreatureAnim { get; private set; } = null;
         public CreatureAnimationCallback CreatureAnimCallback { get; private set; } = null;
 
+        // Buff Component ???
+
         public bool CanSkill
         {
             get
@@ -73,10 +75,24 @@ namespace STELLAREST_F1
                 if (_creatureAIState != value)
                 {
                     _creatureAIState = value;
-                    if (value == ECreatureAIState.Dead)
+                    switch (value)
                     {
-                        Dead();
-                        CreatureAI.OnDead();
+                        case ECreatureAIState.Idle:
+                            // Debug.Log("111");
+                            Moving = false;
+                            break;
+
+                        case ECreatureAIState.Move:
+                            // Debug.Log("222");
+                            Moving = true;
+                            break;
+
+                        case ECreatureAIState.Dead:
+                            {
+                                Dead();
+                                CreatureAI.OnDead();
+                            }
+                            break;
                     }
                 }
             }
@@ -208,9 +224,24 @@ namespace STELLAREST_F1
 
             float damage = UnityEngine.Random.Range(attacker.MinAtk, attacker.MaxAtk);
             float finalDamage = Mathf.FloorToInt(damage);
+            if (ShieldHp > 0.0f)
+            {
+                ShieldHp = Mathf.Clamp(ShieldHp - finalDamage, 0f, ShieldHp);
+                return;
+                // Apply Shield Hit Effect ,,,
+            }
+
 
             Hp = Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
             bool isCritical = false;
+
+            // --- Util.GetRandomQuadPosition or Hit Pos or Fixed Pos
+            List<EffectBase> hitEffects = skillByAttacker.GenerateSkillEffects(
+                                            effectIDs: skillByAttacker.SkillData.HitEffectIDs,
+                                            spawnPos: Util.GetRandomQuadPosition(this.CenterPosition)
+                                            );
+
+            Debug.Log($"<color=red>{nameof(OnDamaged)}</color>");
             Managers.Object.ShowDamageFont(position: this.CenterPosition, damage: finalDamage, isCritical: isCritical);
 
             // --- TEMP: Critical
@@ -258,147 +289,83 @@ namespace STELLAREST_F1
         #endregion Core
 
         #region Background
-        // --- TEMP
-        public virtual Vector3 GetFirePosition() 
+        public virtual Vector3 GetFirePosition() // --- TEMP
             => CenterPosition;
-
-        public void MoveToCellCenter()
-        {
-            Vector3 center = Managers.Map.CellToCenteredWorld(CellPos);
-            Vector3 dir = center - transform.position;
-
-            float threshold = 0.1f;
-            if (dir.sqrMagnitude < threshold * threshold)
-            {
-                LerpToCellPosCompleted = true;
-                transform.position = center;
-                Moving = false;
-            }
-            else if (Target.IsValid())
-                LookAtValidTarget();
-            else if (dir.x < 0f)
-                LookAtDir = ELookAtDirection.Left;
-            else if (dir.x > 0f)
-                LookAtDir = ELookAtDirection.Right;
-
-            transform.position += dir.normalized * MovementSpeed * Time.deltaTime;
-            LerpToCellPosCompleted = false;
-
-            // --- CellPos로 가도록 변경해야함. 어차피 CellPos는 실시간으로 업데이트중.
-            // Vector3Int nearCell = Managers.Map.WorldToCell(transform.position);
-            // Vector3 center = Managers.Map.GetCenterWorld(nearCell);
-            // Vector3 dir = center - transform.position;
-
-            // float threshold = 0.1f;
-            // if (dir.sqrMagnitude < threshold * threshold)
-            // {
-            //     transform.position = center;
-            //     Moving = false;
-            //     LerpToCellPosCompleted = true;
-            // }
-            // else
-            // {
-            //     if (dir.x < 0f)
-            //         LookAtDir = ELookAtDirection.
-            //     else if (dir.x > 0f)
-            //         LookAtDir = ELookAtDirection.Right;
-
-            //     transform.position += dir.normalized * MovementSpeed * Time.deltaTime;
-            //     LerpToCellPosCompleted = false;
-            // }
-        }
         
         public void CollectEnv()
             => CreatureAnim.CollectEnv();
         public void Dead()
             => CreatureAnim.Dead();
 
-        public EFindPathResult FindPathAndMoveToCellPos(Vector3 destPos, int maxDepth, EObjectType ignoreCellObjType = EObjectType.None)
-            => FindPathAndMoveToCellPos(Managers.Map.WorldToCell(destPos), maxDepth, ignoreCellObjType);
+        // --Ready to Move "BaseCellObject.cs"
+        // public EFindPathResult FindPathAndMoveToCellPos(Vector3 destPos, int maxDepth, EObjectType ignoreCellObjType = EObjectType.None)
+        //     => FindPathAndMoveToCellPos(Managers.Map.WorldToCell(destPos), maxDepth, ignoreCellObjType);
 
-        public EFindPathResult FindPathAndMoveToCellPos(Vector3Int destPos, int maxDepth, EObjectType ignoreCellObjType = EObjectType.None)
-        {
-            if (IsForceMovingPingPongObject)
-                return EFindPathResult.Fail_ForceMove;
+        // public EFindPathResult FindPathAndMoveToCellPos(Vector3Int destPos, int maxDepth, EObjectType ignoreCellObjType = EObjectType.None)
+        // {
+        //     if (IsForceMovingPingPongObject)
+        //         return EFindPathResult.Fail_ForceMove;
 
-            // 움직임 진행중..
-            // if (LerpToCellPosCompleted == false)
-            //     return EFindPathResult.Success;
+        //     // ---A*
+        //     List<Vector3Int> path = Managers.Map.FindPath(startCellPos: CellPos, destPos, maxDepth, ignoreCellObjType);
+        //     if (path.Count == 1)
+        //     {
+        //         if (IsOnTheCellCenter == false)
+        //         {
+        //             NextCellPos = path[0];
+        //             LerpToCellPosCompleted = false;
+        //             return EFindPathResult.Success;
+        //         }
+        //         else if (LerpToCellPosCompleted) // --- 무조건 가운데까지 간다.
+        //         {
+        //             return EFindPathResult.Fail_LerpCell;
+        //         }
+        //     }
 
-            // if (CreatureAIState == ECreatureAIState.Idle)
-            //     return EFindPathResult.Fail_LerpCell;
+        //     else if (path.Count > 1)
+        //     {
+        //         Vector3Int dirCellPos = path[1] - CellPos;
+        //         Vector3Int nextCellPos = CellPos + dirCellPos;
 
-            // if (_coLerpToCellPos == null)
-            // {
-            //     // Managers.Map.RemoveObject(this);
-            //     // Managers.Map.AddObject(this, CellPos);
-            //     return EFindPathResult.Fail_LerpCell;
-            // }
+        //         if (Managers.Map.TryMove(moveToCellPos: nextCellPos, ignoreCellObjType: ignoreCellObjType) == false)
+        //             return EFindPathResult.Fail_MoveTo;
 
-            // // 움직임 진행중
-            // if (LerpToCellPosCompleted == false)
-            // {
-            //     return EFindPathResult.Fail_LerpCell;
-            // }
+        //         NextCellPos = nextCellPos;
+        //         LerpToCellPosCompleted = false;
+        //     }
 
-            // A*
-            List<Vector3Int> path = Managers.Map.FindPath(startCellPos: CellPos, destPos, maxDepth, ignoreCellObjType);
-            if (path.Count == 1)
-            {
-                if (IsOnTheCellCenter == false)
-                {
-                    NextCellPos = path[0];
-                    LerpToCellPosCompleted = false;
-                    return EFindPathResult.Success;
-                }
-                else if (LerpToCellPosCompleted) // --- 무조건 가운데까지 간다.
-                    return EFindPathResult.Fail_LerpCell;
-            }
-
-            else if (path.Count > 1)
-            {
-                Vector3Int dirCellPos = path[1] - CellPos;
-                Vector3Int nextPos = CellPos + dirCellPos;
-
-                if (Managers.Map.TryMove(cellObj: this, cellPos: nextPos, ignoreCellObjType: ignoreCellObjType) == false)
-                    return EFindPathResult.Fail_MoveTo;
-
-                NextCellPos = nextPos;
-                LerpToCellPosCompleted = false;
-            }
-
-            return EFindPathResult.Success;
-        }
+        //     return EFindPathResult.Success;
+        // }
         #endregion Background
 
         public bool IsRunningAITick => _coUpdateAI != null;
         protected Coroutine _coUpdateAI = null;
         protected IEnumerator CoUpdateAI()
         {
-            if (ObjectType == EObjectType.Monster)
-                yield break;
+            // if (ObjectType == EObjectType.Monster)
+            //     yield break;
 
-            // while (true)
-            // {
-            //     if (CreatureAI.ForceWaitCompleted == false)
-            //     {
-            //         yield return null;
-            //         continue;
-            //     }
+            while (true)
+            {
+                if (CreatureAI.ForceWaitCompleted == false)
+                {
+                    yield return null;
+                    continue;
+                }
 
-            //     switch (CreatureAIState)
-            //     {
-            //         case ECreatureAIState.Idle:
-            //             CreatureAI.UpdateIdle();
-            //             break;
+                switch (CreatureAIState)
+                {
+                    case ECreatureAIState.Idle:
+                        CreatureAI.UpdateIdle();
+                        break;
 
-            //         case ECreatureAIState.Move:
-            //             CreatureAI.UpdateMove();
-            //             break;
-            //     }
+                    case ECreatureAIState.Move:
+                        CreatureAI.UpdateMove();
+                        break;
+                }
 
-            //     yield return null;
-            // }
+                yield return null;
+            }
         }
 
         public void StartCoUpdateAI()
@@ -446,169 +413,168 @@ namespace STELLAREST_F1
             _coWait = null;
         }
 
-        // --- In Creature.cs temporary
-        protected Coroutine _coLerpToCellPos = null;
-        protected IEnumerator CoLerpToCellPos()
-        {
-            while (true)
-            {
-                if (IsForceMovingPingPongObject || CreatureAIState == ECreatureAIState.Idle)
-                {
-                    //LerpToCellPosCompleted = true;
-                    yield return null;
-                    continue;
-                }
+        // protected Coroutine _coLerpToCellPos = null;
+        // protected IEnumerator CoLerpToCellPos()
+        // {
+        //     while (true)
+        //     {
+        //         if (IsForceMovingPingPongObject || CreatureAIState == ECreatureAIState.Idle)
+        //         {
+        //             //LerpToCellPosCompleted = true;
+        //             yield return null;
+        //             continue;
+        //         }
 
-                Hero hero = this as Hero;
-                if (hero.IsValid())
-                {
-                    // 1. 리더의 MovementSpeed가 느리면 멤버들의 Movement Speed도 Leader에게 맞춰진다.
-                    // --> 리더 주변으로 Chase해야하기 때문
-                    // 2. 1번이 어색하게 느껴지면 MovementSpeed는 통합 Stat으로 관리
-                    float movementSpeed = Util.CalculateValueFromDistance(
-                        value: Managers.Object.HeroLeaderController.Leader.MovementSpeed,
-                        maxValue: Managers.Object.HeroLeaderController.Leader.MovementSpeed * 2f,
-                        distanceToTargetSQR: (CellPos - Managers.Object.HeroLeaderController.Leader.CellPos).sqrMagnitude,
-                        maxDistanceSQR: ReadOnly.Util.HeroDefaultScanRange * ReadOnly.Util.HeroDefaultScanRange
-                    );
+        //         Hero hero = this as Hero;
+        //         if (hero.IsValid())
+        //         {
+        //             // 1. 리더의 MovementSpeed가 느리면 멤버들의 Movement Speed도 Leader에게 맞춰진다.
+        //             // --> 리더 주변으로 Chase해야하기 때문
+        //             // 2. 1번이 어색하게 느껴지면 MovementSpeed는 통합 Stat으로 관리
+        //             float movementSpeed = Util.CalculateValueFromDistance(
+        //                 value: Managers.Object.HeroLeaderController.Leader.MovementSpeed,
+        //                 maxValue: Managers.Object.HeroLeaderController.Leader.MovementSpeed * 2f,
+        //                 distanceToTargetSQR: (CellPos - Managers.Object.HeroLeaderController.Leader.CellPos).sqrMagnitude,
+        //                 maxDistanceSQR: ReadOnly.Util.HeroDefaultScanRange * ReadOnly.Util.HeroDefaultScanRange
+        //             );
 
-                    LerpToCellPos(movementSpeed);
-                }
-                else //--- Monster
-                {
-                    LerpToCellPos(MovementSpeed);
-                }
+        //             LerpToCellPos(movementSpeed);
+        //         }
+        //         else //--- Monster
+        //         {
+        //             LerpToCellPos(MovementSpeed);
+        //         }
 
-                yield return null;
-            }
-        }
+        //         yield return null;
+        //     }
+        // }
 
-        public void StartCoLerpToCellPos()
-        {
-            StopCoLerpToCellPos();
-            _coLerpToCellPos = StartCoroutine(CoLerpToCellPos());
-        }
+        // public void StartCoLerpToCellPos()
+        // {
+        //     StopCoLerpToCellPos();
+        //     _coLerpToCellPos = StartCoroutine(CoLerpToCellPos());
+        // }
 
-        public void StopCoLerpToCellPos()
-        {
-            if (_coLerpToCellPos != null)
-                StopCoroutine(_coLerpToCellPos);
-            _coLerpToCellPos = null;
-        }
+        // public void StopCoLerpToCellPos()
+        // {
+        //     if (_coLerpToCellPos != null)
+        //         StopCoroutine(_coLerpToCellPos);
+        //     _coLerpToCellPos = null;
+        // }
 
-        /*
-            1 - 큐에 A 추가: [A]
-            2 - 큐에 B 추가: [A, B]
-            3 - 큐에 A 추가: [A, B, A]
-            4 - 큐에 B 추가: [A, B, A, B]
-            5 - 1 (검사)
-            5 - 2 Dequeue: [B, A, B]
-            5 - 3 큐에 A 추가: [B, A, B, A]
-            6 - 1 (검사)
-            6 - 2 Dequeue: [A, B, A]
-            6 - 3 큐에 B 추가: [A, B, A, B]
-            7 - 1 (검사)
-            ...
+        // /*
+        //     1 - 큐에 A 추가: [A]
+        //     2 - 큐에 B 추가: [A, B]
+        //     3 - 큐에 A 추가: [A, B, A]
+        //     4 - 큐에 B 추가: [A, B, A, B]
+        //     5 - 1 (검사)
+        //     5 - 2 Dequeue: [B, A, B]
+        //     5 - 3 큐에 A 추가: [B, A, B, A]
+        //     6 - 1 (검사)
+        //     6 - 2 Dequeue: [A, B, A]
+        //     6 - 3 큐에 B 추가: [A, B, A, B]
+        //     7 - 1 (검사)
+        //     ...
 
-            이게 정상이긴한데 위치가 정확하게 입력되지 않음.
-            그래서 큐의 4개의 요소 안에 A가 2개, B가 2개가 있는지만 확인.
-            나중에 몬스터에서도 필요하면 Creature로 옮겨주면 됨
-        */
-        private Queue<Vector3Int> _cantMoveCheckQueue = new Queue<Vector3Int>();
-        [SerializeField] protected int _currentPingPongCantMoveCount = 0;
-        private int maxCantMoveCheckCount = 4; // 2칸에 대해 왔다 갔다만 조사하는 것이라 4로 설정
-        protected bool IsPingPongAndCantMoveToDest(Vector3Int cellPos)
-        {
-            if (_cantMoveCheckQueue.Count >= maxCantMoveCheckCount)
-                _cantMoveCheckQueue.Dequeue();
+        //     이게 정상이긴한데 위치가 정확하게 입력되지 않음.
+        //     그래서 큐의 4개의 요소 안에 A가 2개, B가 2개가 있는지만 확인.
+        //     나중에 몬스터에서도 필요하면 Creature로 옮겨주면 됨
+        // */
+        // private Queue<Vector3Int> _cantMoveCheckQueue = new Queue<Vector3Int>();
+        // [SerializeField] protected int _currentPingPongCantMoveCount = 0;
+        // private int maxCantMoveCheckCount = 4; // 2칸에 대해 왔다 갔다만 조사하는 것이라 4로 설정
+        // protected bool IsPingPongAndCantMoveToDest(Vector3Int cellPos)
+        // {
+        //     if (_cantMoveCheckQueue.Count >= maxCantMoveCheckCount)
+        //         _cantMoveCheckQueue.Dequeue();
 
-            _cantMoveCheckQueue.Enqueue(cellPos);
-            if (_cantMoveCheckQueue.Count == maxCantMoveCheckCount)
-            {
-                Vector3Int[] cellArr = _cantMoveCheckQueue.ToArray();
-                HashSet<Vector3Int> uniqueCellPos = new HashSet<Vector3Int>(cellArr);
-                if (uniqueCellPos.Count == 2)
-                {
-                    Dictionary<Vector3Int, int> checkCellPosCountDict = new Dictionary<Vector3Int, int>();
-                    foreach (var pos in _cantMoveCheckQueue)
-                    {
-                        if (checkCellPosCountDict.ContainsKey(pos))
-                            checkCellPosCountDict[pos]++;
-                        else
-                            checkCellPosCountDict[pos] = 1;
-                    }
+        //     _cantMoveCheckQueue.Enqueue(cellPos);
+        //     if (_cantMoveCheckQueue.Count == maxCantMoveCheckCount)
+        //     {
+        //         Vector3Int[] cellArr = _cantMoveCheckQueue.ToArray();
+        //         HashSet<Vector3Int> uniqueCellPos = new HashSet<Vector3Int>(cellArr);
+        //         if (uniqueCellPos.Count == 2)
+        //         {
+        //             Dictionary<Vector3Int, int> checkCellPosCountDict = new Dictionary<Vector3Int, int>();
+        //             foreach (var pos in _cantMoveCheckQueue)
+        //             {
+        //                 if (checkCellPosCountDict.ContainsKey(pos))
+        //                     checkCellPosCountDict[pos]++;
+        //                 else
+        //                     checkCellPosCountDict[pos] = 1;
+        //             }
 
-                    foreach (var count in checkCellPosCountDict.Values)
-                    {
-                        if (count != 2)
-                            return false;
-                    }
+        //             foreach (var count in checkCellPosCountDict.Values)
+        //             {
+        //                 if (count != 2)
+        //                     return false;
+        //             }
 
-                    return true;
-                }
-            }
+        //             return true;
+        //         }
+        //     }
 
-            return false;
-        }
+        //     return false;
+        // }
 
-        // ***** Force Move Ping Pong Object Coroutine *****
-        private Coroutine _coForceMovePingPongObject = null;
-        protected bool IsForceMovingPingPongObject => _coForceMovePingPongObject != null;
-        private IEnumerator CoForceMovePingPongObject(Vector3Int currentCellPos, Vector3Int destCellPos, System.Action endCallback = null)
-        {
-            List<Vector3Int> path = Managers.Map.FindPath(currentCellPos, destCellPos);
+        // // ***** Force Move Ping Pong Object Coroutine *****
+        // private Coroutine _coForceMovePingPongObject = null;
+        // protected bool IsForceMovingPingPongObject => _coForceMovePingPongObject != null;
+        // private IEnumerator CoForceMovePingPongObject(Vector3Int currentCellPos, Vector3Int destCellPos, System.Action endCallback = null)
+        // {
+        //     List<Vector3Int> path = Managers.Map.FindPath(currentCellPos, destCellPos);
 
-            Queue<Vector3Int> pathQueue = new Queue<Vector3Int>();
-            for (int i = 0; i < path.Count; ++i)
-                pathQueue.Enqueue(path[i]);
-            pathQueue.Dequeue();
+        //     Queue<Vector3Int> pathQueue = new Queue<Vector3Int>();
+        //     for (int i = 0; i < path.Count; ++i)
+        //         pathQueue.Enqueue(path[i]);
+        //     pathQueue.Dequeue();
 
-            Vector3Int nextPos = pathQueue.Dequeue();
-            Vector3 currentWorldPos = Managers.Map.CellToWorld(currentCellPos);
-            while (pathQueue.Count != 0)
-            {
-                Vector3 destPos = Managers.Map.CellToCenteredWorld(nextPos);
-                Vector3 dir = destPos - transform.position; // 왜 이걸로하면 안되지
-                if (dir.x < 0f)
-                    LookAtDir = ELookAtDirection.Left;
-                else if (dir.x > 0f)
-                    LookAtDir = ELookAtDirection.Right;
+        //     Vector3Int nextPos = pathQueue.Dequeue();
+        //     Vector3 currentWorldPos = Managers.Map.CellToWorld(currentCellPos);
+        //     while (pathQueue.Count != 0)
+        //     {
+        //         Vector3 destPos = Managers.Map.CellToCenteredWorld(nextPos);
+        //         Vector3 dir = destPos - transform.position; // 왜 이걸로하면 안되지
+        //         if (dir.x < 0f)
+        //             LookAtDir = ELookAtDirection.Left;
+        //         else if (dir.x > 0f)
+        //             LookAtDir = ELookAtDirection.Right;
 
-                if (dir.sqrMagnitude < 0.01f)
-                {
-                    transform.position = destPos;
-                    currentWorldPos = transform.position;
-                    nextPos = pathQueue.Dequeue();
-                }
-                else
-                {
-                    float moveDist = Mathf.Min(dir.magnitude, MovementSpeed * Time.deltaTime);
-                    transform.position += dir.normalized * moveDist; // Movement per frame.
-                }
+        //         if (dir.sqrMagnitude < 0.01f)
+        //         {
+        //             transform.position = destPos;
+        //             currentWorldPos = transform.position;
+        //             nextPos = pathQueue.Dequeue();
+        //         }
+        //         else
+        //         {
+        //             float moveDist = Mathf.Min(dir.magnitude, MovementSpeed * Time.deltaTime);
+        //             transform.position += dir.normalized * moveDist; // Movement per frame.
+        //         }
 
-                yield return null;
-            }
+        //         yield return null;
+        //     }
 
-            endCallback?.Invoke();
-            // UpdateCellPos();
-        }
+        //     endCallback?.Invoke();
+        //     // UpdateCellPos();
+        // }
 
-        protected void CoStartForceMovePingPongObject(Vector3Int currentCellPos, Vector3Int destCellPos, System.Action endCallback = null)
-        {
-            if (_coForceMovePingPongObject != null)
-                return;
+        // protected void CoStartForceMovePingPongObject(Vector3Int currentCellPos, Vector3Int destCellPos, System.Action endCallback = null)
+        // {
+        //     if (_coForceMovePingPongObject != null)
+        //         return;
 
-            _coForceMovePingPongObject = StartCoroutine(CoForceMovePingPongObject(currentCellPos, destCellPos, endCallback));
-        }
+        //     _coForceMovePingPongObject = StartCoroutine(CoForceMovePingPongObject(currentCellPos, destCellPos, endCallback));
+        // }
 
-        protected void CoStopForceMovePingPongObject()
-        {
-            if (_coForceMovePingPongObject != null)
-            {
-                StopCoroutine(_coForceMovePingPongObject);
-                _coForceMovePingPongObject = null;
-            }
-        }
+        // protected void CoStopForceMovePingPongObject()
+        // {
+        //     if (_coForceMovePingPongObject != null)
+        //     {
+        //         StopCoroutine(_coForceMovePingPongObject);
+        //         _coForceMovePingPongObject = null;
+        //     }
+        // }
     }
 }
 

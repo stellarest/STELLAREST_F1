@@ -4,6 +4,13 @@ using UnityEngine;
 
 namespace STELLAREST_F1
 {
+    /*
+        [ Note ]
+        // --- Off할 때 다시 EnvRoot로 붙여주기
+        // --- 그리고 이미 진행중인 상태에서 Skill을 Spawn하지 않는 등을 조정해야함. 쿨타임이 되면 다시 DoSkill을 시도하기 때문
+        // Debug.Log($"<color=cyan>{nameof(BuffShield)}, {nameof(EnterInGame)}</color>");
+    */
+
     // --- TEMP
     public class BuffShield : BuffBase
     {
@@ -30,25 +37,12 @@ namespace STELLAREST_F1
             _localScale = new Vector3(0.8f, 1f, 0.8f);
         }
 
-        // --- Hit vs Infinite Skill
-        protected override void EnterInGame(Vector3 spawnPos)
-        {
-            base.EnterInGame(spawnPos);
-            // transform.localPosition = new Vector3(0, 0.75f, 0f);
-
-            // --- On할 때 잠깐 붙여주고
-            transform.SetParent(Owner.transform);
-            transform.localPosition = new Vector3(0, 0.75f, 0f);
-            transform.localScale = _localScale;
-
-            // --- Off할 때 다시 EnvRoot로 붙여주기
-            // --- 그리고 이미 진행중인 상태에서 Skill을 Spawn하지 않는 등을 조정해야함. 쿨타임이 되면 다시 DoSkill을 시도하기 때문
-        }
-
-        // --- TEMP
         public override void ApplyEffect()
         {
-            // base.ApplyEffect();
+            // --- 쉴드 에너지부터 채워주고
+            base.ApplyEffect();
+
+            // --- Show Effect
             EnableShield(_onShields, true);
         }
 
@@ -58,6 +52,10 @@ namespace STELLAREST_F1
             {
                 if (isOn)
                 {
+                    // --- On할 때 잠깐 붙여주고
+                    transform.SetParent(Owner.transform);
+                    transform.localPosition = new Vector3(0, 0.75f, 0f);
+                    transform.localScale = _localScale;
                     shields[i].gameObject.SetActive(true);
                     shields[i].Play();
                 }

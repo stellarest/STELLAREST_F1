@@ -351,14 +351,15 @@ namespace STELLAREST_F1
             if (target.IsValid() == false)
                 return;
 
-            if (Skill.SkillData.HitEffectIDs.Length != 0)
-            {
-                Debug.Log("<color=magenta>HIT</color>");
-                List<EffectBase> hitEffects = Skill.GenerateSkillEffects(
-                                        effectIDs: Skill.SkillData.HitEffectIDs,
-                                        spawnPos: Util.GetRandomQuadPosition(target.CenterPosition)
-                                        );
-            }
+            // if (Skill.SkillData.HitEffectIDs.Length != 0)
+            // {
+            //     Debug.Log("<color=magenta>HIT</color>");
+            //     List<EffectBase> hitEffects = Skill.GenerateSkillEffects(
+            //                             effectIDs: Skill.SkillData.HitEffectIDs,
+            //                             spawnPos: Util.GetRandomQuadPosition(target.CenterPosition)
+            //                             );
+            // }
+            
             target.OnDamaged(attacker: Owner, skillByAttacker: Skill);
             // --- Effect
             // --- InitBaseError

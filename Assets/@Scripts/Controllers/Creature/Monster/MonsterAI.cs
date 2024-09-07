@@ -17,7 +17,7 @@ namespace STELLAREST_F1
             get
             {
                 if (IsValidTarget)
-                    return _monsterOwner.Target.GetComponent<BaseCellObject>().CellPos;
+                    return _monsterOwner.Target.CellPos;
 
                 return _cellPatrolPos;
             }

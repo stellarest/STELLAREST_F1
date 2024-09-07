@@ -29,12 +29,14 @@ namespace STELLAREST_F1
         {
             EffectBase effect = Managers.Object.SpawnBaseObject<EffectBase>(
                     objectType: EObjectType.Effect,
-                    spawnPos: _owner.CenterPosition,
+                    spawnPos: _owner.CenterPosition, // --- Default Value
                     dataID: effectID,
                     owner: _owner
                     );
 
             ActiveEffects.Add(effect);
+            effect.ApplyEffect();
+
             return effect;
         }
 
@@ -48,6 +50,8 @@ namespace STELLAREST_F1
                                 );
 
             ActiveEffects.Add(effect);
+            effect.ApplyEffect();
+
             return effect;
         }
 
@@ -58,13 +62,14 @@ namespace STELLAREST_F1
             {
                 EffectBase effect = Managers.Object.SpawnBaseObject<EffectBase>(
                     objectType: EObjectType.Effect,
-                    spawnPos: _owner.CenterPosition,
+                    spawnPos: _owner.CenterPosition, // --- Default Value
                     dataID: id,
                     owner: _owner
                 );
 
                 generatedEffects.Add(effect);
                 ActiveEffects.Add(effect);
+                effect.ApplyEffect();
             }
 
             return generatedEffects;
@@ -84,54 +89,32 @@ namespace STELLAREST_F1
 
                 generatedEffects.Add(effect);
                 ActiveEffects.Add(effect);
+                effect.ApplyEffect();
             }
 
             return generatedEffects;
         }
 
-        // public List<EffectBase> GenerateEffects(IEnumerable<int> effectIDs, Vector3 spawnPos, Action startCallback = null)
-        // {
-        //     List<EffectBase> generatedEffects = new List<EffectBase>();
-        //     foreach (var id in effectIDs)
-        //     {
-        //         EffectBase effect = Managers.Object.SpawnBaseObject<EffectBase>(
-        //             objectType: EObjectType.Effect,
-        //             spawnPos: spawnPos,
-        //             dataID: id,
-        //             owner: _owner
-        //         );
+        public float ApplyStatModifier(EApplyStatType applyStatType, EStatModType statModType)
+        {
+            float value = 0.0f;
+            for (int i = 0; i < ActiveEffects.Count; ++i)
+            {
+                if (ActiveEffects[i].EffectData.ApplyStatType != applyStatType)
+                    continue;
 
-        //         generatedEffects.Add(effect);
-        //         ActiveEffects.Add(effect);
-        //     }
+                if (CanApplyStatEffectType(ActiveEffects[i].EffectType))
+                {
+                    value = statModType == EStatModType.AddAmount ? 
+                            ActiveEffects[i].EffectData.AddAmount : ActiveEffects[i].EffectData.AddPercent;
+                }
+            }
 
-        //     startCallback?.Invoke();
-        //     return generatedEffects;
-        // }
+            return value;
+        }
 
-        // public List<EffectBase> GenerateEffects(IEnumerable<int> effectIDs, BaseObject owner, EEffectSpawnType effectSpawnType)
-        // {
-        //     if (owner.IsValid() == false)
-        //         return null;
-
-        //     List<EffectBase> generatedEffects = new List<EffectBase>();
-        //     foreach (var id in effectIDs)
-        //     {
-        //         EffectData data = Managers.Data.EffectDataDict[id];
-        //         // EEffectType type = data.EffectType;
-
-        //         EffectBase effect = Managers.Object.SpawnBaseObject<EffectBase>(
-        //             objectType: EObjectType.Effect,
-        //             spawnPos: owner.CenterPosition,
-        //             dataID: id
-        //         );
-
-        //         generatedEffects.Add(effect);
-        //         ActiveEffects.Add(effect);
-        //     }
-
-        //     return null;
-        // }
+        private bool CanApplyStatEffectType(EEffectType type)
+            => type == EEffectType.Buff || type == EEffectType.DeBuff;
 
         public void RemoveEffect(EffectBase effect)
         {

@@ -9,6 +9,15 @@ using UnityEditor;
 
 /*
 ********************************************************************
+// --- DID & TODO LIST
+- Shield Skill Flag: SkillBase::LockCoolTimeUntilDisable
+- Related FindPathMethods in Creature.cs -> in BaseCellObject (아직 미완인 것 같긴 함)
+- ApplyEffect는 EffectComp의 ActivateEffects에 추가가 되었을 때, Apply할 수 있도록.
+- BaseCellObj의 ApplyStat을 호출하면, 재정의된 ApplyFinalStat 메서드를 통해서 값을 설정할 수 있게 된다.
+- Hit Burst 어떻게 할래? 그리고 _onShield 꺼주고 _offShield켜줬을 때, _offShield가 전부 끝나고 나서
+- Shield Skill의 LockCoolTimeUntilDisable을 제어할 것인지?(이때부터 RemainCoolTime 코루틴을 돌릴 것인지)등등
+- 아무튼 Hit Burst 부분 내일 해결해보도록.
+
 // --- TODO LIST
 - InitBaseError 이 부분 고치기 (진행중, 결정적으로, 쉴드해야함)
 - SimpleVFX(EffectType)도 EffectComponent로 무조건 호출
@@ -21,7 +30,7 @@ using UnityEditor;
 - HERO LEVEL UP TEST
 
 // --- NOTE
-- *** 지금 게임 실행 불가. Effect 대국적으로 수정해야함 ***
+- 아주 어쩌다가 몬스터 CellPos와 겹치긴하는데 그렇게 심각한 문제는 아님.
 - Skill이 가지고 있는 EffectType부터 생각해봐야할듯.
 
         Instant,    // --- DotBase

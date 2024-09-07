@@ -28,34 +28,34 @@ namespace STELLAREST_F1
         public MonsterAnimation MonsterAnim { get; private set; } = null;
         public EMonsterType MonsterType { get; private set; } = EMonsterType.None;
         private MonsterAI _monsterAI = null;
-        public override ECreatureAIState CreatureAIState
-        {
-            get => base.CreatureAIState;
-            set
-            {
-                base.CreatureAIState = value;
-                switch (value)
-                {
-                    case ECreatureAIState.Idle:
-                        {
-                            Moving = false;
-                            return;
-                        }
+        // public override ECreatureAIState CreatureAIState
+        // {
+        //     get => base.CreatureAIState;
+        //     set
+        //     {
+        //         base.CreatureAIState = value;
+        //         switch (value)
+        //         {
+        //             case ECreatureAIState.Idle:
+        //                 {
+        //                     Moving = false;
+        //                     return;
+        //                 }
 
-                    case ECreatureAIState.Move:
-                        {
-                            Moving = true;
-                            return;
-                        }
+        //             case ECreatureAIState.Move:
+        //                 {
+        //                     Moving = true;
+        //                     return;
+        //                 }
 
-                    case ECreatureAIState.Dead:
-                        {
-                            Dead();
-                            return;
-                        }
-                }
-            }
-        }
+        //             case ECreatureAIState.Dead:
+        //                 {
+        //                     Dead();
+        //                     return;
+        //                 }
+        //         }
+        //     }
+        // }
 
         public override BaseCellObject Target
         {

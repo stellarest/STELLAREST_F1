@@ -320,7 +320,6 @@ namespace STELLAREST_F1
             return objects.ToList();
         }
 
-        // START
         public bool ForceMove(BaseCellObject cellObj, Vector3 worldPos, EObjectType ignoreCellObjType = EObjectType.None)
             => ForceMove(cellObj, Managers.Map.WorldToCell(worldPos), ignoreCellObjType);
 
@@ -333,16 +332,14 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public bool TryMove(BaseCellObject cellObj, Vector3 worldPos, EObjectType ignoreCellObjType = EObjectType.None)
-            => TryMove(cellObj, Managers.Map.WorldToCell(worldPos), ignoreCellObjType);
+        public bool TryMove(Vector3 worldPos, EObjectType ignoreCellObjType = EObjectType.None)
+            => TryMove(Managers.Map.WorldToCell(worldPos), ignoreCellObjType);
 
-        public bool TryMove(BaseCellObject cellObj, Vector3Int cellPos, EObjectType ignoreCellObjType = EObjectType.None)
+        public bool TryMove(Vector3Int moveToCellPos, EObjectType ignoreCellObjType = EObjectType.None)
         {
-            if (ForceMove(cellObj, cellPos, ignoreCellObjType) == false)
+            if (CanMove(moveToCellPos, ignoreCellObjType) == false)
                 return false;
 
-            // if (CanMove(cellPos, ignoreObjectType) == false)
-            //     return false;
             return true;
         }
 

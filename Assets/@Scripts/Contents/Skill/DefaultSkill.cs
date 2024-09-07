@@ -51,16 +51,6 @@ namespace STELLAREST_F1
                         continue;
 
                     BaseCellObject target = _skillTargets[i];
-                    if (SkillData.HitEffectIDs.Length != 0)
-                    {
-                        // --- MUST USE THIS METHOD?? (Util.GetRandomQuadPosition) or FIX EFFECT SPAWN TYPE POSITION
-                        List<EffectBase> hitEffects = GenerateSkillEffects(
-                                                        effectIDs: SkillData.HitEffectIDs,
-                                                        spawnPos: Util.GetRandomQuadPosition(target.CenterPosition)
-                                                        );
-
-                        // --- DO SOMETHING AFTER IF YOU WANT TO
-                    }
                     target.OnDamaged(attacker: Owner, skillByAttacker: this);
                 }
             }

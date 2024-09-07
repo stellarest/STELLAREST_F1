@@ -39,13 +39,9 @@ namespace STELLAREST_F1
 
         public EffectData EffectData { get; private set; } = null;
         public bool IsLoop { get; private set; } = false;
-        public float Amount { get; private set; } = 0.0f;
-        public float Percent { get; private set; } = 0.0f;
         public float Period { get; private set; } = 0.0f;
         public float Remains { get; private set; } = 0.0f;
         public EEffectType EffectType { get; protected set; } = EEffectType.None;
-        public EEffectSpawnType EffectSpawnType { get; private set; } = EEffectSpawnType.None;
-        public EApplyStatType ApplyStateType { get; private set; } = EApplyStatType.None;
         protected Vector3 _enteredDir = Vector3.zero;
         protected int _enteredSignX = 0;
 
@@ -63,13 +59,22 @@ namespace STELLAREST_F1
         protected override void InitialSetInfo(int dataID)
         {
             base.InitialSetInfo(dataID);
-            EffectType = EEffectType.None;
             EffectData = Managers.Data.EffectDataDict[dataID];
             IsLoop = EffectData.IsLoop;
-            Amount = EffectData.AddAmount;
-            Percent = EffectData.AddPercent;
             Period = EffectData.Period;
             InitialSetSize(EffectData.EffectSize);
+        }
+
+        protected override void EnterInGame(Vector3 spawnPos)
+        {
+            base.EnterInGame(spawnPos);
+            if (EffectData.Duration < 0.0f)
+                Remains = float.MaxValue;
+            else
+                Remains = EffectData.Duration * EffectData.Period;
+
+            transform.position = EffectSpawnInfo(EffectData.EffectSpawnType);
+            // ApplyEffect(); ---> EffectComponent에서 Effects 추가 후, 적용
         }
 
         private void InitialSetSize(EObjectSize objSize)
@@ -97,14 +102,6 @@ namespace STELLAREST_F1
             }
         }
 
-        protected override void EnterInGame(Vector3 spawnPos)
-        {
-            base.EnterInGame(spawnPos);
-            Remains = EffectData.Duration * EffectData.Period;
-            transform.position = EffectSpawnInfo(EffectData.EffectSpawnType);
-            ApplyEffect();
-        }
-
         private Vector3 EffectSpawnInfo(EEffectSpawnType effectSpawnType)
         {
             if (effectSpawnType == EEffectSpawnType.None)
@@ -113,7 +110,7 @@ namespace STELLAREST_F1
             Skill = Owner.GetComponent<Creature>().CreatureSkill.CurrentSkill;
             _enteredDir = Skill.EnteredTargetDir;
             _enteredSignX = Skill.EnteredSignX;
-
+            
             if (effectSpawnType == EEffectSpawnType.SkillFromOwner)
             {
                 SpawnedPos = Skill.EnteredOwnerPos;
@@ -129,13 +126,11 @@ namespace STELLAREST_F1
         }
         #endregion
 
-        // --- 왜 protected로 안하고 public으로 했지???
-        // --- 아마도 나중에 EffectComp(ActiveEffects)로 따로 처리할듯.
+
+        // --- ApplyEffect: Show VFX, Apply Stat, Etc...
         public virtual void ApplyEffect()
         {
             StartCoroutine(CoStartTimer());
-            // 여기에다가 도트 뎀, 도트 힐, 패시브 영구적, 힘 버프, 체력 버프, 민첩 버프 등등을 적용시킨다.
-            // 힘 버프(Buff, TypeID:1), 체력 버프(Buff, TypeID:2) 이런식..
         }
 
         protected virtual void ProcessDot() { }
@@ -147,10 +142,9 @@ namespace STELLAREST_F1
 
             float tickTimer = 0f;
             ProcessDot();
-            if (EffectType == EEffectType.Instant)
+            if (EffectType == EEffectType.Instant) // -- ???
             {
-                // yield return new WaitForSeconds(1f);
-                yield return new WaitForSeconds(Remains);
+                yield return new WaitForSeconds(1f);
             }
             else
             {

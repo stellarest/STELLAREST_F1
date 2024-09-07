@@ -255,14 +255,14 @@ namespace STELLAREST_F1
             {
                 case EJoystickState.Drag:
                     {
-                        TryMove = true;
+                        TryJoystickMove = true;
                         EnablePointer(true);
                     }
                     break;
 
                 case EJoystickState.PointerUp:
                     {
-                        TryMove = false;
+                        TryJoystickMove = false;
                         EnablePointer(false);
                     }
                     break;
@@ -271,7 +271,7 @@ namespace STELLAREST_F1
 
         private bool SkillOrCollectEnv()
         {
-            if (TryMove)
+            if (TryJoystickMove)
                 return false;
 
             // --- GetSkill은 CanSkill에서만 호출
@@ -289,7 +289,7 @@ namespace STELLAREST_F1
             return false;
         }
 
-        [field: SerializeField] public bool TryMove { get; private set; } = false;
+        [field: SerializeField] public bool TryJoystickMove { get; private set; } = false;
 
         #region Init Core
         public override bool Init()
@@ -372,7 +372,7 @@ namespace STELLAREST_F1
             if (SkillOrCollectEnv())
                 return;
 
-            if (TryMove)
+            if (TryJoystickMove)
             {
                 // --- Joystick Only
                 if (_lockFindPath == false && Managers.Map.CanMove(GoToJoystickPos, ignoreObjectType: EObjectType.Hero))
@@ -626,7 +626,7 @@ namespace STELLAREST_F1
             }
 
             // --- 타겟이 존재할 경우, 이동하면서 공격
-            if (TryMove == false && _leader.Target.IsValid() == false)
+            if (TryJoystickMove == false && _leader.Target.IsValid() == false)
                 _leader.Moving = false;
 
             _lockFindPath = false;

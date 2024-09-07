@@ -29,6 +29,7 @@ namespace STELLAREST_F1
         public int TargetDistance { get; private set; } = -1;
         public int DataTemplateID { get; private set; } = -1;
         public ESkillType SkillType { get; private set; } = ESkillType.None;
+        // --- 이게 필요 없을 것 같긴 한데
         public EAttachmentPoint SkillFromPoint { get; private set; } = EAttachmentPoint.None;
         protected bool[] _lockTargetDirs = null;
         protected bool IsLockTargetDir(ETargetDirection targetDir) 
@@ -41,6 +42,22 @@ namespace STELLAREST_F1
                 _lockTargetDirs[i] = false;
         }
 
+        // --- Data를 통해서, Skill이 Activate되어 있는 동안 다시 발동하지 않도록,,, 제어해야할듯. (ex) shield
+
+        private bool _lockSkillUntilDisable = false;
+        public bool LockCoolTimeUntilDisable
+        {
+            get => _lockSkillUntilDisable;
+            protected set
+            {
+                _lockSkillUntilDisable = value;
+                if (value == false)
+                {
+                    if (Owner.IsValid() == false)
+                        return;
+                }
+            }
+        }
         [SerializeField] private float _remainCoolTime = 0f;
         public virtual float RemainCoolTime
         {
@@ -89,17 +106,7 @@ namespace STELLAREST_F1
             if (Owner.CreatureAnim.IsEnteredAnimState(ECreatureAnimState.Upper_CollectEnv))
                 return;
 
-            // if (Owner.CreatureAnim.CanSkillTrigger == false)
-            // {
-            //     // Debug.Log($"<color=white>OOPS !!: {Dev_TextID}</color>");
-            //     return;
-            // }
-
-            // --- REAL ACTIVATE SKILL,,
             Owner.CreatureSkill.RemoveActiveSkill(this);
-            // Owner.CreatureSkill.CurrentSkillType = SkillType;
-
-            // Owner.CreatureAnim.Skill(SkillType);
             Owner.CreatureAnim.Skill(Owner.CreatureSkill.CurrentSkillType);
             StartCoroutine(CoActivateSkill());
         }
@@ -107,8 +114,20 @@ namespace STELLAREST_F1
         private IEnumerator CoActivateSkill()
         {
             RemainCoolTime = SkillData.CoolTime;
+            if (LockCoolTimeUntilDisable)
+            {
+                Debug.Log($"<color=white>{nameof(LockCoolTimeUntilDisable)}, {SkillData.DevTextID}</color>");
+                yield break;
+            }
 
             yield return new WaitForSeconds(SkillData.CoolTime);
+            RemainCoolTime = 0f;
+            Owner.CreatureSkill.AddActiveSkill(this);
+        }
+
+        private IEnumerator CoActivateCoolTime()
+        {
+            yield return new WaitForSeconds(RemainCoolTime);
             RemainCoolTime = 0f;
             Owner.CreatureSkill.AddActiveSkill(this);
         }
@@ -198,23 +217,11 @@ namespace STELLAREST_F1
             EnteredTargetDir = Owner.Target.CellPos - Owner.CellPos;
             EnteredSignX = (Owner.LookAtDir == ELookAtDirection.Left) ? 1 : 0;
             Owner.Moving = false;
-
             if (SkillData.EnterStateEffectIDs.Length != 0)
             {
                 List<EffectBase> enterStateEffects = GenerateSkillEffects(effectIDs: SkillData.EnterStateEffectIDs);
-                // --- DO SOMETHING AFTER IF YOU WANT TO
             }
-
-            // --- InitBaseError
-            // if (SkillData.EnterStateEffectIDs.Length != 0)
-            // {
-            //     List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
-            //         effectIDs: SkillData.EnterStateEffectIDs,
-            //         spawnPos: Owner.CenterPosition,
-            //         startCallback: null
-            //     );
-            // }
-
+            
             return true;
         }
 

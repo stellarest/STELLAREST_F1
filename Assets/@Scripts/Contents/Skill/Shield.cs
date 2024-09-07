@@ -7,6 +7,15 @@ namespace STELLAREST_F1
     public class Shield : SkillBase
     {
         #region Events
+        public override bool Init()
+        {
+            if (base.Init() == false)
+                return false;
+
+            LockCoolTimeUntilDisable = true;
+            return true;
+        }
+
         public override bool OnSkillStateEnter()
         {
             if (base.OnSkillStateEnter() == false)

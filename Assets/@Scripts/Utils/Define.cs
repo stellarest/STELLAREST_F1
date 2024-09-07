@@ -290,15 +290,6 @@ namespace STELLAREST_F1
             Max,
         }
 
-        public enum EStatModType
-        {
-            None,
-            Add,
-            PercentAdd,
-            PercentMulti,
-            Max
-        }
-
         public enum EAnimationCurveType
         {
             None = -1,
@@ -423,6 +414,18 @@ namespace STELLAREST_F1
             Pull,
         }
 
+        // public enum EBuffType
+        // {
+        //     None = -1,
+        //     Hp,
+        //     MaxHp,
+        //     Atk,
+        //     CriticalRate,
+        //     DodgeRate,
+        //     MovementSpeed,
+        //     Max = MovementSpeed + 1
+        // }
+
         public enum EEffectSpawnType
         {
             None = -1,
@@ -430,16 +433,27 @@ namespace STELLAREST_F1
             SkillFromTarget = 2
         }
 
-        // public enum EEffectEnterTargetType
-        // {
-        //     None = -1,
-        //     Owner,
-        //     Target,
-        // }
+        public enum EApplyStatType
+        {
+            None = -1,
+            MaxHp = 1,
+            ShieldHp,
+            // --- HpRegen
+            Atk,
+            // --- AtkSpeed
+            CriticalRate,
+            DodgeRate,
+            MovementSpeed
+        }
+
+        public enum EStatModType
+        {
+            AddAmount,
+            AddPercent,
+        }
 
         public enum EEffectClearType
         {
-            VFXTimeOut,
             TimeOut,            // 단순 시간초과로 종료
             ClearSkill,         // 정화 스킬로 인한 종료
             TriggerOutAoE,      // AoE 스킬을 벗어난 종료
@@ -475,19 +489,6 @@ namespace STELLAREST_F1
             // Lower_Idle,
             // Lower_Move,
             //Max = Lower_Move + 1
-        }
-
-        public enum EStatModeType
-        {
-            None = -1,
-            AddAmount = 1,
-            AddPercent = 2
-        }
-
-        public enum EApplyStatType
-        {
-            None = -1,
-            Atk = 1,
         }
 
         // ####################################################

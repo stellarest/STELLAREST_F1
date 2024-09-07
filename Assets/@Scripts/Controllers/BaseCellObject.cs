@@ -16,8 +16,6 @@ namespace STELLAREST_F1
         public BaseAnimation BaseAnim { get; private set; } = null;
         public EffectComponent BaseEffect { get; private set; } = null;
 
-
-
         [SerializeField] private ELookAtDirection _lookAtDir = ELookAtDirection.Right;
         public virtual ELookAtDirection LookAtDir
         {
@@ -49,7 +47,7 @@ namespace STELLAREST_F1
         public virtual Vector3Int ChaseCellPos
             => Target.IsValid() ? Target.CellPos : CellPos;
 
-        [field: SerializeField] public Vector3Int NextCellPos { get; set; } = Vector3Int.one;
+        [field: SerializeField] public Vector3Int NextCellPos { get; protected set; } = Vector3Int.one;
         [field: SerializeField] public bool LerpToCellPosCompleted { get; protected set; } = false;
 
         // --- TEMP
@@ -77,25 +75,27 @@ namespace STELLAREST_F1
         public int MaxLevel => (_maxLevelID % DataTemplateID) + 1;
         protected bool IsMaxLevel => _levelID == _maxLevelID;
 
-        [SerializeField] private float _hp = 0f;
+        [SerializeField] private float _hp = 0.0f;
         public float Hp
         {
             get => _hp;
             protected set => _hp = value;
         }
-        public float MaxHpBase { get; set; } = 0f;
-        public float MinAtkBase { get; set; } = 0f;
-        public float MaxAtkBase { get; set; } = 0f;
-        public float CriticalRateBase { get; set; } = 0f;
-        public float DodgeRateBase { get; set; } = 0f;
-        public float MovementSpeedBase { get; set; } = 0f;
+        [field: SerializeField] public float ShieldHp { get; set; } = 0.0f;
 
-        [field: SerializeField] public float MaxHp { get; set; } = 0f;
-        [field: SerializeField] public float MinAtk { get; set; } = 0f;
-        [field: SerializeField] public float MaxAtk { get; set; } = 0f;
-        [field: SerializeField] public float CriticalRate { get; set; } = 0f;
-        [field: SerializeField] public float DodgeRate { get; set; } = 0f;
-        [field: SerializeField] public float MovementSpeed { get; set; } = 0f;
+        public float MaxHpBase { get; set; } = 0.0f;
+        public float MinAtkBase { get; set; } = 0.0f;
+        public float MaxAtkBase { get; set; } = 0.0f;
+        public float CriticalRateBase { get; set; } = 0.0f;
+        public float DodgeRateBase { get; set; } = 0.0f;
+        public float MovementSpeedBase { get; set; } = 0.0f;
+
+        [field: SerializeField] public float MaxHp { get; set; } = 0.0f;
+        [field: SerializeField] public float MinAtk { get; set; } = 0.0f;
+        [field: SerializeField] public float MaxAtk { get; set; } = 0.0f;
+        [field: SerializeField] public float CriticalRate { get; set; } = 0.0f;
+        [field: SerializeField] public float DodgeRate { get; set; } = 0.0f;
+        [field: SerializeField] public float MovementSpeed { get; set; } = 0.0f;
 
         #region Core
         public override bool Init()
@@ -138,47 +138,257 @@ namespace STELLAREST_F1
         #endregion
 
         #region Background
-        public void LookAtValidTarget()
+        public virtual void ApplyStat()
         {
-            if (Target.IsValid() == false)
-                return;
+            ShieldHp = ApplyFinalStat(baseValue: MaxHpBase, applyStatType: EApplyStatType.ShieldHp);
 
-            Vector3 toTargetDir = Target.transform.position - transform.position;
-            if (toTargetDir.x < 0)
-                LookAtDir = ELookAtDirection.Left;
-            else
-                LookAtDir = ELookAtDirection.Right;
-        }
+            // MaxHpBase
+            // AtkBase
+            // ...
+            // MovementSpeedBase
+            float prevMaxHp = MaxHp;
 
-        protected void SetStat(int levelID)
-        {
-            StatData statData = null;
-            switch (ObjectType)
+            // ... Apply MaxHp = MaxHpBase,,,
+
+            if (prevMaxHp != MaxHpBase)
             {
-                case EObjectType.Hero:
-                    statData = Managers.Data.HeroStatDataDict[levelID];
-                    break;
+                // 현재의 hp를 증가된 MaxHp만큼의 비율로 조정한다.
+                _hp = MaxHp * (_hp / prevMaxHp);
 
-                case EObjectType.Monster:
-                    statData = Managers.Data.MonsterStatDataDict[levelID];
-                    break;
-
-                case EObjectType.Env:
-                    {
-                        EnvData envData = Managers.Data.EnvDataDict[levelID];
-                        Hp = envData.MaxHp;
-                        MaxHp = MaxHpBase = envData.MaxHp;
-                        return;
-                    }
+                // Final Min, Max Check
+                _hp = Mathf.Clamp(value: _hp, min: 0.0f, max: MaxHp);
             }
 
-            Hp = statData.MaxHp;
-            MaxHp = MaxHpBase = statData.MaxHp;
-            MinAtk = MinAtkBase = statData.MinAtk;
-            MaxAtk = MaxAtkBase = statData.MaxAtk;
-            CriticalRate = CriticalRateBase = statData.CriticalRate;
-            DodgeRate = DodgeRateBase = statData.DodgeRate;
-            MovementSpeed = MovementSpeedBase = statData.MovementSpeed;
+            float ratio = _hp / MaxHp;
+            // HpBar.Refresh(ratio); -- LATER TODO
+        }
+
+        protected virtual float ApplyFinalStat(float baseValue, EApplyStatType applyStatType)
+            => baseValue;
+
+        public EFindPathResult FindPathAndMoveToCellPos(Vector3 destPos, int maxDepth, EObjectType ignoreCellObjType = EObjectType.None)
+            => FindPathAndMoveToCellPos(Managers.Map.WorldToCell(destPos), maxDepth, ignoreCellObjType);
+
+        public EFindPathResult FindPathAndMoveToCellPos(Vector3Int destPos, int maxDepth, EObjectType ignoreCellObjType = EObjectType.None)
+        {
+            if (IsForceMovingPingPongObject)
+                return EFindPathResult.Fail_ForceMove;
+
+            // ---A*
+            List<Vector3Int> path = Managers.Map.FindPath(startCellPos: CellPos, destPos, maxDepth, ignoreCellObjType);
+            if (path.Count == 1)
+            {
+                if (IsOnTheCellCenter == false)
+                {
+                    NextCellPos = path[0];
+                    LerpToCellPosCompleted = false;
+                    return EFindPathResult.Success;
+                }
+                else if (LerpToCellPosCompleted) // --- 무조건 가운데까지 간다.
+                {
+                    return EFindPathResult.Fail_LerpCell;
+                }
+            }
+
+            else if (path.Count > 1)
+            {
+                Vector3Int dirCellPos = path[1] - CellPos;
+                Vector3Int nextCellPos = CellPos + dirCellPos;
+
+                if (Managers.Map.TryMove(moveToCellPos: nextCellPos, ignoreCellObjType: ignoreCellObjType) == false)
+                    return EFindPathResult.Fail_MoveTo;
+
+                NextCellPos = nextCellPos;
+                LerpToCellPosCompleted = false;
+            }
+
+            return EFindPathResult.Success;
+        }
+
+        public void MoveToCellCenter()
+        {
+            Vector3 center = Managers.Map.CellToCenteredWorld(CellPos);
+            Vector3 dir = center - transform.position;
+
+            float threshold = 0.1f;
+            if (dir.sqrMagnitude < threshold * threshold)
+            {
+                LerpToCellPosCompleted = true;
+                transform.position = center;
+                // Moving = false; --- 안먹히는듯
+            }
+            else if (Target.IsValid())
+                LookAtValidTarget();
+            else if (dir.x < 0f)
+                LookAtDir = ELookAtDirection.Left;
+            else if (dir.x > 0f)
+                LookAtDir = ELookAtDirection.Right;
+
+            transform.position += dir.normalized * MovementSpeed * Time.deltaTime;
+            LerpToCellPosCompleted = false;
+        }
+
+        // ***** Force Move Ping Pong Object Coroutine *****
+        private Coroutine _coForceMovePingPongObject = null;
+        protected bool IsForceMovingPingPongObject => _coForceMovePingPongObject != null;
+        private IEnumerator CoForceMovePingPongObject(Vector3Int currentCellPos, Vector3Int destCellPos, System.Action endCallback = null)
+        {
+            List<Vector3Int> path = Managers.Map.FindPath(currentCellPos, destCellPos);
+
+            Queue<Vector3Int> pathQueue = new Queue<Vector3Int>();
+            for (int i = 0; i < path.Count; ++i)
+                pathQueue.Enqueue(path[i]);
+            pathQueue.Dequeue();
+
+            Vector3Int nextPos = pathQueue.Dequeue();
+            Vector3 currentWorldPos = Managers.Map.CellToWorld(currentCellPos);
+            while (pathQueue.Count != 0)
+            {
+                Vector3 destPos = Managers.Map.CellToCenteredWorld(nextPos);
+                Vector3 dir = destPos - transform.position; // 왜 이걸로하면 안되지
+                if (dir.x < 0f)
+                    LookAtDir = ELookAtDirection.Left;
+                else if (dir.x > 0f)
+                    LookAtDir = ELookAtDirection.Right;
+
+                if (dir.sqrMagnitude < 0.01f)
+                {
+                    transform.position = destPos;
+                    currentWorldPos = transform.position;
+                    nextPos = pathQueue.Dequeue();
+                }
+                else
+                {
+                    float moveDist = Mathf.Min(dir.magnitude, MovementSpeed * Time.deltaTime);
+                    transform.position += dir.normalized * moveDist; // Movement per frame.
+                }
+
+                yield return null;
+            }
+
+            endCallback?.Invoke();
+            // UpdateCellPos();
+        }
+
+        protected void CoStartForceMovePingPongObject(Vector3Int currentCellPos, Vector3Int destCellPos, System.Action endCallback = null)
+        {
+            if (_coForceMovePingPongObject != null)
+                return;
+
+            _coForceMovePingPongObject = StartCoroutine(CoForceMovePingPongObject(currentCellPos, destCellPos, endCallback));
+        }
+
+        protected void CoStopForceMovePingPongObject()
+        {
+            if (_coForceMovePingPongObject != null)
+            {
+                StopCoroutine(_coForceMovePingPongObject);
+                _coForceMovePingPongObject = null;
+            }
+        }
+
+        protected Coroutine _coLerpToCellPos = null;
+        protected IEnumerator CoLerpToCellPos()
+        {
+            while (true)
+            {
+                if (IsForceMovingPingPongObject /* || CreatureAIState == ECreatureAIState.Idle */ )
+                {
+                    //LerpToCellPosCompleted = true;
+                    yield return null;
+                    continue;
+                }
+
+                Hero hero = this as Hero;
+                if (hero.IsValid())
+                {
+                    // 1. 리더의 MovementSpeed가 느리면 멤버들의 Movement Speed도 Leader에게 맞춰진다.
+                    // --> 리더 주변으로 Chase해야하기 때문
+                    // 2. 1번이 어색하게 느껴지면 MovementSpeed는 통합 Stat으로 관리
+                    float movementSpeed = Util.CalculateValueFromDistance(
+                        value: Managers.Object.HeroLeaderController.Leader.MovementSpeed,
+                        maxValue: Managers.Object.HeroLeaderController.Leader.MovementSpeed * 2f,
+                        distanceToTargetSQR: (CellPos - Managers.Object.HeroLeaderController.Leader.CellPos).sqrMagnitude,
+                        maxDistanceSQR: ReadOnly.Util.HeroDefaultScanRange * ReadOnly.Util.HeroDefaultScanRange
+                    );
+
+                    LerpToCellPos(movementSpeed);
+                }
+                else //--- Monster
+                {
+                    LerpToCellPos(MovementSpeed);
+                }
+
+                yield return null;
+            }
+        }
+
+        public void StartCoLerpToCellPos()
+        {
+            StopCoLerpToCellPos();
+            _coLerpToCellPos = StartCoroutine(CoLerpToCellPos());
+        }
+
+        public void StopCoLerpToCellPos()
+        {
+            if (_coLerpToCellPos != null)
+                StopCoroutine(_coLerpToCellPos);
+            _coLerpToCellPos = null;
+        }
+
+        /*
+            1 - 큐에 A 추가: [A]
+            2 - 큐에 B 추가: [A, B]
+            3 - 큐에 A 추가: [A, B, A]
+            4 - 큐에 B 추가: [A, B, A, B]
+            5 - 1 (검사)
+            5 - 2 Dequeue: [B, A, B]
+            5 - 3 큐에 A 추가: [B, A, B, A]
+            6 - 1 (검사)
+            6 - 2 Dequeue: [A, B, A]
+            6 - 3 큐에 B 추가: [A, B, A, B]
+            7 - 1 (검사)
+            ...
+
+            이게 정상이긴한데 위치가 정확하게 입력되지 않음.
+            그래서 큐의 4개의 요소 안에 A가 2개, B가 2개가 있는지만 확인.
+            나중에 몬스터에서도 필요하면 Creature로 옮겨주면 됨
+        */
+        private Queue<Vector3Int> _cantMoveCheckQueue = new Queue<Vector3Int>();
+        [SerializeField] protected int _currentPingPongCantMoveCount = 0;
+        private int maxCantMoveCheckCount = 4; // 2칸에 대해 왔다 갔다만 조사하는 것이라 4로 설정
+        protected bool IsPingPongAndCantMoveToDest(Vector3Int cellPos)
+        {
+            if (_cantMoveCheckQueue.Count >= maxCantMoveCheckCount)
+                _cantMoveCheckQueue.Dequeue();
+
+            _cantMoveCheckQueue.Enqueue(cellPos);
+            if (_cantMoveCheckQueue.Count == maxCantMoveCheckCount)
+            {
+                Vector3Int[] cellArr = _cantMoveCheckQueue.ToArray();
+                HashSet<Vector3Int> uniqueCellPos = new HashSet<Vector3Int>(cellArr);
+                if (uniqueCellPos.Count == 2)
+                {
+                    Dictionary<Vector3Int, int> checkCellPosCountDict = new Dictionary<Vector3Int, int>();
+                    foreach (var pos in _cantMoveCheckQueue)
+                    {
+                        if (checkCellPosCountDict.ContainsKey(pos))
+                            checkCellPosCountDict[pos]++;
+                        else
+                            checkCellPosCountDict[pos] = 1;
+                    }
+
+                    foreach (var count in checkCellPosCountDict.Values)
+                    {
+                        if (count != 2)
+                            return false;
+                    }
+
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public void SetCellPos(Vector3 worldPos) 
@@ -222,6 +432,49 @@ namespace STELLAREST_F1
 
             float moveDist = Mathf.Min(dir.magnitude, movementSpeed * Time.deltaTime);
             transform.position += dir.normalized * moveDist;
+        }
+
+        public void LookAtValidTarget()
+        {
+            if (Target.IsValid() == false)
+                return;
+
+            Vector3 toTargetDir = Target.transform.position - transform.position;
+            if (toTargetDir.x < 0)
+                LookAtDir = ELookAtDirection.Left;
+            else
+                LookAtDir = ELookAtDirection.Right;
+        }
+
+        protected void SetStat(int levelID)
+        {
+            StatData statData = null;
+            switch (ObjectType)
+            {
+                case EObjectType.Hero:
+                    statData = Managers.Data.HeroStatDataDict[levelID];
+                    break;
+
+                case EObjectType.Monster:
+                    statData = Managers.Data.MonsterStatDataDict[levelID];
+                    break;
+
+                case EObjectType.Env:
+                    {
+                        EnvData envData = Managers.Data.EnvDataDict[levelID];
+                        Hp = envData.MaxHp;
+                        MaxHp = MaxHpBase = envData.MaxHp;
+                        return;
+                    }
+            }
+
+            Hp = statData.MaxHp;
+            MaxHp = MaxHpBase = statData.MaxHp;
+            MinAtk = MinAtkBase = statData.MinAtk;
+            MaxAtk = MaxAtkBase = statData.MaxAtk;
+            CriticalRate = CriticalRateBase = statData.CriticalRate;
+            DodgeRate = DodgeRateBase = statData.DodgeRate;
+            MovementSpeed = MovementSpeedBase = statData.MovementSpeed;
         }
     }
     #endregion
