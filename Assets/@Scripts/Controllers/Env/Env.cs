@@ -59,7 +59,9 @@ namespace STELLAREST_F1
             EnvBody.StartCoFadeInEffect(startCallback: () =>
                         {
                             BaseEffect.GenerateEffect(
-                                    effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_TeleportGreen,
+                                    effectID: EnvType == EEnvType.Tree ? 
+                                            ReadOnly.DataAndPoolingID.DNPID_Effect_TeleportGreen :
+                                            ReadOnly.DataAndPoolingID.DNPID_Effect_TeleportRed,
                                     spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos)
                                     );
                         });

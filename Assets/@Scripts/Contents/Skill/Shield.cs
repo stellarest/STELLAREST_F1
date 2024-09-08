@@ -12,7 +12,7 @@ namespace STELLAREST_F1
             if (base.Init() == false)
                 return false;
 
-            LockCoolTimeUntilDisable = true;
+            LockCoolTimeSkill = true;
             return true;
         }
 

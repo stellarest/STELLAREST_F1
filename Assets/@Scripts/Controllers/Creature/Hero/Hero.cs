@@ -13,13 +13,13 @@ namespace STELLAREST_F1
     public class Hero : Creature
     {
         #if UNITY_EDITOR
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.T))
-            {
-                LevelUp();
-            }
-        }
+        // private void Update()
+        // {
+        //     if (Input.GetKeyDown(KeyCode.T))
+        //     {
+        //         LevelUp();
+        //     }
+        // }
         #endif
 
         public HeroData HeroData { get; private set; } = null;
@@ -193,6 +193,7 @@ namespace STELLAREST_F1
         #endregion Core
 
         #region Background
+        // --- Comment
         protected override float ApplyFinalStat(float baseValue, EApplyStatType applyStatType)
         {
             float value = baseValue;

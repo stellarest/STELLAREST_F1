@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,10 +14,10 @@ namespace STELLAREST_F1
     // Ex. TickTime: 1, TickCount: 5 -> 1초 마다 5번 실행하겠다. 근데 난 그냥 Duration, Period로
     // Monster와 다르게 Effect 여러가지 상속 구조로 가기 위해 베이스 클래스가 이렇게 구성되어 있음. Effect의 핵심은 "상속"
     // --- 단순 VFX, Buff/DeBuff, Dot, CC
-    public class EffectBase : BaseObject
+    public abstract class EffectBase : BaseObject
     {
         private BaseCellObject _owner = null;
-        public BaseCellObject Owner 
+        public BaseCellObject Owner
         {
             get => _owner;
             set
@@ -25,17 +26,8 @@ namespace STELLAREST_F1
                     _owner = value;
             }
         }
-
-        private SkillBase _skill = null;
-        public SkillBase Skill
-        {
-            get => _skill;
-            private set
-            {
-                if (_skill == null || _skill != value)
-                    _skill = value;
-            }
-        }
+        protected SkillBase _skill = null;
+        public void SetSkill(SkillBase skill) => _skill = skill;
 
         public EffectData EffectData { get; private set; } = null;
         public bool IsLoop { get; private set; } = false;
@@ -68,13 +60,18 @@ namespace STELLAREST_F1
         protected override void EnterInGame(Vector3 spawnPos)
         {
             base.EnterInGame(spawnPos);
+            Remains = EffectData.Duration < 0.0f ? 
+                      float.MaxValue : EffectData.Duration * EffectData.Period;
+
             if (EffectData.Duration < 0.0f)
                 Remains = float.MaxValue;
             else
                 Remains = EffectData.Duration * EffectData.Period;
 
             transform.position = EffectSpawnInfo(EffectData.EffectSpawnType);
-            // ApplyEffect(); ---> EffectComponent에서 Effects 추가 후, 적용
+
+            // --- *** From EffectComponent ***
+            // ApplyEffect();
         }
 
         private void InitialSetSize(EObjectSize objSize)
@@ -107,32 +104,57 @@ namespace STELLAREST_F1
             if (effectSpawnType == EEffectSpawnType.None)
                 return SpawnedPos;
 
-            Skill = Owner.GetComponent<Creature>().CreatureSkill.CurrentSkill;
-            _enteredDir = Skill.EnteredTargetDir;
-            _enteredSignX = Skill.EnteredSignX;
-            
+            SkillBase currentSkill = Owner.GetComponent<Creature>().CreatureSkill.CurrentSkill;
+            //_skill = Owner.GetComponent<Creature>().CreatureSkill.CurrentSkill;
+            _enteredDir = currentSkill.EnteredTargetDir;
+            _enteredSignX = currentSkill.EnteredSignX;
+
             if (effectSpawnType == EEffectSpawnType.SkillFromOwner)
             {
-                SpawnedPos = Skill.EnteredOwnerPos;
-                return Skill.EnteredOwnerPos;
+                SpawnedPos = currentSkill.EnteredOwnerPos;
+                return currentSkill.EnteredOwnerPos;
             }
             else if (effectSpawnType == EEffectSpawnType.SkillFromTarget)
             {
-                SpawnedPos = Skill.EnteredTargetPos;
-                return  Skill.EnteredTargetPos;
+                SpawnedPos = currentSkill.EnteredTargetPos;
+                return currentSkill.EnteredTargetPos;
             }
 
             return SpawnedPos;
         }
         #endregion
 
+        public virtual bool TestCondition() => false;
 
-        // --- ApplyEffect: Show VFX, Apply Stat, Etc...
         public virtual void ApplyEffect()
         {
-            StartCoroutine(CoStartTimer());
+            /*
+                Effect_HitNormal
+                Effect_TeleportRed
+                Effect_TeleportGreen
+                Effect_TeleportBlue
+                Effect_TeleportPurple
+                Effect_Dust
+                Effect_OnDeadSkull
+                Effect_ImpactFire
+                Effect_ImpactShockwave
+                Effect_Swing
+                Effect_Shield
+            */
+
+            // --- Timer를 돌리는 것은 직관적이고 좋음.
+            // StartCoroutine(CoStartTimer());
+
+            // EnterApplyEffect
+            // EnterShowEffect
+            // OnShowEffect
+            // EndShowEffect
+            EnterShowEffect();
         }
 
+        public abstract void EnterShowEffect();
+        public abstract void OnShowEffect();
+        public abstract void ExitShowEffect();
         protected virtual void ProcessDot() { }
 
         protected IEnumerator CoStartTimer()
@@ -140,27 +162,20 @@ namespace STELLAREST_F1
             if (EffectType == EEffectType.Airborne || EffectType == EEffectType.Knockback)
                 yield break;
 
-            float tickTimer = 0f;
             ProcessDot();
-            if (EffectType == EEffectType.Instant) // -- ???
+            float tickTimer = 0f;
+            while (Remains > 0f)
             {
-                yield return new WaitForSeconds(1f);
-            }
-            else
-            {
-                while (Remains > 0f)
+                Remains -= Time.deltaTime;
+                tickTimer += Time.deltaTime;
+
+                if (tickTimer >= EffectData.Period)
                 {
-                    Remains -= Time.deltaTime;
-                    tickTimer += Time.deltaTime;
-
-                    if (tickTimer >= EffectData.Period)
-                    {
-                        ProcessDot();
-                        tickTimer -= EffectData.Period;
-                    }
-
-                    yield return null;
+                    ProcessDot();
+                    tickTimer -= EffectData.Period;
                 }
+
+                yield return null;
             }
 
             Remains = 0f;
@@ -169,37 +184,35 @@ namespace STELLAREST_F1
 
         public virtual bool ClearEffect(EEffectClearType clearType)
         {
-            // --- TEMP
             if (Owner.IsValid() == false)
             {
-                Managers.Object.Despawn(this, DataTemplateID);
+                Owner.BaseEffect.RemoveEffect(this);
+                // Managers.Object.Despawn(this, DataTemplateID);
                 return false;
             }
 
             switch (clearType)
             {
                 case EEffectClearType.TimeOut:
-                case EEffectClearType.TriggerOutAoE:
+                    {
+                        Owner.BaseEffect.RemoveEffect(this);
+                        break;
+                    }
+
                 case EEffectClearType.EndOfCC:
                     {
                         Owner.BaseEffect.RemoveEffect(this);
                         //Owner.CreatureEffect.RemoveEffect(this);
-                        return true;
+                        break;
                     }
 
-                case EEffectClearType.ClearSkill:
-                {
-                    // Aoe 범위 안에 있는 경우 해제x
-                    // if (EffectSpawnType != EEffectSpawnType.External)
-                    // {
-                    //     Managers.Object.Despawn(this, DataTemplateID);
-                    //     return true;
-                    // }
-                    break;
-                }
+                case EEffectClearType.ByCondition:
+                    {
+                        break;
+                    }
             }
 
-            return false;
+            return true;
         }
 
         public bool IsCroudControl()
@@ -219,7 +232,7 @@ namespace STELLAREST_F1
 }
 
 /*
-// protected void ApplyParticleInfo()
+        // protected void ApplyParticleInfo()
         // {
         //     if (EffectData.DataID != 1008)
         //         return;
@@ -310,4 +323,36 @@ namespace STELLAREST_F1
 
         //     return quadCenters[randIdx];
         // }
+
+        protected IEnumerator CoStartTimer()
+        {
+            if (EffectType == EEffectType.Airborne || EffectType == EEffectType.Knockback)
+                yield break;
+
+            float tickTimer = 0f;
+            ProcessDot();
+            if (EffectType == EEffectType.Instant) // -- ???
+            {
+                yield return new WaitForSeconds(1f);
+            }
+            else
+            {
+                while (Remains > 0f)
+                {
+                    Remains -= Time.deltaTime;
+                    tickTimer += Time.deltaTime;
+
+                    if (tickTimer >= EffectData.Period)
+                    {
+                        ProcessDot();
+                        tickTimer -= EffectData.Period;
+                    }
+
+                    yield return null;
+                }
+            }
+
+            Remains = 0f;
+            ClearEffect(EEffectClearType.TimeOut);
+        }
 */

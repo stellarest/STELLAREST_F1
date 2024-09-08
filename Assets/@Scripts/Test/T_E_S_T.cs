@@ -10,13 +10,17 @@ using UnityEditor;
 /*
 ********************************************************************
 // --- DID & TODO LIST
-- Shield Skill Flag: SkillBase::LockCoolTimeUntilDisable
+- _offShields Enable할 때, 이것만 사이즈를 크게 잡을지? 아니면 이녀석은 애초에 로컬 사이즈를 조금 크게 잡아 놓을지.
+아니면 점점 크기를 코루틴 보간으로 확장시켜나갈지.
+- Spawn Damage Font for Shield
+
+- Shield Skill Flag: SkillBase::LockCoolTimeUntilDisable (EndEffectCondition)
 - Related FindPathMethods in Creature.cs -> in BaseCellObject (아직 미완인 것 같긴 함)
 - ApplyEffect는 EffectComp의 ActivateEffects에 추가가 되었을 때, Apply할 수 있도록.
 - BaseCellObj의 ApplyStat을 호출하면, 재정의된 ApplyFinalStat 메서드를 통해서 값을 설정할 수 있게 된다.
 - Hit Burst 어떻게 할래? 그리고 _onShield 꺼주고 _offShield켜줬을 때, _offShield가 전부 끝나고 나서
 - Shield Skill의 LockCoolTimeUntilDisable을 제어할 것인지?(이때부터 RemainCoolTime 코루틴을 돌릴 것인지)등등
-- 아무튼 Hit Burst 부분 내일 해결해보도록.
+- 아무튼 Hit Burst 부분 내일 해결해보도록. 또한, --- Comment 부분 검색해서 참고해볼것. (지금은 예시로 ApplyFinalStat에 Shield와 관련하여 작성해놓음)
 
 // --- TODO LIST
 - InitBaseError 이 부분 고치기 (진행중, 결정적으로, 쉴드해야함)

@@ -226,11 +226,17 @@ namespace STELLAREST_F1
             float finalDamage = Mathf.FloorToInt(damage);
             if (ShieldHp > 0.0f)
             {
-                ShieldHp = Mathf.Clamp(ShieldHp - finalDamage, 0f, ShieldHp);
-                return;
-                // Apply Shield Hit Effect ,,,
-            }
+                ShieldHp = Mathf.Clamp(ShieldHp - finalDamage, 0.0f, ShieldHp);
+                BaseEffect.OnShowBuffEffects(EEffectBuffType.ShieldHp);
 
+                // + Spawn Damage Font for Shield
+                if (ShieldHp == 0.0f)
+                    BaseEffect.ExitShowBuffEffects(EEffectBuffType.ShieldHp);
+                // else
+                //     BaseEffect.OnShowBuffEffects(EEffectBuffType.ShieldHp);
+
+                return;
+            }
 
             Hp = Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
             bool isCritical = false;

@@ -83,6 +83,8 @@ namespace STELLAREST_F1
         }
         [field: SerializeField] public float ShieldHp { get; set; } = 0.0f;
 
+        // + ShieldCount // --- 피격 횟수 무효 가능한 갯수
+
         public float MaxHpBase { get; set; } = 0.0f;
         public float MinAtkBase { get; set; } = 0.0f;
         public float MaxAtkBase { get; set; } = 0.0f;
@@ -146,10 +148,10 @@ namespace STELLAREST_F1
             // AtkBase
             // ...
             // MovementSpeedBase
+
             float prevMaxHp = MaxHp;
 
             // ... Apply MaxHp = MaxHpBase,,,
-
             if (prevMaxHp != MaxHpBase)
             {
                 // 현재의 hp를 증가된 MaxHp만큼의 비율로 조정한다.

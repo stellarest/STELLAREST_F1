@@ -25,7 +25,7 @@ namespace STELLAREST_F1
             _owner = owner.GetComponent<BaseCellObject>();
         }
 
-        public EffectBase GenerateEffect(int effectID)
+        public EffectBase GenerateEffect(int effectID, SkillBase skill = null)
         {
             EffectBase effect = Managers.Object.SpawnBaseObject<EffectBase>(
                     objectType: EObjectType.Effect,
@@ -35,12 +35,14 @@ namespace STELLAREST_F1
                     );
 
             ActiveEffects.Add(effect);
+            if (skill != null)
+                effect.SetSkill(skill);
             effect.ApplyEffect();
 
             return effect;
         }
 
-        public EffectBase GenerateEffect(int effectID, Vector3 spawnPos)
+        public EffectBase GenerateEffect(int effectID, Vector3 spawnPos, SkillBase skill = null)
         {
             EffectBase effect = Managers.Object.SpawnBaseObject<EffectBase>(
                                 objectType: EObjectType.Effect,
@@ -50,12 +52,14 @@ namespace STELLAREST_F1
                                 );
 
             ActiveEffects.Add(effect);
+            if (skill != null)
+                effect.SetSkill(skill);
             effect.ApplyEffect();
 
             return effect;
         }
 
-        public List<EffectBase> GenerateEffects(IEnumerable<int> effectIDs)
+        public List<EffectBase> GenerateEffects(IEnumerable<int> effectIDs, SkillBase skill = null)
         {
             List<EffectBase> generatedEffects = new List<EffectBase>();
             foreach (var id in effectIDs)
@@ -69,13 +73,15 @@ namespace STELLAREST_F1
 
                 generatedEffects.Add(effect);
                 ActiveEffects.Add(effect);
+                if (skill != null)
+                    effect.SetSkill(skill);
                 effect.ApplyEffect();
             }
 
             return generatedEffects;
         }
 
-        public List<EffectBase> GenerateEffects(IEnumerable<int> effectIDs, Vector3 spawnPos)
+        public List<EffectBase> GenerateEffects(IEnumerable<int> effectIDs, Vector3 spawnPos, SkillBase skill = null)
         {
             List<EffectBase> generatedEffects = new List<EffectBase>();
             foreach (var id in effectIDs)
@@ -89,6 +95,8 @@ namespace STELLAREST_F1
 
                 generatedEffects.Add(effect);
                 ActiveEffects.Add(effect);
+                if (skill != null)
+                    effect.SetSkill(skill);
                 effect.ApplyEffect();
             }
 
@@ -113,6 +121,54 @@ namespace STELLAREST_F1
             return value;
         }
 
+        public void OnShowEffects(EEffectType effectType)
+        {
+            for (int i = 0; i < ActiveEffects.Count; ++i)
+            {
+                if (ActiveEffects[i].EffectType != effectType)
+                    continue;
+
+                ActiveEffects[i].OnShowEffect();
+            }
+        }
+
+        public void OnShowBuffEffects(EEffectBuffType effectBuffType)
+        {
+            for (int i = 0; i < ActiveEffects.Count; ++i)
+            {
+                if (ActiveEffects[i].EffectType == EEffectType.Buff)
+                {
+                    BuffBase buff = ActiveEffects[i].GetComponent<BuffBase>();
+                    if (buff != null && buff.EffectBuffType == effectBuffType)
+                        buff.OnShowEffect();
+                }
+            }
+        }
+
+        public void ExitShowEffects(EEffectType effectType)
+        {
+            for (int i = 0; i < ActiveEffects.Count; ++i)
+            {
+                if (ActiveEffects[i].EffectType != effectType)
+                    continue;
+
+                ActiveEffects[i].ExitShowEffect();
+            }
+        }
+
+        public void ExitShowBuffEffects(EEffectBuffType effectBuffType)
+        {
+            for (int i = 0; i < ActiveEffects.Count; ++i)
+            {
+                if (ActiveEffects[i].EffectType == EEffectType.Buff)
+                {
+                    BuffBase buff = ActiveEffects[i].GetComponent<BuffBase>();
+                    if (buff != null && buff.EffectBuffType == effectBuffType)
+                        buff.ExitShowEffect();
+                }
+            }
+        }
+
         private bool CanApplyStatEffectType(EEffectType type)
             => type == EEffectType.Buff || type == EEffectType.DeBuff;
 
@@ -122,16 +178,16 @@ namespace STELLAREST_F1
             Managers.Object.Despawn(effect, effect.DataTemplateID);
         }
 
-        public void ClearDebuffsBySkill()
-        {
-            // .ToArray()로 해야할 이유 있음??
-            foreach (var buff in ActiveEffects.ToArray())
-            {
-                if (buff.EffectType != EEffectType.Buff)
-                {
-                    buff.ClearEffect(EEffectClearType.ClearSkill);
-                }
-            }
-        }
+        // public void ClearDebuffsBySkill()
+        // {
+        //     // .ToArray()로 해야할 이유 있음??
+        //     foreach (var buff in ActiveEffects.ToArray())
+        //     {
+        //         if (buff.EffectType != EEffectType.Buff)
+        //         {
+        //             buff.ClearEffect(EEffectClearType.ClearSkill);
+        //         }
+        //     }
+        // }
     }
 }

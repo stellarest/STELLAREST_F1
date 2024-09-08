@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
@@ -24,6 +26,7 @@ namespace STELLAREST_F1
         protected override void InitialSetInfo(int dataID)
         {
             base.InitialSetInfo(dataID);
+            EffectBuffType = EEffectBuffType.ShieldHp;
             _onShields = transform.GetChild(0).gameObject.GetComponentsInChildren<ParticleSystem>(includeInactive: true);
             for (int i = 0; i < _onShields.Length; ++i)
             {
@@ -37,13 +40,54 @@ namespace STELLAREST_F1
             _localScale = new Vector3(0.8f, 1f, 0.8f);
         }
 
+        protected override void EnterInGame(Vector3 spawnPos)
+        {
+            EnableShield(_onShields, false);
+            EnableShield(_offShields, false);
+            base.EnterInGame(spawnPos);
+        }
+
         public override void ApplyEffect()
         {
             // --- 쉴드 에너지부터 채워주고
             base.ApplyEffect();
 
             // --- Show Effect
-            EnableShield(_onShields, true);
+            // EnableShield(_onShields, true);
+        }
+
+        public override void EnterShowEffect()
+            => EnableShield(_onShields, true);
+
+        public override void OnShowEffect()
+            => _hitBurst?.Play();
+
+        public override void ExitShowEffect()
+        {
+            EnableShield(_onShields, false);
+            EnableShield(_offShields, true);
+            StartCoroutine(CoRemoveShield());
+        }
+
+        private IEnumerator CoRemoveShield()
+        {
+            yield return new WaitForSeconds(1f);
+            ClearEffect(EEffectClearType.TimeOut);
+            
+            Debug.Log($"<color=white>ESType: {_skill.SkillType}</color>");
+            _skill.LockCoolTimeSkill = false;
+            // _skill 한테도 끝났다는 것을 알려준다. (다음 쿨타임을 위해)
+        }
+
+        public override bool TestCondition()
+        {
+            if (Owner.IsValid() == false)
+                return true;
+
+            if (Owner.ShieldHp < 0.0f)
+                return true;
+
+            return false;
         }
 
         private void EnableShield(ParticleSystem[] shields, bool isOn)

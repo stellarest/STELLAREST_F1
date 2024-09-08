@@ -108,7 +108,7 @@ namespace STELLAREST_F1
             MonsterBody.StartCoFadeInEffect(startCallback: () =>
             {
                 BaseEffect.GenerateEffect(
-                            effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_TeleportRed,
+                            effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_TeleportPurple,
                             spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos)
                             );
             });

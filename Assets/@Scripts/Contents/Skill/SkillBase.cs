@@ -44,17 +44,22 @@ namespace STELLAREST_F1
 
         // --- Data를 통해서, Skill이 Activate되어 있는 동안 다시 발동하지 않도록,,, 제어해야할듯. (ex) shield
 
-        private bool _lockSkillUntilDisable = false;
-        public bool LockCoolTimeUntilDisable
+        private bool _lockCoolTimeSkill = false;
+        public bool LockCoolTimeSkill
         {
-            get => _lockSkillUntilDisable;
-            protected set
+            get => _lockCoolTimeSkill;
+            set
             {
-                _lockSkillUntilDisable = value;
+                _lockCoolTimeSkill = value;
                 if (value == false)
                 {
                     if (Owner.IsValid() == false)
+                    {
+                        RemainCoolTime = 0.0f;
                         return;
+                    }
+
+                    StartCoroutine(CoActivateCoolTime());
                 }
             }
         }
@@ -114,9 +119,9 @@ namespace STELLAREST_F1
         private IEnumerator CoActivateSkill()
         {
             RemainCoolTime = SkillData.CoolTime;
-            if (LockCoolTimeUntilDisable)
+            if (_lockCoolTimeSkill)
             {
-                Debug.Log($"<color=white>{nameof(LockCoolTimeUntilDisable)}, {SkillData.DevTextID}</color>");
+                Debug.Log($"<color=magenta>{nameof(_lockCoolTimeSkill)}, {SkillData.DevTextID}</color>");
                 yield break;
             }
 
@@ -127,7 +132,9 @@ namespace STELLAREST_F1
 
         private IEnumerator CoActivateCoolTime()
         {
+            Debug.Log($"<color=brown>{this.SkillType} activates CoolTime...</color>");
             yield return new WaitForSeconds(RemainCoolTime);
+            _lockCoolTimeSkill = true;
             RemainCoolTime = 0f;
             Owner.CreatureSkill.AddActiveSkill(this);
         }
@@ -219,7 +226,7 @@ namespace STELLAREST_F1
             Owner.Moving = false;
             if (SkillData.EnterStateEffectIDs.Length != 0)
             {
-                List<EffectBase> enterStateEffects = GenerateSkillEffects(effectIDs: SkillData.EnterStateEffectIDs);
+                List<EffectBase> enterStateEffects = GenerateSkillEffects(effectIDs: SkillData.EnterStateEffectIDs, this);
             }
             
             return true;
@@ -234,7 +241,7 @@ namespace STELLAREST_F1
             {
                 if (SkillData.OnStateEffectIDs.Length != 0)
                 {
-                    List<EffectBase> onStateEffects = GenerateSkillEffects(effectIDs: SkillData.OnStateEffectIDs);
+                    List<EffectBase> onStateEffects = GenerateSkillEffects(effectIDs: SkillData.OnStateEffectIDs, this);
                     // --- DO SOMETHING AFTER IF YOU WANT TO
                 }
 
@@ -258,7 +265,7 @@ namespace STELLAREST_F1
             _skillTargets.Clear();
             if (SkillData.EndStateEffectIDs.Length != 0)
             {
-                List<EffectBase> endStateEffects = GenerateSkillEffects(effectIDs: SkillData.EndStateEffectIDs);
+                List<EffectBase> endStateEffects = GenerateSkillEffects(effectIDs: SkillData.EndStateEffectIDs, this);
                 // --- DO SOMETHING AFTER IF YOU WANT TO
             }
 
@@ -274,20 +281,20 @@ namespace STELLAREST_F1
         }
         #endregion Events
 
-        public List<EffectBase> GenerateSkillEffects(IEnumerable<int> effectIDs)
+        public List<EffectBase> GenerateSkillEffects(IEnumerable<int> effectIDs, SkillBase skill = null)
         {
             if (Owner.IsValid() == false)
                 return null;
 
-            return Owner.BaseEffect.GenerateEffects(effectIDs);
+            return Owner.BaseEffect.GenerateEffects(effectIDs, skill);
         }
 
-        public List<EffectBase> GenerateSkillEffects(IEnumerable<int> effectIDs, Vector3 spawnPos)
+        public List<EffectBase> GenerateSkillEffects(IEnumerable<int> effectIDs, Vector3 spawnPos, SkillBase skill = null)
         {
             if (Owner.IsValid() == false)
                 return null;
 
-            return Owner.BaseEffect.GenerateEffects(effectIDs, spawnPos);
+            return Owner.BaseEffect.GenerateEffects(effectIDs, spawnPos, skill);
         }
 
         protected void GatherMeleeTargets()

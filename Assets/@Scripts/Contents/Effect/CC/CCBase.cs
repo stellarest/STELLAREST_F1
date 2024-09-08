@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using STELLAREST_F1;
@@ -26,6 +27,10 @@ namespace STELLAREST_F1
                     break;
             }
         }
+
+        public override void EnterShowEffect() { }
+        public override void OnShowEffect() { }
+        public override void ExitShowEffect() { }
     }
 }
 

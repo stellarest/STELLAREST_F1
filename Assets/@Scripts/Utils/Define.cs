@@ -402,7 +402,7 @@ namespace STELLAREST_F1
         {
             None = -1,
             SimpleVFX = 1,
-            Instant,
+            //Instant,
             Infinite,
             Buff,
             DeBuff,
@@ -414,17 +414,11 @@ namespace STELLAREST_F1
             Pull,
         }
 
-        // public enum EBuffType
-        // {
-        //     None = -1,
-        //     Hp,
-        //     MaxHp,
-        //     Atk,
-        //     CriticalRate,
-        //     DodgeRate,
-        //     MovementSpeed,
-        //     Max = MovementSpeed + 1
-        // }
+        public enum EEffectBuffType
+        {
+            None = -1,
+            ShieldHp
+        }
 
         public enum EEffectSpawnType
         {
@@ -454,11 +448,9 @@ namespace STELLAREST_F1
 
         public enum EEffectClearType
         {
-            TimeOut,            // 단순 시간초과로 종료
-            ClearSkill,         // 정화 스킬로 인한 종료
-            TriggerOutAoE,      // AoE 스킬을 벗어난 종료
-            EndOfCC,            // CC가 끝났을 때 종료
-            Disable,
+            TimeOut,
+            EndOfCC,
+            ByCondition            
         }
 
         public enum EHeroWeaponType
@@ -616,10 +608,10 @@ namespace STELLAREST_F1
                 public static readonly int DNPID_Env_ZincRock = 101019;
 
                 // --- Effects(VFX)
-                public static readonly int DNPID_Effect_TeleportRed = 1001;     // --- MONSTER
-                public static readonly int DNPID_Effect_TeleportGreen = 1002;   // --- ENV
-                public static readonly int DNPID_Effect_TeleportBlue = 1003;    // --- HERO + PET(Allies)
-                public static readonly int DNPID_Effect_TeleportPurple = 1004;  // --- BOSS
+                public static readonly int DNPID_Effect_TeleportRed = 1001;     // --- ENV ROCK
+                public static readonly int DNPID_Effect_TeleportGreen = 1002;   // --- ENV TREE
+                public static readonly int DNPID_Effect_TeleportBlue = 1003;    // --- HERO + PET(Allies, Etc)
+                public static readonly int DNPID_Effect_TeleportPurple = 1004;  // --- MONSTER
                 public static readonly int DNPID_Effect_Dust = 1005;
                 public static readonly int DNPID_Effect_OnDeadSkull = 1006;
             }

@@ -18,9 +18,8 @@ namespace STELLAREST_F1
             _particleRenderers = GetComponentsInChildren<ParticleSystemRenderer>();
         }
 
-        public override void ApplyEffect()
+        public override void EnterShowEffect()
         {
-            base.ApplyEffect();
             if (_particles == null || _particleRenderers == null)
                 return;
 

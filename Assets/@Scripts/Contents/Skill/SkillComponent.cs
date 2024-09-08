@@ -128,6 +128,11 @@ namespace STELLAREST_F1
             if (skill.SkillType == ESkillType.Skill_A)
                 return;
 
+            if (skill.SkillType == ESkillType.Skill_C)
+            {
+                Debug.Log("ddd");
+            }
+
             Debug.Log($"<color=cyan>Ready(Add): {skill.Dev_TextID}</color>");
             ActiveSkills.Add(skill);
         }
