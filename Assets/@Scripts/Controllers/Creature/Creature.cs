@@ -225,6 +225,7 @@ namespace STELLAREST_F1
             return true;
         }
 
+        public virtual void OnDamagedShieldHp(float finalDamage) { }
 
         // --- OnDamaged 리턴 타입을 bool로 바꾸기
         // --- Hero가 데미지를 받을 때는 빨간색

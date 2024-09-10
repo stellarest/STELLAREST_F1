@@ -9,9 +9,9 @@ namespace STELLAREST_F1
 {
     public class Monster : Creature
     {
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         private static int SpawnNumber = 0;
-        #endif
+#endif
 
         public MonsterData MonsterData { get; private set; } = null;
         [SerializeField] private MonsterBody _monsterBody = null;
@@ -103,7 +103,7 @@ namespace STELLAREST_F1
             MonsterBody.MonsterEmoji = EMonsterEmoji.Normal;
             LookAtDir = ELookAtDirection.Left; // --- Default Monsters Dir: Left
             CreatureAIState = ECreatureAIState.Idle;
-            
+
             base.EnterInGame(spawnPos);
             MonsterBody.StartCoFadeInEffect(startCallback: () =>
             {
@@ -121,49 +121,58 @@ namespace STELLAREST_F1
 
             float damage = UnityEngine.Random.Range(attacker.MinAtk, attacker.MaxAtk);
             float finalDamage = Mathf.FloorToInt(damage);
-            // --- 몬스터도 쉴드 가능
+            //  --- TEMP CRITICAL ---
+            bool isCritical = UnityEngine.Random.Range(0, 2) == 0 ? true : false;
+            if (isCritical)
+            {
+                finalDamage *= 1 + 0.5f;
+                Managers.Object.ShowTextFont(
+                   position: CenterPosition + (Vector3.up * 0.5f),
+                   text: "CRITICAL !!",
+                   textSize: 8.0f,
+                   textColor: Color.red,
+                   fontAssetType: EFontAssetType.Comic,
+                   fontAnimType: EFontAnimationType.GoingUp
+               );
+            }
+
             if (ShieldHp > 0.0f)
             {
-                ShieldHp = Mathf.Clamp(ShieldHp - finalDamage, 0.0f, ShieldHp);
-                if (ShieldHp == 0.0f)
-                    BaseEffect.ExitShowBuffEffects(EEffectBuffType.ShieldHp);
-                else
-                {
-                    BaseEffect.OnShowBuffEffects(EEffectBuffType.ShieldHp);
-                    // --- Shield는 치명타 먼역으로
-                    Managers.Object.ShowDamageFont(
-                                    position: CenterPosition,
-                                    damage: finalDamage,
-                                    textColor: Color.blue,
-                                    isCritical: false,
-                                    fontSignType: EFontSignType.Minus,
-                                    fontOutAnimFunc: () =>
-                                    {
-                                        return UnityEngine.Random.Range(0, 2) == 0 ?
-                                                    EFontOutAnimationType.OutBouncingLeftUp :
-                                                    EFontOutAnimationType.OutBouncingRightUp;
-                                    });
-                }
-
+                OnDamagedShieldHp(finalDamage);
                 return true;
             }
 
             Hp = Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
-            bool isCritical = false;
             List<EffectBase> hitEffects = skillByAttacker.GenerateSkillEffects(
                                                     effectIDs: skillByAttacker.SkillData.HitEffectIDs,
                                                     spawnPos: Util.GetRandomQuadPosition(this.CenterPosition)
                                                     );
 
-            isCritical = UnityEngine.Random.Range(0, 2) == 0 ? true : false;
             Managers.Object.ShowDamageFont(
-                                            position: CenterPosition,
-                                            damage: finalDamage,
-                                            Color.white,
-                                            isCritical: isCritical,
-                                            fontSignType: EFontSignType.None,
-                                            EFontOutAnimationType.OutFalling
-                                        );
+                                                position: CenterPosition,
+                                                damage: finalDamage,
+                                                Color.white,
+                                                isCritical: isCritical,
+                                                fontSignType: EFontSignType.None,
+                                                EFontAnimationType.Falling
+                                          );
+
+            // if (isCritical)
+            // {
+            // }
+
+
+            // Managers.Object.ShowDamageFont(
+            //                     position: CenterPosition,
+            //                     damage: finalDamage,
+            //                     Color.white,
+            //                     isCritical: isCritical,
+            //                     fontSignType: EFontSignType.None,
+            //                     EFontOutAnimationType.OutFalling
+            //                 );
+
+            if (isCritical)
+                Managers.Object.ShowImpactCriticalHit(CenterPosition, this);
 
             if (Hp <= 0f)
             {
@@ -173,9 +182,32 @@ namespace STELLAREST_F1
             else
                 BaseBody.StartCoHurtFlashEffect(isCritical: isCritical);
 
-            HitShakeMovement(duration: 0.05f, power: 0.5f, vibrato: 10);
+            HitShakeMovement(duration: 0.05f, power: 0.5f, vibrato: 10); // --- TEMP
             return true;
+        }
 
+        public override void OnDamagedShieldHp(float finalDamage)
+        {
+            ShieldHp = Mathf.Clamp(ShieldHp - finalDamage, 0.0f, ShieldHp);
+            if (ShieldHp == 0.0f)
+                BaseEffect.ExitShowBuffEffects(EEffectBuffType.ShieldHp);
+            else
+            {
+                BaseEffect.OnShowBuffEffects(EEffectBuffType.ShieldHp);
+                // --- Shield는 치명타 먼역으로
+                Managers.Object.ShowDamageFont(
+                                position: CenterPosition,
+                                damage: finalDamage,
+                                textColor: Color.blue,
+                                isCritical: false,
+                                fontSignType: EFontSignType.Minus,
+                                fontOutAnimFunc: () =>
+                                {
+                                    return UnityEngine.Random.Range(0, 2) == 0 ?
+                                                EFontAnimationType.BouncingLeftUp :
+                                                EFontAnimationType.BouncingRightUp;
+                                });
+            }
         }
 
         // public override void OnDamaged(BaseCellObject attacker, SkillBase skillFromAttacker)

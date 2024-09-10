@@ -464,6 +464,7 @@ namespace STELLAREST_F1
                 if (count == totalCount)
                 {
                     Managers.Data.Init();
+                    Managers.MonoContents.InitFontTypes();
                     //Managers.Sprite.Init();
                     //Managers.Animation.Init();
                     Test();

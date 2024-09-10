@@ -80,7 +80,6 @@ namespace STELLAREST_F1
         {
             yield return new WaitForSeconds(2f);
             ClearEffect(EEffectClearType.TimeOut);
-            
             Debug.Log($"<color=white>ESType: {_skill.SkillType}</color>");
             _skill.LockCoolTimeSkill = false;
             // _skill 한테도 끝났다는 것을 알려준다. (다음 쿨타임을 위해)

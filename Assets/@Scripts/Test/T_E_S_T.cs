@@ -9,70 +9,37 @@ using UnityEditor;
 
 /*
 ********************************************************************
-// --- DID & TODO LIST
-// --- Creature OnDamaged 리턴 타입을 bool로 바꾸기
-// --- Hero와 Monster OnDamaged에 재정의하기
-// --- Hero가 데미지를 받을 때는 빨간색
-// --- Monster, Env가 데미지를 받을 때는 하얀색으로.
-// --- 쉴드 부분만 -데미지 앞에 표시할 수 있도록. OnOff로 파라미터 받아서 하면 될 듯. 굳이 메서드 하나 더 추가하지 말고.
 
-- _offShields Enable할 때, 이것만 사이즈를 크게 잡을지? 아니면 이녀석은 애초에 로컬 사이즈를 조금 크게 잡아 놓을지.
-아니면 점점 크기를 코루틴 보간으로 확장시켜나갈지.
-- Spawn Damage Font for Shield
-
-- Shield Skill Flag: SkillBase::LockCoolTimeUntilDisable (EndEffectCondition)
-- Related FindPathMethods in Creature.cs -> in BaseCellObject (아직 미완인 것 같긴 함)
 - ApplyEffect는 EffectComp의 ActivateEffects에 추가가 되었을 때, Apply할 수 있도록.
 - BaseCellObj의 ApplyStat을 호출하면, 재정의된 ApplyFinalStat 메서드를 통해서 값을 설정할 수 있게 된다.
-- Hit Burst 어떻게 할래? 그리고 _onShield 꺼주고 _offShield켜줬을 때, _offShield가 전부 끝나고 나서
-- Shield Skill의 LockCoolTimeUntilDisable을 제어할 것인지?(이때부터 RemainCoolTime 코루틴을 돌릴 것인지)등등
-- 아무튼 Hit Burst 부분 내일 해결해보도록. 또한, --- Comment 부분 검색해서 참고해볼것. (지금은 예시로 ApplyFinalStat에 Shield와 관련하여 작성해놓음)
+- 쉴드 on할땐 Owner 로컬로 붙이고 off할 땐 다시 PoolingRoot에 붙여줄 것인가?
 
 // --- TODO LIST
-- InitBaseError 이 부분 고치기 (진행중, 결정적으로, 쉴드해야함)
-- SimpleVFX(EffectType)도 EffectComponent로 무조건 호출
-- 내일 무조건 팔라딘 쉴드
+- DamageFont 클래스에 Critical Font 스폰하고 있는데 이거 TextFont Class 따로 제작해서 빼야할듯
+- TextFont Class에는 폰트 타입을 정할 수 있고 지정한 글자를 작성할 수 있음.
+- TextFont를 통한 Critical Font는 objManager를 통해서 생성
+- DoTween DoAnimation 기능은 MonoContentsManager로 따로 빼야할듯.
+
+- Paladin Level Up, Level Up Stat, Level Up Skill
+-->> 하지만 이 부분을 하려면 먼저 기획이 어느정도 확실해야할듯.
+
+- Critical Font
 - 아쳐 머즐이펙트, 발바닥 Dust(랜서, 위자드 포함)
-
-// --- DID NOTE
-- Collider, Rigid는 일단 모두 다 붙여줌(Effect도 언젠가 필요한 녀석이 생길지도)
-- Stat은 BaseCellObject에서 관리
-- HERO LEVEL UP TEST
+- Related FindPathMethods in Creature.cs -> in BaseCellObject (아직 미완인 것 같긴 함)
 
 // --- NOTE
-- 아주 어쩌다가 몬스터 CellPos와 겹치긴하는데 그렇게 심각한 문제는 아님.
-- Skill이 가지고 있는 EffectType부터 생각해봐야할듯.
-
-        Instant,    // --- DotBase
-        Buff,       // --- BuffBase
-        Debuff,     // --- BuffBase
-        Dot,        // --- DotBase
-        Infinite,   // --- BuffBase
-        Knockback,  // --- CCBase
-        Airborne,   // --- CCBase
-        Freeze,     // --- CCBase
-        Stun,       // --- CCBase
-        Pull,       // --- CCBase
-
-Double Slash
-- Instant
-Shield
-- Buff(Infinite)
-와 진짜 개쩌네 ;; 이펙트
-
-- 크게 수정하지 말고, 일단 GenerateEffect부터.
-- 그 다음 GenerateProjectile.
-- 그 다음 구조 생각해보기
-- Effect 쪽 1차 수정, 이펙트 스탯 적용
-- Effect를 애초에 Base Owner에 붙인다??
-
-// --- LATER LIST
-- Archer Muzzle Effect
-
-// --- NOTE
-- 결국 Effect 주도(중심)의 게임
-- Heroes + Monsters + Skill + Effect만 무한정 찍어낼 수 있으면 싸구려 게임(최대 3300)으로써 중간 이상은 갈 수 있을지도.
-- 사실 이정도면 잘 해도 3300 판매 가능.
+- Instant,    // --- DotBase
+- Buff,       // --- BuffBase
+- Debuff,     // --- BuffBase
+- Dot,        // --- DotBase
+- Infinite,   // --- BuffBase
+- Knockback,  // --- CCBase
+- Airborne,   // --- CCBase
+- Freeze,     // --- CCBase
+- Stun,       // --- CCBase
+- Pull,       // --- CCBase
+- 결국 Skill, Effect 주도(중심)의 게임
+- Heroes + Monsters + Skill + Effect만 무한정 찍어낼 수 있으면 싸구려 게임(3300)으로써 중간 이상은 갈 수 있을지도.
 - Skill, Effect부터 차례대로 적용하고 가장 나중에 Hero AI, Monster AI 적용
 ********************************************************************
 // --- DID LIST

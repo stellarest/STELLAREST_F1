@@ -33,7 +33,7 @@ namespace STELLAREST_F1
         public Transform MonsterRoot => GetRoot(ReadOnly.Util.MonsterPoolingRootName);
         public Transform EnvRoot => GetRoot(ReadOnly.Util.EnvPoolingRootName);
         public Transform ProjectileRoot => GetRoot(ReadOnly.Util.ProjectilePoolingRootName);
-        public Transform DamageFontRoot => GetRoot(ReadOnly.Util.DamageFontPoolingRootName);
+        public Transform TextFontRoot => GetRoot(ReadOnly.Util.TextFontPoolingRootName);
         public Transform EffectRoot => GetRoot(ReadOnly.Util.EffectPoolingRootName);
 
         private bool IsCellObject(EObjectType objectType)
@@ -199,38 +199,64 @@ namespace STELLAREST_F1
             return HeroLeaderController;
         }
 
+        public void ShowTextFont(Vector3 position, string text, float textSize, Color textColor, EFontAssetType fontAssetType, EFontAnimationType fontAnimType)
+        {
+            int poolingID = ReadOnly.DataAndPoolingID.DNPID_TextFont;
+            string prefabName = ReadOnly.Prefabs.PFName_TextFontBase;
+            GameObject go = Managers.Resource.Instantiate(prefabName, parent: TextFontRoot, poolingID: poolingID);
+            TextFont textFont = go.GetComponent<TextFont>();
+            textFont.ShowTextFont(position, text, textSize, textColor, fontAssetType, fontAnimType);
+        }
+
         public void ShowDamageFont(Vector3 position, float damage, Color textColor, bool isCritical = false, 
                                 EFontSignType fontSignType = EFontSignType.None,
-                                EFontOutAnimationType fontOutAnimType = EFontOutAnimationType.OutGoingUp)
+                                EFontAnimationType fontAnimType = EFontAnimationType.GoingUp)
         {
             int poolingID = ReadOnly.DataAndPoolingID.DNPID_DamageFont;
-            string prefabName = ReadOnly.Prefabs.PFName_DamageFont;
-            GameObject go = Managers.Resource.Instantiate(prefabName, parent: DamageFontRoot, poolingID: poolingID); // 풀링 되려나??
-            DamageFont dmgFont = go.GetComponent<DamageFont>();
-            dmgFont.Show(position, damage, textColor, isCritical, fontSignType, fontOutAnimType);
+            string prefabName = ReadOnly.Prefabs.PFName_TextFontBase;
+            GameObject go = Managers.Resource.Instantiate(prefabName, parent: TextFontRoot, poolingID: poolingID);
+            TextFont dmgFont = go.GetComponent<TextFont>();
+            dmgFont.ShowDamageFont(position, damage, textColor, isCritical, fontSignType, fontAnimType);
         }
 
-        public void ShowDamageFont(Vector3 position, float damage, string colorCode, bool isCritical = false,
-                                EFontSignType fontSignType = EFontSignType.None,
-                                EFontOutAnimationType fontOutAnimType = EFontOutAnimationType.OutGoingUp)
+        public void ShowDamageFont(Vector3 position, float damage, Color textColor, bool isCritical,
+                         EFontSignType fontSignType,
+                         Func<EFontAnimationType> fontOutAnimFunc)
         {
             int poolingID = ReadOnly.DataAndPoolingID.DNPID_DamageFont;
-            string prefabName = ReadOnly.Prefabs.PFName_DamageFont;
-            GameObject go = Managers.Resource.Instantiate(prefabName, parent: DamageFontRoot, poolingID: poolingID); // 풀링 되려나??
-            DamageFont dmgFont = go.GetComponent<DamageFont>();
-            dmgFont.Show(position, damage, colorCode, isCritical, fontSignType, fontOutAnimType);
+            string prefabName = ReadOnly.Prefabs.PFName_TextFontBase;
+            GameObject go = Managers.Resource.Instantiate(prefabName, parent: TextFontRoot, poolingID: poolingID);
+            TextFont dmgFont = go.GetComponent<TextFont>();
+            dmgFont.ShowDamageFont(position, damage, textColor, isCritical: isCritical, fontSignType: fontSignType, fontOutAnimFunc.Invoke());
         }
 
-        public void ShowDamageFont(Vector3 position, float damage, Color textColor, bool isCritical, 
-                                 EFontSignType fontSignType, 
-                                 Func<EFontOutAnimationType> fontOutAnimFunc)
+        // public void ShowDamageFont(Vector3 position, float damage, string colorCode, bool isCritical = false,
+        //                         EFontSignType fontSignType = EFontSignType.None,
+        //                         EFontAnimationType fontAnimType = EFontAnimationType.GoingUp)
+        // {
+        //     int poolingID = ReadOnly.DataAndPoolingID.DNPID_TextFont;
+        //     string prefabName = ReadOnly.Prefabs.PFName_TextFont;
+        //     GameObject go = Managers.Resource.Instantiate(prefabName, parent: TextFontRoot, poolingID: poolingID);
+        //     TextFont dmgFont = go.GetComponent<TextFont>();
+        //     dmgFont.ShowDamageFont(position, damage, colorCode, isCritical, fontSignType, fontAnimType);
+        // }
+
+        public VFXBase ShowImpactCriticalHit(Vector3 position, BaseCellObject owner)
         {
-            int poolingID = ReadOnly.DataAndPoolingID.DNPID_DamageFont;
-            string prefabName = ReadOnly.Prefabs.PFName_DamageFont;
-            GameObject go = Managers.Resource.Instantiate(prefabName, parent: DamageFontRoot, poolingID: poolingID); // 풀링 되려나??
-            DamageFont dmgFont = go.GetComponent<DamageFont>();
-            dmgFont.Show(position, damage, textColor, isCritical: isCritical, fontSignType: fontSignType, fontOutAnimFunc.Invoke());
+            int poolingID = ReadOnly.DataAndPoolingID.DNPID_Effect_ImpactCriticalHit;
+            return SpawnBaseObject<VFXBase>(EObjectType.Effect, position, poolingID, owner);
         }
+
+        // public DamageFont ShowCriticalFont(Vector3 position)
+        // {
+        //     // Spawn Critical Font
+        //     int poolingID = ReadOnly.DataAndPoolingID.DNPID_CriticalFont;
+        //     string prefabName = ReadOnly.Prefabs.PFName_CriticalFont;
+        //     GameObject go = Managers.Resource.Instantiate(prefabName, parent: Managers.Object.DamageFontRoot, poolingID: poolingID);
+        //     DamageFont criticalFont = go.GetComponent<DamageFont>();
+        //     criticalFont.transform.position = position;
+        //     return criticalFont;
+        // }
 
         public List<T> FindTargets<T>(BaseObject owner, int range, bool isAlly = false) where T : BaseObject
         {

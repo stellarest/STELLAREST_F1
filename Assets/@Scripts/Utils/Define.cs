@@ -453,12 +453,6 @@ namespace STELLAREST_F1
             ByCondition            
         }
 
-        public enum EDamageFontType
-        {
-            Default,
-            Shield,
-        }
-
         public enum EHeroWeaponType
         {
             Default,
@@ -489,13 +483,13 @@ namespace STELLAREST_F1
             //Max = Lower_Move + 1
         }
 
-        public enum EFontOutAnimationType
+        public enum EFontAnimationType
         {
-            OutGoingUp,
-            OutSmaller,
-            OutFalling,
-            OutBouncingLeftUp,
-            OutBouncingRightUp,
+            GoingUp,
+            Smaller,
+            Falling,
+            BouncingLeftUp,
+            BouncingRightUp,
         }
 
         public enum EFontSignType
@@ -503,6 +497,13 @@ namespace STELLAREST_F1
             None,
             Plus,
             Minus
+        }
+
+        public enum EFontAssetType
+        {
+            MapleBold,
+            Comic,
+            Max,
         }
 
         // ####################################################
@@ -518,7 +519,10 @@ namespace STELLAREST_F1
             public static class Prefabs
             {
                 public static readonly string PFName_LeaderController = "LeaderController";
-                public static readonly string PFName_DamageFont = "DamageFont";
+                public static readonly string PFName_TextFontBase = "TextFontBase";
+
+                // public static readonly string PFName_DamageFont = "DamageFont";
+                // public static readonly string PFName_CriticalFont = "CriticalFont";
                 public static readonly string PFName_EffectBase = "EffectBase";
             }
 
@@ -561,7 +565,12 @@ namespace STELLAREST_F1
             public static class DataAndPoolingID
             {
                 // --- Damage Font
+                // public static readonly int DNPID_DamageFont = 109;
+                // public static readonly int DNPID_CriticalFont = 110;
+
                 public static readonly int DNPID_DamageFont = 109;
+                public static readonly int DNPID_TextFont = 110;
+                public static readonly int DNPID_Effect_ImpactCriticalHit = 1011;
 
                 public static readonly int DNPID_Hero_Paladin = 101000;
                 public static readonly int DNPID_Hero_Archer = 102000;
@@ -716,7 +725,8 @@ namespace STELLAREST_F1
                 public static readonly string MonsterPoolingRootName = "@Pool_Monsters";
                 public static readonly string EnvPoolingRootName = "@Pool_Envs";
                 public static readonly string ProjectilePoolingRootName = "@Pool_Projectiles";
-                public static readonly string DamageFontPoolingRootName = "@Pool_DamageFonts";
+                //public static readonly string DamageFontPoolingRootName = "@Pool_DamageFonts";
+                public static readonly string TextFontPoolingRootName = "@Pool_TextFonts";
                 public static readonly string EffectPoolingRootName = "@Pool_Effects";
 
                 public static readonly string PreLoad = "PreLoad";

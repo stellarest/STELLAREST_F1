@@ -69,7 +69,6 @@ namespace STELLAREST_F1
                 Remains = EffectData.Duration * EffectData.Period;
 
             transform.position = EffectSpawnInfo(EffectData.EffectSpawnType);
-
             // --- *** From EffectComponent ***
             // ApplyEffect();
         }
