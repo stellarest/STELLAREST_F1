@@ -93,31 +93,70 @@ namespace STELLAREST_F1
 
         }
 
-        public override void OnDamaged(BaseCellObject attacker, SkillBase skillFromAttacker)
+        public override bool OnDamaged(BaseCellObject attacker, SkillBase skillByAttacker)
         {
             if (this.IsValid() == false)
-                return;
+                return false;
 
             float finalDamage = 1f;
-
             // --- TEMP
             if ((attacker as Hero).CreatureRarity == ECreatureRarity.Elite)
                 finalDamage++;
 
             Hp = Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
-            Managers.Object.ShowDamageFont(position: this.CenterPosition, damage: finalDamage, isCritical: false);
+            Managers.Object.ShowDamageFont(
+                                            position: CenterPosition,
+                                            damage: finalDamage,
+                                            Color.white,
+                                            isCritical: false,
+                                            fontSignType: EFontSignType.None,
+                                            EFontOutAnimationType.OutSmaller
+                                        );
             if (Hp <= 0f)
             {
                 Hp = 0f;
-                OnDead(attacker, skillFromAttacker);
-                return;
+                OnDead(attacker, skillByAttacker);
             }
             else
             {
                 HitShakeMovement(duration: 0.1f, power: 0.5f, vibrato: 20);
                 EnvBody.StartCoHurtFlashEffect(isCritical: false);
             }
+
+            return true;
         }
+
+        // public override void OnDamaged(BaseCellObject attacker, SkillBase skillFromAttacker)
+        // {
+        //     if (this.IsValid() == false)
+        //         return;
+
+        //     float finalDamage = 1f;
+
+        //     // --- TEMP
+        //     if ((attacker as Hero).CreatureRarity == ECreatureRarity.Elite)
+        //         finalDamage++;
+
+        //     Hp = Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
+        //     Managers.Object.ShowDamageFont(
+        //                                     position: CenterPosition,
+        //                                     damage: finalDamage,
+        //                                     Color.white,
+        //                                     isCritical: false,
+        //                                     EFontOutAnimationType.OutSmaller
+        //                                 );
+        //     if (Hp <= 0f)
+        //     {
+        //         Hp = 0f;
+        //         OnDead(attacker, skillFromAttacker);
+        //         return;
+        //     }
+        //     else
+        //     {
+        //         HitShakeMovement(duration: 0.1f, power: 0.5f, vibrato: 20);
+        //         EnvBody.StartCoHurtFlashEffect(isCritical: false);
+        //     }
+        // }
 
         public override void OnDead(BaseCellObject attacker, SkillBase skillFromAttacker)
         {

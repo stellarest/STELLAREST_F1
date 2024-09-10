@@ -21,7 +21,9 @@ namespace STELLAREST_F1
         private ParticleSystem[] _offShields = null;
         private ParticleSystem _hitBurst = null; // --- 이거 따로 Hit Effect VFX Simple로 줘야할지?
         private Vector3 _localPosition = Vector3.zero;
+        //private Vector3 _localScale = Vector3.zero;
         private Vector3 _localScale = Vector3.zero;
+
 
         protected override void InitialSetInfo(int dataID)
         {
@@ -42,6 +44,7 @@ namespace STELLAREST_F1
 
         protected override void EnterInGame(Vector3 spawnPos)
         {
+            transform.localPosition = _localPosition;
             EnableShield(_onShields, false);
             EnableShield(_offShields, false);
             base.EnterInGame(spawnPos);
@@ -57,13 +60,17 @@ namespace STELLAREST_F1
         }
 
         public override void EnterShowEffect()
-            => EnableShield(_onShields, true);
+        {
+            transform.localScale = _localScale;
+            EnableShield(_onShields, true);
+        }
 
         public override void OnShowEffect()
             => _hitBurst?.Play();
 
         public override void ExitShowEffect()
         {
+            transform.localScale = Vector3.one * 1.2f;
             EnableShield(_onShields, false);
             EnableShield(_offShields, true);
             StartCoroutine(CoRemoveShield());
@@ -71,23 +78,12 @@ namespace STELLAREST_F1
 
         private IEnumerator CoRemoveShield()
         {
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(2f);
             ClearEffect(EEffectClearType.TimeOut);
             
             Debug.Log($"<color=white>ESType: {_skill.SkillType}</color>");
             _skill.LockCoolTimeSkill = false;
             // _skill 한테도 끝났다는 것을 알려준다. (다음 쿨타임을 위해)
-        }
-
-        public override bool TestCondition()
-        {
-            if (Owner.IsValid() == false)
-                return true;
-
-            if (Owner.ShieldHp < 0.0f)
-                return true;
-
-            return false;
         }
 
         private void EnableShield(ParticleSystem[] shields, bool isOn)
@@ -98,8 +94,8 @@ namespace STELLAREST_F1
                 {
                     // --- On할 때 잠깐 붙여주고
                     transform.SetParent(Owner.transform);
-                    transform.localPosition = new Vector3(0, 0.75f, 0f);
-                    transform.localScale = _localScale;
+                    // transform.localPosition = new Vector3(0, 0.75f, 0f);
+                    // transform.localScale = _localScale;
                     shields[i].gameObject.SetActive(true);
                     shields[i].Play();
                 }

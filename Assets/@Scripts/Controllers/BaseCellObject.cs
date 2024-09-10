@@ -131,7 +131,10 @@ namespace STELLAREST_F1
             Managers.Map.ForceMove(cellObj: this, cellPos: SpawnedCellPos, ignoreCellObjType: EObjectType.None);
         }
 
-        public virtual void OnDamaged(BaseCellObject attacker, SkillBase skillByAttacker) { }
+        public virtual bool OnDamaged(BaseCellObject attacker, SkillBase skillByAttacker) 
+            => true;
+
+        //public virtual void OnDamaged(BaseCellObject attacker, SkillBase skillByAttacker) { }
         public virtual void OnDead(BaseCellObject attacker, SkillBase skillFromAttacker)
         {
             RigidBody.simulated = false;

@@ -8,6 +8,10 @@ namespace STELLAREST_F1
     // Animation Curve, VFX...
     public class MonoContentsManager : MonoBehaviour
     {
+        // public EFontOutAnimationType TestAnim = EFontOutAnimationType.OutGoingUp;
+        public DG.Tweening.Ease InTest;
+        public DG.Tweening.Ease OutTest;
+
         public static MonoContentsManager Instance = null;
         
         [SerializeField] private AnimationCurve[] _curves = new AnimationCurve[(int)EAnimationCurveType.Max];

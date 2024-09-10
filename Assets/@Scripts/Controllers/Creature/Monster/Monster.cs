@@ -114,12 +114,76 @@ namespace STELLAREST_F1
             });
         }
 
-        public override void OnDamaged(BaseCellObject attacker, SkillBase skillFromAttacker)
+        public override bool OnDamaged(BaseCellObject attacker, SkillBase skillByAttacker)
         {
-            base.OnDamaged(attacker, skillFromAttacker);
-            HitShakeMovement(duration: 0.05f, power: 0.5f, vibrato: 10); // --- TEMP
+            if (base.OnDamaged(attacker, skillByAttacker) == false)
+                return false;
+
+            float damage = UnityEngine.Random.Range(attacker.MinAtk, attacker.MaxAtk);
+            float finalDamage = Mathf.FloorToInt(damage);
+            // --- 몬스터도 쉴드 가능
+            if (ShieldHp > 0.0f)
+            {
+                ShieldHp = Mathf.Clamp(ShieldHp - finalDamage, 0.0f, ShieldHp);
+                if (ShieldHp == 0.0f)
+                    BaseEffect.ExitShowBuffEffects(EEffectBuffType.ShieldHp);
+                else
+                {
+                    BaseEffect.OnShowBuffEffects(EEffectBuffType.ShieldHp);
+                    // --- Shield는 치명타 먼역으로
+                    Managers.Object.ShowDamageFont(
+                                    position: CenterPosition,
+                                    damage: finalDamage,
+                                    textColor: Color.blue,
+                                    isCritical: false,
+                                    fontSignType: EFontSignType.Minus,
+                                    fontOutAnimFunc: () =>
+                                    {
+                                        return UnityEngine.Random.Range(0, 2) == 0 ?
+                                                    EFontOutAnimationType.OutBouncingLeftUp :
+                                                    EFontOutAnimationType.OutBouncingRightUp;
+                                    });
+                }
+
+                return true;
+            }
+
+            Hp = Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
+            bool isCritical = false;
+            List<EffectBase> hitEffects = skillByAttacker.GenerateSkillEffects(
+                                                    effectIDs: skillByAttacker.SkillData.HitEffectIDs,
+                                                    spawnPos: Util.GetRandomQuadPosition(this.CenterPosition)
+                                                    );
+
+            isCritical = UnityEngine.Random.Range(0, 2) == 0 ? true : false;
+            Managers.Object.ShowDamageFont(
+                                            position: CenterPosition,
+                                            damage: finalDamage,
+                                            Color.white,
+                                            isCritical: isCritical,
+                                            fontSignType: EFontSignType.None,
+                                            EFontOutAnimationType.OutFalling
+                                        );
+
+            if (Hp <= 0f)
+            {
+                Hp = 0f;
+                OnDead(attacker, skillByAttacker);
+            }
+            else
+                BaseBody.StartCoHurtFlashEffect(isCritical: isCritical);
+
+            HitShakeMovement(duration: 0.05f, power: 0.5f, vibrato: 10);
+            return true;
+
         }
-        
+
+        // public override void OnDamaged(BaseCellObject attacker, SkillBase skillFromAttacker)
+        // {
+        //     base.OnDamaged(attacker, skillFromAttacker);
+        //     HitShakeMovement(duration: 0.05f, power: 0.5f, vibrato: 10); // --- TEMP
+        // }
+
         public override void OnDead(BaseCellObject attacker, SkillBase skillFromAttacker)
             => base.OnDead(attacker, skillFromAttacker);
 

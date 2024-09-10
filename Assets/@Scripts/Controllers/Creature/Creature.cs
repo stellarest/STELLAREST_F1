@@ -214,64 +214,86 @@ namespace STELLAREST_F1
         private void LateUpdate()
             => UpdateCellPos();
 
-        public override void OnDamaged(BaseCellObject attacker, SkillBase skillByAttacker)
+        public override bool OnDamaged(BaseCellObject attacker, SkillBase skillByAttacker)
         {
             if (CreatureAIState == ECreatureAIState.Dead)
-                return;
+                return false;
 
             if (attacker.IsValid() == false)
-                return;
+                return false;
 
-            float damage = UnityEngine.Random.Range(attacker.MinAtk, attacker.MaxAtk);
-            float finalDamage = Mathf.FloorToInt(damage);
-            if (ShieldHp > 0.0f)
-            {
-                ShieldHp = Mathf.Clamp(ShieldHp - finalDamage, 0.0f, ShieldHp);
-                BaseEffect.OnShowBuffEffects(EEffectBuffType.ShieldHp);
-
-                // + Spawn Damage Font for Shield
-                if (ShieldHp == 0.0f)
-                    BaseEffect.ExitShowBuffEffects(EEffectBuffType.ShieldHp);
-                // else
-                //     BaseEffect.OnShowBuffEffects(EEffectBuffType.ShieldHp);
-
-                return;
-            }
-
-            Hp = Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
-            bool isCritical = false;
-
-            // --- Util.GetRandomQuadPosition or Hit Pos or Fixed Pos
-            List<EffectBase> hitEffects = skillByAttacker.GenerateSkillEffects(
-                                            effectIDs: skillByAttacker.SkillData.HitEffectIDs,
-                                            spawnPos: Util.GetRandomQuadPosition(this.CenterPosition)
-                                            );
-
-            Debug.Log($"<color=red>{nameof(OnDamaged)}</color>");
-            Managers.Object.ShowDamageFont(position: this.CenterPosition, damage: finalDamage, isCritical: isCritical);
-
-            // --- TEMP: Critical
-            // if (UnityEngine.Random.Range(0f, 100f) >= 50f)
-            //     isCritical = true;
-
-            // --- InitBaseError
-            // if (skillByAttacker.SkillData.HitEffectIDs.Length != 0)
-            // {
-            //     List<EffectBase> effects = BaseEffect.GenerateEffects(
-            //         effectIDs: skillByAttacker.SkillData.HitEffectIDs,
-            //         spawnPos: Util.GetRandomQuadPosition(CenterPosition),
-            //         startCallback: null
-            //     );
-            // }
-
-            if (Hp <= 0f)
-            {
-                Hp = 0f;
-                OnDead(attacker, skillByAttacker);
-            }
-            else
-                BaseBody.StartCoHurtFlashEffect(isCritical: isCritical);
+            return true;
         }
+
+
+        // --- OnDamaged 리턴 타입을 bool로 바꾸기
+        // --- Hero가 데미지를 받을 때는 빨간색
+        // --- Monster, Env가 데미지를 받을 때는 하얀색으로.
+        // public override void OnDamaged(BaseCellObject attacker, SkillBase skillByAttacker)
+        // {
+        //     if (CreatureAIState == ECreatureAIState.Dead)
+        //         return;
+
+        //     if (attacker.IsValid() == false)
+        //         return;
+
+        //     float damage = UnityEngine.Random.Range(attacker.MinAtk, attacker.MaxAtk);
+        //     float finalDamage = Mathf.FloorToInt(damage);
+        //     if (ShieldHp > 0.0f)
+        //     {
+        //         ShieldHp = Mathf.Clamp(ShieldHp - finalDamage, 0.0f, ShieldHp);
+        //         // Managers.Object.ShowDamageFont(position: this.CenterPosition, damage: finalDamage);
+        //         if (ShieldHp == 0.0f)
+        //             BaseEffect.ExitShowBuffEffects(EEffectBuffType.ShieldHp);
+        //         else
+        //         {
+        //             BaseEffect.OnShowBuffEffects(EEffectBuffType.ShieldHp);
+        //             // --- Shield는 치명타 먼역으로
+        //             Managers.Object.ShowDamageFont(
+        //                              position: CenterPosition,
+        //                             damage: finalDamage,
+        //                             textColor: Color.cyan,
+        //                             fontOutAnimFunc: () =>
+        //                             {
+        //                                 return UnityEngine.Random.Range(0, 2) == 0 ?
+        //                                             EFontOutAnimationType.OutBouncingLeftUp :
+        //                                             EFontOutAnimationType.OutBouncingRightUp;
+        //                             });
+        //         }
+
+        //         return;
+        //     }
+
+        //     Hp = Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
+        //     bool isCritical = false;
+
+        //     // --- Util.GetRandomQuadPosition or Hit Pos or Fixed Pos
+        //     List<EffectBase> hitEffects = skillByAttacker.GenerateSkillEffects(
+        //                                     effectIDs: skillByAttacker.SkillData.HitEffectIDs,
+        //                                     spawnPos: Util.GetRandomQuadPosition(this.CenterPosition)
+        //                                     );
+
+        //     isCritical = UnityEngine.Random.Range(0, 2) == 0 ? true : false;
+        //     Managers.Object.ShowDamageFont(
+        //                                     position: CenterPosition, 
+        //                                     damage: finalDamage, 
+        //                                     Color.red, 
+        //                                     isCritical: isCritical,
+        //                                     EFontOutAnimationType.OutFalling
+        //                                 );
+
+        //     // --- TEMP: Critical
+        //     // if (UnityEngine.Random.Range(0f, 100f) >= 50f)
+        //     //     isCritical = true;
+
+        //     if (Hp <= 0f)
+        //     {
+        //         Hp = 0f;
+        //         OnDead(attacker, skillByAttacker);
+        //     }
+        //     else
+        //         BaseBody.StartCoHurtFlashEffect(isCritical: isCritical);
+        // }
 
         public override void OnDead(BaseCellObject attacker, SkillBase skillFromAttacker)
         {

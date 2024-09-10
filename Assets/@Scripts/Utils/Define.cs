@@ -453,6 +453,12 @@ namespace STELLAREST_F1
             ByCondition            
         }
 
+        public enum EDamageFontType
+        {
+            Default,
+            Shield,
+        }
+
         public enum EHeroWeaponType
         {
             Default,
@@ -483,9 +489,32 @@ namespace STELLAREST_F1
             //Max = Lower_Move + 1
         }
 
+        public enum EFontOutAnimationType
+        {
+            OutGoingUp,
+            OutSmaller,
+            OutFalling,
+            OutBouncingLeftUp,
+            OutBouncingRightUp,
+        }
+
+        public enum EFontSignType
+        {
+            None,
+            Plus,
+            Minus
+        }
+
         // ####################################################
         public static class ReadOnly
         {
+            public static class ColorCode
+            {
+                public static readonly string BrightRed = "#EE4B2B";
+                public static readonly string BrightBlue = "##0096FF";
+                public static readonly string BrightGreen = "#AAFF00";
+            }
+
             public static class Prefabs
             {
                 public static readonly string PFName_LeaderController = "LeaderController";

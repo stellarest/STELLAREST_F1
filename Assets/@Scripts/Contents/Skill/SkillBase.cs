@@ -242,18 +242,7 @@ namespace STELLAREST_F1
                 if (SkillData.OnStateEffectIDs.Length != 0)
                 {
                     List<EffectBase> onStateEffects = GenerateSkillEffects(effectIDs: SkillData.OnStateEffectIDs, this);
-                    // --- DO SOMETHING AFTER IF YOU WANT TO
                 }
-
-                // --- InitBaseError
-                // if (SkillData.OnStateEffectIDs.Length != 0)
-                // {
-                //     List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
-                //         effectIDs: SkillData.OnStateEffectIDs,
-                //         spawnPos: Owner.CenterPosition,
-                //         startCallback: null
-                //     );
-                // }
                 return true;
             }
 
@@ -266,18 +255,7 @@ namespace STELLAREST_F1
             if (SkillData.EndStateEffectIDs.Length != 0)
             {
                 List<EffectBase> endStateEffects = GenerateSkillEffects(effectIDs: SkillData.EndStateEffectIDs, this);
-                // --- DO SOMETHING AFTER IF YOU WANT TO
             }
-
-            // --- InitBaseError
-            // if (SkillData.EndStateEffectIDs.Length != 0)
-            // {
-            //     List<EffectBase> effects = Owner.BaseEffect.GenerateEffects(
-            //         effectIDs: SkillData.EndStateEffectIDs,
-            //         spawnPos: Owner.CenterPosition,
-            //         startCallback: null
-            //     );
-            // }
         }
         #endregion Events
 

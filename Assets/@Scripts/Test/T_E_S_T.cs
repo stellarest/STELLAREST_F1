@@ -10,6 +10,12 @@ using UnityEditor;
 /*
 ********************************************************************
 // --- DID & TODO LIST
+// --- Creature OnDamaged 리턴 타입을 bool로 바꾸기
+// --- Hero와 Monster OnDamaged에 재정의하기
+// --- Hero가 데미지를 받을 때는 빨간색
+// --- Monster, Env가 데미지를 받을 때는 하얀색으로.
+// --- 쉴드 부분만 -데미지 앞에 표시할 수 있도록. OnOff로 파라미터 받아서 하면 될 듯. 굳이 메서드 하나 더 추가하지 말고.
+
 - _offShields Enable할 때, 이것만 사이즈를 크게 잡을지? 아니면 이녀석은 애초에 로컬 사이즈를 조금 크게 잡아 놓을지.
 아니면 점점 크기를 코루틴 보간으로 확장시켜나갈지.
 - Spawn Damage Font for Shield
