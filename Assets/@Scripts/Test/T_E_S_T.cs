@@ -9,7 +9,6 @@ using UnityEditor;
 
 /*
 ********************************************************************
-
 - ApplyEffect는 EffectComp의 ActivateEffects에 추가가 되었을 때, Apply할 수 있도록.
 - BaseCellObj의 ApplyStat을 호출하면, 재정의된 ApplyFinalStat 메서드를 통해서 값을 설정할 수 있게 된다.
 - 쉴드 on할땐 Owner 로컬로 붙이고 off할 땐 다시 PoolingRoot에 붙여줄 것인가?
@@ -28,6 +27,13 @@ using UnityEditor;
 - Related FindPathMethods in Creature.cs -> in BaseCellObject (아직 미완인 것 같긴 함)
 
 // --- NOTE
+
+// --- SKILLS NOTE
+[Paladin] Hmmm...
+P: Second Wind (E)
+S1: Double Slash(C) -> Triple Slash (E)
+S2: Shield(C) -> Heaven's Shield (E)
+
 - Instant,    // --- DotBase
 - Buff,       // --- BuffBase
 - Debuff,     // --- BuffBase

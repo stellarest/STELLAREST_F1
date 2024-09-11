@@ -199,7 +199,8 @@ namespace STELLAREST_F1
             return HeroLeaderController;
         }
 
-        public void ShowTextFont(Vector3 position, string text, float textSize, Color textColor, EFontAssetType fontAssetType, EFontAnimationType fontAnimType)
+        public void ShowTextFont(Vector3 position, string text, float textSize, Color textColor, 
+                        EFontAssetType fontAssetType, EFontAnimationType fontAnimType)
         {
             int poolingID = ReadOnly.DataAndPoolingID.DNPID_TextFont;
             string prefabName = ReadOnly.Prefabs.PFName_TextFontBase;
@@ -208,9 +209,19 @@ namespace STELLAREST_F1
             textFont.ShowTextFont(position, text, textSize, textColor, fontAssetType, fontAnimType);
         }
 
-        public void ShowDamageFont(Vector3 position, float damage, Color textColor, bool isCritical = false, 
+        public void ShowTextFont(Vector3 position, string text, float textSize, string textColorCode,
+                        EFontAssetType fontAssetType, EFontAnimationType fontAnimType)
+        {
+            int poolingID = ReadOnly.DataAndPoolingID.DNPID_TextFont;
+            string prefabName = ReadOnly.Prefabs.PFName_TextFontBase;
+            GameObject go = Managers.Resource.Instantiate(prefabName, parent: TextFontRoot, poolingID: poolingID);
+            TextFont textFont = go.GetComponent<TextFont>();
+            textFont.ShowTextFont(position, text, textSize, textColorCode, fontAssetType, fontAnimType);
+        }
+
+        public void ShowDamageFont(Vector3 position, float damage, Color textColor, bool isCritical, 
                                 EFontSignType fontSignType = EFontSignType.None,
-                                EFontAnimationType fontAnimType = EFontAnimationType.GoingUp)
+                                EFontAnimationType fontAnimType = EFontAnimationType.EndGoingUp)
         {
             int poolingID = ReadOnly.DataAndPoolingID.DNPID_DamageFont;
             string prefabName = ReadOnly.Prefabs.PFName_TextFontBase;
@@ -219,27 +230,38 @@ namespace STELLAREST_F1
             dmgFont.ShowDamageFont(position, damage, textColor, isCritical, fontSignType, fontAnimType);
         }
 
+        public void ShowDamageFont(Vector3 position, float damage, string textColorCode, bool isCritical,
+                        EFontSignType fontSignType = EFontSignType.None,
+                        EFontAnimationType fontAnimType = EFontAnimationType.EndGoingUp)
+        {
+            int poolingID = ReadOnly.DataAndPoolingID.DNPID_TextFont;
+            string prefabName = ReadOnly.Prefabs.PFName_TextFontBase;
+            GameObject go = Managers.Resource.Instantiate(prefabName, parent: TextFontRoot, poolingID: poolingID);
+            TextFont dmgFont = go.GetComponent<TextFont>();
+            dmgFont.ShowDamageFont(position, damage, textColorCode, isCritical, fontSignType, fontAnimType);
+        }
+
         public void ShowDamageFont(Vector3 position, float damage, Color textColor, bool isCritical,
                          EFontSignType fontSignType,
-                         Func<EFontAnimationType> fontOutAnimFunc)
+                         Func<EFontAnimationType> fontAnimFunc)
         {
             int poolingID = ReadOnly.DataAndPoolingID.DNPID_DamageFont;
             string prefabName = ReadOnly.Prefabs.PFName_TextFontBase;
             GameObject go = Managers.Resource.Instantiate(prefabName, parent: TextFontRoot, poolingID: poolingID);
             TextFont dmgFont = go.GetComponent<TextFont>();
-            dmgFont.ShowDamageFont(position, damage, textColor, isCritical: isCritical, fontSignType: fontSignType, fontOutAnimFunc.Invoke());
+            dmgFont.ShowDamageFont(position, damage, textColor, isCritical: isCritical, fontSignType: fontSignType, fontAnimFunc.Invoke());
         }
 
-        // public void ShowDamageFont(Vector3 position, float damage, string colorCode, bool isCritical = false,
-        //                         EFontSignType fontSignType = EFontSignType.None,
-        //                         EFontAnimationType fontAnimType = EFontAnimationType.GoingUp)
-        // {
-        //     int poolingID = ReadOnly.DataAndPoolingID.DNPID_TextFont;
-        //     string prefabName = ReadOnly.Prefabs.PFName_TextFont;
-        //     GameObject go = Managers.Resource.Instantiate(prefabName, parent: TextFontRoot, poolingID: poolingID);
-        //     TextFont dmgFont = go.GetComponent<TextFont>();
-        //     dmgFont.ShowDamageFont(position, damage, colorCode, isCritical, fontSignType, fontAnimType);
-        // }
+        public void ShowDamageFont(Vector3 position, float damage, string textColorCode, bool isCritical,
+                         EFontSignType fontSignType,
+                         Func<EFontAnimationType> fontAnimFunc)
+        {
+            int poolingID = ReadOnly.DataAndPoolingID.DNPID_DamageFont;
+            string prefabName = ReadOnly.Prefabs.PFName_TextFontBase;
+            GameObject go = Managers.Resource.Instantiate(prefabName, parent: TextFontRoot, poolingID: poolingID);
+            TextFont dmgFont = go.GetComponent<TextFont>();
+            dmgFont.ShowDamageFont(position, damage, textColorCode, isCritical: isCritical, fontSignType: fontSignType, fontAnimFunc.Invoke());
+        }
 
         public VFXBase ShowImpactCriticalHit(Vector3 position, BaseCellObject owner)
         {

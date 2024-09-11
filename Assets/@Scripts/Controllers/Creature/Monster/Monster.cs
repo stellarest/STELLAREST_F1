@@ -121,26 +121,17 @@ namespace STELLAREST_F1
 
             float damage = UnityEngine.Random.Range(attacker.MinAtk, attacker.MaxAtk);
             float finalDamage = Mathf.FloorToInt(damage);
-            //  --- TEMP CRITICAL ---
-            bool isCritical = UnityEngine.Random.Range(0, 2) == 0 ? true : false;
-            if (isCritical)
-            {
-                finalDamage *= 1 + 0.5f;
-                Managers.Object.ShowTextFont(
-                   position: CenterPosition + (Vector3.up * 0.5f),
-                   text: "CRITICAL !!",
-                   textSize: 8.0f,
-                   textColor: Color.red,
-                   fontAssetType: EFontAssetType.Comic,
-                   fontAnimType: EFontAnimationType.GoingUp
-               );
-            }
-
+            // --- 몬스터도 ShieldHp Buff 가능
             if (ShieldHp > 0.0f)
             {
                 OnDamagedShieldHp(finalDamage);
                 return true;
             }
+
+            // --- TEMP CRITICAL ---
+            bool isCritical = UnityEngine.Random.Range(0, 2) == 0 ? true : false;
+            if (isCritical)
+                finalDamage *= 1 + 0.5f;
 
             Hp = Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
             List<EffectBase> hitEffects = skillByAttacker.GenerateSkillEffects(
@@ -151,28 +142,25 @@ namespace STELLAREST_F1
             Managers.Object.ShowDamageFont(
                                                 position: CenterPosition,
                                                 damage: finalDamage,
-                                                Color.white,
+                                                textColor: Color.white,
                                                 isCritical: isCritical,
                                                 fontSignType: EFontSignType.None,
-                                                EFontAnimationType.Falling
+                                                EFontAnimationType.EndFalling
                                           );
 
-            // if (isCritical)
-            // {
-            // }
-
-
-            // Managers.Object.ShowDamageFont(
-            //                     position: CenterPosition,
-            //                     damage: finalDamage,
-            //                     Color.white,
-            //                     isCritical: isCritical,
-            //                     fontSignType: EFontSignType.None,
-            //                     EFontOutAnimationType.OutFalling
-            //                 );
-
+            // --- 몬스터에게도 Critical Rate를 줘야할지?
             if (isCritical)
+            {
                 Managers.Object.ShowImpactCriticalHit(CenterPosition, this);
+                Managers.Object.ShowTextFont(
+                               position: CenterPosition + Vector3.up * 0.65f,
+                               text: "CRITICAL",
+                               textSize: 5.0f,
+                               textColor: Color.red,
+                               fontAssetType: EFontAssetType.Comic,
+                               fontAnimType: EFontAnimationType.EndFallingShake
+                           );
+            }
 
             if (Hp <= 0f)
             {
@@ -194,18 +182,17 @@ namespace STELLAREST_F1
             else
             {
                 BaseEffect.OnShowBuffEffects(EEffectBuffType.ShieldHp);
-                // --- Shield는 치명타 먼역으로
                 Managers.Object.ShowDamageFont(
                                 position: CenterPosition,
                                 damage: finalDamage,
                                 textColor: Color.blue,
-                                isCritical: false,
+                                isCritical: false, // --- Shield는 치명타 면역
                                 fontSignType: EFontSignType.Minus,
-                                fontOutAnimFunc: () =>
+                                fontAnimFunc: () =>
                                 {
                                     return UnityEngine.Random.Range(0, 2) == 0 ?
-                                                EFontAnimationType.BouncingLeftUp :
-                                                EFontAnimationType.BouncingRightUp;
+                                                EFontAnimationType.EndBouncingLeftUp :
+                                                EFontAnimationType.EndBouncingRightUp;
                                 });
             }
         }

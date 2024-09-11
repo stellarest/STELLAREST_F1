@@ -483,13 +483,16 @@ namespace STELLAREST_F1
             //Max = Lower_Move + 1
         }
 
+        // --- Font: InGame Font
+        // --- FontUI: UI Font
         public enum EFontAnimationType
         {
-            GoingUp,
-            Smaller,
-            Falling,
-            BouncingLeftUp,
-            BouncingRightUp,
+            EndGoingUp,
+            EndSmaller,
+            EndFalling,
+            EndFallingShake,
+            EndBouncingLeftUp,
+            EndBouncingRightUp,
         }
 
         public enum EFontSignType
@@ -567,8 +570,9 @@ namespace STELLAREST_F1
                 // --- Damage Font
                 // public static readonly int DNPID_DamageFont = 109;
                 // public static readonly int DNPID_CriticalFont = 110;
-
                 public static readonly int DNPID_DamageFont = 109;
+                // --- DNPID_DamageFont로 재탕하면 서로 다른 옵션 떄문에 간헐적으로 안맞을 때가 있음.
+                // --- 안전하게 새로운 PoolingID로 적용.
                 public static readonly int DNPID_TextFont = 110;
                 public static readonly int DNPID_Effect_ImpactCriticalHit = 1011;
 

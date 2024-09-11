@@ -110,7 +110,7 @@ namespace STELLAREST_F1
                                             Color.white,
                                             isCritical: false,
                                             fontSignType: EFontSignType.None,
-                                            EFontAnimationType.Smaller
+                                            EFontAnimationType.EndSmaller
                                         );
             if (Hp <= 0f)
             {
