@@ -151,7 +151,9 @@ namespace STELLAREST_F1
             // --- 몬스터에게도 Critical Rate를 줘야할지?
             if (isCritical)
             {
-                Managers.Object.ShowImpactCriticalHit(CenterPosition, this);
+                // Managers.Object.ShowImpactCriticalHit(CenterPosition, this);
+                BaseEffect.GenerateEffect(effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_ImpactCriticalHit,
+                                          skill: null);
                 Managers.Object.ShowTextFont(
                                position: CenterPosition + Vector3.up * 0.65f,
                                text: "CRITICAL",

@@ -37,7 +37,7 @@ namespace STELLAREST_F1
             ActiveEffects.Add(effect);
             if (skill != null)
                 effect.SetSkill(skill);
-            effect.ApplyEffect();
+            effect.ApplyEffect(); // --- 이것때문임. Effect도 각 오브젝트의 BaseEffect에서 생성하도록,,,ㅇㅋ?
 
             return effect;
         }

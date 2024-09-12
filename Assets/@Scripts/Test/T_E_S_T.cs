@@ -8,10 +8,33 @@ using DG.Tweening;
 using UnityEditor;
 
 /*
+// --- SKILL NOTE (I, II, III, IV, V)
+[Paladin] 
+P: Endurance
+S1: Slash I -> ... -> Slash IV -> Ultimate Slash 
+S2: Shield I -> ... -> Shield IV -> Ultimate Shield
+
+[Archer]
+P: Hawk Eyes
+S1: Multiple Shot I -> ... -> Multiple Shot IV -> Ultimate Multiple Shot
+S2: Arrow Storm I -> ... -> Arrow Storm IV -> Ultimate Arrow Storm
+
+[Lancer]
+P: Determination
+S1: Thrust I -> Thrust I -> Ultimate Thrust
+S2: Line Rush I -> ... -> Line Rush IV -> Ultimate Line Rush
+*/
+
+/*
+// --- TODO NOTE
+- Impact Critical Hit Pooling 안됨
+*/
+
+/*
 ********************************************************************
 - ApplyEffect는 EffectComp의 ActivateEffects에 추가가 되었을 때, Apply할 수 있도록.
 - BaseCellObj의 ApplyStat을 호출하면, 재정의된 ApplyFinalStat 메서드를 통해서 값을 설정할 수 있게 된다.
-- 쉴드 on할땐 Owner 로컬로 붙이고 off할 땐 다시 PoolingRoot에 붙여줄 것인가?
+- 쉴드 on할땐 Owner 로컬로 붙이고 off할 땐 다시 PoolingRoot에 붙여줄 것인가? (이것부터 검토)
 
 // --- TODO LIST
 - DamageFont 클래스에 Critical Font 스폰하고 있는데 이거 TextFont Class 따로 제작해서 빼야할듯

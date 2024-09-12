@@ -18,8 +18,9 @@ namespace STELLAREST_F1
 
         public override void ApplyEffect()
         {
-            base.ApplyEffect();
+            // Stat부터 적용 후 VFX등 효과 보여주기
             Owner.ApplyStat();
+            base.ApplyEffect();
         }
 
         public override void EnterShowEffect() { }

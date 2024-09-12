@@ -192,6 +192,7 @@ namespace STELLAREST_F1
 
             switch (clearType)
             {
+                case EEffectClearType.Disable:
                 case EEffectClearType.TimeOut:
                     {
                         Owner.BaseEffect.RemoveEffect(this);

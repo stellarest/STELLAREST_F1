@@ -263,11 +263,12 @@ namespace STELLAREST_F1
             dmgFont.ShowDamageFont(position, damage, textColorCode, isCritical: isCritical, fontSignType: fontSignType, fontAnimFunc.Invoke());
         }
 
-        public VFXBase ShowImpactCriticalHit(Vector3 position, BaseCellObject owner)
-        {
-            int poolingID = ReadOnly.DataAndPoolingID.DNPID_Effect_ImpactCriticalHit;
-            return SpawnBaseObject<VFXBase>(EObjectType.Effect, position, poolingID, owner);
-        }
+        // --- Effect는 ObjectManager에서 생성하지 않는다 !!!!! 반드시 EffectComp가 들고있는 녀석을 통해 호출.
+        // public VFXBase ShowImpactCriticalHit(Vector3 position, BaseCellObject owner)
+        // {
+        //     int poolingID = ReadOnly.DataAndPoolingID.DNPID_Effect_ImpactCriticalHit;
+        //     return SpawnBaseObject<VFXBase>(EObjectType.Effect, position, poolingID, owner);
+        // }
 
         // public DamageFont ShowCriticalFont(Vector3 position)
         // {

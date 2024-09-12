@@ -448,6 +448,7 @@ namespace STELLAREST_F1
 
         public enum EEffectClearType
         {
+            Disable,
             TimeOut,
             EndOfCC,
             ByCondition            
