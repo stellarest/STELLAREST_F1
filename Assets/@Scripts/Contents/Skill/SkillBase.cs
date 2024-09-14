@@ -43,14 +43,13 @@ namespace STELLAREST_F1
         }
 
         // --- Data를 통해서, Skill이 Activate되어 있는 동안 다시 발동하지 않도록,,, 제어해야할듯. (ex) shield
-
-        private bool _lockCoolTimeSkill = false;
+        private bool _manualCoolTimeSkill = false;
         public bool LockCoolTimeSkill
         {
-            get => _lockCoolTimeSkill;
+            get => _manualCoolTimeSkill;
             set
             {
-                _lockCoolTimeSkill = value;
+                _manualCoolTimeSkill = value;
                 if (value == false)
                 {
                     if (Owner.IsValid() == false)
@@ -119,9 +118,9 @@ namespace STELLAREST_F1
         private IEnumerator CoActivateSkill()
         {
             RemainCoolTime = SkillData.CoolTime;
-            if (_lockCoolTimeSkill)
+            if (_manualCoolTimeSkill)
             {
-                Debug.Log($"<color=magenta>{nameof(_lockCoolTimeSkill)}, {SkillData.DevTextID}</color>");
+                Debug.Log($"<color=magenta>{nameof(_manualCoolTimeSkill)}, {SkillData.DevTextID}</color>");
                 yield break;
             }
 
@@ -134,7 +133,7 @@ namespace STELLAREST_F1
         {
             Debug.Log($"<color=brown>{this.SkillType} activates CoolTime...</color>");
             yield return new WaitForSeconds(RemainCoolTime);
-            _lockCoolTimeSkill = true;
+            _manualCoolTimeSkill = true;
             RemainCoolTime = 0f;
             Owner.CreatureSkill.AddActiveSkill(this);
         }
@@ -223,7 +222,7 @@ namespace STELLAREST_F1
             EnteredTargetPos = Owner.Target.CenterPosition; // FOR PROJECTILE,,,
             EnteredTargetDir = Owner.Target.CellPos - Owner.CellPos;
             EnteredSignX = (Owner.LookAtDir == ELookAtDirection.Left) ? 1 : 0;
-            Owner.Moving = false;
+            Owner.Moving = false; // --- Blending Anim(Move to Idle)
             if (SkillData.EnterStateEffectIDs.Length != 0)
             {
                 List<EffectBase> enterStateEffects = GenerateSkillEffects(effectIDs: SkillData.EnterStateEffectIDs, this);

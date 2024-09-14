@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace STELLAREST_F1
 {
+    // --- 이름 변경 해야할듯? ManualCoolTimeSkill
     public class Shield : SkillBase
     {
         #region Events

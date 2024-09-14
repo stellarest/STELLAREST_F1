@@ -121,6 +121,9 @@ namespace STELLAREST_F1
                 case EClassName.MonsterAI:
                     return typeof(MonsterAI);
 
+                case EClassName.NewSkillComp:
+                    return typeof(NewSkillComp); // --- TEST
+
                 default:
                     Debug.LogError($"{nameof(Util)}, {nameof(GetTypeFromName)}, Input : \"{className}, Please check Define.EClassName\"");
                     Debug.Break();

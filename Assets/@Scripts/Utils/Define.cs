@@ -345,7 +345,9 @@ namespace STELLAREST_F1
             HeroAI,
             MeleeHeroAI,
             RangedHeroAI,
-            MonsterAI
+            MonsterAI,
+
+            NewSkillComp
         }
 
         public enum EProjectileMotionType
@@ -401,9 +403,9 @@ namespace STELLAREST_F1
         public enum EEffectType
         {
             None = -1,
-            SimpleVFX = 1,
+            SimpleVFX = 1, // --- Instant로 바꿔야할듯?
             //Instant,
-            Infinite,
+            //Infinite, ---> 없어도 될 것 같음. Duration을 -1로 지정한게 Infinite임.
             Buff,
             DeBuff,
             Dot,
@@ -417,6 +419,8 @@ namespace STELLAREST_F1
         public enum EEffectBuffType
         {
             None = -1,
+            MaxHp,
+            InfiniteMaxHp,
             ShieldHp
         }
 
@@ -569,12 +573,11 @@ namespace STELLAREST_F1
             public static class DataAndPoolingID
             {
                 // --- Damage Font
-                // public static readonly int DNPID_DamageFont = 109;
-                // public static readonly int DNPID_CriticalFont = 110;
-                public static readonly int DNPID_DamageFont = 109;
                 // --- DNPID_DamageFont로 재탕하면 서로 다른 옵션 떄문에 간헐적으로 안맞을 때가 있음.
                 // --- 안전하게 새로운 PoolingID로 적용.
+                public static readonly int DNPID_DamageFont = 109;
                 public static readonly int DNPID_TextFont = 110;
+
                 public static readonly int DNPID_Effect_ImpactCriticalHit = 1011;
 
                 public static readonly int DNPID_Hero_Paladin = 101000;

@@ -46,7 +46,7 @@ namespace STELLAREST_F1
 
             // --- Skill, Env는 Move -> Idle로 부터 실행
             if (HeroOwner.CanSkill)
-                HeroOwner.CreatureSkill.GetSkill.DoSkill();
+                HeroOwner.CreatureSkill.ReadyToActivate.DoSkill();
             else if (HeroOwner.CanCollectEnv)
                 HeroOwner.CollectEnv();
         }

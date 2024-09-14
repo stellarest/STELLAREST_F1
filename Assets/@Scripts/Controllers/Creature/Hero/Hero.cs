@@ -345,7 +345,7 @@ namespace STELLAREST_F1
             base.OnDeadFadeOutCompleted();
         }
 
-        public void LevelUp()
+        public override void LevelUp()
         {
             if (this.IsValid() == false)
                 return;
@@ -361,22 +361,17 @@ namespace STELLAREST_F1
             if (Managers.Data.HeroStatDataDict.TryGetValue(key: _levelID, value: out HeroStatData statData))
             {
                 SetStat(_levelID);
-                SetHeroSkill(_levelID);
+                CreatureSkill.LevelUpSkill(ownerLevelID: _levelID);
             }
 
             if (IsMaxLevel)
             {
-                Debug.Log("<color=yellow>CHANGE: ELITE HERO</color>");
+                Debug.Log("<color=yellow>CHANGE: LEGENDARY HERO</color>");
                 CreatureRarity = ECreatureRarity.Elite;
                 HeroBody.ChangeSpriteSet(Managers.Data.HeroSpriteDataDict[_levelID]);
             }
         }
-
-        private void SetHeroSkill(int _levelID)
-        {
-            // LOAD HERO SKILLS,,,
-        }
-
+        
         private IEnumerator CoInitialReleaseLeaderHeroAI()
         {
             // 여기서 하면 안됨... Leader랑 관련 있는듯.

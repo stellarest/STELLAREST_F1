@@ -14,7 +14,7 @@ namespace STELLAREST_F1
     {
         private RectTransform _rectTr = null;
         private TextMeshPro _text = null;
-        private TMP_Text _tmpText = null;
+        private TMP_Text _tmpText = null; // --- For DoTween.DOFade
         private SortingGroup _sortingGroup = null;
         private float _initialFontSize = 0.0f;
 
@@ -97,13 +97,13 @@ namespace STELLAREST_F1
             _text.fontSize = _initialFontSize;
             if (isCritical)
             {
-                Debug.Log("<color=red>CRITICAL</color>");
+                Debug.Log("<color=red>CRITICAL FONT</color>");
                 _text.font = Managers.MonoContents.GetFontAsset(EFontAssetType.Comic);
                 _text.fontSize *= 1 + 0.5f; // +50%
             }
             else
             {
-                Debug.Log("<color=white>NORMAL</color>");
+                Debug.Log("<color=white>NORMAL FONT</color>");
                 _text.font = Managers.MonoContents.GetFontAsset(EFontAssetType.MapleBold);
             }
 
@@ -138,13 +138,13 @@ namespace STELLAREST_F1
             _text.fontSize = _initialFontSize;
             if (isCritical)
             {
-                Debug.Log("<color=red>CRITICAL</color>");
+                Debug.Log("<color=red>CRITICAL FONT</color>");
                 _text.font = Managers.MonoContents.GetFontAsset(EFontAssetType.Comic);
                 _text.fontSize *= 1 + 0.5f; // +50%
             }
             else
             {
-                Debug.Log("<color=white>NORMAL</color>");
+                Debug.Log("<color=white>NORMAL FONT</color>");
                 _text.font = Managers.MonoContents.GetFontAsset(EFontAssetType.MapleBold);
             }
 

@@ -9,7 +9,7 @@ namespace STELLAREST_F1
 {
     public class Creature : BaseCellObject
     {
-        public Data.CreatureData CreatureData { get; private set; } = null;
+        public Data.CreatureData CreatureData { get; protected set; } = null;
         public CreatureAI CreatureAI { get; protected set; } = null;
         [field: SerializeField] public ECreatureRarity CreatureRarity { get; protected set; } = ECreatureRarity.None;
         public SkillComponent CreatureSkill { get; protected set; } = null; // Skills
@@ -39,7 +39,7 @@ namespace STELLAREST_F1
                 if (CreatureAnim.CanSkillTrigger == false)
                     return false;
 
-                SkillBase currentSkill = CreatureSkill.GetSkill;
+                SkillBase currentSkill = CreatureSkill.ReadyToActivate;
                 if (currentSkill == null || currentSkill.RemainCoolTime > 0f)
                 {
                     CreatureAnim.ReadySkill = false;
@@ -325,6 +325,10 @@ namespace STELLAREST_F1
             => CreatureAnim.CollectEnv();
         public void Dead()
             => CreatureAnim.Dead();
+
+        public virtual void LevelUp()
+        {
+        }
 
         // --Ready to Move "BaseCellObject.cs"
         // public EFindPathResult FindPathAndMoveToCellPos(Vector3 destPos, int maxDepth, EObjectType ignoreCellObjType = EObjectType.None)

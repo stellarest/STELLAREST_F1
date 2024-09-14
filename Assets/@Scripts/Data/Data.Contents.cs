@@ -568,6 +568,7 @@ namespace STELLAREST_F1.Data
         public bool IsLoop;
         public float AddAmount;
         public float AddPercent;
+        public float AddMulti;
         public float Period;
         public float Duration;
         public EObjectSize EffectSize;

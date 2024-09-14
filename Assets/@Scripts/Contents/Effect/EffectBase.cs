@@ -14,6 +14,8 @@ namespace STELLAREST_F1
     // Ex. TickTime: 1, TickCount: 5 -> 1초 마다 5번 실행하겠다. 근데 난 그냥 Duration, Period로
     // Monster와 다르게 Effect 여러가지 상속 구조로 가기 위해 베이스 클래스가 이렇게 구성되어 있음. Effect의 핵심은 "상속"
     // --- 단순 VFX, Buff/DeBuff, Dot, CC
+
+    // --- Level Up
     public abstract class EffectBase : BaseObject
     {
         private BaseCellObject _owner = null;
@@ -29,6 +31,7 @@ namespace STELLAREST_F1
         protected SkillBase _skill = null;
         public void SetSkill(SkillBase skill) => _skill = skill;
 
+        // --- 쿨타임 무제한은 반드시 EffectData.Period, EffectData.Duration 모두 음수로 설정
         public EffectData EffectData { get; private set; } = null;
         public bool IsLoop { get; private set; } = false;
         public float Period { get; private set; } = 0.0f;
@@ -45,6 +48,7 @@ namespace STELLAREST_F1
 
             ObjectType = EObjectType.Effect;
             SortingGroup.sortingOrder = ReadOnly.SortingLayers.SLOrder_Effect;
+
             return true;
         }
 
@@ -60,7 +64,7 @@ namespace STELLAREST_F1
         protected override void EnterInGame(Vector3 spawnPos)
         {
             base.EnterInGame(spawnPos);
-            Remains = EffectData.Duration < 0.0f ? 
+            Remains = (EffectData.Duration < 0.0f && EffectData.Period < 0.0f) ? 
                       float.MaxValue : EffectData.Duration * EffectData.Period;
 
             if (EffectData.Duration < 0.0f)

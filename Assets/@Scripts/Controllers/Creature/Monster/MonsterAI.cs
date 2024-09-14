@@ -79,7 +79,7 @@ namespace STELLAREST_F1
             _monsterOwner.LookAtValidTarget();
             if (IsEndMoveAnim && _monsterOwner.CanSkill)
             {
-                _monsterOwner.CreatureSkill.GetSkill.DoSkill();
+                _monsterOwner.CreatureSkill.ReadyToActivate.DoSkill();
                 return;
             }
             else if (_coPatrol == null)

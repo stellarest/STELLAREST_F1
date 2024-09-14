@@ -10,14 +10,28 @@ namespace STELLAREST_F1
     public class SkillComponent : InitBase
     {
         private Creature _owner = null;
-        public List<SkillBase> Skills { get; } = new List<SkillBase>();
-        // public List<SkillBase> ActiveSkills { get; } = new List<SkillBase>();
 
-        // --- DEV 
+        public List<SkillBase> Skills { get; } = new List<SkillBase>();
         public List<SkillBase> ActiveSkills = new List<SkillBase>();
 
-        public SkillBase FindSkill(int dataID) => Skills.FirstOrDefault(n => n.DataTemplateID == dataID);
-        public SkillBase[] SkillArray { get; private set; } = new SkillBase[(int)ESkillType.Max]; // --- Caching
+        private const int c_Skill_A_ID = 100;
+        private const int c_Skill_B_ID = 200;
+        private const int c_Skill_C_ID = 300;
+
+#if UNITY_EDITOR
+        public string ActiveSkillB = "";
+        public string ActiveSkillC = "";
+#endif
+
+        public SkillBase FindSkill(int skillDataID) 
+            => Skills.FirstOrDefault(s => s.DataTemplateID == skillDataID);
+        public SkillBase FindSkill(ESkillType skillType) 
+            => Skills.FirstOrDefault(s => s.SkillType == skillType);
+
+
+        // public SkillBase[] SkillArray { get; private set; } = new SkillBase[(int)ESkillType.Max]; // --- Caching
+        public SkillBase[] SkillArray { get; private set; } = null; // --- Caching
+
         [field: SerializeField] public ESkillType CurrentSkillType { get; set; } = ESkillType.None;
         public SkillBase CurrentSkill
         {
@@ -30,7 +44,7 @@ namespace STELLAREST_F1
             }
         }
 
-        public SkillBase GetSkill
+        public SkillBase ReadyToActivate
         {
             get
             {
@@ -64,21 +78,29 @@ namespace STELLAREST_F1
         {
             _owner = owner;
 
-            if (SkillArray == null)
-                SkillArray = new SkillBase[(int)ESkillType.Max];
+            SkillArray = SkillArray == null ? new SkillBase[(int)ESkillType.Max] : SkillArray;
 
             // --- Default Skill(A)
-            SkillArray[(int)ESkillType.Skill_A] = InitialAddSkill(creatureData.Skill_A_ID);
+            SkillArray[(int)ESkillType.Skill_A] = AddSkill(creatureData.Skill_A_ID);
+            Skills.Add(SkillArray[(int)ESkillType.Skill_A]);
 
-            // --- Active Skill1(B)
-            SkillArray[(int)ESkillType.Skill_B] = InitialAddSkill(creatureData.Skill_B_ID);
+            // --- Active Skill(B)
+            SkillArray[(int)ESkillType.Skill_B] = AddSkill(creatureData.Skill_B_ID);
             if (SkillArray[(int)ESkillType.Skill_B] != null)
-                ActiveSkills.Add(SkillArray[(int)ESkillType.Skill_B]);
-
-            // --- Active Skill2(C)
-            SkillArray[(int)ESkillType.Skill_C] = InitialAddSkill(creatureData.Skill_C_ID);
+            {
+                // ActiveSkills.Add(SkillArray[(int)ESkillType.Skill_B]);
+                AddActiveSkill(SkillArray[(int)ESkillType.Skill_B]);
+                Skills.Add(SkillArray[(int)ESkillType.Skill_B]);
+            }
+            
+            // --- Active Skill(C)
+            SkillArray[(int)ESkillType.Skill_C] = AddSkill(creatureData.Skill_C_ID);
             if (SkillArray[(int)ESkillType.Skill_C] != null)
-                ActiveSkills.Add(SkillArray[(int)ESkillType.Skill_C]);
+            {
+                // ActiveSkills.Add(SkillArray[(int)ESkillType.Skill_C]);
+                AddActiveSkill(SkillArray[(int)ESkillType.Skill_C]);
+                Skills.Add(SkillArray[(int)ESkillType.Skill_C]);
+            }
 
             // --- Check Validation (All Creatures must have one skill at least.)
             {
@@ -98,7 +120,7 @@ namespace STELLAREST_F1
             }
         }
 
-        private SkillBase InitialAddSkill(int skillDataID)
+        private SkillBase AddSkill(int skillDataID)
         {
             if (skillDataID == -1)
                 return null;
@@ -113,13 +135,13 @@ namespace STELLAREST_F1
             SkillBase skill = gameObject.AddComponent(skillClassType) as SkillBase;
             if (skill == null)
             {
-                Debug.LogError($"{nameof(InitialAddSkill)}, You have a SkillDataID, but Add Failed.");
+                Debug.LogError($"{nameof(AddSkill)}, You have a SkillDataID, but Add Failed.");
                 Debug.Break();
                 return null;
             }
 
             skill.InitialSetInfo(dataID: skillDataID, owner: _owner);
-            Skills.Add(skill);
+            // Skills.Add(skill);
             return skill;
         }
 
@@ -128,12 +150,18 @@ namespace STELLAREST_F1
             if (skill.SkillType == ESkillType.Skill_A)
                 return;
 
-            if (skill.SkillType == ESkillType.Skill_C)
-            {
-                Debug.Log("ddd");
-            }
+            // if (skill.SkillType == ESkillType.Skill_C)
+            //     Debug.Log("ADDED SKILL C !!");
 
             Debug.Log($"<color=cyan>Ready(Add): {skill.Dev_TextID}</color>");
+
+#if UNITY_EDITOR
+            if (skill.SkillType == ESkillType.Skill_B)
+                ActiveSkillB = skill.Dev_TextID;
+            else if (skill.SkillType == ESkillType.Skill_C)
+                ActiveSkillC = skill.Dev_TextID;
+#endif
+
             ActiveSkills.Add(skill);
         }
 
@@ -150,6 +178,67 @@ namespace STELLAREST_F1
                 => SkillArray[(int)skillType]?.OnSkillStateEnter();
         public void OnSkillStateExit(ESkillType skillType)
                 => SkillArray[(int)skillType]?.OnSkillStateExit();
+
+        /*
+            // LevelUpSkill Ref
+
+            [Paladin]: 101000 ~ 101004
+            - Skill_A: 101100 ~ 101104
+            - Skill_B: 101200 ~ 101204
+            - Skill_C: 101300 ~ 101304
+
+            1. 일반 (Common)
+            2. 고급 (Uncommon)
+            3. 레어 (Rare)
+            4. 에픽 (Epic)
+            5. 전설 (Legendary)
+        */
+        public void LevelUpSkill(int ownerLevelID)
+        {
+            LevelUpSkill(ownerLevelID + c_Skill_A_ID, ESkillType.Skill_A);
+
+            // --- 애초에 처음부터 존재하지 않는 스킬은 스킬 레벨업 불가능
+            if (SkillArray[(int)ESkillType.Skill_B] != null)
+                LevelUpSkill(ownerLevelID + c_Skill_B_ID, ESkillType.Skill_B);
+            else
+                Debug.LogWarning($"Faield to {nameof(LevelUpSkill)}: Skill_B");
+
+            if (SkillArray[(int)ESkillType.Skill_C] != null)
+                LevelUpSkill(ownerLevelID + c_Skill_C_ID, ESkillType.Skill_C);
+            else
+                Debug.LogWarning($"Faield to {nameof(LevelUpSkill)}: Skill_C");
+        }
+
+        private void LevelUpSkill(int skillDataID, ESkillType skillType)
+        {
+            int nextSkillID = skillDataID;
+            SkillBase prevSkill = SkillArray[(int)skillType];
+            SkillBase nextSkill = AddSkill(nextSkillID);
+            if (nextSkill != null)
+            {
+                SkillArray[(int)skillType] = nextSkill;
+                if (IsActiveSkill(skillType))
+                {
+                    // ActiveSkills.Remove(prevSkill);
+                    RemoveActiveSkill(prevSkill);
+                    AddActiveSkill(nextSkill);
+                    // ActiveSkills.Add(nextSkill);
+                }
+
+                Skills.Remove(prevSkill);
+
+                Debug.Log($"--- Success to remove prev Skill: {prevSkill.Dev_TextID}");
+                UnityEngine.Object.Destroy(prevSkill);
+                Debug.Log($"<color=white>Success {nameof(LevelUpSkill)}: {skillType}, {nextSkill.Dev_TextID}</color>");
+            }
+            else
+            {
+                Debug.LogError($"Failed to find next Skill data: {skillDataID}, {skillType}");
+            }
+        }
+
+        private bool IsActiveSkill(ESkillType skillType)
+            => skillType == ESkillType.Skill_B || skillType == ESkillType.Skill_C;
 
         private void OnDisable()
         {

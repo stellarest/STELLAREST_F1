@@ -151,7 +151,6 @@ namespace STELLAREST_F1
             // AtkBase
             // ...
             // MovementSpeedBase
-
             float prevMaxHp = MaxHp;
 
             // ... Apply MaxHp = MaxHpBase,,,

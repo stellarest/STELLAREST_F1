@@ -77,24 +77,25 @@ namespace STELLAREST_F1
                 // Debug.Log($"<color=white>Is GameOver: {Managers.Game.IsGameOver}</color>");
             }
 
-            if (Input.GetKeyDown("1"))
-                Managers.Game.ChangeHeroLeader(autoChangeFromDead: false);
+            // --- HERO MEMBERS TEST
+            // if (Input.GetKeyDown("1"))
+            //     Managers.Game.ChangeHeroLeader(autoChangeFromDead: false);
 
-            if (Input.GetKeyDown("2"))
-                Managers.Object.HeroLeaderController.ChangeFormation_Dev();
+            // if (Input.GetKeyDown("2"))
+            //     Managers.Object.HeroLeaderController.ChangeFormation_Dev();
 
-            if (Input.GetKeyDown("4"))
-            {
-                bool forceFollowToLeader = Managers.Object.HeroLeaderController.ForceFollowToLeader;
-                Managers.Object.HeroLeaderController.ForceFollowToLeader = !forceFollowToLeader;
-                Debug.Log($"<color=white>ForceFollowToLeader: {Managers.Object.HeroLeaderController.ForceFollowToLeader}</color>");
-            }
+            // if (Input.GetKeyDown("4"))
+            // {
+            //     bool forceFollowToLeader = Managers.Object.HeroLeaderController.ForceFollowToLeader;
+            //     Managers.Object.HeroLeaderController.ForceFollowToLeader = !forceFollowToLeader;
+            //     Debug.Log($"<color=white>ForceFollowToLeader: {Managers.Object.HeroLeaderController.ForceFollowToLeader}</color>");
+            // }
 
-            if (Input.GetKeyDown("9"))
-                Managers.Object.HeroLeaderController.ShuffleMembersPosition();
+            // if (Input.GetKeyDown("9"))
+            //     Managers.Object.HeroLeaderController.ShuffleMembersPosition();
 
-            if (Input.GetKeyDown(KeyCode.I))
-                ShowCellPosText();
+            // if (Input.GetKeyDown(KeyCode.I))
+            //     ShowCellPosText();
 
             if (Input.GetKeyDown(KeyCode.O))
                 OnOffTileCollider();
