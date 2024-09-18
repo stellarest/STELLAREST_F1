@@ -48,8 +48,13 @@ namespace STELLAREST_F1
         {
             base.InitialSetInfo(dataID);
             EnvData = Managers.Data.EnvDataDict[dataID];
+#if UNITY_EDITOR
+            Dev_TextID = EnvData.DevTextID;
+#endif
             EnvType = EnvData.EnvType;
-            _maxLevelID = dataID;
+            // --- BaseStat
+            // _maxLevelID = dataID;
+
             gameObject.name += $"_{EnvData.DevTextID.Replace(" ", "")}";
         }
 
@@ -90,7 +95,6 @@ namespace STELLAREST_F1
             //         }
             //         break;
             // }
-
         }
 
         public override bool OnDamaged(BaseCellObject attacker, SkillBase skillByAttacker)
@@ -103,18 +107,18 @@ namespace STELLAREST_F1
             if ((attacker as Hero).CreatureRarity == ECreatureRarity.Elite)
                 finalDamage++;
 
-            Hp = Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
+            Health = Mathf.Clamp(Health - finalDamage, 0f, MaxHealth);
             Managers.Object.ShowDamageFont(
-                                            position: CenterPosition,
-                                            damage: finalDamage,
-                                            Color.white,
-                                            isCritical: false,
-                                            fontSignType: EFontSignType.None,
-                                            EFontAnimationType.EndSmaller
-                                        );
-            if (Hp <= 0f)
+                                                position: CenterPosition,
+                                                damage: finalDamage,
+                                                Color.white,
+                                                isCritical: false,
+                                                fontSignType: EFontSignType.None,
+                                                EFontAnimationType.EndSmaller
+                                          );
+            if (Health <= 0f)
             {
-                Hp = 0f;
+                Health = 0f;
                 OnDead(attacker, skillByAttacker);
             }
             else

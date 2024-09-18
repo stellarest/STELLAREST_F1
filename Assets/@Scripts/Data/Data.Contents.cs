@@ -212,6 +212,7 @@ namespace STELLAREST_F1.Data
     {
         public EMonsterType MonsterType;
         public EObjectSize MonsterSize;
+        public int MonsterMaxLevel;
         public int DropItemID;
     }
 
@@ -327,7 +328,7 @@ namespace STELLAREST_F1.Data
     {
         public EEnvType EnvType;
         public string AnimatorLabel;
-        public float MaxHp;
+        public float MaxHealth;
         public int DropItemID;
     }
 
@@ -417,12 +418,13 @@ namespace STELLAREST_F1.Data
 
     public class StatData : BaseData
     {
-        public float MaxHp;
-        public float MinAtk;
-        public float MaxAtk;
+        public float MaxHealth;
+        public float MinAttack;
+        public float MaxAttack;
         public float CriticalRate;
-        public float DodgeRate;
+	    public float DodgeRate;
         public float MovementSpeed;
+	    public float Luck;
     }
 
     [Serializable]

@@ -8,12 +8,13 @@ using static STELLAREST_F1.Define;
 namespace STELLAREST_F1
 {
     /// <summary>
-    /// Creatures(Hero, Monster), Env
+    /// Creatures(Hero, Monster, Summon), Env
     /// </summary>
     public class BaseCellObject : BaseObject
     {
         public BaseBody BaseBody { get; private set; } = null;
         public BaseAnimation BaseAnim { get; private set; } = null;
+        public BaseStat BaseStat { get; private set; } = null; // 일단은 Env도 들고 있게. 헷갈림.
         public EffectComponent BaseEffect { get; private set; } = null;
 
         [SerializeField] private ELookAtDirection _lookAtDir = ELookAtDirection.Right;
@@ -67,37 +68,62 @@ namespace STELLAREST_F1
             }
         }
 
-        // --- Stat
-        [SerializeField] protected int _levelID = 0;
-        public int Level => (_levelID % DataTemplateID) + 1;
+        /*  [Stat Data]
 
-        [SerializeField] protected int _maxLevelID = 0;
-        public int MaxLevel => (_maxLevelID % DataTemplateID) + 1;
-        protected bool IsMaxLevel => _levelID == _maxLevelID;
+            public float MaxHealth;
+            public float MinAttack;
+            public float MaxAttack;
+            public float CriticalRate;
+            public float DamageReductionRate;
+	        public float DodgeRate;
+            public float MovementSpeed;
 
-        [SerializeField] private float _hp = 0.0f;
-        public float Hp
-        {
-            get => _hp;
-            protected set => _hp = value;
-        }
-        [field: SerializeField] public float ShieldHp { get; set; } = 0.0f;
 
-        // + ShieldCount // --- 피격 횟수 무효 가능한 갯수
+	        public float Luck;                  
+	        public int InvincibleCount;
+        */
 
-        public float MaxHpBase { get; set; } = 0.0f;
-        public float MinAtkBase { get; set; } = 0.0f;
-        public float MaxAtkBase { get; set; } = 0.0f;
-        public float CriticalRateBase { get; set; } = 0.0f;
-        public float DodgeRateBase { get; set; } = 0.0f;
-        public float MovementSpeedBase { get; set; } = 0.0f;
+        // ***** Stat Prev *****
+        // --- Stat: Level
+        // [SerializeField] protected int _levelID = 0;
+        // public int Level => (_levelID % DataTemplateID) + 1;
 
-        [field: SerializeField] public float MaxHp { get; set; } = 0.0f;
-        [field: SerializeField] public float MinAtk { get; set; } = 0.0f;
-        [field: SerializeField] public float MaxAtk { get; set; } = 0.0f;
-        [field: SerializeField] public float CriticalRate { get; set; } = 0.0f;
-        [field: SerializeField] public float DodgeRate { get; set; } = 0.0f;
-        [field: SerializeField] public float MovementSpeed { get; set; } = 0.0f;
+        // [SerializeField] protected int _maxLevelID = 0;
+        // public int MaxLevel => (_maxLevelID % DataTemplateID) + 1;
+        // protected bool IsMaxLevel => _levelID == _maxLevelID;
+
+        // // --- Stat
+        // [SerializeField] private float _health = 0.0f;
+        // public float Health
+        // {
+        //     get => _health;
+        //     protected set => _health = value;
+        // }
+
+        // [field: SerializeField] public float BonusHealth { get; set; } = 0.0f;
+
+        // [field: SerializeField] public float MaxHealth { get; set; } = 0.0f;
+        // public float MaxHealthBase { get; protected set; } = 0.0f;
+
+
+        // public float MinAttackBase { get; protected set; } = 0.0f;
+        // public float MaxAttackBase { get; protected set; } = 0.0f;
+        // public float MovementSpeedRateBase { get; protected set; } = 0.0f;
+        
+        // public float MaxHpBase { get; set; } = 0.0f;
+        // public float MinAtkBase { get; set; } = 0.0f;
+        // public float MaxAtkBase { get; set; } = 0.0f;
+        // public float CriticalRateBase { get; set; } = 0.0f;
+        // public float DodgeRateBase { get; set; } = 0.0f;
+        // public float MovementSpeedBase { get; set; } = 0.0f;
+
+        // [field: SerializeField] public float MaxHp { get; set; } = 0.0f;
+        // [field: SerializeField] public float MinAtk { get; set; } = 0.0f;
+        // [field: SerializeField] public float MaxAtk { get; set; } = 0.0f;
+        // [field: SerializeField] public float CriticalRate { get; set; } = 0.0f;
+        // [field: SerializeField] public float DodgeRate { get; set; } = 0.0f;
+        // [field: SerializeField] public float MovementSpeed { get; set; } = 0.0f;
+
 
         #region Core
         public override bool Init()
@@ -107,6 +133,7 @@ namespace STELLAREST_F1
 
             BaseBody = gameObject.GetOrAddComponent<BaseBody>();
             BaseAnim = Util.FindChild<BaseAnimation>(gameObject, name: ReadOnly.Util.AnimationBody, recursive: false);
+            BaseStat = gameObject.GetOrAddComponent<BaseStat>();
             return true;
         }
 
@@ -115,16 +142,21 @@ namespace STELLAREST_F1
             base.InitialSetInfo(dataID);
             BaseBody.InitialSetInfo(dataID, this);
             BaseAnim.InitialSetInfo(dataID, this);
+            BaseStat.InitialSetInfo(dataID, this);            
+
             BaseEffect = gameObject.GetOrAddComponent<EffectComponent>();
             BaseEffect.InitialSetInfo(this);
-            _levelID = dataID;
+            // _levelID = dataID;
         }
 
         protected override void EnterInGame(Vector3 spawnPos)
         {
             base.EnterInGame(spawnPos);
             Targets.Clear();
-            SetStat(_levelID);
+
+            //SetStat(_levelID);
+            BaseStat.RefreshStat();
+
             BaseBody.ResetMaterialsAndColors();
             BaseBody.StartCoFadeInEffect();
             SpawnedCellPos = Managers.Map.WorldToCell(spawnPos);
@@ -141,29 +173,29 @@ namespace STELLAREST_F1
             // BaseBody.StartCoFadeOutEffect(() => OnDeadFadeOutCompleted());
         }
         #endregion
-
+        
         #region Background
         public virtual void ApplyStat()
         {
-            ShieldHp = ApplyFinalStat(baseValue: MaxHpBase, applyStatType: EApplyStatType.ShieldHp);
+            BonusHealth = ApplyFinalStat(baseValue: MaxHealthBase, applyStatType: EApplyStatType.BonusHealth);
 
             // MaxHpBase
             // AtkBase
             // ...
             // MovementSpeedBase
-            float prevMaxHp = MaxHp;
+            float prevMaxHealth = MaxHealth;
 
             // ... Apply MaxHp = MaxHpBase,,,
-            if (prevMaxHp != MaxHpBase)
+            if (prevMaxHealth != MaxHealthBase)
             {
                 // 현재의 hp를 증가된 MaxHp만큼의 비율로 조정한다.
-                _hp = MaxHp * (_hp / prevMaxHp);
+                Health = MaxHealth * (Health / prevMaxHealth);
 
                 // Final Min, Max Check
-                _hp = Mathf.Clamp(value: _hp, min: 0.0f, max: MaxHp);
+                Health = Mathf.Clamp(value: Health, min: 0.0f, max: MaxHealth);
             }
 
-            float ratio = _hp / MaxHp;
+            float ratio = Health / MaxHealth;
             // HpBar.Refresh(ratio); -- LATER TODO
         }
 
@@ -249,7 +281,7 @@ namespace STELLAREST_F1
             while (pathQueue.Count != 0)
             {
                 Vector3 destPos = Managers.Map.CellToCenteredWorld(nextPos);
-                Vector3 dir = destPos - transform.position; // 왜 이걸로하면 안되지
+                Vector3 dir = destPos - transform.position;
                 if (dir.x < 0f)
                     LookAtDir = ELookAtDirection.Left;
                 else if (dir.x > 0f)
@@ -450,36 +482,74 @@ namespace STELLAREST_F1
                 LookAtDir = ELookAtDirection.Right;
         }
 
-        protected void SetStat(int levelID)
-        {
-            StatData statData = null;
-            switch (ObjectType)
-            {
-                case EObjectType.Hero:
-                    statData = Managers.Data.HeroStatDataDict[levelID];
-                    break;
+        // --- PREV
+        // protected void SetStat(int levelID)
+        // {
+        //     StatData statData = null;
+        //     switch (ObjectType)
+        //     {
+        //         case EObjectType.Hero:
+        //             statData = Managers.Data.HeroStatDataDict[levelID];
+        //             break;
 
-                case EObjectType.Monster:
-                    statData = Managers.Data.MonsterStatDataDict[levelID];
-                    break;
+        //         case EObjectType.Monster:
+        //             statData = Managers.Data.MonsterStatDataDict[levelID];
+        //             break;
 
-                case EObjectType.Env:
-                    {
-                        EnvData envData = Managers.Data.EnvDataDict[levelID];
-                        Hp = envData.MaxHp;
-                        MaxHp = MaxHpBase = envData.MaxHp;
-                        return;
-                    }
-            }
+        //         case EObjectType.Env:
+        //             {
+        //                 EnvData envData = Managers.Data.EnvDataDict[levelID];
+                        
+        //                 Health = envData.MaxHealth;
+        //                 MaxHp = MaxHpBase = envData.MaxHealth;
+        //                 return;
+        //             }
+        //     }
 
-            Hp = statData.MaxHp;
-            MaxHp = MaxHpBase = statData.MaxHp;
-            MinAtk = MinAtkBase = statData.MinAtk;
-            MaxAtk = MaxAtkBase = statData.MaxAtk;
-            CriticalRate = CriticalRateBase = statData.CriticalRate;
-            DodgeRate = DodgeRateBase = statData.DodgeRate;
-            MovementSpeed = MovementSpeedBase = statData.MovementSpeed;
-        }
+        //     Health = statData.MaxHealth;
+        //     MaxHp = MaxHpBase = statData.MaxHealth;
+        //     MinAtk = MinAtkBase = statData.MinAttack;
+        //     MaxAtk = MaxAtkBase = statData.MaxAttack;
+        //     CriticalRate = CriticalRateBase = statData.CriticalRate;
+        //     DodgeRate = DodgeRateBase = statData.DodgeRate;
+        //     MovementSpeed = MovementSpeedBase = statData.MovementSpeed;
+        // }
+        #endregion
+
+        #region Stat Util
+        // --- Main Stat
+        public float Health { get => BaseStat.Health; set => BaseStat.Health = value; }
+        public float MaxHealth { get => BaseStat.MaxAttack; set => BaseStat.MaxHealth = value; }
+        public float MaxHealthBase => BaseStat.MaxHealthBase;
+
+        public float MinAttack { get => BaseStat.MinAttack; set => BaseStat.MinAttack = value; }
+        public float MinAttackBase => BaseStat.MinAttackBase;
+
+        public float MaxAttack { get => BaseStat.MaxAttack; set => BaseStat.MaxAttack = value; }
+        public float MaxAttackBase => BaseStat.MaxAttackBase;
+
+        public float CriticalRate { get => BaseStat.CriticalRate; set => BaseStat.CriticalRate = value; }
+        public float CriticalRateBase => BaseStat.CriticalRateBase;
+
+        public float DodgeRate { get => BaseStat.DodgeRate; set => BaseStat.DodgeRate = value; }
+        public float DodgeRateBase => BaseStat.DodgeRateBase;
+
+        public float MovementSpeed { get => BaseStat.MovementSpeed; set => BaseStat.MovementSpeed = value; }
+        public float MovementSpeedBase => BaseStat.MovementSpeedBase;
+
+        public float Luck { get => BaseStat.Luck; set => BaseStat.Luck = value; }
+        public float LuckBase => BaseStat.LuckBase;
+
+        // --- Sub Stat
+        public float BonusHealth { get => BaseStat.BonusHealth; set => BaseStat.BonusHealth = value; }
+        public float DamageReductinoRate { get => BaseStat.DamageReductinoRate; set => BaseStat.DamageReductinoRate = value; }
+        public float AllDebuffResistance { get => BaseStat.AllDebuffResistance; set => BaseStat.AllDebuffResistance = value; }
+        public int InvincibleCount { get => BaseStat.InvincibleCount; set => BaseStat.InvincibleCount = value; }
+
+        // --- Level
+        public int Level => BaseStat.Level;
+        public int MaxLevel => BaseStat.MaxLevel;
+        public bool IsMaxLevel => BaseStat.IsMaxLevel;
+        #endregion
     }
-    #endregion
 }

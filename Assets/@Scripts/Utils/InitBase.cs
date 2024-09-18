@@ -7,6 +7,10 @@ namespace STELLAREST_F1
 {
     public class InitBase : MonoBehaviour
     {
+#if UNITY_EDITOR
+        public string Dev_TextID = null;
+#endif
+
         private void Awake() 
             => Init();
 

@@ -15,10 +15,6 @@ namespace STELLAREST_F1
         public Vector3 EnteredTargetDir { get; protected set; } = Vector3.zero;
         public int EnteredSignX { get; protected set; } = 0;
 
-        #if UNITY_EDITOR
-        public string Dev_TextID = null;
-        #endif
-
         public Creature Owner { get; private set; } = null;
         protected bool IsValidOwner => Owner.IsValid();
         protected bool IsValidTarget => Owner.Target.IsValid();
@@ -195,9 +191,9 @@ namespace STELLAREST_F1
             else if (owner.ObjectType == EObjectType.Monster)
                 SkillData = Managers.Data.MonsterSkillDataDict[dataID];
 
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             Dev_TextID = SkillData.DevTextID;
-            #endif
+#endif
 
             InvokeRange = SkillData.InvokeRange;
             TargetRange = SkillData.TargetRange;

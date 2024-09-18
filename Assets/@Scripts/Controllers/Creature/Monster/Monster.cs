@@ -92,7 +92,12 @@ namespace STELLAREST_F1
             base.InitialSetInfo(dataID);
             _monsterAI = CreatureAI as MonsterAI;
             MonsterData = Managers.Data.MonsterDataDict[dataID];
-            _maxLevelID = dataID;
+#if UNITY_EDITOR
+            Dev_TextID = MonsterData.DevTextID;
+#endif
+
+            // --- BaseStat
+            // _maxLevelID = dataID;
 
             MonsterType = MonsterData.MonsterType;
             gameObject.name += $"_{MonsterData.DevTextID.Replace(" ", "")}_{SpawnNumber++}";
@@ -119,10 +124,10 @@ namespace STELLAREST_F1
             if (base.OnDamaged(attacker, skillByAttacker) == false)
                 return false;
 
-            float damage = UnityEngine.Random.Range(attacker.MinAtk, attacker.MaxAtk);
+            float damage = UnityEngine.Random.Range(attacker.MinAttack, attacker.MaxAttack);
             float finalDamage = Mathf.FloorToInt(damage);
             // --- 몬스터도 ShieldHp Buff 가능
-            if (ShieldHp > 0.0f)
+            if (BonusHealth > 0.0f)
             {
                 OnDamagedShieldHp(finalDamage);
                 return true;
@@ -133,7 +138,7 @@ namespace STELLAREST_F1
             if (isCritical)
                 finalDamage *= 1 + 0.5f;
 
-            Hp = Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
+            Health = Mathf.Clamp(Health - finalDamage, 0f, MaxHealth);
             List<EffectBase> hitEffects = skillByAttacker.GenerateSkillEffects(
                                                     effectIDs: skillByAttacker.SkillData.HitEffectIDs,
                                                     spawnPos: Util.GetRandomQuadPosition(this.CenterPosition)
@@ -164,9 +169,9 @@ namespace STELLAREST_F1
                            );
             }
 
-            if (Hp <= 0f)
+            if (Health <= 0f)
             {
-                Hp = 0f;
+                Health = 0f;
                 OnDead(attacker, skillByAttacker);
             }
             else
@@ -178,8 +183,8 @@ namespace STELLAREST_F1
 
         public override void OnDamagedShieldHp(float finalDamage)
         {
-            ShieldHp = Mathf.Clamp(ShieldHp - finalDamage, 0.0f, ShieldHp);
-            if (ShieldHp == 0.0f)
+            BonusHealth = Mathf.Clamp(BonusHealth - finalDamage, 0.0f, BonusHealth);
+            if (BonusHealth == 0.0f)
                 BaseEffect.ExitShowBuffEffects(EEffectBuffType.ShieldHp);
             else
             {
@@ -208,25 +213,25 @@ namespace STELLAREST_F1
         public override void OnDead(BaseCellObject attacker, SkillBase skillFromAttacker)
             => base.OnDead(attacker, skillFromAttacker);
 
-        public override void LevelUp()
-        {
-            if (this.IsValid() == false)
-                return;
+        // public override void LevelUp()
+        // {
+        //     if (this.IsValid() == false)
+        //         return;
 
-            if (IsMaxLevel)
-            {
-                Debug.Log($"<color=magenta>MAX LEVEL !!{gameObject.name}</color>");
-                return;
-            }
+        //     if (IsMaxLevel)
+        //     {
+        //         Debug.Log($"<color=magenta>MAX LEVEL !!{gameObject.name}</color>");
+        //         return;
+        //     }
 
-            _levelID = Mathf.Clamp(_levelID + 1, DataTemplateID, _maxLevelID);
-            Debug.Log($"<color=white>Lv: {Level} / MaxLv: {MaxLevel}</color>");
-            if (Managers.Data.MonsterStatDataDict.TryGetValue(key: _levelID, value: out MonsterStatData statData))
-            {
-                SetStat(_levelID);
-                CreatureSkill.LevelUpSkill(ownerLevelID: _levelID);
-            }
-        }
+        //     _levelID = Mathf.Clamp(_levelID + 1, DataTemplateID, _maxLevelID);
+        //     Debug.Log($"<color=white>Lv: {Level} / MaxLv: {MaxLevel}</color>");
+        //     if (Managers.Data.MonsterStatDataDict.TryGetValue(key: _levelID, value: out MonsterStatData statData))
+        //     {
+        //         SetStat(_levelID);
+        //         CreatureSkill.LevelUpSkill(ownerLevelID: _levelID);
+        //     }
+        // }
 
         protected override void OnDisable()
             => base.OnDisable();

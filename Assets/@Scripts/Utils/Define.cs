@@ -10,6 +10,15 @@ namespace STELLAREST_F1
 {
     public static class Define
     {
+        public enum EGameGrade
+        {
+            Common,
+            Uncommon,
+            Rare,
+            Epic,
+            Legendary
+        }
+
         public enum ECreatureRarity
         {
             None = -1,
@@ -435,7 +444,7 @@ namespace STELLAREST_F1
         {
             None = -1,
             MaxHp = 1,
-            ShieldHp,
+            BonusHealth,
             // --- HpRegen
             Atk,
             // --- AtkSpeed

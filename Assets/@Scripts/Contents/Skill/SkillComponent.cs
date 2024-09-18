@@ -14,9 +14,9 @@ namespace STELLAREST_F1
         public List<SkillBase> Skills { get; } = new List<SkillBase>();
         public List<SkillBase> ActiveSkills = new List<SkillBase>();
 
-        private const int c_Skill_A_ID = 100;
-        private const int c_Skill_B_ID = 200;
-        private const int c_Skill_C_ID = 300;
+        private const int c_Skill_A_INTERVAL_NUMBER = 100;
+        private const int c_Skill_B_INTERVAL_NUMBER = 200;
+        private const int c_Skill_C_INTERVAL_NUMBER = 300;
 
 #if UNITY_EDITOR
         public string ActiveSkillB = "";
@@ -141,7 +141,6 @@ namespace STELLAREST_F1
             }
 
             skill.InitialSetInfo(dataID: skillDataID, owner: _owner);
-            // Skills.Add(skill);
             return skill;
         }
 
@@ -195,16 +194,17 @@ namespace STELLAREST_F1
         */
         public void LevelUpSkill(int ownerLevelID)
         {
-            LevelUpSkill(ownerLevelID + c_Skill_A_ID, ESkillType.Skill_A);
+            // --- Creature는 Skill_A를 무조건 가지고 있어야함.
+            LevelUpSkill(ownerLevelID + c_Skill_A_INTERVAL_NUMBER, ESkillType.Skill_A);
 
             // --- 애초에 처음부터 존재하지 않는 스킬은 스킬 레벨업 불가능
             if (SkillArray[(int)ESkillType.Skill_B] != null)
-                LevelUpSkill(ownerLevelID + c_Skill_B_ID, ESkillType.Skill_B);
+                LevelUpSkill(ownerLevelID + c_Skill_B_INTERVAL_NUMBER, ESkillType.Skill_B);
             else
                 Debug.LogWarning($"Faield to {nameof(LevelUpSkill)}: Skill_B");
 
             if (SkillArray[(int)ESkillType.Skill_C] != null)
-                LevelUpSkill(ownerLevelID + c_Skill_C_ID, ESkillType.Skill_C);
+                LevelUpSkill(ownerLevelID + c_Skill_C_INTERVAL_NUMBER, ESkillType.Skill_C);
             else
                 Debug.LogWarning($"Faield to {nameof(LevelUpSkill)}: Skill_C");
         }

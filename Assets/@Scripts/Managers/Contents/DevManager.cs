@@ -94,11 +94,8 @@ namespace STELLAREST_F1
             // if (Input.GetKeyDown("9"))
             //     Managers.Object.HeroLeaderController.ShuffleMembersPosition();
 
-            // if (Input.GetKeyDown(KeyCode.I))
-            //     ShowCellPosText();
-
-            if (Input.GetKeyDown(KeyCode.O))
-                OnOffTileCollider();
+            if (Input.GetKeyDown(KeyCode.I)) ShowCellPosText();
+            if (Input.GetKeyDown(KeyCode.O)) OnOffTileCollider();
         }
 
         private void ShowCellPosText()

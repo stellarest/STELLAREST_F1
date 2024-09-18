@@ -21,6 +21,7 @@ namespace STELLAREST_F1
         public static bool IsValid(this Transform tr)
             => tr != null && tr.gameObject.activeSelf;
 
+        // --- TODO SOMETHING.
         public static bool IsValid(this BaseObject bo)
         {
             if (bo != null && bo.isActiveAndEnabled)
@@ -30,11 +31,11 @@ namespace STELLAREST_F1
                     case EObjectType.Hero:
                     case EObjectType.Monster:
                         Creature creature = bo as Creature;
-                        return (creature.CreatureAIState != ECreatureAIState.Dead) && (creature.Hp > 0f);
+                        return (creature.CreatureAIState != ECreatureAIState.Dead) && (creature.Health > 0f);
 
                     case EObjectType.Env:
                         Env env = bo as Env;
-                        return (env.EnvState != EEnvState.Dead) && (env.Hp > 0f);
+                        return (env.EnvState != EEnvState.Dead) && (env.Health > 0f);
 
                     // ##### TODO #####
                     case EObjectType.Projectile:

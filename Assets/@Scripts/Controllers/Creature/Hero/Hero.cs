@@ -7,7 +7,6 @@ using UnityEngine;
 using STELLAREST_F1.Data;
 using static STELLAREST_F1.Define;
 
-
 namespace STELLAREST_F1
 {
     public class Hero : Creature
@@ -17,7 +16,9 @@ namespace STELLAREST_F1
         {
             if (Input.GetKeyDown(KeyCode.T))
             {
-                LevelUp();
+                if (LevelUp() == false)
+                    Debug.LogWarning($"Faield to LvUp, IsMaxLv: {IsMaxLevel}");
+                // BaseStat.LevelUp();
             }
         }
         #endif
@@ -154,8 +155,12 @@ namespace STELLAREST_F1
             base.InitialSetInfo(dataID);
             HeroAI = CreatureAI as HeroAI;
             HeroData = Managers.Data.HeroDataDict[dataID];
-            for (int i = DataTemplateID; i < DataTemplateID + ReadOnly.Util.HeroMaxLevel;)
-                _maxLevelID = i++;
+#if UNITY_EDITOR
+            Dev_TextID = HeroData.DevTextID;
+#endif
+            // --- BaseStat
+            // for (int i = DataTemplateID; i < DataTemplateID + ReadOnly.Util.HeroMaxLevel;)
+            //     _maxLevelID = i++;
 
             gameObject.name += $"_{HeroData.DevTextID.Replace(" ", "")}";
         }
@@ -182,9 +187,9 @@ namespace STELLAREST_F1
             if (base.OnDamaged(attacker, skillByAttacker) == false)
                 return false;
 
-            float damage = UnityEngine.Random.Range(attacker.MinAtk, attacker.MaxAtk);
+            float damage = UnityEngine.Random.Range(attacker.MinAttack, attacker.MaxAttack);
             float finalDamage = Mathf.FloorToInt(damage);
-            if (ShieldHp > 0.0f)
+            if (BonusHealth > 0.0f)
             {
                 OnDamagedShieldHp(finalDamage);
                 return true;
@@ -195,7 +200,7 @@ namespace STELLAREST_F1
             if (isCritical)
                 finalDamage *= 1 + 0.5f;
 
-            Hp = Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
+            Health = Mathf.Clamp(Health - finalDamage, 0f, MaxHealth);
             List<EffectBase> hitEffects = skillByAttacker.GenerateSkillEffects(
                                                     effectIDs: skillByAttacker.SkillData.HitEffectIDs,
                                                     spawnPos: Util.GetRandomQuadPosition(this.CenterPosition)
@@ -225,9 +230,9 @@ namespace STELLAREST_F1
                            );
             }
 
-            if (Hp <= 0f)
+            if (Health <= 0f)
             {
-                Hp = 0f;
+                Health = 0f;
                 OnDead(attacker, skillByAttacker);
             }
             else
@@ -238,8 +243,8 @@ namespace STELLAREST_F1
 
         public override void OnDamagedShieldHp(float finalDamage)
         {
-            ShieldHp = Mathf.Clamp(ShieldHp - finalDamage, 0.0f, ShieldHp);
-            if (ShieldHp == 0.0f)
+            BonusHealth = Mathf.Clamp(BonusHealth - finalDamage, 0.0f, BonusHealth);
+            if (BonusHealth == 0.0f)
                 BaseEffect.ExitShowBuffEffects(EEffectBuffType.ShieldHp);
             else
             {
@@ -278,7 +283,7 @@ namespace STELLAREST_F1
             float value = baseValue;
 
             // --- Shield는 약간 예외다.
-            if (applyStatType == EApplyStatType.ShieldHp)
+            if (applyStatType == EApplyStatType.BonusHealth)
             {
                 // --- 예를 들어, 현재 최대 체력이 1000이고, "최대 체력의 10% 만큼에 해당하는 쉴드 에너지를 얻는다"라고 했을 때
                 value *= 1 + BaseEffect.ApplyStatModifier(applyStatType, EStatModType.AddPercent);
@@ -345,31 +350,45 @@ namespace STELLAREST_F1
             base.OnDeadFadeOutCompleted();
         }
 
-        public override void LevelUp()
+        public override bool LevelUp()
         {
-            if (this.IsValid() == false)
-                return;
+            if (BaseStat.LevelUp() == false)
+                return false;
 
+            CreatureSkill.LevelUpSkill(ownerLevelID: BaseStat.LevelID);
             if (IsMaxLevel)
             {
-                Debug.Log($"<color=magenta>MAX LEVEL !!{gameObject.name}</color>");
-                return;
+                Debug.Log($"<color=yellow>MaxUp Hero</color>");
+                CreatureRarity = ECreatureRarity.Elite; // --- 이거 바꿔야할듯.
+                HeroBody.ChangeSpriteSet(Managers.Data.HeroSpriteDataDict[BaseStat.LevelID]);
             }
 
-            _levelID = Mathf.Clamp(_levelID + 1, DataTemplateID, _maxLevelID);
-            Debug.Log($"<color=white>Lv: {Level} / MaxLv: {MaxLevel}</color>");
-            if (Managers.Data.HeroStatDataDict.TryGetValue(key: _levelID, value: out HeroStatData statData))
-            {
-                SetStat(_levelID);
-                CreatureSkill.LevelUpSkill(ownerLevelID: _levelID);
-            }
+            return true;
 
-            if (IsMaxLevel)
-            {
-                Debug.Log("<color=yellow>CHANGE: LEGENDARY HERO</color>");
-                CreatureRarity = ECreatureRarity.Elite;
-                HeroBody.ChangeSpriteSet(Managers.Data.HeroSpriteDataDict[_levelID]);
-            }
+            // ---------- PREV ----------
+            // if (this.IsValid() == false)
+            //     return;
+
+            // if (IsMaxLevel)
+            // {
+            //     Debug.Log($"<color=magenta>MAX LEVEL !!{gameObject.name}</color>");
+            //     return;
+            // }
+
+            // _levelID = Mathf.Clamp(_levelID + 1, DataTemplateID, _maxLevelID);
+            // Debug.Log($"<color=white>Lv: {Level} / MaxLv: {MaxLevel}</color>");
+            // if (Managers.Data.HeroStatDataDict.TryGetValue(key: _levelID, value: out HeroStatData statData))
+            // {
+            //     SetStat(_levelID);
+            //     CreatureSkill.LevelUpSkill(ownerLevelID: _levelID);
+            // }
+
+            // if (IsMaxLevel)
+            // {
+            //     Debug.Log("<color=yellow>CHANGE: LEGENDARY HERO</color>");
+            //     CreatureRarity = ECreatureRarity.Elite;
+            //     HeroBody.ChangeSpriteSet(Managers.Data.HeroSpriteDataDict[_levelID]);
+            // }
         }
         
         private IEnumerator CoInitialReleaseLeaderHeroAI()

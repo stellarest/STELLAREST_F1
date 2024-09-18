@@ -16,7 +16,6 @@ namespace STELLAREST_F1
         public CreatureBody CreatureBody { get; protected set; } = null;
         public CreatureAnimation CreatureAnim { get; private set; } = null;
         public CreatureAnimationCallback CreatureAnimCallback { get; private set; } = null;
-
         // Buff Component ???
 
         public bool CanSkill
@@ -326,9 +325,8 @@ namespace STELLAREST_F1
         public void Dead()
             => CreatureAnim.Dead();
 
-        public virtual void LevelUp()
-        {
-        }
+        public virtual bool LevelUp() 
+            => false;
 
         // --Ready to Move "BaseCellObject.cs"
         // public EFindPathResult FindPathAndMoveToCellPos(Vector3 destPos, int maxDepth, EObjectType ignoreCellObjType = EObjectType.None)
