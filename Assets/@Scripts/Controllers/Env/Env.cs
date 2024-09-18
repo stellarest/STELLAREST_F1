@@ -97,10 +97,10 @@ namespace STELLAREST_F1
             // }
         }
 
-        public override bool OnDamaged(BaseCellObject attacker, SkillBase skillByAttacker)
+        public override void OnDamaged(BaseCellObject attacker, SkillBase skillByAttacker)
         {
             if (this.IsValid() == false)
-                return false;
+                return;
 
             float finalDamage = 1f;
             // --- TEMP
@@ -127,7 +127,7 @@ namespace STELLAREST_F1
                 EnvBody.StartCoHurtFlashEffect(isCritical: false);
             }
 
-            return true;
+            return;
         }
 
         // public override void OnDamaged(BaseCellObject attacker, SkillBase skillFromAttacker)

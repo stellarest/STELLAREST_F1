@@ -50,6 +50,8 @@ namespace STELLAREST_F1
             }
             else if (_owner.ObjectType == EObjectType.Monster)
             {
+                // *** MonsterMaxLevel이 몬스터 데이터에 추가되었으므로
+                // 추후에 MonsterStatData 작성할 때 주의해야함. 
                 MonsterData monsterData = Managers.Data.MonsterDataDict[dataID];
                 for (int i = dataID; i < dataID + monsterData.MonsterMaxLevel;)
                     _maxLevelID = i++;

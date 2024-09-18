@@ -163,8 +163,7 @@ namespace STELLAREST_F1
             Managers.Map.ForceMove(cellObj: this, cellPos: SpawnedCellPos, ignoreCellObjType: EObjectType.None);
         }
 
-        public virtual bool OnDamaged(BaseCellObject attacker, SkillBase skillByAttacker) 
-            => true;
+        public virtual void OnDamaged(BaseCellObject attacker, SkillBase skillByAttacker) { }
 
         //public virtual void OnDamaged(BaseCellObject attacker, SkillBase skillByAttacker) { }
         public virtual void OnDead(BaseCellObject attacker, SkillBase skillFromAttacker)
@@ -519,7 +518,7 @@ namespace STELLAREST_F1
         #region Stat Util
         // --- Main Stat
         public float Health { get => BaseStat.Health; set => BaseStat.Health = value; }
-        public float MaxHealth { get => BaseStat.MaxAttack; set => BaseStat.MaxHealth = value; }
+        public float MaxHealth { get => BaseStat.MaxHealth; set => BaseStat.MaxHealth = value; }
         public float MaxHealthBase => BaseStat.MaxHealthBase;
 
         public float MinAttack { get => BaseStat.MinAttack; set => BaseStat.MinAttack = value; }

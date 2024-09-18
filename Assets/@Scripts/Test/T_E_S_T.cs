@@ -8,6 +8,9 @@ using DG.Tweening;
 using UnityEditor;
 
 /*
+// --- Shield Test (Buff)
+// --- Try and Adjust Buff
+
 // --- My Fantasy Heroes
 // - 광고 있는 버전, 제한된 버전
 // - 광고 없는 버전 (3,300)

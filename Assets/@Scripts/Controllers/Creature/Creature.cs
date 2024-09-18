@@ -213,18 +213,102 @@ namespace STELLAREST_F1
         private void LateUpdate()
             => UpdateCellPos();
 
-        public override bool OnDamaged(BaseCellObject attacker, SkillBase skillByAttacker)
+        public override void OnDamaged(BaseCellObject attacker, SkillBase skillByAttacker)
         {
             if (CreatureAIState == ECreatureAIState.Dead)
-                return false;
+                return;
 
             if (attacker.IsValid() == false)
-                return false;
+                return;
 
-            return true;
+            float damage = UnityEngine.Random.Range(attacker.MinAttack, attacker.MaxAttack);
+            bool isCritical = UnityEngine.Random.Range(0, 2) == 0 ? true : false;
+            if (isCritical)
+                damage *= 1 + 0.5f;
+
+            float finalDamage = Mathf.FloorToInt(damage);
+
+            if (BonusHealth > 0.0f)
+            {
+                // --- Critical Font for Shield Buff
+                if (isCritical)
+                {
+                    BaseEffect.GenerateEffect(effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_ImpactCriticalHit,
+                                              skill: null);
+                    Managers.Object.ShowTextFont(
+                                   position: CenterPosition + Vector3.up * 0.65f,
+                                   text: "CRITICAL",
+                                   textSize: 5.0f,
+                                   textColor: Color.cyan,
+                                   fontAssetType: EFontAssetType.Comic,
+                                   fontAnimType: EFontAnimationType.EndSmaller
+                               );
+                }
+
+                OnDamagedShieldHp(finalDamage, isCritical);
+                return;
+            }
+
+            Health = Mathf.Clamp(Health - finalDamage, 0f, MaxHealth);
+            List<EffectBase> hitEffects = skillByAttacker.GenerateSkillEffects(
+                                                    effectIDs: skillByAttacker.SkillData.HitEffectIDs,
+                                                    spawnPos: Util.GetRandomQuadPosition(this.CenterPosition)
+                                                    );
+
+            Managers.Object.ShowDamageFont(
+                                            position: CenterPosition,
+                                            damage: finalDamage,
+                                            textColor: ObjectType == EObjectType.Monster ? Color.white : Color.red,
+                                            isCritical: isCritical,
+                                            fontSignType: EFontSignType.None,
+                                            EFontAnimationType.EndFalling
+                                        );
+
+            if (isCritical)
+            {
+                BaseEffect.GenerateEffect(effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_ImpactCriticalHit,
+                                          skill: null);
+                Managers.Object.ShowTextFont(
+                               position: CenterPosition + Vector3.up * 0.65f,
+                               text: "CRITICAL",
+                               textSize: 5.0f,
+                               textColor: Color.red,
+                               fontAssetType: EFontAssetType.Comic,
+                               fontAnimType: EFontAnimationType.EndFallingShake
+                           );
+            }
+
+            if (Health <= 0f)
+            {
+                Health = 0f;
+                OnDead(attacker, skillByAttacker);
+            }
+            else
+                BaseBody.StartCoHurtFlashEffect(isCritical: isCritical);
         }
 
-        public virtual void OnDamagedShieldHp(float finalDamage) { }
+        public void OnDamagedShieldHp(float finalDamage, bool isCritical)
+        {
+            BonusHealth = Mathf.Clamp(BonusHealth - finalDamage, 0.0f, BonusHealth);
+            if (BonusHealth == 0.0f)
+                BaseEffect.ExitShowBuffEffects(EEffectBuffType.ShieldHp);
+            else
+            {
+                BaseEffect.OnShowBuffEffects(EEffectBuffType.ShieldHp);
+                Managers.Object.ShowDamageFont(
+                                position: CenterPosition,
+                                damage: finalDamage,
+                                textColor: ObjectType == EObjectType.Hero ? Color.cyan : Color.blue,
+                                isCritical: isCritical,
+                                fontSignType: EFontSignType.Minus,
+                                fontAnimFunc: () =>
+                                {
+                                    return UnityEngine.Random.Range(0, 2) == 0 ?
+                                                EFontAnimationType.EndBouncingLeftUp :
+                                                EFontAnimationType.EndBouncingRightUp;
+                                });
+            }
+        }
 
         // --- OnDamaged 리턴 타입을 bool로 바꾸기
         // --- Hero가 데미지를 받을 때는 빨간색
