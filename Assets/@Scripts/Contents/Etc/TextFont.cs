@@ -201,6 +201,10 @@ namespace STELLAREST_F1
                 case EFontAnimationType.EndBouncingRightUp:
                     FontAnimEndBouncingRightUp(endCallback);
                     break;
+
+                case EFontAnimationType.EndTestAnim:
+                    EndTestAnim(endCallback);
+                    break;
             }
         }
 
@@ -332,6 +336,12 @@ namespace STELLAREST_F1
                 endCallback?.Invoke();
             });
 
+            seq.Play();
+        }
+
+        private void EndTestAnim(System.Action endCallback = null)
+        {
+            Sequence seq = DOTween.Sequence();
             seq.Play();
         }
         #endregion

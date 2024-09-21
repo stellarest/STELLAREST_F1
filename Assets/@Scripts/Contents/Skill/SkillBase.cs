@@ -221,7 +221,7 @@ namespace STELLAREST_F1
             Owner.Moving = false; // --- Blending Anim(Move to Idle)
             if (SkillData.EnterStateEffectIDs.Length != 0)
             {
-                List<EffectBase> enterStateEffects = GenerateSkillEffects(effectIDs: SkillData.EnterStateEffectIDs, this);
+                List<EffectBase> enterStateEffects = GenerateSkillEffects(effectIDs: SkillData.EnterStateEffectIDs, skill: this);
             }
             
             return true;
@@ -236,7 +236,7 @@ namespace STELLAREST_F1
             {
                 if (SkillData.OnStateEffectIDs.Length != 0)
                 {
-                    List<EffectBase> onStateEffects = GenerateSkillEffects(effectIDs: SkillData.OnStateEffectIDs, this);
+                    List<EffectBase> onStateEffects = GenerateSkillEffects(effectIDs: SkillData.OnStateEffectIDs, skill: this);
                 }
                 return true;
             }
@@ -249,7 +249,7 @@ namespace STELLAREST_F1
             _skillTargets.Clear();
             if (SkillData.EndStateEffectIDs.Length != 0)
             {
-                List<EffectBase> endStateEffects = GenerateSkillEffects(effectIDs: SkillData.EndStateEffectIDs, this);
+                List<EffectBase> endStateEffects = GenerateSkillEffects(effectIDs: SkillData.EndStateEffectIDs, skill: this);
             }
         }
         #endregion Events
@@ -259,7 +259,7 @@ namespace STELLAREST_F1
             if (Owner.IsValid() == false)
                 return null;
 
-            return Owner.BaseEffect.GenerateEffects(effectIDs, skill);
+            return Owner.BaseEffect.GenerateEffects(effectIDs, this);
         }
 
         public List<EffectBase> GenerateSkillEffects(IEnumerable<int> effectIDs, Vector3 spawnPos, SkillBase skill = null)
@@ -267,7 +267,7 @@ namespace STELLAREST_F1
             if (Owner.IsValid() == false)
                 return null;
 
-            return Owner.BaseEffect.GenerateEffects(effectIDs, spawnPos, skill);
+            return Owner.BaseEffect.GenerateEffects(effectIDs, spawnPos, this);
         }
 
         protected void GatherMeleeTargets()

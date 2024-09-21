@@ -19,7 +19,9 @@ namespace STELLAREST_F1
         protected override void InitialSetInfo(int dataID)
         {
             base.InitialSetInfo(dataID);
-            EffectBuffType = EEffectBuffType.ShieldHp;
+            EffectBuffType = EEffectBuffType.BonusHealthShield;
+            // EffectBuffType = EEffectBuffType.BonusHealth;
+
             _onShields = transform.GetChild(0).gameObject.GetComponentsInChildren<ParticleSystem>(includeInactive: true);
             for (int i = 0; i < _onShields.Length; ++i)
             {
@@ -49,6 +51,7 @@ namespace STELLAREST_F1
         public override void ApplyEffect()
         {
             base.ApplyEffect();
+            Owner.BaseEffect.SetEffectBuff(EffectBuffType, true);
         }
 
         public override void EnterShowEffect()
@@ -85,12 +88,14 @@ namespace STELLAREST_F1
                 _offShields[i].Play();
             }
 
+            Owner.BaseEffect.SetEffectBuff(EffectBuffType, true);
             StartCoroutine(CoRemoveShield());
         }
 
         private IEnumerator CoRemoveShield()
         {
             yield return new WaitForSeconds(2.0F);
+            
             Debug.Log("<color=red>SHIELD - REMOVE</color>");
             for (int i = 0; i < _offShields.Length; ++i)
                 _offShields[i].gameObject.SetActive(false);

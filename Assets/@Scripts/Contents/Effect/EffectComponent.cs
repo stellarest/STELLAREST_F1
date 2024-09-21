@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using STELLAREST_F1.Data;
 using UnityEngine;
 using static STELLAREST_F1.Define;
@@ -15,14 +16,23 @@ namespace STELLAREST_F1
         private const string EffectPoolingRootName = "";
         private BaseCellObject _owner = null;
         public List<EffectBase> ActiveEffects { get; } = new List<EffectBase>();
-        private Transform EffectPoolingRoot
-        {
-            get => null;
-        }
+        public Dictionary<EEffectBuffType, bool> IsOnEffectBuffDict { get; private set; } = null;
 
         public void InitialSetInfo(BaseObject owner)
         {
             _owner = owner.GetComponent<BaseCellObject>();
+            IsOnEffectBuffDict = new Dictionary<EEffectBuffType, bool>();
+        }
+
+        public void SetEffectBuff(EEffectBuffType buffClass, bool isOn)
+            => IsOnEffectBuffDict[buffClass] = isOn;
+
+        public bool IsOnEffectBuff(EEffectBuffType buffClass)
+        {
+            if (IsOnEffectBuffDict.TryGetValue(key: buffClass, out bool isOn) == false)
+                return false;
+
+            return isOn;
         }
 
         public EffectBase GenerateEffect(int effectID, SkillBase skill = null)

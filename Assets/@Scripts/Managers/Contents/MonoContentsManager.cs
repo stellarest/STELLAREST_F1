@@ -14,6 +14,14 @@ namespace STELLAREST_F1
         private TMP_FontAsset[] _fontAssets = null;
         public static MonoContentsManager Instance = null;
         [SerializeField] private AnimationCurve[] _curves = new AnimationCurve[(int)EAnimationCurveType.Max];
+
+        // --- Color Red
+        public Color BrightRed { get; } = new Color(r: 238.0f / 255.0f, g: 75.0f / 255.0f, b: 43.0f / 255.0f, a: 1.0f);
+
+        // --- Color Blue
+        public Color BrightBlue { get; } = new Color(r: 0.0f, g: 150.0f / 255.0f, b: 1.0f, a: 1.0f);
+        public Color NeonBlue { get; } = new Color(r: 31.0f / 255.0f, g: 81.0f / 255.0f, b: 1.0f, a: 1.0f);
+
         public AnimationCurve Curve(EAnimationCurveType curveType)
         {
             if (curveType == EAnimationCurveType.None || curveType == EAnimationCurveType.Max)

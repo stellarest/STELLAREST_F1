@@ -155,7 +155,7 @@ namespace STELLAREST_F1
             Targets.Clear();
 
             //SetStat(_levelID);
-            BaseStat.RefreshStat();
+            BaseStat.SetBaseStat();
 
             BaseBody.ResetMaterialsAndColors();
             BaseBody.StartCoFadeInEffect();
@@ -177,6 +177,7 @@ namespace STELLAREST_F1
         public virtual void ApplyStat()
         {
             BonusHealth = ApplyFinalStat(baseValue: MaxHealthBase, applyStatType: EApplyStatType.BonusHealth);
+            //DamageReductinoRate = ApplyFinalStat(baseValue: DamageReductinoRate,)
 
             // MaxHpBase
             // AtkBase
@@ -541,9 +542,10 @@ namespace STELLAREST_F1
 
         // --- Sub Stat
         public float BonusHealth { get => BaseStat.BonusHealth; set => BaseStat.BonusHealth = value; }
+        public float FixedBonusAttackAmount { get => BaseStat.FixedBonusAttackAmount; set => BaseStat.FixedBonusAttackAmount = value; }
         public float DamageReductinoRate { get => BaseStat.DamageReductinoRate; set => BaseStat.DamageReductinoRate = value; }
-        public float AllDebuffResistance { get => BaseStat.AllDebuffResistance; set => BaseStat.AllDebuffResistance = value; }
-        public int InvincibleCount { get => BaseStat.InvincibleCount; set => BaseStat.InvincibleCount = value; }
+        public float DebuffResistanceRate { get => BaseStat.DebuffResistanceRate; set => BaseStat.DebuffResistanceRate = value; }
+        public int InvincibleCountPerWave { get => BaseStat.InvincibleCountPerWave; set => BaseStat.InvincibleCountPerWave = value; }
 
         // --- Level
         public int Level => BaseStat.Level;

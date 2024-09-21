@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using STELLAREST_F1.Data;
 using static STELLAREST_F1.Define;
+using UnityEditor;
 
 namespace STELLAREST_F1
 {
@@ -213,6 +214,7 @@ namespace STELLAREST_F1
         private void LateUpdate()
             => UpdateCellPos();
 
+        // --- Integration again from Hero, Monster
         public override void OnDamaged(BaseCellObject attacker, SkillBase skillByAttacker)
         {
             if (CreatureAIState == ECreatureAIState.Dead)
@@ -222,162 +224,138 @@ namespace STELLAREST_F1
                 return;
 
             float damage = UnityEngine.Random.Range(attacker.MinAttack, attacker.MaxAttack);
-            bool isCritical = UnityEngine.Random.Range(0, 2) == 0 ? true : false;
+            bool isCritical = UnityEngine.Random.Range(0.0f, 1.0f) <= attacker.CriticalRate;
             if (isCritical)
-                damage *= 1 + 0.5f;
+                damage *= 1 + 0.5f; // --- 50% Damage Up Rate (Temp)
 
+            float remainedDamage = 0.0f;
             float finalDamage = Mathf.FloorToInt(damage);
-
+            
+            // DO SOMETHING: + Check Dodge, etc...
+            // if (InvincibleCountPerWave > 0) { ... }
+            // --- Bonus Health
             if (BonusHealth > 0.0f)
             {
-                // --- Critical Font for Shield Buff
-                if (isCritical)
+                float prevBonusHealth = finalDamage > BonusHealth ? BonusHealth : 0.0f;
+                remainedDamage = OnDamagedBonusHealth(finalDamage);
+                // --- Bonus Health: Shield
+                if (BaseEffect.IsOnEffectBuff(EEffectBuffType.BonusHealthShield))
                 {
-                    BaseEffect.GenerateEffect(effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_ImpactCriticalHit,
-                                              skill: null);
-                    Managers.Object.ShowTextFont(
-                                   position: CenterPosition + Vector3.up * 0.65f,
-                                   text: "CRITICAL",
-                                   textSize: 5.0f,
-                                   textColor: Color.cyan,
-                                   fontAssetType: EFontAssetType.Comic,
-                                   fontAnimType: EFontAnimationType.EndSmaller
-                               );
+                    BaseEffect.OnShowBuffEffects(EEffectBuffType.BonusHealthShield);
+                    if (BonusHealth == 0.0f || remainedDamage > 0.0f) // Bonus Helath가 0.0이라는 의미다.
+                    {
+                        // --- Shield의 경우에는 보호막이 깨지면, 나머지 잔여 데미지량은 무시(무효)한다.
+                        // --- FontAnim에 Random Height도 있으면 좋을 것 같은데.
+                        // --- Height + 좌측을 바라볼 때 BouncingRight, 우측을 바라볼 때 BouncingLeft.
+                        EFontAnimationType shieldBreakAnimType = 
+                            LookAtDir == ELookAtDirection.Left ? 
+                                         EFontAnimationType.EndBouncingRightUp :
+                                         EFontAnimationType.EndBouncingLeftUp;
+
+                        // --- Duration 추가해야 할 것 같은데.. BREAK !! 부분은 yellow로 하고 싶기도 하고
+                        ShowTextFont(text: "SHIELD\n  BREAK !!", fontSize: 5.5f, textColor: Managers.MonoContents.BrightBlue, fontAnimType: shieldBreakAnimType);
+                        BaseEffect.ExitShowBuffEffects(EEffectBuffType.BonusHealthShield);
+                        return;
+                    }
+                    else
+                    {
+                        // ShowDamageFont(finalDamage: finalDamage, fontColor: ObjectType == EObjectType.Hero ? Color.cyan : Color.blue,
+                        //     isCritical: isCritical, onDamagedBonusHealth: true);
+                        EFontAnimationType fontAnimType = UnityEngine.Random.Range(0, 2) == 0 ?
+                                                            EFontAnimationType.EndBouncingLeftUp :
+                                                            EFontAnimationType.EndBouncingRightUp;
+
+                        ShowDamageFont(damage: finalDamage, fontColor: ObjectType == EObjectType.Hero ? Color.cyan : Color.blue,
+                            fontSignType: EFontSignType.Minus, isCritical: isCritical, fontAnimType: fontAnimType);
+                    }
+
                 }
+                // --- Bonus Health: Other (잔여 데미지 처리)
+                // --- 나중에 쉴드 버프 종류가 추가되면 분기처리 로직으로 변경(지금은 일반 보너스 체력으로 가정)
+                else if (BaseEffect.IsOnEffectBuff(EEffectBuffType.BonusHealth))
+                {
+                    // DO SOMETHING...
+                    BaseEffect.OnShowBuffEffects(EEffectBuffType.BonusHealth);
+                    if (BonusHealth == 0.0f || remainedDamage > 0.0f) // Bonus Helath가 0.0이라는 의미다.
+                    {
+                        // --- 잔여 데미지 처리
+                        BaseEffect.ExitShowBuffEffects(EEffectBuffType.BonusHealth);
 
-                OnDamagedShieldHp(finalDamage, isCritical);
-                return;
+                        // --- 남아있있던 쉴드에 적용된 데미지 폰트 표시
+                        if (prevBonusHealth != 0.0f)
+                        {
+                            ShowDamageFont(damage: prevBonusHealth, fontColor: ObjectType == EObjectType.Hero ? Color.cyan : Color.blue,
+                                fontSignType: EFontSignType.Minus, isCritical: isCritical, fontAnimType: EFontAnimationType.EndBouncingLeftUp);
+                        }
+
+                        // --- 실제로체력에 적용된 데미지 포트 표시
+                        if (remainedDamage != 0.0f)
+                        {
+                            ShowDamageFont(damage: remainedDamage, fontColor: Managers.MonoContents.BrightRed,
+                                fontSignType: EFontSignType.None, isCritical: isCritical, fontAnimType: EFontAnimationType.EndBouncingRightUp);
+                        }
+                        else
+                            ShowTextFont(text: "ZERO DAMAGE", fontSize: 4.0f, textColor: Managers.MonoContents.BrightRed, fontAnimType: EFontAnimationType.EndBouncingRightUp);
+
+                        BaseEffect.ExitShowBuffEffects(EEffectBuffType.BonusHealth);
+                        Health = Mathf.Clamp(Health - remainedDamage, 0.0f, MaxHealth);
+                        if (Health <= 0.0f)
+                        {
+                            Health = 0.0f;
+                            OnDead(attacker, skillByAttacker);
+                        }
+                        else
+                        {
+                            BaseBody.StartCoHurtFlashEffect(isCritical: isCritical);
+                        }
+                    }
+                    else
+                    {
+                        EFontAnimationType fontAnimType = UnityEngine.Random.Range(0, 2) == 0 ?
+                                                            EFontAnimationType.EndBouncingLeftUp :
+                                                            EFontAnimationType.EndBouncingRightUp;
+
+                        ShowDamageFont(damage: finalDamage, fontColor: ObjectType == EObjectType.Hero ? Color.cyan : Color.blue,
+                            fontSignType: EFontSignType.Minus, isCritical: isCritical, fontAnimType: fontAnimType);
+                    }
+                }
             }
-
-            Health = Mathf.Clamp(Health - finalDamage, 0f, MaxHealth);
-            List<EffectBase> hitEffects = skillByAttacker.GenerateSkillEffects(
-                                                    effectIDs: skillByAttacker.SkillData.HitEffectIDs,
-                                                    spawnPos: Util.GetRandomQuadPosition(this.CenterPosition)
-                                                    );
-
-            Managers.Object.ShowDamageFont(
-                                            position: CenterPosition,
-                                            damage: finalDamage,
-                                            textColor: ObjectType == EObjectType.Monster ? Color.white : Color.red,
-                                            isCritical: isCritical,
-                                            fontSignType: EFontSignType.None,
-                                            EFontAnimationType.EndFalling
-                                        );
-
-            if (isCritical)
+            else // --- Damage to Default Health
             {
-                BaseEffect.GenerateEffect(effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_ImpactCriticalHit,
-                                          skill: null);
-                Managers.Object.ShowTextFont(
-                               position: CenterPosition + Vector3.up * 0.65f,
-                               text: "CRITICAL",
-                               textSize: 5.0f,
-                               textColor: Color.red,
-                               fontAssetType: EFontAssetType.Comic,
-                               fontAnimType: EFontAnimationType.EndFallingShake
-                           );
-            }
+                Health = Mathf.Clamp(Health - finalDamage, 0.0f, MaxHealth);
 
-            if (Health <= 0f)
-            {
-                Health = 0f;
-                OnDead(attacker, skillByAttacker);
+                ShowDamageFont(damage: finalDamage, fontColor: ObjectType == EObjectType.Monster ? Color.white : Color.red,
+                    isCritical: isCritical, fontSignType: EFontSignType.None, EFontAnimationType.EndFalling);
+
+                ShowImpactHit(skillByAttacker, isCritical);
+                if (isCritical)
+                    ShowTextFont(text: "CRITICAL", fontSize: 5.0f, textColor: Color.red, fontAnimType: EFontAnimationType.EndFallingShake);
+
+                if (Health <= 0.0f)
+                {
+                    Health = 0.0f;
+                    OnDead(attacker, skillByAttacker);
+                }
+                else
+                {
+                    BaseBody.StartCoHurtFlashEffect(isCritical: isCritical);
+                }
             }
-            else
-                BaseBody.StartCoHurtFlashEffect(isCritical: isCritical);
         }
 
-        public void OnDamagedShieldHp(float finalDamage, bool isCritical)
+        private float OnDamagedBonusHealth(float finalDamage)
         {
-            BonusHealth = Mathf.Clamp(BonusHealth - finalDamage, 0.0f, BonusHealth);
-            if (BonusHealth == 0.0f)
-                BaseEffect.ExitShowBuffEffects(EEffectBuffType.ShieldHp);
-            else
+            float remainedDamage = 0.0f;
+            if (finalDamage > BonusHealth)
             {
-                BaseEffect.OnShowBuffEffects(EEffectBuffType.ShieldHp);
-                Managers.Object.ShowDamageFont(
-                                position: CenterPosition,
-                                damage: finalDamage,
-                                textColor: ObjectType == EObjectType.Hero ? Color.cyan : Color.blue,
-                                isCritical: isCritical,
-                                fontSignType: EFontSignType.Minus,
-                                fontAnimFunc: () =>
-                                {
-                                    return UnityEngine.Random.Range(0, 2) == 0 ?
-                                                EFontAnimationType.EndBouncingLeftUp :
-                                                EFontAnimationType.EndBouncingRightUp;
-                                });
+                remainedDamage = finalDamage - BonusHealth;
+                BonusHealth = 0.0f;
             }
+            else
+                BonusHealth = Mathf.Clamp(BonusHealth - finalDamage, 0.0f, BonusHealth);
+
+            return remainedDamage;
         }
-
-        // --- OnDamaged 리턴 타입을 bool로 바꾸기
-        // --- Hero가 데미지를 받을 때는 빨간색
-        // --- Monster, Env가 데미지를 받을 때는 하얀색으로.
-        // public override void OnDamaged(BaseCellObject attacker, SkillBase skillByAttacker)
-        // {
-        //     if (CreatureAIState == ECreatureAIState.Dead)
-        //         return;
-
-        //     if (attacker.IsValid() == false)
-        //         return;
-
-        //     float damage = UnityEngine.Random.Range(attacker.MinAtk, attacker.MaxAtk);
-        //     float finalDamage = Mathf.FloorToInt(damage);
-        //     if (ShieldHp > 0.0f)
-        //     {
-        //         ShieldHp = Mathf.Clamp(ShieldHp - finalDamage, 0.0f, ShieldHp);
-        //         // Managers.Object.ShowDamageFont(position: this.CenterPosition, damage: finalDamage);
-        //         if (ShieldHp == 0.0f)
-        //             BaseEffect.ExitShowBuffEffects(EEffectBuffType.ShieldHp);
-        //         else
-        //         {
-        //             BaseEffect.OnShowBuffEffects(EEffectBuffType.ShieldHp);
-        //             // --- Shield는 치명타 먼역으로
-        //             Managers.Object.ShowDamageFont(
-        //                              position: CenterPosition,
-        //                             damage: finalDamage,
-        //                             textColor: Color.cyan,
-        //                             fontOutAnimFunc: () =>
-        //                             {
-        //                                 return UnityEngine.Random.Range(0, 2) == 0 ?
-        //                                             EFontOutAnimationType.OutBouncingLeftUp :
-        //                                             EFontOutAnimationType.OutBouncingRightUp;
-        //                             });
-        //         }
-
-        //         return;
-        //     }
-
-        //     Hp = Mathf.Clamp(Hp - finalDamage, 0f, MaxHp);
-        //     bool isCritical = false;
-
-        //     // --- Util.GetRandomQuadPosition or Hit Pos or Fixed Pos
-        //     List<EffectBase> hitEffects = skillByAttacker.GenerateSkillEffects(
-        //                                     effectIDs: skillByAttacker.SkillData.HitEffectIDs,
-        //                                     spawnPos: Util.GetRandomQuadPosition(this.CenterPosition)
-        //                                     );
-
-        //     isCritical = UnityEngine.Random.Range(0, 2) == 0 ? true : false;
-        //     Managers.Object.ShowDamageFont(
-        //                                     position: CenterPosition, 
-        //                                     damage: finalDamage, 
-        //                                     Color.red, 
-        //                                     isCritical: isCritical,
-        //                                     EFontOutAnimationType.OutFalling
-        //                                 );
-
-        //     // --- TEMP: Critical
-        //     // if (UnityEngine.Random.Range(0f, 100f) >= 50f)
-        //     //     isCritical = true;
-
-        //     if (Hp <= 0f)
-        //     {
-        //         Hp = 0f;
-        //         OnDead(attacker, skillByAttacker);
-        //     }
-        //     else
-        //         BaseBody.StartCoHurtFlashEffect(isCritical: isCritical);
-        // }
 
         public override void OnDead(BaseCellObject attacker, SkillBase skillFromAttacker)
         {
@@ -527,6 +505,29 @@ namespace STELLAREST_F1
                 StopCoroutine(_coWait);
             _coWait = null;
         }
+
+        #region Util Misc
+        protected void ShowDamageFont(float damage, Color fontColor, bool isCritical, EFontSignType fontSignType, EFontAnimationType fontAnimType)
+            => Managers.Object.ShowDamageFont(position: CenterPosition, damage: damage, textColor: fontColor, isCritical: isCritical,
+                                                fontSignType: fontSignType, fontAnimType: fontAnimType);
+
+        protected void ShowImpactHit(SkillBase skillByAttacker, bool isCritical)
+        {
+            if (isCritical)
+                BaseEffect.GenerateEffect(effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_ImpactCriticalHit, skill: null);
+
+            List<EffectBase> hitEffects = skillByAttacker.GenerateSkillEffects
+                                    (
+                                        effectIDs: skillByAttacker.SkillData.HitEffectIDs,
+                                        spawnPos: Util.GetRandomQuadPosition(this.CenterPosition)
+                                    );
+        }
+
+        // TextFont의 FontAssetType은 일단 Comic으로 고정
+        protected void ShowTextFont(string text, float fontSize, Color textColor, EFontAnimationType fontAnimType)
+            => Managers.Object.ShowTextFont(position: CenterPosition + Vector3.up * 0.65f, text: text, textSize: fontSize, textColor: textColor,
+                                                fontAssetType: EFontAssetType.Comic, fontAnimType: fontAnimType);
+        #endregion
 
         // protected Coroutine _coLerpToCellPos = null;
         // protected IEnumerator CoLerpToCellPos()

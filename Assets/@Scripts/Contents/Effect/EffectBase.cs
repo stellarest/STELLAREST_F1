@@ -81,6 +81,7 @@ namespace STELLAREST_F1
         {
             switch (objSize)
             {
+                case EObjectSize.None:
                 case EObjectSize.VerySmall:
                     break;
 

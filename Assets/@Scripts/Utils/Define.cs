@@ -428,9 +428,11 @@ namespace STELLAREST_F1
         public enum EEffectBuffType
         {
             None = -1,
-            MaxHp,
-            InfiniteMaxHp,
-            ShieldHp
+            DamageReduction,
+            BonusHealth,
+            BonusHealthShield,
+            AttackPowerUp,
+            SpeedUp,
         }
 
         public enum EEffectSpawnType
@@ -443,14 +445,16 @@ namespace STELLAREST_F1
         public enum EApplyStatType
         {
             None = -1,
-            MaxHp = 1,
+            MaxHp,
             BonusHealth,
-            // --- HpRegen
-            Atk,
-            // --- AtkSpeed
+            HealthRegenerationRate,
+            DamageReductionRate,
+            AttackPowerUpRate,
+            AttackSpeedUpRate,
             CriticalRate,
             DodgeRate,
-            MovementSpeed
+            MovementSpeed,
+            Max = MovementSpeed + 1
         }
 
         public enum EStatModType
@@ -507,6 +511,7 @@ namespace STELLAREST_F1
             EndFallingShake,
             EndBouncingLeftUp,
             EndBouncingRightUp,
+            EndTestAnim,
         }
 
         public enum EFontSignType
@@ -587,6 +592,7 @@ namespace STELLAREST_F1
                 public static readonly int DNPID_DamageFont = 109;
                 public static readonly int DNPID_TextFont = 110;
 
+                public static readonly int DNPID_Effect_Shield = 1010;
                 public static readonly int DNPID_Effect_ImpactCriticalHit = 1011;
 
                 public static readonly int DNPID_Hero_Paladin = 101000;

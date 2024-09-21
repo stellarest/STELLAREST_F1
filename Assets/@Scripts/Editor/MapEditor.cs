@@ -7,6 +7,7 @@ using UnityEngine.Tilemaps;
 using static STELLAREST_F1.Define;
 using UnityEditor.Timeline;
 using STELLAREST_F1.Data;
+using Codice.CM.Common.Tree;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -17,12 +18,11 @@ namespace STELLAREST_F1
 {
     public class MapEditor : EditorWindow
     {
+
 #if UNITY_EDITOR
         [MenuItem("Tools/PrintTest %#H")]
         private static void PrintTest()
         {
-            Debug.Log(Mathf.Acos(0.99f) * Mathf.Rad2Deg);
-
             // List<int> myNums = new List<int>();
             // for (int i = 1; i <= 5; ++i)
             // {

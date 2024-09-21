@@ -8,6 +8,11 @@ using DG.Tweening;
 using UnityEditor;
 
 /*
+// --- 보너스 체력 부분(쉴드일 때) 나머지 잔여 실제 체력에 대한 데미지 적용은 하지 않도록! (말 그대로 보호막)
+// --- 그 이외의 보너스 체력 부분은 보너스 체력이 깨졌을 때 remainedDamage를 적용시켜서 실제 체력에 데미지를 적용시킬것.
+// (이 때, 데미지 폰트를 띄우는 것도 조정해야겠지)
+// --- ObjectDisposedException: SerializedProperty 에러가 발생하면 채찍이 알려준 방법으로 적용해볼것.
+
 // --- Shield Test (Buff)
 // --- Try and Adjust Buff
 
