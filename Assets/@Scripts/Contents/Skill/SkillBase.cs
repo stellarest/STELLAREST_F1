@@ -116,7 +116,7 @@ namespace STELLAREST_F1
             RemainCoolTime = SkillData.CoolTime;
             if (_manualCoolTimeSkill)
             {
-                Debug.Log($"<color=magenta>{nameof(_manualCoolTimeSkill)}, {SkillData.DevTextID}</color>");
+                Debug.Log($"<color=magenta>{nameof(_manualCoolTimeSkill)}, {SkillData.Dev_NameTextID}</color>");
                 yield break;
             }
 
@@ -192,7 +192,7 @@ namespace STELLAREST_F1
                 SkillData = Managers.Data.MonsterSkillDataDict[dataID];
 
 #if UNITY_EDITOR
-            Dev_TextID = SkillData.DevTextID;
+            Dev_NameTextID = SkillData.Dev_NameTextID;
 #endif
 
             InvokeRange = SkillData.InvokeRange;

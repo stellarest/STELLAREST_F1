@@ -236,6 +236,7 @@ namespace STELLAREST_F1
             // --- Bonus Health
             if (BonusHealth > 0.0f)
             {
+                // --- 남아있있던 쉴드에 적용된 데미지 폰트를 표시하기 위해 이전의 마지막 보너스 데미지를 받아놓음.(EEffectBuffType.BonusHealth)
                 float prevBonusHealth = finalDamage > BonusHealth ? BonusHealth : 0.0f;
                 remainedDamage = OnDamagedBonusHealth(finalDamage);
                 // --- Bonus Health: Shield
@@ -259,8 +260,8 @@ namespace STELLAREST_F1
                     }
                     else
                     {
-                        // ShowDamageFont(finalDamage: finalDamage, fontColor: ObjectType == EObjectType.Hero ? Color.cyan : Color.blue,
-                        //     isCritical: isCritical, onDamagedBonusHealth: true);
+                        // --- 좌측을 바라볼 땐, EndBouncingRightUp, 우측을 바라볼 땐 EndBouncingLeftUp으로 설정하고
+                        // --- 데미지 폰트가 출력되는 높이를 랜덤으로 하는게 좋을듯.
                         EFontAnimationType fontAnimType = UnityEngine.Random.Range(0, 2) == 0 ?
                                                             EFontAnimationType.EndBouncingLeftUp :
                                                             EFontAnimationType.EndBouncingRightUp;
@@ -284,6 +285,7 @@ namespace STELLAREST_F1
                         // --- 남아있있던 쉴드에 적용된 데미지 폰트 표시
                         if (prevBonusHealth != 0.0f)
                         {
+                            // --- 이전 컬러는 BrightBlue였음. (기본 쉴드 데미지 폰터 컬러로 다시 변경함)
                             ShowDamageFont(damage: prevBonusHealth, fontColor: ObjectType == EObjectType.Hero ? Color.cyan : Color.blue,
                                 fontSignType: EFontSignType.Minus, isCritical: isCritical, fontAnimType: EFontAnimationType.EndBouncingLeftUp);
                         }
@@ -291,6 +293,7 @@ namespace STELLAREST_F1
                         // --- 실제로체력에 적용된 데미지 포트 표시
                         if (remainedDamage != 0.0f)
                         {
+                            // --- Damage FontColor: BrightRed
                             ShowDamageFont(damage: remainedDamage, fontColor: Managers.MonoContents.BrightRed,
                                 fontSignType: EFontSignType.None, isCritical: isCritical, fontAnimType: EFontAnimationType.EndBouncingRightUp);
                         }
@@ -320,7 +323,8 @@ namespace STELLAREST_F1
                     }
                 }
             }
-            else // --- Damage to Default Health
+            // --- Damage to Default Health (기본 데미지 처리)
+            else
             {
                 Health = Mathf.Clamp(Health - finalDamage, 0.0f, MaxHealth);
 
@@ -506,7 +510,7 @@ namespace STELLAREST_F1
             _coWait = null;
         }
 
-        #region Util Misc
+        #region Util - OnDamaged
         protected void ShowDamageFont(float damage, Color fontColor, bool isCritical, EFontSignType fontSignType, EFontAnimationType fontAnimType)
             => Managers.Object.ShowDamageFont(position: CenterPosition, damage: damage, textColor: fontColor, isCritical: isCritical,
                                                 fontSignType: fontSignType, fontAnimType: fontAnimType);

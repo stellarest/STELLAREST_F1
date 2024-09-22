@@ -461,6 +461,7 @@ namespace STELLAREST_F1
         {
             AddAmount,
             AddPercent,
+            AddPercentMulti
         }
 
         public enum EEffectClearType

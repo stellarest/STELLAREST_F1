@@ -49,13 +49,13 @@ namespace STELLAREST_F1
             base.InitialSetInfo(dataID);
             EnvData = Managers.Data.EnvDataDict[dataID];
 #if UNITY_EDITOR
-            Dev_TextID = EnvData.DevTextID;
+            Dev_NameTextID = EnvData.Dev_NameTextID;
 #endif
             EnvType = EnvData.EnvType;
             // --- BaseStat
             // _maxLevelID = dataID;
 
-            gameObject.name += $"_{EnvData.DevTextID.Replace(" ", "")}";
+            gameObject.name += $"_{EnvData.Dev_NameTextID.Replace(" ", "")}";
         }
 
         protected override void EnterInGame(Vector3 spawnPos)

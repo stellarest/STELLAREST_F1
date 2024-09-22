@@ -156,13 +156,13 @@ namespace STELLAREST_F1
             HeroAI = CreatureAI as HeroAI;
             HeroData = Managers.Data.HeroDataDict[dataID];
 #if UNITY_EDITOR
-            Dev_TextID = HeroData.DevTextID;
+            Dev_NameTextID = HeroData.Dev_NameTextID;
 #endif
             // --- BaseStat
             // for (int i = DataTemplateID; i < DataTemplateID + ReadOnly.Util.HeroMaxLevel;)
             //     _maxLevelID = i++;
 
-            gameObject.name += $"_{HeroData.DevTextID.Replace(" ", "")}";
+            gameObject.name += $"_{HeroData.Dev_NameTextID.Replace(" ", "")}";
         }
 
         protected override void EnterInGame(Vector3 spawnPos)
@@ -204,25 +204,22 @@ namespace STELLAREST_F1
             if (applyStatType == EApplyStatType.BonusHealth)
             {
                 // --- 예를 들어, 현재 최대 체력이 1000이고, "최대 체력의 10% 만큼에 해당하는 쉴드 에너지를 얻는다"라고 했을 때
-                value *= 1 + BaseEffect.ApplyStatModifier(applyStatType, EStatModType.AddPercent);
+                value *= 1 + BaseEffect.GetStatModifier(applyStatType, EStatModType.AddPercent);
                 // --- 100의 쉴드 에너지를 얻게 된다.
                 value = Mathf.Clamp(value - baseValue, 0.0f, baseValue);
                 // --- 이후 AddAmount가 되는 양이 있다면, 그것을 고정적으로 더해준다.
-                value += BaseEffect.ApplyStatModifier(applyStatType, EStatModType.AddAmount);
+                value += BaseEffect.GetStatModifier(applyStatType, EStatModType.AddAmount);
 
                 // --- 최종 설명 예시
                 // 스킬 설명: 최대 체력의 10%만큼 해당하는 쉴드 에너지를 얻는다.
                 // 아이템 설명: 275의 쉴드 에너지를 추가로 얻는다.
                 // ---> 1000(MaxHpBase), Shield Percent(0.1), Result: 100 + AddAmount(250) = 375
-                
-                // 아니면 애초에 AddPercent가 아닌 그냥 Percent 옵션도 추가해서 플래그를 통해
-                // Percent의 경우에는 Percent 또는 AddPercent 둘 중에 하나만 적용이 가능하도록 해도 될듯.
             }
             else
             {
                 // --- 기본적인 순서는 +부터 하는 것이 맞다고 봄
-                value += BaseEffect.ApplyStatModifier(applyStatType, EStatModType.AddAmount);
-                value *= 1 + BaseEffect.ApplyStatModifier(applyStatType, EStatModType.AddPercent);
+                value += BaseEffect.GetStatModifier(applyStatType, EStatModType.AddAmount);
+                value *= 1 + BaseEffect.GetStatModifier(applyStatType, EStatModType.AddPercent);
             }
 
             return value;

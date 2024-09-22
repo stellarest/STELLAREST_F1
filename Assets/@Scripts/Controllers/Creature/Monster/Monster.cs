@@ -93,14 +93,14 @@ namespace STELLAREST_F1
             _monsterAI = CreatureAI as MonsterAI;
             MonsterData = Managers.Data.MonsterDataDict[dataID];
 #if UNITY_EDITOR
-            Dev_TextID = MonsterData.DevTextID;
+            Dev_NameTextID = MonsterData.Dev_NameTextID;
 #endif
 
             // --- BaseStat
             // _maxLevelID = dataID;
 
             MonsterType = MonsterData.MonsterType;
-            gameObject.name += $"_{MonsterData.DevTextID.Replace(" ", "")}_{SpawnNumber++}";
+            gameObject.name += $"_{MonsterData.Dev_NameTextID.Replace(" ", "")}_{SpawnNumber++}";
         }
 
         protected override void EnterInGame(Vector3 spawnPos)

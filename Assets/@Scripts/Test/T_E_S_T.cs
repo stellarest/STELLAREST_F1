@@ -8,25 +8,21 @@ using DG.Tweening;
 using UnityEditor;
 
 /*
-// --- 보너스 체력 부분(쉴드일 때) 나머지 잔여 실제 체력에 대한 데미지 적용은 하지 않도록! (말 그대로 보호막)
-// --- 그 이외의 보너스 체력 부분은 보너스 체력이 깨졌을 때 remainedDamage를 적용시켜서 실제 체력에 데미지를 적용시킬것.
-// (이 때, 데미지 폰트를 띄우는 것도 조정해야겠지)
+// [TODO LIST]
+// ----->>> Infinite Effect (이것부터 할까? 귀찮은데. DamageReductionRate부터 해보기)
+// --- Dodge... (ExportHeroes에 DodgeHologram_Export받아 놨음. 이전 2DBase 프로젝트에서 Dodge 부분 참고)
+// --- Invincible Count...
+// --- Shield - Lightning
+// --- Shield - Fire...
+// --- Arhcer Muzzle Fire Effect...
+// --- EFontAnimationType.EndTestAnim 폰트 애니메이션 추가할 거 남아있음...
+
+// [NOTE]
 // --- ObjectDisposedException: SerializedProperty 에러가 발생하면 채찍이 알려준 방법으로 적용해볼것.
-
-// --- Shield Test (Buff)
-// --- Try and Adjust Buff
-
-// --- My Fantasy Heroes
-// - 광고 있는 버전, 제한된 버전
-// - 광고 없는 버전 (3,300)
-// - Stat 클래스로 교체해서 수정. 버프류 같은것은 스탯별로 SubStat으로 처리. 합연산 곱연산등.
-// --- BaseStat 주석 참고
-// --- Hero LevelUp쪽을 건드려야.
-// - 레벨과 스킬은 같이 오름. (개발의 편의성)
-// - UnCommon(특성 강화), Rare(1차 변화), Epic(매우 좋은 특성 강화), Legendary (매우 좋은 2차 변화 )밸런스로 떼우기.
-
-// --- STEP BY STEP
-Common, Uncommon, Rare, Epic, Legendary
+// --- 단순한 인스펙터 에러로 추측되긴함.
+// --- 유료 풀버전 부터 제작, 출시 -> 기능 제한 무료 버전 출시(+스테이지 오픈시에만 광고)
+// --- Common, Uncommon, Rare...: 거기서 거기, Epic, Ultimate: 체감되는 효과
+// --- Paladin: Endurance(5%, 12%, 20%, 30%, 40%)
 
 - 지금 레벨업하면, 히어로 스탯과 스킬 레벨이 같이 증가하는 것으로 되어 있음.
 ---> 이대로 가되, 스킬 효과만 Rare에서 조금 특별한 효과 주고, Legendary는 완전히 다르게 업그레이드 시켜주고.

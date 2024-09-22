@@ -174,7 +174,10 @@ namespace STELLAREST_F1
         #endregion
         
         #region Background
-        public virtual void ApplyStat()
+        public void ApplyStat() 
+            => BaseStat.ApplyStat(); 
+
+        public virtual void ApplyStat_T() // ---> Move to Stat.cs
         {
             BonusHealth = ApplyFinalStat(baseValue: MaxHealthBase, applyStatType: EApplyStatType.BonusHealth);
             //DamageReductinoRate = ApplyFinalStat(baseValue: DamageReductinoRate,)
@@ -184,17 +187,13 @@ namespace STELLAREST_F1
             // ...
             // MovementSpeedBase
             float prevMaxHealth = MaxHealth;
-
-            // ... Apply MaxHp = MaxHpBase,,,
-            if (prevMaxHealth != MaxHealthBase)
+            if (prevMaxHealth != MaxHealth)
             {
                 // 현재의 hp를 증가된 MaxHp만큼의 비율로 조정한다.
                 Health = MaxHealth * (Health / prevMaxHealth);
-
                 // Final Min, Max Check
                 Health = Mathf.Clamp(value: Health, min: 0.0f, max: MaxHealth);
             }
-
             float ratio = Health / MaxHealth;
             // HpBar.Refresh(ratio); -- LATER TODO
         }
@@ -516,7 +515,7 @@ namespace STELLAREST_F1
         // }
         #endregion
 
-        #region Stat Util
+        #region Util - Stat
         // --- Main Stat
         public float Health { get => BaseStat.Health; set => BaseStat.Health = value; }
         public float MaxHealth { get => BaseStat.MaxHealth; set => BaseStat.MaxHealth = value; }

@@ -113,7 +113,7 @@ namespace STELLAREST_F1
             return generatedEffects;
         }
 
-        public float ApplyStatModifier(EApplyStatType applyStatType, EStatModType statModType)
+        public float GetStatModifier(EApplyStatType applyStatType, EStatModType statModType)
         {
             float value = 0.0f;
             for (int i = 0; i < ActiveEffects.Count; ++i)
@@ -123,8 +123,23 @@ namespace STELLAREST_F1
 
                 if (CanApplyStatEffectType(ActiveEffects[i].EffectType))
                 {
-                    value = statModType == EStatModType.AddAmount ? 
-                            ActiveEffects[i].EffectData.AddAmount : ActiveEffects[i].EffectData.AddPercent;
+                    switch (statModType)
+                    {
+                        case EStatModType.AddAmount:
+                            value += ActiveEffects[i].EffectData.AddAmount;
+                            break;
+
+                        case EStatModType.AddPercent:
+                            value += ActiveEffects[i].EffectData.AddPercent;
+                            break;
+
+                        case EStatModType.AddPercentMulti:
+                            value += ActiveEffects[i].EffectData.AddPercentMulti;
+                            break;
+                    }
+
+                    // value = statModType == EStatModType.AddAmount ? 
+                    //         ActiveEffects[i].EffectData.AddAmount : ActiveEffects[i].EffectData.AddPercent;
                 }
             }
 

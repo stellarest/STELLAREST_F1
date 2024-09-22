@@ -51,6 +51,14 @@ namespace STELLAREST_F1
         public override void ApplyEffect()
         {
             base.ApplyEffect();
+            // 알 수 없는 사유로, BonusHealth가 여전히 0.0f일 경우, 해제하고 리턴한다.
+            if (Owner.BonusHealth == 0.0f)
+            {
+                Debug.Log("<color=cyan>ZERO HEALTH OF SHIELD</color>");
+                ExitShowEffect();
+                return;
+            }
+
             Owner.BaseEffect.SetEffectBuff(EffectBuffType, true);
         }
 
@@ -88,7 +96,7 @@ namespace STELLAREST_F1
                 _offShields[i].Play();
             }
 
-            Owner.BaseEffect.SetEffectBuff(EffectBuffType, true);
+            Owner.BaseEffect.SetEffectBuff(EffectBuffType, false);
             StartCoroutine(CoRemoveShield());
         }
 

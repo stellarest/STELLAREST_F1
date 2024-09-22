@@ -152,13 +152,13 @@ namespace STELLAREST_F1
             // if (skill.SkillType == ESkillType.Skill_C)
             //     Debug.Log("ADDED SKILL C !!");
 
-            Debug.Log($"<color=cyan>Ready(Add): {skill.Dev_TextID}</color>");
+            Debug.Log($"<color=cyan>Ready(Add): {skill.Dev_NameTextID}</color>");
 
 #if UNITY_EDITOR
             if (skill.SkillType == ESkillType.Skill_B)
-                ActiveSkillB = skill.Dev_TextID;
+                ActiveSkillB = skill.Dev_NameTextID;
             else if (skill.SkillType == ESkillType.Skill_C)
-                ActiveSkillC = skill.Dev_TextID;
+                ActiveSkillC = skill.Dev_NameTextID;
 #endif
 
             ActiveSkills.Add(skill);
@@ -169,7 +169,7 @@ namespace STELLAREST_F1
             if (skill.SkillType == ESkillType.Skill_A)
                 return;
 
-            Debug.Log($"<color=cyan>End(Remove): {skill.Dev_TextID}</color>");
+            Debug.Log($"<color=cyan>End(Remove): {skill.Dev_NameTextID}</color>");
             ActiveSkills.Remove(skill);
         }
 
@@ -227,9 +227,9 @@ namespace STELLAREST_F1
 
                 Skills.Remove(prevSkill);
 
-                Debug.Log($"--- Success to remove prev Skill: {prevSkill.Dev_TextID}");
+                Debug.Log($"--- Success to remove prev Skill: {prevSkill.Dev_NameTextID}");
                 UnityEngine.Object.Destroy(prevSkill);
-                Debug.Log($"<color=white>Success {nameof(LevelUpSkill)}: {skillType}, {nextSkill.Dev_TextID}</color>");
+                Debug.Log($"<color=white>Success {nameof(LevelUpSkill)}: {skillType}, {nextSkill.Dev_NameTextID}</color>");
             }
             else
             {

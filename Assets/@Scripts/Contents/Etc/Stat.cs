@@ -12,7 +12,7 @@ namespace STELLAREST_F1
     public class SubStat : InitBase
     {
         [field: SerializeField] public float BonusHealth { get; set; } = 0.0f;
-        public float BonusHealthBase { get; private set; } = 0.0f;
+        public const float BonusHealthBase = 0.0f;
 
         [field: SerializeField] public float FixedBonusAttackAmount { get; set; } = 0.0f;
         public float FixedBonusAttackAmountBase {get; private set; } = 0.0f;
@@ -28,7 +28,7 @@ namespace STELLAREST_F1
 
         public void SetZero()
         {
-            BonusHealth = BonusHealthBase = 0.0f;
+            BonusHealth = BonusHealthBase;
             FixedBonusAttackAmount = FixedBonusAttackAmountBase = 0.0f;
             DamageReductionRate = DamageReductionRateBase = 0.0f;
             DebuffResistanceRate = DebuffResistanceRateBase = 0.0f;
@@ -78,7 +78,7 @@ namespace STELLAREST_F1
 
         // --- Util SubStat
         public float BonusHealth { get => _subStat.BonusHealth; set => _subStat.BonusHealth = value; }
-        public float BonusHealthBase => _subStat.BonusHealthBase;
+        public float BonusHealthBase => SubStat.BonusHealthBase;
 
         public float FixedBonusAttackAmount { get => _subStat.FixedBonusAttackAmount; set => _subStat.FixedBonusAttackAmount = value; }
         public float FixedBonusAttackAmoutBase => _subStat.FixedBonusAttackAmountBase;
@@ -98,7 +98,7 @@ namespace STELLAREST_F1
             get
             {
 #if UNITY_EDITOR
-                Dev_TextID = $"Lv: {((_levelID % _dataTemplateID) + 1).ToString()} / {MaxLevel.ToString()}";
+                Dev_NameTextID = $"Lv: {((_levelID % _dataTemplateID) + 1).ToString()} / {MaxLevel.ToString()}";
 #endif
                 return (_levelID % _dataTemplateID) + 1; // --- 1부터 시작하므로
             }
@@ -119,7 +119,7 @@ namespace STELLAREST_F1
 
             if (IsMaxLevel)
             {
-                Debug.Log($"<color=magenta>{_owner.Dev_TextID} is already MaxLv !!</color>");
+                Debug.Log($"<color=magenta>{_owner.Dev_NameTextID} is already MaxLv !!</color>");
                 return false;
             }
 
@@ -177,7 +177,7 @@ namespace STELLAREST_F1
             else if (_owner.ObjectType == EObjectType.Env)
                 _maxLevelID = dataID;
 
-            Dev_TextID = $"Lv: {((_levelID % _dataTemplateID) + 1).ToString()} / {MaxLevel.ToString()}";
+            Dev_NameTextID = $"Lv: {((_levelID % _dataTemplateID) + 1).ToString()} / {MaxLevel.ToString()}";
         }
 
         public void SetBaseStat()
@@ -251,11 +251,31 @@ namespace STELLAREST_F1
             // _healthBar.Refresh(Health / MaxHealth)
         }
 
+        // 각각의 스탯을 여기서 별도로 처리한다.
         private void ApplyPerStat(EApplyStatType statType)
         {
             if (statType == EApplyStatType.BonusHealth)
             {
-                //_subStat.BonusHealth = 
+                // BonusHealth의 Base는 MaxHealth
+                float bonusHealthValue = MaxHealth;
+
+                // 1. FIXED AMOUNT
+                bonusHealthValue += _owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.BonusHealth,
+                                        statModType: EStatModType.AddAmount); // + ITEM + STAT + ETC...
+
+                // 2. ADD PERCENT
+                bonusHealthValue *= 1 + _owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.BonusHealth,
+                                            statModType: EStatModType.AddPercent);
+
+                // 3. ADD PERCENT MULTI
+                bonusHealthValue *= 1 + _owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.BonusHealth,
+                                            statModType: EStatModType.AddPercentMulti);
+
+                BonusHealth = Mathf.Clamp(bonusHealthValue - MaxHealth, 0.0f, MaxHealth);
+            }
+            else
+            {
+                // DO SOMETHING...
             }
         }
     }

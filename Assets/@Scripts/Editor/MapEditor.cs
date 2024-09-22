@@ -134,7 +134,7 @@ namespace STELLAREST_F1
             Dictionary<int, MonsterData> monsterDataDict = LoadJson<MonsterDataLoader, int, MonsterData>(ReadOnly.DataSet.MonsterData).MakeDict();
             foreach (var data in monsterDataDict.Values)
             {
-                string name = $"{data.DataID}_{data.DevTextID}";;
+                string name = $"{data.DataID}_{data.Dev_NameTextID}";;
                 string assetPath = Path.Combine("Assets/@Resources/TileMaps/Dev/Monsters", $"{name}.asset");
                 if (assetPath == "")
                 {
@@ -146,7 +146,7 @@ namespace STELLAREST_F1
                 if (customTile != null)
                 {
                     // 아이콘의 이미지가 변경되었을 경우
-                    string spriteName = data.IconImage.Replace(".sprite", "");
+                    string spriteName = data.IconLabel.Replace(".sprite", "");
                     Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>($"Assets/@Resources/Sprites/Creature/Monsters/Icons/{spriteName}.png");
                     if (sprite == null)
                     {
@@ -163,7 +163,7 @@ namespace STELLAREST_F1
                 }
                 else
                 {
-                    string spriteName = data.IconImage.Replace(".sprite", "");
+                    string spriteName = data.IconLabel.Replace(".sprite", "");
                     Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>($"Assets/@Resources/Sprites/Creature/Monsters/Icons/{spriteName}.png");
                     if (sprite == null)
                     {

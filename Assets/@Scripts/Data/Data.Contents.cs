@@ -11,11 +11,12 @@ namespace STELLAREST_F1.Data
     public class BaseData
     {
         public int DataID;
-        public string DevTextID;
         public string PrefabLabel;
+        public string IconLabel;
         public string NameTextID;
         public string DescriptionTextID;
-        public string IconImage;
+        public string Dev_NameTextID;
+        public string Dev_DescriptionTextID;
     }
 
     public class CreatureData : BaseData
@@ -570,7 +571,7 @@ namespace STELLAREST_F1.Data
         public bool IsLoop;
         public float AddAmount;
         public float AddPercent;
-        public float AddMulti;
+        public float AddPercentMulti;
         public float Period;
         public float Duration;
         public EObjectSize EffectSize;
