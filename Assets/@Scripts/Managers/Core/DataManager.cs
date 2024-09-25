@@ -43,7 +43,11 @@ namespace STELLAREST_F1
         public Dictionary<int, ProjectileData> ProjectileDataDict { get; private set; } = new Dictionary<int, ProjectileData>();
         #endregion
         #region Effects
-        public Dictionary<int, EffectData> EffectDataDict { get; private set;} = new Dictionary<int, EffectData>();
+        // EffectDataDict ---> 제거 예정. 에셋이 너무 다 제각각이다보니. 별도로 데이터를 관리하는게 좋을 것 같음.
+        // public Dictionary<int, EffectData> EffectDataDict { get; private set;} = new Dictionary<int, EffectData>();
+        public Dictionary<int, HeroEffectData> HeroEffectDataDict { get; private set; } = new Dictionary<int, HeroEffectData>();
+        public Dictionary<int, MonsterEffectData> MonsterEffectDataDict { get; private set; } = new Dictionary<int, MonsterEffectData>();
+        public Dictionary<int, EnvEffectData> EnvEffectDataDict { get; private set; } = new Dictionary<int, EnvEffectData>();
         #endregion
         #region Items
         // TODO: Item
@@ -72,7 +76,11 @@ namespace STELLAREST_F1
             // SkillDataDict = LoadJson<SkillDataLoader, int, SkillData>(ReadOnly.DataSet.SkillData).MakeDict();
             
             ProjectileDataDict = LoadJson<ProjectileDataLoader, int, ProjectileData>(ReadOnly.DataSet.ProjectileData).MakeDict();
-            EffectDataDict = LoadJson<EffectDataLoader, int, EffectData>(ReadOnly.DataSet.EffectData).MakeDict();
+            // EffectDataDict = LoadJson<EffectDataLoader, int, EffectData>(ReadOnly.DataSet.EffectData).MakeDict();
+            
+            HeroEffectDataDict = LoadJson<HeroEffectDataLoader, int, HeroEffectData>(ReadOnly.DataSet.HeroEffectData).MakeDict();
+            MonsterEffectDataDict = LoadJson<MonsterEffectDataLoader, int, MonsterEffectData>(ReadOnly.DataSet.MonsterEffectData).MakeDict();
+            EnvEffectDataDict = LoadJson<EnvEffectDataLoader, int, EnvEffectData>(ReadOnly.DataSet.EnvEffectData).MakeDict();
         }
 
         private T LoadJson<T, Key, Value>(string path) where T : ILoader<Key, Value>

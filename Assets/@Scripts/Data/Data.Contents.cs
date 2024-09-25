@@ -579,14 +579,72 @@ namespace STELLAREST_F1.Data
         public EApplyStatType ApplyStatType;
     }
 
-    public class EffectDataLoader : ILoader<int, EffectData>
-    {
-        public List<EffectData> Effects = new List<EffectData>();
+    // public class EffectDataLoader : ILoader<int, EffectData>
+    // {
+    //     public List<EffectData> Effects = new List<EffectData>();
 
-        public Dictionary<int, EffectData> MakeDict()
+    //     public Dictionary<int, EffectData> MakeDict()
+    //     {
+    //         Dictionary<int, EffectData> dict = new Dictionary<int,EffectData>();
+    //         foreach (EffectData data in Effects)
+    //             dict.Add(data.DataID, data);
+
+    //         return dict;
+    //     }
+    // }
+
+
+    [Serializable]
+    public class HeroEffectData : EffectData
+    {
+    }
+
+    public class HeroEffectDataLoader : ILoader<int, HeroEffectData>
+    {
+        public List<HeroEffectData> HeroEffects = new List<HeroEffectData>();
+
+        public Dictionary<int, HeroEffectData> MakeDict()
         {
-            Dictionary<int, EffectData> dict = new Dictionary<int,EffectData>();
-            foreach (EffectData data in Effects)
+            Dictionary<int, HeroEffectData> dict = new Dictionary<int, HeroEffectData>();
+            foreach (HeroEffectData data in HeroEffects)
+                dict.Add(data.DataID, data);
+
+            return dict;
+        }
+    }
+
+    [Serializable]
+    public class MonsterEffectData : EffectData
+    {
+    }
+
+    public class MonsterEffectDataLoader : ILoader<int, MonsterEffectData>
+    {
+        public List<MonsterEffectData> MonsterEffects = new List<MonsterEffectData>();
+
+        public Dictionary<int, MonsterEffectData> MakeDict()
+        {
+            Dictionary<int, MonsterEffectData> dict = new Dictionary<int, MonsterEffectData>();
+            foreach (MonsterEffectData data in MonsterEffects)
+                dict.Add(data.DataID, data);
+
+            return dict;
+        }
+    }
+
+    [Serializable]
+    public class EnvEffectData : EffectData
+    {
+    }
+
+    public class EnvEffectDataLoader : ILoader<int, EnvEffectData>
+    {
+        public List<EnvEffectData> EnvEffects = new List<EnvEffectData>();
+
+        public Dictionary<int, EnvEffectData> MakeDict()
+        {
+            Dictionary<int, EnvEffectData> dict = new Dictionary<int, EnvEffectData>();
+            foreach (EnvEffectData data in EnvEffects)
                 dict.Add(data.DataID, data);
 
             return dict;

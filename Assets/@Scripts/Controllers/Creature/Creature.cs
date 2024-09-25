@@ -198,7 +198,7 @@ namespace STELLAREST_F1
         }
 
         protected override void EnterInGame(Vector3 spawnPos)
-        {
+        {            
             StartCoWait(waitCondition: () => BaseAnim.IsPlay() == false,
                       callbackWaitCompleted: () =>
                       {
@@ -326,6 +326,12 @@ namespace STELLAREST_F1
             // --- Damage to Default Health (기본 데미지 처리)
             else
             {
+                if (DamageReductinoRate > 0.0f)
+                {
+                    // finalDamage = 100f;
+                    // Health = 
+                }
+
                 Health = Mathf.Clamp(Health - finalDamage, 0.0f, MaxHealth);
 
                 ShowDamageFont(damage: finalDamage, fontColor: ObjectType == EObjectType.Monster ? Color.white : Color.red,
@@ -373,7 +379,7 @@ namespace STELLAREST_F1
                 startCallback: () =>
                 {
                     BaseEffect.GenerateEffect(
-                            effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_OnDeadSkull,
+                            effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_Global_OnDeadSkull,
                             spawnPos: CenterPosition
                             );
                 },
@@ -518,7 +524,7 @@ namespace STELLAREST_F1
         protected void ShowImpactHit(SkillBase skillByAttacker, bool isCritical)
         {
             if (isCritical)
-                BaseEffect.GenerateEffect(effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_ImpactCriticalHit, skill: null);
+                BaseEffect.GenerateEffect(effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_Global_ImpactCriticalHit, skill: null);
 
             List<EffectBase> hitEffects = skillByAttacker.GenerateSkillEffects
                                     (
@@ -532,6 +538,7 @@ namespace STELLAREST_F1
             => Managers.Object.ShowTextFont(position: CenterPosition + Vector3.up * 0.65f, text: text, textSize: fontSize, textColor: textColor,
                                                 fontAssetType: EFontAssetType.Comic, fontAnimType: fontAnimType);
         #endregion
+
 
         // protected Coroutine _coLerpToCellPos = null;
         // protected IEnumerator CoLerpToCellPos()

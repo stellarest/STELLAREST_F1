@@ -160,7 +160,6 @@ namespace STELLAREST_F1
             else if (skill.SkillType == ESkillType.Skill_C)
                 ActiveSkillC = skill.Dev_NameTextID;
 #endif
-
             ActiveSkills.Add(skill);
         }
 

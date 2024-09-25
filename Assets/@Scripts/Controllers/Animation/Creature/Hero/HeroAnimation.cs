@@ -62,7 +62,7 @@ namespace STELLAREST_F1
 
             Vector3 spawnPos = _heroOwner.HeroBody.GetContainer(EHeroBody_Lower.LegR).TR.position;
             EffectBase dustEffect = _heroOwner.BaseEffect.GenerateEffect(
-                                        effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_Dust,
+                                        effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_Global_Dust,
                                         spawnPos: spawnPos
                                         );
             

@@ -7,8 +7,7 @@ using Unity.Burst;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 using static STELLAREST_F1.Define;
-using UnityEngine.U2D;
-using UnityEditor;
+using STELLAREST_F1.Data;
 
 namespace STELLAREST_F1
 {
@@ -247,6 +246,24 @@ namespace STELLAREST_F1
             }
 
             return dataID;
+        }
+
+        public static bool IsBaseStat(EApplyStatType statType)
+            => EApplyStatType.MaxHealth     == statType     ||
+               EApplyStatType.AttackPower   == statType     ||
+               EApplyStatType.CriticalRate  == statType     ||
+               EApplyStatType.DodgeRate     == statType     ||
+               EApplyStatType.MovementSpeed == statType     ||
+               EApplyStatType.Luck          == statType;
+
+        public static EffectData GetEffectData(int dataID, BaseObject owner)
+        {
+            if (owner == null)
+                return null;
+
+            return owner.ObjectType == EObjectType.Hero ? Managers.Data.HeroEffectDataDict[dataID]        :
+                   (owner.ObjectType == EObjectType.Monster ? Managers.Data.MonsterEffectDataDict[dataID] : 
+                   Managers.Data.EnvEffectDataDict[dataID]);
         }
 
 #if UNITY_EDITOR

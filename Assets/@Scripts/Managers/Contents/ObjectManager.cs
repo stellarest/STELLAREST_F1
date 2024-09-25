@@ -169,7 +169,14 @@ namespace STELLAREST_F1
                 // --- TEMP
                 case EObjectType.Effect:
                     {
-                        EffectData data = Managers.Data.EffectDataDict[dataID];
+                        //EffectData data = Managers.Data.EffectDataDict[dataID];
+                        EffectData data = Util.GetEffectData(dataID, owner);
+                        if (data == null)
+                        {
+                            Debug.LogError($"{nameof(SpawnBaseObject)}, {nameof(EObjectType.Effect)}");
+                            return null;
+                        }
+
                         go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: EffectRoot, poolingID: Util.GetPoolingID(EObjectType.Effect, dataID));
                         if (go == null)
                         {

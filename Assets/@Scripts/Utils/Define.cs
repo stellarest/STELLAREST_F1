@@ -445,16 +445,16 @@ namespace STELLAREST_F1
         public enum EApplyStatType
         {
             None = -1,
-            MaxHp,
-            BonusHealth,
-            HealthRegenerationRate,
-            DamageReductionRate,
-            AttackPowerUpRate,
-            AttackSpeedUpRate,
+            MaxHealth,
+            AttackPower,
             CriticalRate,
             DodgeRate,
             MovementSpeed,
-            Max = MovementSpeed + 1
+            Luck,
+
+            BonusHealth,
+            DamageReductionRate,
+            Max = DamageReductionRate + 1
         }
 
         public enum EStatModType
@@ -582,19 +582,17 @@ namespace STELLAREST_F1
                 // public static readonly string SkillData = "SkillData";
 
                 public static readonly string ProjectileData = "ProjectileData";
-                public static readonly string EffectData = "EffectData";
+                // public static readonly string EffectData = "EffectData"; // --- 제거 예정
+                public static readonly string HeroEffectData = "HeroEffectData";
+                public static readonly string MonsterEffectData = "MonsterEffectData";
+                public static readonly string EnvEffectData = "EnvEffectData";
             }
 
             public static class DataAndPoolingID
             {
                 // --- Damage Font
-                // --- DNPID_DamageFont로 재탕하면 서로 다른 옵션 떄문에 간헐적으로 안맞을 때가 있음.
-                // --- 안전하게 새로운 PoolingID로 적용.
                 public static readonly int DNPID_DamageFont = 109;
                 public static readonly int DNPID_TextFont = 110;
-
-                public static readonly int DNPID_Effect_Shield = 1010;
-                public static readonly int DNPID_Effect_ImpactCriticalHit = 1011;
 
                 public static readonly int DNPID_Hero_Paladin = 101000;
                 public static readonly int DNPID_Hero_Archer = 102000;
@@ -647,6 +645,7 @@ namespace STELLAREST_F1
                 public static readonly int DNPID_Monster_Turkey = 101001;
                 public static readonly int DNPID_Monster_Bunny = 101002;
                 public static readonly int DNPID_Monster_Pug = 101003;
+                
                 // --- Envs
                 public static readonly int DNPID_Env_AshTree = 101000;
                 public static readonly int DNPID_Env_BlackOakTree = 101001;
@@ -670,12 +669,16 @@ namespace STELLAREST_F1
                 public static readonly int DNPID_Env_ZincRock = 101019;
 
                 // --- Effects(VFX)
-                public static readonly int DNPID_Effect_TeleportRed = 1001;     // --- ENV ROCK
-                public static readonly int DNPID_Effect_TeleportGreen = 1002;   // --- ENV TREE
-                public static readonly int DNPID_Effect_TeleportBlue = 1003;    // --- HERO + PET(Allies, Etc)
-                public static readonly int DNPID_Effect_TeleportPurple = 1004;  // --- MONSTER
-                public static readonly int DNPID_Effect_Dust = 1005;
-                public static readonly int DNPID_Effect_OnDeadSkull = 1006;
+                public static readonly int DNPID_Effect_Global_ImpactDefaultHit = 900000;
+                public static readonly int DNPID_Effect_Global_ImpactCriticalHit = 900001;
+                public static readonly int DNPID_Effect_Global_TeleportRed = 900002;     // --- ENV ROCK
+                public static readonly int DNPID_Effect_Global_TeleportGreen = 900003;   // --- ENV TREE
+                public static readonly int DNPID_Effect_Global_TeleportBlue = 900004;    // --- HERO + PET(Allies, Etc)
+                public static readonly int DNPID_Effect_Global_TeleportPurple = 900005;  // --- MONSTER
+                public static readonly int DNPID_Effect_Global_Dust = 900006;
+                public static readonly int DNPID_Effect_Global_OnDeadSkull = 900007;
+                public static readonly int DNPID_Effect_Global_ImpactFire = 900008;
+                public static readonly int DNPID_Effect_Global_ImpactShockwave = 900009;
             }
 
             public static class AnimationParams

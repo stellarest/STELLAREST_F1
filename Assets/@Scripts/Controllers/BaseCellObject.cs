@@ -154,8 +154,8 @@ namespace STELLAREST_F1
             base.EnterInGame(spawnPos);
             Targets.Clear();
 
-            //SetStat(_levelID);
-            BaseStat.SetBaseStat();
+            BaseStat.SetBaseStatFromData();
+            // GeneratePassiveEffect();
 
             BaseBody.ResetMaterialsAndColors();
             BaseBody.StartCoFadeInEffect();
@@ -177,29 +177,28 @@ namespace STELLAREST_F1
         public void ApplyStat() 
             => BaseStat.ApplyStat(); 
 
-        public virtual void ApplyStat_T() // ---> Move to Stat.cs
-        {
-            BonusHealth = ApplyFinalStat(baseValue: MaxHealthBase, applyStatType: EApplyStatType.BonusHealth);
-            //DamageReductinoRate = ApplyFinalStat(baseValue: DamageReductinoRate,)
+        // public virtual void ApplyStat_T() // ---> Move to Stat.cs
+        // {
+        //     BonusHealth = ApplyFinalStat(baseValue: MaxHealthBase, applyStatType: EApplyStatType.BonusHealth);
+        //     //DamageReductinoRate = ApplyFinalStat(baseValue: DamageReductinoRate,)
+        //     // MaxHpBase
+        //     // AtkBase
+        //     // ...
+        //     // MovementSpeedBase
+        //     float prevMaxHealth = MaxHealth;
+        //     if (prevMaxHealth != MaxHealth)
+        //     {
+        //         // 현재의 hp를 증가된 MaxHp만큼의 비율로 조정한다.
+        //         Health = MaxHealth * (Health / prevMaxHealth);
+        //         // Final Min, Max Check
+        //         Health = Mathf.Clamp(value: Health, min: 0.0f, max: MaxHealth);
+        //     }
+        //     float ratio = Health / MaxHealth;
+        //     // HpBar.Refresh(ratio); -- LATER TODO
+        // }
 
-            // MaxHpBase
-            // AtkBase
-            // ...
-            // MovementSpeedBase
-            float prevMaxHealth = MaxHealth;
-            if (prevMaxHealth != MaxHealth)
-            {
-                // 현재의 hp를 증가된 MaxHp만큼의 비율로 조정한다.
-                Health = MaxHealth * (Health / prevMaxHealth);
-                // Final Min, Max Check
-                Health = Mathf.Clamp(value: Health, min: 0.0f, max: MaxHealth);
-            }
-            float ratio = Health / MaxHealth;
-            // HpBar.Refresh(ratio); -- LATER TODO
-        }
-
-        protected virtual float ApplyFinalStat(float baseValue, EApplyStatType applyStatType)
-            => baseValue;
+        // protected virtual float ApplyFinalStat(float baseValue, EApplyStatType applyStatType)
+        //     => baseValue;
 
         public EFindPathResult FindPathAndMoveToCellPos(Vector3 destPos, int maxDepth, EObjectType ignoreCellObjType = EObjectType.None)
             => FindPathAndMoveToCellPos(Managers.Map.WorldToCell(destPos), maxDepth, ignoreCellObjType);
@@ -547,9 +546,15 @@ namespace STELLAREST_F1
         public int InvincibleCountPerWave { get => BaseStat.InvincibleCountPerWave; set => BaseStat.InvincibleCountPerWave = value; }
 
         // --- Level
+        public int LevelID => BaseStat.LevelID;
         public int Level => BaseStat.Level;
         public int MaxLevel => BaseStat.MaxLevel;
         public bool IsMaxLevel => BaseStat.IsMaxLevel;
+        #endregion
+
+        #region Util - Test
+        protected void GeneratePassiveEffect()
+            => BaseEffect.GenerateEffect(effectID: LevelID);
         #endregion
     }
 }

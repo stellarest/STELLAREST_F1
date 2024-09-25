@@ -24,7 +24,7 @@ namespace STELLAREST_F1
             IsOnEffectBuffDict = new Dictionary<EEffectBuffType, bool>();
         }
 
-        public void SetEffectBuff(EEffectBuffType buffClass, bool isOn)
+        public void SetIsOnEffectBuff(EEffectBuffType buffClass, bool isOn)
             => IsOnEffectBuffDict[buffClass] = isOn;
 
         public bool IsOnEffectBuff(EEffectBuffType buffClass)

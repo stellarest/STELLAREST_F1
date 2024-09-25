@@ -31,8 +31,8 @@ namespace STELLAREST_F1
         protected SkillBase _skill = null;
         public void SetSkill(SkillBase skill) => _skill = skill;
 
-        // --- 쿨타임 무제한은 반드시 EffectData.Period, EffectData.Duration 모두 음수로 설정
         public EffectData EffectData { get; private set; } = null;
+
         public bool IsLoop { get; private set; } = false;
         public float Period { get; private set; } = 0.0f;
         public float Remains { get; private set; } = 0.0f;
@@ -48,14 +48,22 @@ namespace STELLAREST_F1
 
             ObjectType = EObjectType.Effect;
             SortingGroup.sortingOrder = ReadOnly.SortingLayers.SLOrder_Effect;
-
             return true;
         }
 
         protected override void InitialSetInfo(int dataID)
         {
             base.InitialSetInfo(dataID);
-            EffectData = Managers.Data.EffectDataDict[dataID];
+
+            if (Owner.ObjectType == EObjectType.Hero)
+                EffectData = Managers.Data.HeroEffectDataDict[dataID];
+            else if (Owner.ObjectType == EObjectType.Monster)
+                EffectData = Managers.Data.MonsterEffectDataDict[dataID];
+            else if (Owner.ObjectType == EObjectType.Env)
+                EffectData = Managers.Data.EnvEffectDataDict[dataID];
+
+            // EffectData = Managers.Data.EffectDataDict[dataID];
+            
             IsLoop = EffectData.IsLoop;
             Period = EffectData.Period;
             InitialSetSize(EffectData.EffectSize);
@@ -109,7 +117,6 @@ namespace STELLAREST_F1
                 return SpawnedPos;
 
             SkillBase currentSkill = Owner.GetComponent<Creature>().CreatureSkill.CurrentSkill;
-            //_skill = Owner.GetComponent<Creature>().CreatureSkill.CurrentSkill;
             _enteredDir = currentSkill.EnteredTargetDir;
             _enteredSignX = currentSkill.EnteredSignX;
 
@@ -128,24 +135,8 @@ namespace STELLAREST_F1
         }
         #endregion
 
-        public virtual bool TestCondition() => false;
-
         public virtual void ApplyEffect()
         {
-            /*
-                Effect_HitNormal
-                Effect_TeleportRed
-                Effect_TeleportGreen
-                Effect_TeleportBlue
-                Effect_TeleportPurple
-                Effect_Dust
-                Effect_OnDeadSkull
-                Effect_ImpactFire
-                Effect_ImpactShockwave
-                Effect_Swing
-                Effect_Shield
-            */
-
             // --- Timer를 돌리는 것은 직관적이고 좋음.
             // StartCoroutine(CoStartTimer());
 

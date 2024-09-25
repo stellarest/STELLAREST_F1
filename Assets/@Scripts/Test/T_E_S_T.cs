@@ -9,6 +9,10 @@ using UnityEditor;
 
 /*
 // [TODO LIST]
+// 이전 패시브 버프 적용된거 제거하고 새로운 Value로 적용시키기.
+// Seperatae EffectData - GlobalEffectData, HeroEffectData, MonsterEffect ???
+
+// DamageReductionRate가 Infinite일 때랑 버프가 해제될때랑 스탯 적용 / 해제하는거 잡아야할듯.
 // ----->>> Infinite Effect (이것부터 할까? 귀찮은데. DamageReductionRate부터 해보기)
 // --- Dodge... (ExportHeroes에 DodgeHologram_Export받아 놨음. 이전 2DBase 프로젝트에서 Dodge 부분 참고)
 // --- Invincible Count...

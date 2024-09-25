@@ -59,7 +59,7 @@ namespace STELLAREST_F1
                 return;
             }
 
-            Owner.BaseEffect.SetEffectBuff(EffectBuffType, true);
+            Owner.BaseEffect.SetIsOnEffectBuff(EffectBuffType, true);
         }
 
         public override void EnterShowEffect()
@@ -96,7 +96,7 @@ namespace STELLAREST_F1
                 _offShields[i].Play();
             }
 
-            Owner.BaseEffect.SetEffectBuff(EffectBuffType, false);
+            Owner.BaseEffect.SetIsOnEffectBuff(EffectBuffType, false);
             StartCoroutine(CoRemoveShield());
         }
 
