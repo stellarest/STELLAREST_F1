@@ -203,6 +203,7 @@ namespace STELLAREST_F1
                       callbackWaitCompleted: () =>
                       {
                           base.EnterInGame(spawnPos);
+                          RefreshCreatureBaseBuff();
                           CreatureAI.EnterInGame();
                           CreatureAnim.EnterInGame();
                           StartCoUpdateAI();
@@ -539,6 +540,33 @@ namespace STELLAREST_F1
                                                 fontAssetType: EFontAssetType.Comic, fontAnimType: fontAnimType);
         #endregion
 
+        #region Util - Passive Buff
+        protected void RefreshCreatureBaseBuff()
+        {
+            if (this.IsValid() == false)
+                return;
+
+            // 0.05(C) -> 0.12(U) -> 0.2(R) -> 0.3(E) -> 0.4(L)
+            EffectBase findEffect = BaseEffect.ActiveEffects.Find(n => n.EffectData.DataID == LevelID);
+            if (findEffect == null)
+            {
+                if (Util.GetEffectData(dataID: LevelID, owner: this) == null)
+                    return;
+
+                var effectTest = BaseEffect.GenerateEffect(effectID: LevelID);
+                Debug.Log(effectTest.Dev_NameTextID);
+            }
+
+            int prevLevelID = LevelID - 1;
+            findEffect = BaseEffect.ActiveEffects.Find(n => n.EffectData.DataID == prevLevelID);
+            if (findEffect != null)
+            {
+                BaseEffect.RemoveEffect(findEffect);
+                BaseStat.ApplyStat();
+                findEffect.ExitShowEffect();
+            }
+        }
+        #endregion
 
         // protected Coroutine _coLerpToCellPos = null;
         // protected IEnumerator CoLerpToCellPos()

@@ -11,7 +11,7 @@ namespace STELLAREST_F1
 {
     public class SubStat : InitBase
     {
-        public const float ZeroBase = 0.0f;
+        public const float c_ZeroBase = 0.0f;
         private BaseStat _baseStat = null;
 
         [field: SerializeField] public float BonusHealth { get; set; } = 0.0f;
@@ -35,16 +35,16 @@ namespace STELLAREST_F1
         public void InitialSetInfo(BaseStat baseStat)
         {
             _baseStat = baseStat;
-            BonusHealth = ZeroBase;
-            FixedBonusAttackAmount = ZeroBase;
-            DamageReductionRate = ZeroBase;
-            DebuffResistanceRate = ZeroBase;
-            InvincibleCountPerWave = (int)ZeroBase;
+            BonusHealth = c_ZeroBase;
+            FixedBonusAttackAmount = c_ZeroBase;
+            DamageReductionRate = c_ZeroBase;
+            DebuffResistanceRate = c_ZeroBase;
+            InvincibleCountPerWave = (int)c_ZeroBase;
         }
 
         public void ApplySubStat(EApplyStatType statType)
         {
-            float baseValue = 0.0f;
+            float baseValue = c_ZeroBase;
             if (statType == EApplyStatType.BonusHealth)
             {
                 // BonusHealth의 Base는 MaxHealth
@@ -66,9 +66,11 @@ namespace STELLAREST_F1
             }
             else if (statType == EApplyStatType.DamageReductionRate)
             {
-                Debug.Log(_baseStat.Owner.Dev_NameTextID);
+                // Debug.Log(_baseStat.Owner.Dev_NameTextID);
 
-                baseValue = DamageReductionRate;
+                // ************** 여기가 문제 *****************
+                // 버프가 중쳡됨. 제거할 때, 해당 버프를 찾아서 값을 제거해주는게 나을듯.
+                // baseValue = DamageReductionRate;
 
                 // 0.05 + 0.05 + 0.12 지금 이렇게 되고 있음.
                 baseValue += _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.DamageReductionRate,
@@ -268,8 +270,8 @@ namespace STELLAREST_F1
                 return;
 
             // ************ TEST ************
-            if (Owner.ObjectType == EObjectType.Monster)
-                return;
+            // if (Owner.ObjectType == EObjectType.Monster)
+            //     return;
             // ******************************
 
             float prevMaxHealth = MaxHealth;

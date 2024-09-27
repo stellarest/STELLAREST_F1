@@ -17,7 +17,8 @@ namespace STELLAREST_F1
 
         public override void ApplyEffect()
         {
-            EnterShowEffect();
+            //EnterShowEffect();
+            base.ApplyEffect();
             StartCoroutine(CoStartTimer());
         }
 

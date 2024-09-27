@@ -261,9 +261,31 @@ namespace STELLAREST_F1
             if (owner == null)
                 return null;
 
-            return owner.ObjectType == EObjectType.Hero ? Managers.Data.HeroEffectDataDict[dataID]        :
-                   (owner.ObjectType == EObjectType.Monster ? Managers.Data.MonsterEffectDataDict[dataID] : 
-                   Managers.Data.EnvEffectDataDict[dataID]);
+            switch (owner.ObjectType)
+            {
+                case EObjectType.Hero:
+                    {
+                        if (Managers.Data.HeroEffectDataDict.TryGetValue(dataID, out HeroEffectData heroEffectData))
+                            return heroEffectData;
+                    }
+                    break;
+
+                case EObjectType.Monster:
+                    {
+                        if (Managers.Data.MonsterEffectDataDict.TryGetValue(dataID, out MonsterEffectData monsterEffectData))
+                            return monsterEffectData;
+                    }
+                    break;
+
+                case EObjectType.Env:
+                    {
+                        if (Managers.Data.EnvEffectDataDict.TryGetValue(dataID, out EnvEffectData envEffectData))
+                            return envEffectData;
+                    }
+                    break;
+            }
+
+            return null;
         }
 
 #if UNITY_EDITOR

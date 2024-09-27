@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using STELLAREST_F1.Data;
 using UnityEngine;
+using UnityEngine.UI;
 using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
@@ -15,7 +16,9 @@ namespace STELLAREST_F1
     {
         private const string EffectPoolingRootName = "";
         private BaseCellObject _owner = null;
-        public List<EffectBase> ActiveEffects { get; } = new List<EffectBase>();
+
+        // --- 원래 ReadOnly Property였음. 일단 개발용으로 Property로 바꿈.
+        [field: SerializeField] public List<EffectBase> ActiveEffects { get; private set; } = new List<EffectBase>();
         public Dictionary<EEffectBuffType, bool> IsOnEffectBuffDict { get; private set; } = null;
 
         public void InitialSetInfo(BaseObject owner)
@@ -24,12 +27,12 @@ namespace STELLAREST_F1
             IsOnEffectBuffDict = new Dictionary<EEffectBuffType, bool>();
         }
 
-        public void SetIsOnEffectBuff(EEffectBuffType buffClass, bool isOn)
-            => IsOnEffectBuffDict[buffClass] = isOn;
+        public void SetIsOnEffectBuff(EEffectBuffType buffType, bool isOn)
+            => IsOnEffectBuffDict[buffType] = isOn;
 
-        public bool IsOnEffectBuff(EEffectBuffType buffClass)
+        public bool IsOnEffectBuff(EEffectBuffType buffType)
         {
-            if (IsOnEffectBuffDict.TryGetValue(key: buffClass, out bool isOn) == false)
+            if (IsOnEffectBuffDict.TryGetValue(key: buffType, out bool isOn) == false)
                 return false;
 
             return isOn;
@@ -47,7 +50,7 @@ namespace STELLAREST_F1
             ActiveEffects.Add(effect);
             if (skill != null)
                 effect.SetSkill(skill);
-            effect.ApplyEffect(); // --- 이것때문임. Effect도 각 오브젝트의 BaseEffect에서 생성하도록,,,ㅇㅋ?
+            effect.ApplyEffect();
 
             return effect;
         }
@@ -199,8 +202,18 @@ namespace STELLAREST_F1
 
         public void RemoveEffect(EffectBase effect)
         {
+            // 아니면 Remove할 때 effect.ExitShowEffect() ??
             ActiveEffects.Remove(effect);
             Managers.Object.Despawn(effect, effect.DataTemplateID);
+        }
+
+        public void RemoveAllEffects()
+        {
+            for (int i = 0; i < ActiveEffects.Count; ++i)
+            {
+                ActiveEffects.Remove(ActiveEffects[i]);
+                Managers.Object.Despawn(ActiveEffects[i], ActiveEffects[i].DataTemplateID);
+            }
         }
 
         // public void ClearDebuffsBySkill()

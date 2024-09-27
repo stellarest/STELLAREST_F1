@@ -170,10 +170,11 @@ namespace STELLAREST_F1
                 case EObjectType.Effect:
                     {
                         //EffectData data = Managers.Data.EffectDataDict[dataID];
+                        // *** Effect데이터는 Global이든 뭐든 반드시 각 객체의 데이터에서 포함하도록 변경. ***
                         EffectData data = Util.GetEffectData(dataID, owner);
                         if (data == null)
                         {
-                            Debug.LogError($"{nameof(SpawnBaseObject)}, {nameof(EObjectType.Effect)}");
+                            //Debug.LogError($"{nameof(SpawnBaseObject)}, {nameof(EObjectType.Effect)}");
                             return null;
                         }
 

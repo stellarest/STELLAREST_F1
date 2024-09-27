@@ -669,6 +669,7 @@ namespace STELLAREST_F1
                 public static readonly int DNPID_Env_ZincRock = 101019;
 
                 // --- Effects(VFX)
+                public static readonly int DNPID_Effect_GlobalHero_VFXHeroMaxUp = 800000;
                 public static readonly int DNPID_Effect_Global_ImpactDefaultHit = 900000;
                 public static readonly int DNPID_Effect_Global_ImpactCriticalHit = 900001;
                 public static readonly int DNPID_Effect_Global_TeleportRed = 900002;     // --- ENV ROCK

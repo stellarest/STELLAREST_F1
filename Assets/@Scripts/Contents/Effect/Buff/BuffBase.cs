@@ -18,14 +18,25 @@ namespace STELLAREST_F1
 
         public override void ApplyEffect()
         {
-            // Stat부터 적용 후 VFX등 효과 보여주기
             Owner.ApplyStat();
             base.ApplyEffect();
         }
 
-        public override void EnterShowEffect() { }
-        public override void OnShowEffect() { }
-        public override void ExitShowEffect() { }
+        public override void EnterShowEffect()
+        {
+            Owner.BaseEffect.SetIsOnEffectBuff(EffectBuffType, true);
+            transform.SetParent(Owner.transform);
+            Debug.Log($"{nameof(EnterShowEffect)} - {EffectBuffType}");
+        }
+
+        public override void OnShowEffect()
+        { 
+        }
+
+        public override void ExitShowEffect() 
+        { 
+            Owner.BaseEffect.SetIsOnEffectBuff(EffectBuffType, false);
+        }
     }
 }
 

@@ -20,7 +20,6 @@ namespace STELLAREST_F1
         {
             base.InitialSetInfo(dataID);
             EffectBuffType = EEffectBuffType.BonusHealthShield;
-            // EffectBuffType = EEffectBuffType.BonusHealth;
 
             _onShields = transform.GetChild(0).gameObject.GetComponentsInChildren<ParticleSystem>(includeInactive: true);
             for (int i = 0; i < _onShields.Length; ++i)
@@ -51,25 +50,24 @@ namespace STELLAREST_F1
         public override void ApplyEffect()
         {
             base.ApplyEffect();
-            // 알 수 없는 사유로, BonusHealth가 여전히 0.0f일 경우, 해제하고 리턴한다.
             if (Owner.BonusHealth == 0.0f)
             {
                 Debug.Log("<color=cyan>ZERO HEALTH OF SHIELD</color>");
                 ExitShowEffect();
                 return;
             }
-
-            Owner.BaseEffect.SetIsOnEffectBuff(EffectBuffType, true);
         }
 
         public override void EnterShowEffect()
         {
+            base.EnterShowEffect();
+
             // --- ON SHIELDS
             Debug.Log("<color=white>SHIELD - ON</color>");
             for (int i = 0; i < _offShields.Length; ++i)
                 _offShields[i].gameObject.SetActive(false);
 
-            transform.SetParent(Owner.transform);
+            //transform.SetParent(Owner.transform);
             transform.localPosition = _onShieldsLocalPos;
             transform.localScale = _onShieldsLocalScale;
             for (int i = 0; i < _onShields.Length; ++i)
@@ -85,7 +83,8 @@ namespace STELLAREST_F1
         public override void ExitShowEffect()
         {
             // --- OFF SHIELDS
-            Debug.Log("SHIELD - OFF");
+            base.ExitShowEffect();
+
             for (int i = 0; i < _onShields.Length; ++i)
                 _onShields[i].gameObject.SetActive(false);
 
@@ -96,7 +95,6 @@ namespace STELLAREST_F1
                 _offShields[i].Play();
             }
 
-            Owner.BaseEffect.SetIsOnEffectBuff(EffectBuffType, false);
             StartCoroutine(CoRemoveShield());
         }
 
@@ -104,26 +102,15 @@ namespace STELLAREST_F1
         {
             yield return new WaitForSeconds(2.0F);
             
-            Debug.Log("<color=red>SHIELD - REMOVE</color>");
             for (int i = 0; i < _offShields.Length; ++i)
                 _offShields[i].gameObject.SetActive(false);
 
-            transform.SetParent(Managers.Object.EffectRoot);
             transform.localPosition = Vector3.zero;
             transform.localScale = Vector3.one;
+            transform.SetParent(Managers.Object.EffectRoot);
             ClearEffect(EEffectClearType.Disable);
-            _skill.LockCoolTimeSkill = false; // --- _skill 한테도 끝났다는 것을 알려준다. (다음 쿨타임을 위해)
+            _skill.LockCoolTimeSkill = false;
         }
-
-        // private void OnParticleSystemStopped()
-        // {
-        //     // --- END SHIELDS
-        //     Debug.Log("<color=red>SHIELD - END</color>");
-        //     transform.SetParent(Managers.Object.EffectRoot);
-        //     transform.localPosition = Vector3.zero;
-        //     transform.localScale = Vector3.one;
-        //     _skill.LockCoolTimeSkill = false; // --- _skill 한테도 끝났다는 것을 알려준다. (다음 쿨타임을 위해)
-        // }
     }
 }
 

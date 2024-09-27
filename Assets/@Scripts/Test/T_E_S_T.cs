@@ -9,6 +9,10 @@ using UnityEditor;
 
 /*
 // [TODO LIST]
+// EffectComponent::RemoveEffect 참고
+// EffectBase::EnterShowEffect(); // --- +PARAM: ON TO THE PARENT(OWNER) ??
+
+
 // 이전 패시브 버프 적용된거 제거하고 새로운 Value로 적용시키기.
 // Seperatae EffectData - GlobalEffectData, HeroEffectData, MonsterEffect ???
 

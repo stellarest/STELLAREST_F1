@@ -62,8 +62,11 @@ namespace STELLAREST_F1
             else if (Owner.ObjectType == EObjectType.Env)
                 EffectData = Managers.Data.EnvEffectDataDict[dataID];
 
-            // EffectData = Managers.Data.EffectDataDict[dataID];
-            
+#if UNITY_EDITOR
+            Dev_NameTextID = EffectData.Dev_NameTextID;
+            gameObject.name += $"_{EffectData.Dev_NameTextID}";
+#endif
+
             IsLoop = EffectData.IsLoop;
             Period = EffectData.Period;
             InitialSetSize(EffectData.EffectSize);
@@ -147,9 +150,9 @@ namespace STELLAREST_F1
             EnterShowEffect();
         }
 
-        public abstract void EnterShowEffect();
+        public abstract void EnterShowEffect(); // --- +PARAM: ON TO THE PARENT(OWNER) ??
         public abstract void OnShowEffect();
-        public abstract void ExitShowEffect();
+        public abstract void ExitShowEffect(); // --- // --- +PARAM: OFF FROM PARENT(OWNER) ??
         protected virtual void ProcessDot() { }
 
         protected IEnumerator CoStartTimer()

@@ -270,13 +270,14 @@ namespace STELLAREST_F1
             if (BaseStat.LevelUp() == false)
                 return false;
 
-            // GeneratePassiveEffect();
+            RefreshCreatureBaseBuff();
             CreatureSkill.LevelUpSkill(ownerLevelID: BaseStat.LevelID);
             if (IsMaxLevel)
             {
                 Debug.Log($"<color=yellow>MaxUp Hero</color>");
                 CreatureRarity = ECreatureRarity.Elite; // --- 이거 바꿔야할듯.
                 HeroBody.ChangeSpriteSet(Managers.Data.HeroSpriteDataDict[BaseStat.LevelID]);
+                BaseEffect.GenerateEffect(effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_GlobalHero_VFXHeroMaxUp);
             }
 
             return true;

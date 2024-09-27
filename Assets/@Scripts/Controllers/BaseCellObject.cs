@@ -551,10 +551,5 @@ namespace STELLAREST_F1
         public int MaxLevel => BaseStat.MaxLevel;
         public bool IsMaxLevel => BaseStat.IsMaxLevel;
         #endregion
-
-        #region Util - Test
-        protected void GeneratePassiveEffect()
-            => BaseEffect.GenerateEffect(effectID: LevelID);
-        #endregion
     }
 }
