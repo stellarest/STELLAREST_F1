@@ -118,6 +118,10 @@ namespace STELLAREST_F1
         {
             if (effectSpawnType == EEffectSpawnType.None)
                 return SpawnedPos;
+            else if (effectSpawnType == EEffectSpawnType.SetParentOwner)
+            {
+                
+            }
 
             SkillBase currentSkill = Owner.GetComponent<Creature>().CreatureSkill.CurrentSkill;
             _enteredDir = currentSkill.EnteredTargetDir;

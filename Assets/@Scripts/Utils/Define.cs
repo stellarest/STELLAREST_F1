@@ -19,12 +19,10 @@ namespace STELLAREST_F1
             Legendary
         }
 
-        public enum ECreatureRarity
+        public enum EHeroGrade
         {
-            None = -1,
-            Common,
-            Elite,
-            Max = Elite + 1
+            Default,
+            Max
         }
 
         public enum EMonsterType
@@ -273,6 +271,7 @@ namespace STELLAREST_F1
             None = -1,
             Tree,
             Rock,
+            Max = Rock + 1
         }
 
         public enum EEnvState
@@ -438,8 +437,9 @@ namespace STELLAREST_F1
         public enum EEffectSpawnType
         {
             None = -1,
-            SkillFromOwner = 1,
-            SkillFromTarget = 2
+            SetParentOwner = 1,
+            SkillFromOwner = 2,
+            SkillFromTarget = 3
         }
 
         public enum EApplyStatType
@@ -762,10 +762,10 @@ namespace STELLAREST_F1
                 public static readonly string AnimationBody = "AnimationBody";
 
                 // --- Sprites
-                public static readonly string Pickaxe_Common_SP = "Pickaxe_Common.sprite";
-                public static readonly string Pickaxe_Elite_SP = "Pickaxe_Elite.sprite";
-                public static readonly string WoodcutterAxe_Common_SP = "WoodcutterAxe_Common.sprite";
-                public static readonly string WoodcutterAxe_Elite_SP = "WoodcutterAxe_Elite.sprite";
+                public static readonly string Pickaxe_Default_SP = "Pickaxe_Default.sprite";
+                public static readonly string Pickaxe_Max_SP = "Pickaxe_Max.sprite";
+                public static readonly string WoodcutterAxe_Default_SP = "WoodcutterAxe_Default.sprite";
+                public static readonly string WoodcutterAxe_Max_SP = "WoodcutterAxe_Max.sprite";
                 public static readonly string Shadow_SP = "Shadow.sprite";
 
                 public static readonly string EnvRock_Rock_SP = "StoneRock_Rock.sprite";

@@ -275,37 +275,13 @@ namespace STELLAREST_F1
             if (IsMaxLevel)
             {
                 Debug.Log($"<color=yellow>MaxUp Hero</color>");
-                CreatureRarity = ECreatureRarity.Elite; // --- 이거 바꿔야할듯.
                 HeroBody.ChangeSpriteSet(Managers.Data.HeroSpriteDataDict[BaseStat.LevelID]);
+
+                // --- MaxUp Effect.
                 BaseEffect.GenerateEffect(effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_GlobalHero_VFXHeroMaxUp);
             }
 
             return true;
-
-            // ---------- PREV ----------
-            // if (this.IsValid() == false)
-            //     return;
-
-            // if (IsMaxLevel)
-            // {
-            //     Debug.Log($"<color=magenta>MAX LEVEL !!{gameObject.name}</color>");
-            //     return;
-            // }
-
-            // _levelID = Mathf.Clamp(_levelID + 1, DataTemplateID, _maxLevelID);
-            // Debug.Log($"<color=white>Lv: {Level} / MaxLv: {MaxLevel}</color>");
-            // if (Managers.Data.HeroStatDataDict.TryGetValue(key: _levelID, value: out HeroStatData statData))
-            // {
-            //     SetStat(_levelID);
-            //     CreatureSkill.LevelUpSkill(ownerLevelID: _levelID);
-            // }
-
-            // if (IsMaxLevel)
-            // {
-            //     Debug.Log("<color=yellow>CHANGE: LEGENDARY HERO</color>");
-            //     CreatureRarity = ECreatureRarity.Elite;
-            //     HeroBody.ChangeSpriteSet(Managers.Data.HeroSpriteDataDict[_levelID]);
-            // }
         }
 
         private IEnumerator CoInitialReleaseLeaderHeroAI()

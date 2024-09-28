@@ -4,20 +4,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using STELLAREST_F1.Data;
 using static STELLAREST_F1.Define;
-using UnityEditor;
 
 namespace STELLAREST_F1
 {
     public class Creature : BaseCellObject
     {
-        public Data.CreatureData CreatureData { get; protected set; } = null;
+        public CreatureData CreatureData { get; protected set; } = null;
         public CreatureAI CreatureAI { get; protected set; } = null;
-        [field: SerializeField] public ECreatureRarity CreatureRarity { get; protected set; } = ECreatureRarity.None;
         public SkillComponent CreatureSkill { get; protected set; } = null; // Skills
         public CreatureBody CreatureBody { get; protected set; } = null;
         public CreatureAnimation CreatureAnim { get; private set; } = null;
         public CreatureAnimationCallback CreatureAnimCallback { get; private set; } = null;
-        // Buff Component ???
 
         public bool CanSkill
         {
@@ -184,7 +181,6 @@ namespace STELLAREST_F1
             else if (ObjectType == EObjectType.Monster)
                 CreatureData = Managers.Data.MonsterDataDict[dataID];
 
-            CreatureRarity = CreatureData.CreatureRarity;
             Type aiClassType = Util.GetTypeFromName(CreatureData.AIClassName);
             CreatureAI = gameObject.AddComponent(aiClassType) as CreatureAI;
             CreatureAI.InitialSetInfo(this);
@@ -556,7 +552,8 @@ namespace STELLAREST_F1
                 var effectTest = BaseEffect.GenerateEffect(effectID: LevelID);
                 Debug.Log(effectTest.Dev_NameTextID);
             }
-
+            
+            // Remove Prev Effect
             int prevLevelID = LevelID - 1;
             findEffect = BaseEffect.ActiveEffects.Find(n => n.EffectData.DataID == prevLevelID);
             if (findEffect != null)

@@ -21,7 +21,6 @@ namespace STELLAREST_F1.Data
 
     public class CreatureData : BaseData
     {
-        public ECreatureRarity CreatureRarity;
         public string AIClassName;
         public string AnimatorLabel;
         public float ColliderRadius;

@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using STELLAREST_F1.Data;
 using static STELLAREST_F1.Define;
-using Unity.VisualScripting.Dependencies.Sqlite;
-using System;
-using System.Data;
 
 namespace STELLAREST_F1
 {
@@ -211,12 +208,12 @@ namespace STELLAREST_F1
 
                 case EHeroWeaponType.CollectTree:
                     GetContainer(EHeroBody_Weapon.WeaponR_Armor).TR.localScale = Vector3.one;
-                    GetContainer(EHeroBody_Weapon.WeaponR_Armor).SPR.sprite = _envHeroWeaponDict[EEnvType.Tree][(int)Owner.CreatureRarity];
+                    GetContainer(EHeroBody_Weapon.WeaponR_Armor).SPR.sprite = _envHeroWeaponDict[EEnvType.Tree][Owner.IsMaxLevel ? 1 : 0];
                     break;
 
                 case EHeroWeaponType.CollectRock:
                     GetContainer(EHeroBody_Weapon.WeaponR_Armor).TR.localScale = Vector3.one;
-                    GetContainer(EHeroBody_Weapon.WeaponR_Armor).SPR.sprite = _envHeroWeaponDict[EEnvType.Rock][(int)Owner.CreatureRarity];
+                    GetContainer(EHeroBody_Weapon.WeaponR_Armor).SPR.sprite = _envHeroWeaponDict[EEnvType.Rock][Owner.IsMaxLevel ? 1 : 0];
                     break;
             }
         }
@@ -2339,14 +2336,14 @@ namespace STELLAREST_F1
 
         private void InitEnvWeapon()
         {
-            Sprite[] envWeapons = new Sprite[(int)ECreatureRarity.Max];
-            envWeapons[(int)ECreatureRarity.Common] = Managers.Resource.Load<Sprite>(ReadOnly.Util.WoodcutterAxe_Common_SP);
-            envWeapons[(int)ECreatureRarity.Elite] = Managers.Resource.Load<Sprite>(ReadOnly.Util.WoodcutterAxe_Elite_SP);
+            Sprite[] envWeapons = new Sprite[(int)EEnvType.Max];
+            envWeapons[(int)EHeroGrade.Default] = Managers.Resource.Load<Sprite>(ReadOnly.Util.WoodcutterAxe_Default_SP);
+            envWeapons[(int)EHeroGrade.Max] = Managers.Resource.Load<Sprite>(ReadOnly.Util.WoodcutterAxe_Max_SP);
             _envHeroWeaponDict.Add(EEnvType.Tree, envWeapons);
 
-            envWeapons = new Sprite[(int)ECreatureRarity.Max];
-            envWeapons[(int)ECreatureRarity.Common] = Managers.Resource.Load<Sprite>(ReadOnly.Util.Pickaxe_Common_SP);
-            envWeapons[(int)ECreatureRarity.Elite] = Managers.Resource.Load<Sprite>(ReadOnly.Util.Pickaxe_Elite_SP);
+            envWeapons = new Sprite[(int)EEnvType.Max];
+            envWeapons[(int)EHeroGrade.Default] = Managers.Resource.Load<Sprite>(ReadOnly.Util.Pickaxe_Default_SP);
+            envWeapons[(int)EHeroGrade.Max] = Managers.Resource.Load<Sprite>(ReadOnly.Util.Pickaxe_Max_SP);
             _envHeroWeaponDict.Add(EEnvType.Rock, envWeapons);
         }
         #endregion
