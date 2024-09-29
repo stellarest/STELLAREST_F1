@@ -9,6 +9,23 @@ using UnityEditor;
 
 /*
 // [TODO LIST]
+// --- UpdateEffect 말고 LevelUpEffect로 해서 이전 이펙트 지우고 최신 이펙트로 적용해야할 것 같은데. 다른 종류라면 (아이템, 스킬, 훈련등)
+// --->>> Creature::RefreshCreatureBaseBuff를 UpdateEffect같은 것으로 수정 필요.
+// --->>> LevelUpSkill 했을 때, BuffUpdate해야함. 이게 핵심일 것 같은데.
+// --->>> Paladin Slash 2~5 완성시키기 (이것도 선택하도록?)
+// --->>> Paladin Shield 2~5 완성시키기 (선택하도록 할까?)
+
+Paladin -> Guardian, Knight, Phantom Knight.
+버프는 어떻게 변함? Guardian - Damage Reduction: 60% (Max)
+Knight - Damage Reduction(40%) + Fixed Attack ?
+...
+
+// --- 나는 ShieldHp를 올린적이 없는데 쉴드가 발동되고 있는 상태에서 ShieldHp가 계속 올라감.
+// --- EffectBuffType = EEffectBuffType.BonusHealth 버그 있음(OnDamaged)
+// --- ****************************** EffectCom::RemoveEffect 부분 참고 ******************************
+
+// EffectSpawnType: SetParentOwner 부분 앞으로 정상적인 로직으로 될지 확인하고 (아마 될듯)
+// 그리고 Enter, Exit Show Effect 부분 다시 참고해보고, 구조 조금 제대로 다듬고, DamageReductinoRate 적용하기
 // EffectComponent::RemoveEffect 참고
 // EffectBase::EnterShowEffect(); // --- +PARAM: ON TO THE PARENT(OWNER) ??
 

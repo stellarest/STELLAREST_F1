@@ -8,7 +8,7 @@ namespace STELLAREST_F1
 {
     public class BuffShield : BuffBase
     {
-        private const string c_hitBurst = "Hit_Burst";
+        private const string c_HitBurst = "Hit_Burst";
         private ParticleSystem[] _onShields = null;
         private ParticleSystem[] _offShields = null;
         private ParticleSystem _hitBurst = null;
@@ -20,12 +20,13 @@ namespace STELLAREST_F1
         {
             base.InitialSetInfo(dataID);
             EffectBuffType = EEffectBuffType.BonusHealthShield;
+            //EffectBuffType = EEffectBuffType.BonusHealth;
 
             _onShields = transform.GetChild(0).gameObject.GetComponentsInChildren<ParticleSystem>(includeInactive: true);
             for (int i = 0; i < _onShields.Length; ++i)
             {
                 _onShields[i].gameObject.SetActive(false);
-                if (_onShields[i].gameObject.name.Contains(c_hitBurst))
+                if (_onShields[i].gameObject.name.Contains(c_HitBurst))
                     _hitBurst = _onShields[i].gameObject.GetComponent<ParticleSystem>();
             }
 
@@ -52,22 +53,19 @@ namespace STELLAREST_F1
             base.ApplyEffect();
             if (Owner.BonusHealth == 0.0f)
             {
-                Debug.Log("<color=cyan>ZERO HEALTH OF SHIELD</color>");
-                ExitShowEffect();
+                Debug.LogWarning("Zero Health of the Shield");
+                ExitEffect();
                 return;
             }
         }
 
-        public override void EnterShowEffect()
+        public override void EnterEffect()
         {
-            base.EnterShowEffect();
+            base.EnterEffect();
 
-            // --- ON SHIELDS
-            Debug.Log("<color=white>SHIELD - ON</color>");
             for (int i = 0; i < _offShields.Length; ++i)
                 _offShields[i].gameObject.SetActive(false);
 
-            //transform.SetParent(Owner.transform);
             transform.localPosition = _onShieldsLocalPos;
             transform.localScale = _onShieldsLocalScale;
             for (int i = 0; i < _onShields.Length; ++i)
@@ -77,13 +75,9 @@ namespace STELLAREST_F1
             }
         }
 
-        public override void OnShowEffect()
-            => _hitBurst?.Play();
-
-        public override void ExitShowEffect()
+        public override void ExitEffect()
         {
-            // --- OFF SHIELDS
-            base.ExitShowEffect();
+            base.ExitEffect();
 
             for (int i = 0; i < _onShields.Length; ++i)
                 _onShields[i].gameObject.SetActive(false);
@@ -94,11 +88,17 @@ namespace STELLAREST_F1
                 _offShields[i].gameObject.SetActive(true);
                 _offShields[i].Play();
             }
-
-            StartCoroutine(CoRemoveShield());
         }
 
-        private IEnumerator CoRemoveShield()
+        public override void DoEffect()
+            => _hitBurst?.Play();
+
+        protected override void OnRemoveSelfByCondition(Action endCallback = null)
+        {
+            StartCoroutine(CoRemoveShield(endCallback));
+        }
+
+        private IEnumerator CoRemoveShield(Action endCallback)
         {
             yield return new WaitForSeconds(2.0F);
             
@@ -107,9 +107,8 @@ namespace STELLAREST_F1
 
             transform.localPosition = Vector3.zero;
             transform.localScale = Vector3.one;
-            transform.SetParent(Managers.Object.EffectRoot);
-            ClearEffect(EEffectClearType.Disable);
             _skill.LockCoolTimeSkill = false;
+            endCallback?.Invoke();
         }
     }
 }

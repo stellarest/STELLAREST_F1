@@ -7,7 +7,6 @@ using STELLAREST_F1.Data;
 
 namespace STELLAREST_F1
 {
-    // --- How to Collider Remove From BaseObject ???
     public class Env : BaseCellObject
     {
         public EnvData EnvData { get; private set; } = null;
@@ -64,11 +63,10 @@ namespace STELLAREST_F1
             EnvBody.StartCoFadeInEffect(startCallback: () =>
                         {
                             BaseEffect.GenerateEffect(
-                                    effectID: EnvType == EEnvType.Tree ? 
-                                            ReadOnly.DataAndPoolingID.DNPID_Effect_Global_TeleportGreen :
-                                            ReadOnly.DataAndPoolingID.DNPID_Effect_Global_TeleportRed,
+                                    effectID: EnvType == EEnvType.Tree ?  ReadOnly.DataAndPoolingID.DNPID_Effect_Global_TeleportGreen :
+                                                                          ReadOnly.DataAndPoolingID.DNPID_Effect_Global_TeleportRed,
                                     spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos)
-                                    );
+                                );
                         });
                         
             EnvState = EEnvState.Idle;

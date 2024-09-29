@@ -551,5 +551,17 @@ namespace STELLAREST_F1
         public int MaxLevel => BaseStat.MaxLevel;
         public bool IsMaxLevel => BaseStat.IsMaxLevel;
         #endregion
+
+        #region Util - Effect Comp
+        public void RequestRemoveEffect(EffectBase effect)
+        {
+            if (effect.IsValid() == false)
+                return;
+
+            BaseEffect.ActiveEffects.Remove(effect);
+            effect.transform.SetParent(Managers.Object.EffectRoot);
+            Managers.Object.Despawn(effect, effect.DataTemplateID);
+        }
+        #endregion
     }
 }

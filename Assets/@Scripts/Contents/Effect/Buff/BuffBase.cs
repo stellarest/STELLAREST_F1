@@ -22,21 +22,11 @@ namespace STELLAREST_F1
             base.ApplyEffect();
         }
 
-        public override void EnterShowEffect()
-        {
-            Owner.BaseEffect.SetIsOnEffectBuff(EffectBuffType, true);
-            transform.SetParent(Owner.transform);
-            Debug.Log($"{nameof(EnterShowEffect)} - {EffectBuffType}");
-        }
+        public override void EnterEffect()
+            => Owner.BaseEffect.SetIsOnEffectBuff(EffectBuffType, true);
+        public override void ExitEffect()
+            => Owner.BaseEffect.SetIsOnEffectBuff(EffectBuffType, false);
 
-        public override void OnShowEffect()
-        { 
-        }
-
-        public override void ExitShowEffect() 
-        { 
-            Owner.BaseEffect.SetIsOnEffectBuff(EffectBuffType, false);
-        }
+        public override void DoEffect() { }
     }
 }
-

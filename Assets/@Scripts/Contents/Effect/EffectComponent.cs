@@ -19,12 +19,20 @@ namespace STELLAREST_F1
 
         // --- 원래 ReadOnly Property였음. 일단 개발용으로 Property로 바꿈.
         [field: SerializeField] public List<EffectBase> ActiveEffects { get; private set; } = new List<EffectBase>();
+
+        // --- 이게 필요할까
         public Dictionary<EEffectBuffType, bool> IsOnEffectBuffDict { get; private set; } = null;
 
         public void InitialSetInfo(BaseObject owner)
         {
             _owner = owner.GetComponent<BaseCellObject>();
             IsOnEffectBuffDict = new Dictionary<EEffectBuffType, bool>();
+        }
+
+        public void EnterInGame()
+        {
+            RemoveAllEffects();
+            // + Apply Base Effect
         }
 
         public void SetIsOnEffectBuff(EEffectBuffType buffType, bool isOn)
@@ -149,18 +157,7 @@ namespace STELLAREST_F1
             return value;
         }
 
-        public void OnShowEffects(EEffectType effectType)
-        {
-            for (int i = 0; i < ActiveEffects.Count; ++i)
-            {
-                if (ActiveEffects[i].EffectType != effectType)
-                    continue;
-
-                ActiveEffects[i].OnShowEffect();
-            }
-        }
-
-        public void OnShowBuffEffects(EEffectBuffType effectBuffType)
+        public void DoBuffEffects(EEffectBuffType effectBuffType)
         {
             for (int i = 0; i < ActiveEffects.Count; ++i)
             {
@@ -168,19 +165,8 @@ namespace STELLAREST_F1
                 {
                     BuffBase buff = ActiveEffects[i].GetComponent<BuffBase>();
                     if (buff != null && buff.EffectBuffType == effectBuffType)
-                        buff.OnShowEffect();
+                        buff.DoEffect();
                 }
-            }
-        }
-
-        public void ExitShowEffects(EEffectType effectType)
-        {
-            for (int i = 0; i < ActiveEffects.Count; ++i)
-            {
-                if (ActiveEffects[i].EffectType != effectType)
-                    continue;
-
-                ActiveEffects[i].ExitShowEffect();
             }
         }
 
@@ -192,7 +178,7 @@ namespace STELLAREST_F1
                 {
                     BuffBase buff = ActiveEffects[i].GetComponent<BuffBase>();
                     if (buff != null && buff.EffectBuffType == effectBuffType)
-                        buff.ExitShowEffect();
+                        buff.ExitEffect();
                 }
             }
         }
@@ -202,9 +188,37 @@ namespace STELLAREST_F1
 
         public void RemoveEffect(EffectBase effect)
         {
-            // 아니면 Remove할 때 effect.ExitShowEffect() ??
-            ActiveEffects.Remove(effect);
-            Managers.Object.Despawn(effect, effect.DataTemplateID);
+            if (effect.IsValid() == false)
+                return;
+
+            effect.ExitEffect();
+            if (effect.EffectClearType != EEffectClearType.ByCondition)
+            {
+                ActiveEffects.Remove(effect);
+                effect.transform.SetParent(Managers.Object.EffectRoot); //--- FORCE
+                Managers.Object.Despawn(effect, effect.DataTemplateID);
+            }
+            else
+                effect.OnRemoveSelfByConditionHandler?.Invoke(() =>
+                {
+                    ActiveEffects.Remove(effect);
+                    effect.transform.SetParent(Managers.Object.EffectRoot); //--- FORCE
+                    Managers.Object.Despawn(effect, effect.DataTemplateID);
+                    Debug.Log($"<color=yellow>REMOVE: {effect.Dev_NameTextID}</color>");
+                });
+        }
+
+        public void RemoveBuffEffects(EEffectBuffType buffType)
+        {
+            for (int i = 0; i < ActiveEffects.Count; ++i)
+            {
+                if (ActiveEffects[i].EffectType == EEffectType.Buff)
+                {
+                    BuffBase buff = ActiveEffects[i].GetComponent<BuffBase>();
+                    if (buff != null && buff.EffectBuffType == buffType)
+                        this.RemoveEffect(buff);
+                }
+            }
         }
 
         public void RemoveAllEffects()

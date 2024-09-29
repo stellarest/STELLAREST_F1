@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,16 +14,18 @@ namespace STELLAREST_F1
             EffectBuffType = EEffectBuffType.DamageReduction;
         }
 
-        public override void EnterShowEffect()
+        protected override void OnRemoveSelfByCondition(Action endCallback = null)
         {
-            base.EnterShowEffect();
-            Debug.Log($"<color=magenta>!! {nameof(EnterShowEffect)} - {Dev_NameTextID}, {DataTemplateID}</color>");
+            endCallback?.Invoke();
         }
 
-        public override void ExitShowEffect()
+        public override void EnterEffect()
         {
-            base.ExitShowEffect();
-            transform.SetParent(Managers.Object.EffectRoot); // Destroy해도 될것같긴한데 일단 이렇게
+            base.EnterEffect();
+        }
+        public override void ExitEffect()
+        {
+            base.ExitEffect();
         }
     }
 }

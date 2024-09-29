@@ -7,9 +7,10 @@ namespace STELLAREST_F1
 {
     public class DotBase : EffectBase
     {
-        public override void EnterShowEffect() { }
-        public override void ExitShowEffect() { }
-        public override void OnShowEffect() { }
+        public override void EnterEffect() { }
+        public override void ExitEffect() { }
+        
+        public override void DoEffect() { }
         protected override void ProcessDot() { }
     }
 }

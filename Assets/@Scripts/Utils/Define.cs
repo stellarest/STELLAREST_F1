@@ -250,7 +250,7 @@ namespace STELLAREST_F1
 
         public enum ERockBody
         {
-            Rock, 
+            Rock,
             Empty,
             Ore,
             OreShadow,
@@ -442,6 +442,13 @@ namespace STELLAREST_F1
             SkillFromTarget = 3
         }
 
+        public enum EEffectClearType
+        {
+            OnDisable,         // --- TEMP
+            TimeOut,
+            ByCondition,
+        }
+
         public enum EApplyStatType
         {
             None = -1,
@@ -462,14 +469,6 @@ namespace STELLAREST_F1
             AddAmount,
             AddPercent,
             AddPercentMulti
-        }
-
-        public enum EEffectClearType
-        {
-            Disable,
-            TimeOut,
-            EndOfCC,
-            ByCondition            
         }
 
         public enum EHeroWeaponType
@@ -645,7 +644,7 @@ namespace STELLAREST_F1
                 public static readonly int DNPID_Monster_Turkey = 101001;
                 public static readonly int DNPID_Monster_Bunny = 101002;
                 public static readonly int DNPID_Monster_Pug = 101003;
-                
+
                 // --- Envs
                 public static readonly int DNPID_Env_AshTree = 101000;
                 public static readonly int DNPID_Env_BlackOakTree = 101001;
@@ -845,7 +844,7 @@ namespace STELLAREST_F1
 
                 public static readonly float HeroDefaultScanRange = 8.0F; // 오리지날 6F, 일단 6칸
                 public static readonly float MonsterDefaultScanRange = 6.0F; // 상하좌우 한칸 기준, 대각선X
-                
+
                 public static readonly float Temp_StopDistance = 1.25F;
 
                 // Dead Fade Out Time

@@ -28,9 +28,10 @@ namespace STELLAREST_F1
             }
         }
 
-        public override void EnterShowEffect() { }
-        public override void OnShowEffect() { }
-        public override void ExitShowEffect() { }
+        public override void EnterEffect() { }
+        public override void ExitEffect() { }
+
+        public override void DoEffect() { }
     }
 }
 

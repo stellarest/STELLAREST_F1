@@ -87,7 +87,7 @@ namespace STELLAREST_F1
                     dataID: ReadOnly.DataAndPoolingID.DNPID_Hero_Paladin);
                 leaderController.Leader = firstHero;
 
-                // StartCoroutine(CoContinuousSpawnMonster_Test(5.5f));
+                StartCoroutine(CoContinuousSpawnMonster_Test(5.5f));
                 StartCoroutine(CoContinuousSpawnEnv_Test(1f));
 
                 // // // // // --- Projectile Target Range Test List

@@ -3,10 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using static STELLAREST_F1.Define;
 using STELLAREST_F1.Data;
-using UnityEditor;
-using System.Data;
+using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
@@ -14,8 +12,6 @@ namespace STELLAREST_F1
     // Ex. TickTime: 1, TickCount: 5 -> 1초 마다 5번 실행하겠다. 근데 난 그냥 Duration, Period로
     // Monster와 다르게 Effect 여러가지 상속 구조로 가기 위해 베이스 클래스가 이렇게 구성되어 있음. Effect의 핵심은 "상속"
     // --- 단순 VFX, Buff/DeBuff, Dot, CC
-
-    // --- Level Up
     public abstract class EffectBase : BaseObject
     {
         private BaseCellObject _owner = null;
@@ -32,13 +28,21 @@ namespace STELLAREST_F1
         public void SetSkill(SkillBase skill) => _skill = skill;
 
         public EffectData EffectData { get; private set; } = null;
+        public EEffectType EffectType { get; protected set; } = EEffectType.None;
+        public EEffectClearType EffectClearType { get; protected set; } = EEffectClearType.OnDisable;
+        
+        // --- 지금 당장 우아한 방법은 아니긴 하지만, ByCondition에 의한 이펙트는 OnRemoveSelfByCondition에서 재정의만 하면 됨
+        public Action<Action> OnRemoveSelfByConditionHandler = null;
+        protected virtual void OnRemoveSelfByCondition(Action endCallback = null) { }
 
         public bool IsLoop { get; private set; } = false;
         public float Period { get; private set; } = 0.0f;
         public float Remains { get; private set; } = 0.0f;
-        public EEffectType EffectType { get; protected set; } = EEffectType.None;
+
         protected Vector3 _enteredDir = Vector3.zero;
         protected int _enteredSignX = 0;
+
+        public bool RemoveImmediately { get; protected set; } = false;
 
         #region Core
         public override bool Init()
@@ -79,13 +83,20 @@ namespace STELLAREST_F1
                       float.MaxValue : EffectData.Duration * EffectData.Period;
 
             if (EffectData.Duration < 0.0f)
+            {
                 Remains = float.MaxValue;
+                EffectClearType = EEffectClearType.ByCondition;
+
+                OnRemoveSelfByConditionHandler -= OnRemoveSelfByCondition;
+                OnRemoveSelfByConditionHandler += OnRemoveSelfByCondition;
+            }
             else
+            {
                 Remains = EffectData.Duration * EffectData.Period;
+                EffectClearType = EEffectClearType.TimeOut;
+            }
 
             transform.position = EffectSpawnInfo(EffectData.EffectSpawnType);
-            // --- *** From EffectComponent ***
-            // ApplyEffect();
         }
 
         private void InitialSetSize(EObjectSize objSize)
@@ -120,7 +131,8 @@ namespace STELLAREST_F1
                 return SpawnedPos;
             else if (effectSpawnType == EEffectSpawnType.SetParentOwner)
             {
-                
+                transform.SetParent(Owner.transform);
+                return SpawnedPos;
             }
 
             SkillBase currentSkill = Owner.GetComponent<Creature>().CreatureSkill.CurrentSkill;
@@ -144,22 +156,18 @@ namespace STELLAREST_F1
 
         public virtual void ApplyEffect()
         {
-            // --- Timer를 돌리는 것은 직관적이고 좋음.
-            // StartCoroutine(CoStartTimer());
+            if (EffectClearType == EEffectClearType.TimeOut)
+                StartCoroutine(CoStartLifeTimer());
 
-            // EnterApplyEffect
-            // EnterShowEffect
-            // OnShowEffect
-            // EndShowEffect
-            EnterShowEffect();
+            EnterEffect();
         }
+        public abstract void EnterEffect();
+        public abstract void ExitEffect();
 
-        public abstract void EnterShowEffect(); // --- +PARAM: ON TO THE PARENT(OWNER) ??
-        public abstract void OnShowEffect();
-        public abstract void ExitShowEffect(); // --- // --- +PARAM: OFF FROM PARENT(OWNER) ??
+        public abstract void DoEffect();
         protected virtual void ProcessDot() { }
 
-        protected IEnumerator CoStartTimer()
+        protected IEnumerator CoStartLifeTimer()
         {
             if (EffectType == EEffectType.Airborne || EffectType == EEffectType.Knockback)
                 yield break;
@@ -181,41 +189,14 @@ namespace STELLAREST_F1
             }
 
             Remains = 0f;
-            ClearEffect(EEffectClearType.TimeOut);
+            //ClearEffect(EEffectClearType.TimeOut);
+            Owner.BaseEffect.RemoveEffect(this);
         }
 
-        public virtual bool ClearEffect(EEffectClearType clearType)
+        public void ClearEffect(EEffectClearType clearType)
         {
-            if (Owner.IsValid() == false)
-            {
-                Owner.BaseEffect.RemoveEffect(this);
-                // Managers.Object.Despawn(this, DataTemplateID);
-                return false;
-            }
-
-            switch (clearType)
-            {
-                case EEffectClearType.Disable:
-                case EEffectClearType.TimeOut:
-                    {
-                        Owner.BaseEffect.RemoveEffect(this);
-                        break;
-                    }
-
-                case EEffectClearType.EndOfCC:
-                    {
-                        Owner.BaseEffect.RemoveEffect(this);
-                        //Owner.CreatureEffect.RemoveEffect(this);
-                        break;
-                    }
-
-                case EEffectClearType.ByCondition:
-                    {
-                        break;
-                    }
-            }
-
-            return true;
+             if (Owner.IsValid() == false)
+                return;
         }
 
         public bool IsCroudControl()
@@ -235,6 +216,40 @@ namespace STELLAREST_F1
 }
 
 /*
+        // public virtual bool ClearEffect(EEffectClearType clearType)
+        // {
+        //     if (Owner.IsValid() == false)
+        //     {
+        //         Owner.BaseEffect.RemoveEffect(this);
+        //         // Managers.Object.Despawn(this, DataTemplateID);
+        //         return false;
+        //     }
+
+        //     switch (clearType)
+        //     {
+        //         case EEffectClearType.Disable:
+        //         case EEffectClearType.TimeOut:
+        //             {
+        //                 Owner.BaseEffect.RemoveEffect(this);
+        //                 break;
+        //             }
+
+        //         case EEffectClearType.EndOfCC:
+        //             {
+        //                 Owner.BaseEffect.RemoveEffect(this);
+        //                 //Owner.CreatureEffect.RemoveEffect(this);
+        //                 break;
+        //             }
+
+        //         case EEffectClearType.ByCondition:
+        //             {
+        //                 break;
+        //             }
+        //     }
+
+        //     return true;
+        // }
+
         // protected void ApplyParticleInfo()
         // {
         //     if (EffectData.DataID != 1008)

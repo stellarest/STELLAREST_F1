@@ -38,8 +38,9 @@ namespace STELLAREST_F1
                         return (env.EnvState != EEnvState.Dead) && (env.Health > 0f);
 
                     // ##### TODO #####
+                    case EObjectType.Effect:
                     case EObjectType.Projectile:
-                        return bo != null && bo.gameObject.activeSelf;
+                        return bo != null && bo.gameObject.activeSelf;                        
                 }
             }
 

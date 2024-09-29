@@ -66,18 +66,29 @@ namespace STELLAREST_F1
             }
             else if (statType == EApplyStatType.DamageReductionRate)
             {
-                // Debug.Log(_baseStat.Owner.Dev_NameTextID);
-
-                // ************** 여기가 문제 *****************
-                // 버프가 중쳡됨. 제거할 때, 해당 버프를 찾아서 값을 제거해주는게 나을듯.
-                // baseValue = DamageReductionRate;
-
-                // 0.05 + 0.05 + 0.12 지금 이렇게 되고 있음.
                 baseValue += _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.DamageReductionRate,
                                                 statModType: EStatModType.AddAmount);
 
+                baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.DamageReductionRate,
+                                                statModType: EStatModType.AddPercent);
+
+                baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.DamageReductionRate,
+                                                statModType: EStatModType.AddPercentMulti);
+
                 // --- 데미지 감소율은 Fixed AddAmount로 최대 50%까지 가능.
                 baseValue = Mathf.Clamp(baseValue, 0.0f, 0.5f);
+                if (baseValue >= 0.5f)
+                {
+                    // --- 전부 곱연산으로 적용 (로직 재확인 필요)
+                    baseValue *= 1 - (1 - baseValue) * (1 - _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.DamageReductionRate,
+                                statModType: EStatModType.AddAmount));
+
+                    baseValue *= 1 - (1 - baseValue) * (1 - _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.DamageReductionRate,
+                                statModType: EStatModType.AddPercent));
+
+                    baseValue *= 1 - (1 - baseValue) * (1 - _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.DamageReductionRate,
+                                statModType: EStatModType.AddPercentMulti));
+                }
 
                 // --- 그 이후로는 곱연산을 적용하여 100%의 피해 감소율을 막는다(데미지 감소율로 인한 100% 무적상태 방지)
                 // --- 삭제 금지. 이게 맞음.
@@ -85,10 +96,6 @@ namespace STELLAREST_F1
                 //                                 statModType: EStatModType.AddPercentMulti))
                 //                                 * (1 - Inventory.Armor)
                 //                                 * (1 - TrainingStat.Endurance);
-
-                // 이녀석 때문에 0.0025f가 나온다.
-                // baseValue *= 1 - (1 - baseValue) * (1 - _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.DamageReductionRate,
-                //                                 statModType: EStatModType.AddPercentMulti));
 
                 DamageReductionRate = baseValue;
             }
