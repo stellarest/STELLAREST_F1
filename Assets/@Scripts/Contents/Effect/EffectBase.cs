@@ -70,7 +70,6 @@ namespace STELLAREST_F1
             Dev_NameTextID = EffectData.Dev_NameTextID;
             gameObject.name += $"_{EffectData.Dev_NameTextID}";
 #endif
-
             IsLoop = EffectData.IsLoop;
             Period = EffectData.Period;
             InitialSetSize(EffectData.EffectSize);
@@ -189,7 +188,6 @@ namespace STELLAREST_F1
             }
 
             Remains = 0f;
-            //ClearEffect(EEffectClearType.TimeOut);
             Owner.BaseEffect.RemoveEffect(this);
         }
 

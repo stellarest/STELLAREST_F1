@@ -465,6 +465,12 @@ namespace STELLAREST_F1
                 {
                     Managers.Data.Init();
                     Managers.MonoContents.Init();
+                    Managers.Game.Init();
+#if UNITY_EDITOR
+                    // Load HasGamePackages
+                    Managers.Game.HasGamePackages[(int)EGamePackage.Elite] = true;
+                    Managers.Game.HasGamePackages[(int)EGamePackage.Premium] = false;
+#endif
                     //Managers.Sprite.Init();
                     //Managers.Animation.Init();
                     Test();

@@ -8,21 +8,54 @@ using DG.Tweening;
 using UnityEditor;
 
 /*
-// [TODO LIST]
-// --- UpdateEffect 말고 LevelUpEffect로 해서 이전 이펙트 지우고 최신 이펙트로 적용해야할 것 같은데. 다른 종류라면 (아이템, 스킬, 훈련등)
-// --->>> Creature::RefreshCreatureBaseBuff를 UpdateEffect같은 것으로 수정 필요.
-// --->>> LevelUpSkill 했을 때, BuffUpdate해야함. 이게 핵심일 것 같은데.
-// --->>> Paladin Slash 2~5 완성시키기 (이것도 선택하도록?)
-// --->>> Paladin Shield 2~5 완성시키기 (선택하도록 할까?)
 
-Paladin -> Guardian, Knight, Phantom Knight.
-버프는 어떻게 변함? Guardian - Damage Reduction: 60% (Max)
-Knight - Damage Reduction(40%) + Fixed Attack ?
-...
+// Hero Skill 수정(Skill_A, B(Lv.3부터 자동 잠금 해제), C(Lv.5(Max)에서 자동 잠금 해제), Elite Skill
 
-// --- 나는 ShieldHp를 올린적이 없는데 쉴드가 발동되고 있는 상태에서 ShieldHp가 계속 올라감.
-// --- EffectBuffType = EEffectBuffType.BonusHealth 버그 있음(OnDamaged)
-// --- ****************************** EffectCom::RemoveEffect 부분 참고 ******************************
+[ Unlock Elite Package: 6,500 ]
+1. 스테이지 종료시 등장하는 의무 광고 제거(4스테이지 부터, 이거 광고를 제거 안하면 시청하거나 무조건 앱을 다시 시작해야함)
+2. 자동 채집 NPC 추가(나무꾼 1명, 광부 1명) 
+3. 엘리트 히어로 진화 활성화
+4. 엘리트 훈련소 활성화
+5. ...
+
+[ Unlock Premium Package: 9,900 ]
+1. 스테이지 종료시 등장하는 의무 광고 제거(4스테이지 부터, 이거 광고를 제거 안하면 시청하거나 무조건 앱을 다시 시작해야함)
+2. 자동 채집 NPC 추가(나무꾼 2명, 광부 2명)
+3. 히어로 8종 추가(기존 12종, 총 20종)
+4. 스테이지 입장시 보상형 광고 스킵권 10회 제공
+5. 경험치 획득량 +100%
+
+————————————————————————————
+팔라딘 lv.1
+Skill_A: 기본 공격
+Skill_B: 비활성화
+Skill_C: 비활성화
+
+팔라딘 lv.2 (스탯 / 버프 스탯 증가)
+Skill_A: 기본 공격
+Skill_B: 비활성화
+Skill_C: 비활성화
+
+팔라딘 lv.3 (스탯 / 버프 스탯 증가, 스킬B 개방)
+Skill_A: 기본 공격
+Skill_B: 개방 (+슬래쉬, 2명의 적을 적중)
+Skill_C: 비활성화
+
+팔라딘 lv.4 (스탯 / 버프 스탯 증가)
+Skill_A: 기본 공격
+Skill_B: 활성화
+Skill_C: 비활성화
+
+팔라딘 lv.5 (Max) (스탯 / 버프 스탯 증가, 스킬C 개방)
+Skill_A: 기본 공격
+Skill_B: 활성화
+Skill_C: 개방
+
+팔라딘 lv.5 (Max, Elite)
+Skill_A: 강화된 기본 공격
+Skill_B: 매우 강화된 Skill_B 
+Skill_C: 매우 강화된 Skill_C
+————————————————————————————
 
 // EffectSpawnType: SetParentOwner 부분 앞으로 정상적인 로직으로 될지 확인하고 (아마 될듯)
 // 그리고 Enter, Exit Show Effect 부분 다시 참고해보고, 구조 조금 제대로 다듬고, DamageReductinoRate 적용하기
@@ -61,87 +94,7 @@ Knight - Damage Reduction(40%) + Fixed Attack ?
 - 히어로 데이터 시트, 몬스터 데이터 시트에 스킬ID는 전부 적어놓고 시작한다.
 - 최초 레벨업은 Unlock이 되고, 그 이후에는 Max Level까지 레벨업이 되어야한다.
 /************************************************************************************
-// LevelUp Stat 증가부터,, 스킬 레벨업이랑 독립적으로 적용시켜야할듯.
-// Organize related to find path methods
 
-// - 실제 스탯 능력치의 증가는 곱연산으로. 
-// - 아이템 조합(5% + 5% = 12% 카드 생성)은 합연산으로. (유저에게 직관적)
-// - 능력치 부여는 곱연산으로.
-
-// - * 히어로 레벨이 증가하면, 히로의 기본 스탯이 증가한다.
-// - * 히어로 레벨은 어떻게 증가시킬 것인가?
-// - * InGameGrade? 5단계로?
-1. 일반 (Common)
-2. 고급 (Uncommon)
-3. 레어 (Rare)
-4. 에픽 (Epic)
-5. 전설 (Legendary)
-아... 모든 것이 랜덤. 나쁘지 않을 것 같은데, 웨이브 종료할 때 마다.
-일반 + 일반은 레어로 만들고. 레어+레어는 에픽으로.
-
-최대 체력 증가 일반 등급 버프 카드가 나올수도.
-리롤하거나 다음 웨이브 종료후, 레어 등급의 최대 체력 버프가 나올수도.
-
-각 버프 카드는 중첩이 안된다.
-예를 들어, 일반 등급의 체력 버프를 먹고. 그 다음 웨이브에서 레어 등급의 체력 버프가 나왔다면,
-아 중첩이 되야되겠군.
-
-// - * 레벨업
-: 각 히어로마다 정해진 능력치 대폭 증가 (Max level.5)
-
-// - * 고정 스탯 증가
-: 각 히어로의 고정 스탯을 증가할 수 있다. (Infinite Buff)
-
-// - 재화는(Wood, Stone, Apple, Ore... 등등 각종 다양한것들이 있는데, 웨이브가 종료되면 전부 Soul로 전환됨)
-// - Soul은 히어로 스킬, 유저 아이템에 활용 된다.
-// - 모든 웨이브가 종료(스테이지 클리어)되면 골드를 얻게 된다. 골드는 히어로 연구소 스탯, 인게임 아이템 구매(킹덤러쉬 참고)에 활용할 수 있다. 
-// - 몬스터를 사냥해서 잡으면 웨이브 유저 경험치가 증가하고 웨이브 유저 레벨업을 하게 된다. (Max. 5)
-// - 연구소 스탯은 예를 들어... 기절 확률리 적용되어 있는 모든 스킬에 기절 확률을 5% 증가한다. 이런거?
-// - 모든 히어로의 기본 스킬(기본 공격등)의 쿨타임이 10% 감소한다. 이런거. 아니면 이것을 공격속도 증가로 해도 될 듯?
-// - 무조건, 유저는 쉽게 받아들일 수 있도록. 유저의 입장에서 수학적인게 아닌, 공격 속도가 증가한다. 이런식으로.
-// - 무조건 Soul로 All-in-One, Soul로 히어로의 레벨, 히어로의 스킬, 인게임 웨이브 아이템 구매 등.
-
-// --- SKILL BLANCE NOTE
-[Abstract]
-- 나무, 광석, 초록 사과, 빨간 사과, 은색 광석, 금색 광석 등은 웨이브 종료시 모두 Soul로 전환
-- 인게임 재화는 무조건 Soul로 All-in-One, Soul로 히어로의 레벨, 히어로의 스킬, 인게임 웨이브 아이템 구매 등.
-- 히어로의 레벨을 올리면, 히어로의 기본 스킬(Skill_A)의 레벨은 자동으로 올라간다. (Hero Max Level.5)
-
-- LevelUpInfo 구조체를 가지고 있어야 할까. 아니면 히어로의 기본 스탯만 정해져있는 상태에서 스탯을 찍어서 올려주는 형태로?
-- 내가 착각하고 있었다. 기본 스탯은 변함이 없는 거고, 각종 버프만 기본 스킬이 가지고 있게끔.
-- 레벨업을 한번 클릭하며 현재 스텟 기준으로 증가 될 스탯을 수치와 초록색%로 보여주고 한번 더 누르면 레벨업을 하게끔.
-- 캐릭터마다 증가되는 스탯양이 당연히 다르다. 예를 들어 팔라딘은 레벨업하면 체력이 높은 수치로 증가함.
-
-"DataID": 101000,
-            "DevTextID": "Lv.01 - Paladin",
-
-            "MaxHp": 550.0,
-            "MinAtk": 12.0,
-            "MaxAtk": 15.0,
-            "CriticalRate": 0.0,
-            "DodgeRate": 0.0,
-            "MovementSpeed": 5.0
-
-[Paladin]
-S_A (Stat Template)     (101100)
-: 기본 근접 공격
-(캐릭터 스탯과 관련된 모든 버프를 이녀석이 갖고 있다)
-
-S_B
-- Slash I               (101200)
-: 사정 거리 2까지 도달하는 검기를 날려 2회 공격한다. 
-
-- Slash II              (101201)
-: 검기의 사정 거리가 2 -> 3으로 증가한다.
-
-- Slash III             (101202)
-: 검기의 공격력이 10% 증가한다. 
-
-- Slash IV              (101203)
-: 검기의 공격력이 10% -> 20% 증가한다.
-
--  Slash V              (101204)
-: 거대한 검기를 3회 날려 공격한다.
 
 S_C
 - Slash I               (101200)
@@ -253,23 +206,6 @@ S2: Shield(C) -> Heaven's Shield (E)
 - Paladin Skill_C(Shield) 대략 완성하고 Effect Stat 대략적으로 잡고 캐릭터, 스킬 레벨업하는거 잡기(진화 스킬까지)
 - 이런식으로 캐릭터 선형으로 추가해나가기(Druid까지, Barbarian까지 할 수 있으면 더 좋고)
 
-// --- HERO NOTE
-- Paladin (101000)
->>> Skills (히어로 레벨업시 스킬도 자동 레벨업)
-> Skill_A (101100): Melee Enemy
-> Skill_B (101200): Projectile Enemy
-ex. lv.2: + Dmg
-ex. lv.3: + InvokeRange
-ex. lv.4: + Cooldown
-ex. lv.5(Max): Triple Attack 이런식으로하면 가능하겠네
-
-> Skill_C (101300): Self -> Self + Allies
-ex. lv.2: + Increase Shield Value
-ex. lv.3: + Increase Shield Value
-ex. lv.4: + Cooldown
-ex. lv.5(Max): Judgement of the Heaven 
-
-
 // --- NOTE
 1. Paladin
 2. Archer
@@ -280,46 +216,4 @@ ex. lv.5(Max): Judgement of the Heaven
 7. Tricster
 8. Druid
 
-- 스킬 데이터 예시, 쉴드 궁극기 같은 경우는 같은편에게는 쉴드 효과를 걸어주고, 적에게는 스턴 효과를 줄려면
-- TargetToEnemyEffectIDs, TargetToAllyEffectIDs. 이펙트로 효과 먹여도 되긴함. (나중에)
-- Paladin Double Attack -> Shield
-- Spawn Turkey, Bunny, Pug
-
->>> Hero AI, Monster AI
->>> EStartTargetRange, XShaped
->>> Priest, Gather Ally Targets (Add Skill Heal, How to Gather Ally Targets)
->>> Melee Hero, Ranged Hero AI
->>> Organize Effect, Skills
->>> Next Skill ID in Hero Stat Data?
->>> Add Monsters
-
-// --- 이 방식이 제일 직관적이고 깔끔한듯.
-// --- 스킬까지 스킬 포인트로 따로 찍게 하는 것은 조금 오바스러운 것 같음
-// --- 차라리 육성하고 싶은 육성 선택 후 레벨업을 하면 Skill_A, B, C는 모두 자동으로 레벨업
-// --- 이후 다른 가챠 요소는 브로테이토처럼 Item, Passive User Skill(모든 히어로광역 적용)같은 것을 넣던지
-- Paladin Lv.1 (LvStatID - 101000)
-> Skill_A Lv.1 (101100)
-> Skill_B Lv.1 (101200)
-> Skill_C Lv.1 (101300)
-
-- Paladin Lv.2 (LvStatID - 101001)
-> Skill_A Lv.2 (101101)
-> Skill_B Lv.2 (101201)
-> Skill_C Lv.2 (101301)
-
-- Paladin Lv.3 (LvStatID - 101002)
-> Skill_A Lv.3 (101102)
-> Skill_B Lv.3 (101202)
-> Skill_C Lv.3 (101302)
-
-- Paladin Lv.4 (LvStatID - 101003)
-> Skill_A Lv.4 (101103)
-> Skill_B Lv.4 (101203)
-> Skill_C Lv.4 (101303)
-
-- Paladin Lv.5 (LvStatID - 101004)
-> Skill_A Lv.5 (101104)
-> Skill_B Lv.5 (101204)
-> Skill_C Lv.5 (101304)
-********************************************************************
 */

@@ -158,10 +158,6 @@ namespace STELLAREST_F1
 #if UNITY_EDITOR
             Dev_NameTextID = HeroData.Dev_NameTextID;
 #endif
-            // --- BaseStat
-            // for (int i = DataTemplateID; i < DataTemplateID + ReadOnly.Util.HeroMaxLevel;)
-            //     _maxLevelID = i++;
-
             gameObject.name += $"_{HeroData.Dev_NameTextID.Replace(" ", "")}";
         }
 
@@ -179,6 +175,7 @@ namespace STELLAREST_F1
                             spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos)
                             );
             });
+            
             StartCoroutine(CoInitialReleaseLeaderHeroAI());
         }
 
@@ -270,16 +267,17 @@ namespace STELLAREST_F1
             if (BaseStat.LevelUp() == false)
                 return false;
 
-            RefreshCreatureBaseBuff();
             CreatureSkill.LevelUpSkill(ownerLevelID: BaseStat.LevelID);
-            if (IsMaxLevel)
-            {
-                Debug.Log($"<color=yellow>MaxUp Hero</color>");
-                HeroBody.ChangeSpriteSet(Managers.Data.HeroSpriteDataDict[BaseStat.LevelID]);
+            RefreshCreatureBaseBuff();
+            // if (IsMaxLevel)
+            // {
+            //     Debug.Log($"<color=yellow>MaxUp Hero</color>");
+            //     HeroBody.ChangeSpriteSet(Managers.Data.HeroSpriteDataDict[BaseStat.LevelID]);
 
-                // --- MaxUp Effect.
-                BaseEffect.GenerateEffect(effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_GlobalHero_VFXHeroMaxUp);
-            }
+            //     // --- MaxUp Effect.
+            //     BaseEffect.GenerateEffect(effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_GlobalHero_VFXHeroMaxUp);
+            //     Debug.Log("<color=yellow>Your game is premium version.</color>");
+            // }
 
             return true;
         }

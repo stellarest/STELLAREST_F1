@@ -10,19 +10,18 @@ namespace STELLAREST_F1
 {
     public static class Define
     {
-        public enum EGameGrade
+        // --- 독립적인 게임 패키지
+        public enum EGamePackage
         {
-            Common,
-            Uncommon,
-            Rare,
-            Epic,
-            Legendary
+            Elite,                  // --- KRW: 6,600(모든 기능 잠금 해제)
+            Premium,                // --- KRW: 14,900(인게임 플레이 지원, 히어로 추가)
+            Max = Premium + 1
         }
 
         public enum EHeroGrade
         {
             Default,
-            Max
+            Elite
         }
 
         public enum EMonsterType

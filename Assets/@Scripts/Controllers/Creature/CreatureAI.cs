@@ -111,7 +111,9 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public virtual void InitialSetInfo(Creature owner) => Owner = owner;
+        public virtual void InitialSetInfo(Creature owner) 
+            => Owner = owner;
+            
         public virtual void EnterInGame()
             => StartCoFindTargets();
         #endregion Init Core

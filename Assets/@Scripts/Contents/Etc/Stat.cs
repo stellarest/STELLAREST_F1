@@ -154,14 +154,30 @@ namespace STELLAREST_F1
         {
             get
             {
+                int level = -1;
+                if (_levelID == _maxLevelID && Managers.Game.HasGamePackages[(int)EGamePackage.Elite])
+                    level = _levelID % _dataTemplateID;
+                else
+                    level = (_levelID % _dataTemplateID) + 1;
+
 #if UNITY_EDITOR
-                Dev_NameTextID = $"Lv: {((_levelID % _dataTemplateID) + 1).ToString()} / {MaxLevel.ToString()}";
+                Dev_NameTextID = $"Lv: {level.ToString()} / {MaxLevel.ToString()}";
 #endif
-                return (_levelID % _dataTemplateID) + 1; // --- 1부터 시작하므로
+                return level;
             }
         }
 
-        public int MaxLevel => (_maxLevelID % _dataTemplateID) + 1; // --- 1부터 시작하므로
+        public int MaxLevel
+            => _levelID == _maxLevelID && Managers.Game.HasGamePackages[(int)EGamePackage.Elite] ?
+               _maxLevelID % _dataTemplateID : (_maxLevelID % _dataTemplateID) + 1;
+
+        // {
+        //     get
+        //     {
+        //         (_maxLevelID % _dataTemplateID) + 1; // --- 1부터 시작하므로
+        //         return -1;
+        //     }
+        // }
 
         [SerializeField] protected int _levelID = -1;
         public int LevelID => _levelID;
@@ -185,10 +201,21 @@ namespace STELLAREST_F1
                 return false;
 
             _levelID = Mathf.Clamp(_levelID + 1, _dataTemplateID, _maxLevelID);
+    
             switch (objType)
             {
                 case EObjectType.Hero:
                     {
+                        if (_levelID == _maxLevelID && Managers.Game.HasGamePackages[(int)EGamePackage.Elite])
+                        {
+                            _levelID = ++_maxLevelID;
+                            // int lv = Level;
+                            // int maxLv = MaxLevel;
+                            
+                            Owner.GetComponent<Hero>().HeroBody.ChangeSpriteSet(Managers.Data.HeroSpriteDataDict[_levelID]);
+                            Owner.BaseEffect.GenerateEffect(effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_GlobalHero_VFXHeroMaxUp);
+                        }
+
                         if (Managers.Data.HeroStatDataDict.TryGetValue(key: _levelID, value: out HeroStatData heroStatData) == false)
                         {
                             Debug.LogError($"{nameof(BaseStat)}::{nameof(LevelUp)}, Failed to load HeroStatData.");

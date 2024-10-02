@@ -12,6 +12,11 @@ namespace STELLAREST_F1
         private Creature _owner = null;
 
         public List<SkillBase> Skills { get; } = new List<SkillBase>();
+
+        // --- Hero 기준
+        // - Skill_A: Default
+        // - Skill_B: lv.3에서 자동으로 잠금 해제
+        // - Skill_C: lv.5에서 자동으로 잠금 해제
         public List<SkillBase> ActiveSkills = new List<SkillBase>();
 
         private const int c_Skill_A_INTERVAL_NUMBER = 100;
@@ -22,7 +27,7 @@ namespace STELLAREST_F1
         public string ActiveSkillB = "";
         public string ActiveSkillC = "";
 #endif
-
+        // --- Projectile에서 참고하고 있는거 고작 하나 때문에 이 컨테이너는 필요 없을지도
         public SkillBase FindSkill(int skillDataID) 
             => Skills.FirstOrDefault(s => s.DataTemplateID == skillDataID);
         public SkillBase FindSkill(ESkillType skillType) 
@@ -84,6 +89,7 @@ namespace STELLAREST_F1
             SkillArray[(int)ESkillType.Skill_A] = AddSkill(creatureData.Skill_A_ID);
             Skills.Add(SkillArray[(int)ESkillType.Skill_A]);
 
+            // --- 지금 이 부분을 추가하면 안되고, 히어로 레벨이 Lv.3, Lv.5가 되었을 때로 변경해야함
             // --- Active Skill(B)
             SkillArray[(int)ESkillType.Skill_B] = AddSkill(creatureData.Skill_B_ID);
             if (SkillArray[(int)ESkillType.Skill_B] != null)
@@ -103,21 +109,21 @@ namespace STELLAREST_F1
             }
 
             // --- Check Validation (All Creatures must have one skill at least.)
-            {
-                int skillCount = 0;
-                for (int i = 0; i < SkillArray.Length; ++i)
-                {
-                    SkillBase skill = SkillArray[i];
-                    if (skill != null)
-                        ++skillCount;
-                }
+            // {
+            //     int skillCount = 0;
+            //     for (int i = 0; i < SkillArray.Length; ++i)
+            //     {
+            //         SkillBase skill = SkillArray[i];
+            //         if (skill != null)
+            //             ++skillCount;
+            //     }
 
-                if (skillCount == 0)
-                {
-                    Debug.LogError($"{nameof(SkillComponent)}");
-                    Debug.Break();
-                }
-            }
+            //     if (skillCount == 0)
+            //     {
+            //         Debug.LogError($"{nameof(SkillComponent)}");
+            //         Debug.Break();
+            //     }
+            // }
         }
 
         private SkillBase AddSkill(int skillDataID)

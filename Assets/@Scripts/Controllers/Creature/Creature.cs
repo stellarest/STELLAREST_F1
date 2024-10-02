@@ -549,6 +549,12 @@ namespace STELLAREST_F1
             if (this.IsValid() == false)
                 return;
 
+            // 기획적인 요소를 변경해야하나.
+            // 어차피 웨이브마다 진행되는 거라,,,
+            // Lv.1 특성 찍을 수 있는 것
+            // Lv.2 특성 찍을 수 있는 것 
+            // Lv.3 ...
+
             // Endurance: 0.05(C) -> 0.12(U) -> 0.2(R) -> 0.3(E) -> 0.4(L)
             EffectBase findEffect = BaseEffect.ActiveEffects.Find(n => n.EffectData.DataID == LevelID);
             if (findEffect == null)
