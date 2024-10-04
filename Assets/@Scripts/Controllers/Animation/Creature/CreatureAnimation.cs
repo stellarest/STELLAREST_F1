@@ -62,6 +62,7 @@ namespace STELLAREST_F1
         protected readonly int OnSkillB = Animator.StringToHash(ReadOnly.AnimationParams.OnSkillB);
         protected readonly int OnSkillC = Animator.StringToHash(ReadOnly.AnimationParams.OnSkillC);
         protected readonly int OnCollectEnv = Animator.StringToHash(ReadOnly.AnimationParams.OnCollectEnv);
+        protected readonly int AttackRate = Animator.StringToHash(ReadOnly.AnimationParams.AttackRate);
 
         public bool Moving
         {
@@ -134,8 +135,8 @@ namespace STELLAREST_F1
             CanSkillTrigger = true;
         }
 
-        // --- BaseAnimation으로 옮김
-        //public void Dead() => Animator.SetTrigger(OnDead);
+        public void SetAttackRate(float attackRate)
+            => Animator.SetFloat(AttackRate, _creatureOwner.AttackRate);
 
         #region Init Core
         public override bool Init()
@@ -349,64 +350,3 @@ namespace STELLAREST_F1
         }
     }
 }
-
-/*
-    [PREV REF]
-       // public override void UpdateAnimation() 
-        //     => base.UpdateAnimation();
-
-        // public bool IsMoving
-        // {
-        //     get => Animator.GetBool(Moving);
-        //     set => Animator.SetBool(Moving, value);
-        // }
-
-        // public bool IsInAttackRange
-        // {
-        //     get => Animator.GetBool(AttackRange);
-        //     set => Animator.SetBool(AttackRange, value);
-        // }
-
-        // public bool CanSkillAttack
-        // {
-        //     get => Animator.GetBool(ReadySkillAttack);
-        //     set => Animator.SetBool(ReadySkillAttack, value);
-        // }
-
-
-
-        // public virtual void PlayCreatureAnimation(ECreatureAIState creatureState)
-        // {
-        //     switch (creatureState)
-        //     {
-        //         case ECreatureAIState.Idle:
-        //             Animator.Play(Upper_Idle);
-        //             Animator.Play(Lower_Idle);
-        //             break;
-
-        //         case ECreatureAIState.Move:
-        //             Animator.Play(Upper_Move);
-        //             Animator.Play(Lower_Move);
-        //             break;
-
-        //         case ECreatureAIState.Skill_Attack:
-        //             //Animator.Play(Play_Skill_Attack);
-        //             //Animator.Play(Upper_Skill_Attack);
-        //             break;
-
-        //         case ECreatureAIState.CollectEnv:
-        //             Animator.Play(Play_CollectEnv);
-        //             break;
-
-        //         case ECreatureAIState.Dead:
-        //             Animator.Play(Play_Dead);
-        //             break;
-        //     }
-        // }
-
-        // public bool IsCurrentAnimationState(ECreatureAIState creatureState)
-        // {
-        //     AnimatorStateInfo stateInfo = Animator.GetCurrentAnimatorStateInfo(layerIndex: 0);
-        //     return stateInfo.shortNameHash == GetHash(creatureState);
-        // }
-*/

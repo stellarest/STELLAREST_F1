@@ -9,21 +9,16 @@ using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
+    // Hero LevelUp Info
+    // --- 히어로별 1개의 Passive Buff 고정
     public class SubStat : InitBase
     {
         public const float c_ZeroBase = 0.0f;
         private BaseStat _baseStat = null;
-
         [field: SerializeField] public float BonusHealth { get; set; } = 0.0f;
-
         [field: SerializeField] public float FixedBonusAttackAmount { get; set; } = 0.0f;
-        public float FixedBonusAttackAmountBase {get; private set; } = 0.0f;
-
-        // --- 이거 추가해야할듯.
-        // FixedBonusAttackAmountInvokeRate
-        // ---
-
-        [field: SerializeField] public float DamageReductionRate { get; set; } = 0.0f;
+        public float FixedBonusAttackAmountBase { get; private set; } = 0.0f;
+        [field: SerializeField] public float ArmorRate { get; set; } = 0.0f;
         public float DamageReductionRateBase { get; private set; } = 0.0f;
 
         [field: SerializeField] public float DebuffResistanceRate { get; set; } = 0.0f;
@@ -37,7 +32,7 @@ namespace STELLAREST_F1
             _baseStat = baseStat;
             BonusHealth = c_ZeroBase;
             FixedBonusAttackAmount = c_ZeroBase;
-            DamageReductionRate = c_ZeroBase;
+            ArmorRate = c_ZeroBase;
             DebuffResistanceRate = c_ZeroBase;
             InvincibleCountPerWave = (int)c_ZeroBase;
         }
@@ -64,31 +59,34 @@ namespace STELLAREST_F1
 
                 BonusHealth = Mathf.Clamp(baseValue - _baseStat.MaxHealth, 0.0f, _baseStat.MaxHealth);
             }
-            else if (statType == EApplyStatType.DamageReductionRate)
+            else if (statType == EApplyStatType.Armor)
             {
-                baseValue += _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.DamageReductionRate,
+                baseValue += _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.Armor,
                                                 statModType: EStatModType.AddAmount);
 
-                baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.DamageReductionRate,
+                baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.Armor,
                                                 statModType: EStatModType.AddPercent);
 
-                baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.DamageReductionRate,
+                baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.Armor,
                                                 statModType: EStatModType.AddPercentMulti);
 
+                ArmorRate = Mathf.Clamp(baseValue, 0.0f, ReadOnly.Util.MaxArmorRate);
+
+                // --- PREV: 0.5이상부터 곱연산으로 했던 부분
                 // --- 데미지 감소율은 Fixed AddAmount로 최대 50%까지 가능.
-                baseValue = Mathf.Clamp(baseValue, 0.0f, 0.5f);
-                if (baseValue >= 0.5f)
-                {
-                    // --- 전부 곱연산으로 적용 (로직 재확인 필요)
-                    baseValue *= 1 - (1 - baseValue) * (1 - _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.DamageReductionRate,
-                                statModType: EStatModType.AddAmount));
+                // baseValue = Mathf.Clamp(baseValue, 0.0f, 0.5f);
+                // if (baseValue >= 0.5f)
+                // {
+                //     // --- 전부 곱연산으로 적용 (로직 재확인 필요)
+                //     baseValue *= 1 - (1 - baseValue) * (1 - _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.Armor,
+                //                 statModType: EStatModType.AddAmount));
 
-                    baseValue *= 1 - (1 - baseValue) * (1 - _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.DamageReductionRate,
-                                statModType: EStatModType.AddPercent));
+                //     baseValue *= 1 - (1 - baseValue) * (1 - _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.Armor,
+                //                 statModType: EStatModType.AddPercent));
 
-                    baseValue *= 1 - (1 - baseValue) * (1 - _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.DamageReductionRate,
-                                statModType: EStatModType.AddPercentMulti));
-                }
+                //     baseValue *= 1 - (1 - baseValue) * (1 - _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.Armor,
+                //                 statModType: EStatModType.AddPercentMulti));
+                // }
 
                 // --- 그 이후로는 곱연산을 적용하여 100%의 피해 감소율을 막는다(데미지 감소율로 인한 100% 무적상태 방지)
                 // --- 삭제 금지. 이게 맞음.
@@ -97,7 +95,7 @@ namespace STELLAREST_F1
                 //                                 * (1 - Inventory.Armor)
                 //                                 * (1 - TrainingStat.Endurance);
 
-                DamageReductionRate = baseValue;
+                // ArmorRate = baseValue;
             }
         }
     }
@@ -124,11 +122,14 @@ namespace STELLAREST_F1
         [field: SerializeField] public float MaxHealth { get; set; } = 0.0f;
         public float MaxHealthBase { get; private set; } = 0.0f;
 
-        [field: SerializeField] public float MinAttack { get; set; } = 0.0f;
-        public float MinAttackBase { get; private set; } = 0.0f;
+        [field: SerializeField] public float MinDamage { get; set; } = 0.0f;
+        public float MinDamageBase { get; private set; } = 0.0f;
 
-        [field: SerializeField] public float MaxAttack { get; set; } = 0.0f;
-        public float MaxAttackBase { get; private set; } = 0.0f;
+        [field: SerializeField] public float MaxDamage { get; set; } = 0.0f;
+        public float MaxDamageBase { get; private set; } = 0.0f;
+
+        [field: SerializeField] public float AttackRate { get; set; } = 0.0f;
+        public float AttackRateBase { get; private set; } = 0.0f;
 
         [field: SerializeField] public float CriticalRate { get; set; } = 0.0f;
         public float CriticalRateBase { get; private set; } = 0.0f;
@@ -145,7 +146,7 @@ namespace STELLAREST_F1
         // --- Util SubStat
         public float BonusHealth { get => _subStat.BonusHealth; set => _subStat.BonusHealth = value; }
         public float FixedBonusAttackAmount { get => _subStat.FixedBonusAttackAmount; set => _subStat.FixedBonusAttackAmount = value; }
-        public float DamageReductinoRate { get => _subStat.DamageReductionRate; set => _subStat.DamageReductionRate = value; }
+        public float ArmorRate { get => _subStat.ArmorRate; set => _subStat.ArmorRate = value; }
         public float DebuffResistanceRate { get => _subStat.DebuffResistanceRate; set => _subStat.DebuffResistanceRate = value; }
         public int InvincibleCountPerWave { get => _subStat.InvincibleCountPerWave; set => _subStat.InvincibleCountPerWave = value; }
 
@@ -154,12 +155,7 @@ namespace STELLAREST_F1
         {
             get
             {
-                int level = -1;
-                if (_levelID == _maxLevelID && Managers.Game.HasGamePackages[(int)EGamePackage.Elite])
-                    level = _levelID % _dataTemplateID;
-                else
-                    level = (_levelID % _dataTemplateID) + 1;
-
+                int level = (_levelID % _dataTemplateID) + 1;
 #if UNITY_EDITOR
                 Dev_NameTextID = $"Lv: {level.ToString()} / {MaxLevel.ToString()}";
 #endif
@@ -167,18 +163,7 @@ namespace STELLAREST_F1
             }
         }
 
-        public int MaxLevel
-            => _levelID == _maxLevelID && Managers.Game.HasGamePackages[(int)EGamePackage.Elite] ?
-               _maxLevelID % _dataTemplateID : (_maxLevelID % _dataTemplateID) + 1;
-
-        // {
-        //     get
-        //     {
-        //         (_maxLevelID % _dataTemplateID) + 1; // --- 1부터 시작하므로
-        //         return -1;
-        //     }
-        // }
-
+        public int MaxLevel => (_maxLevelID % _dataTemplateID) + 1; // --- 1부터 시작하므로
         [SerializeField] protected int _levelID = -1;
         public int LevelID => _levelID;
 
@@ -201,39 +186,8 @@ namespace STELLAREST_F1
                 return false;
 
             _levelID = Mathf.Clamp(_levelID + 1, _dataTemplateID, _maxLevelID);
-    
-            switch (objType)
-            {
-                case EObjectType.Hero:
-                    {
-                        if (_levelID == _maxLevelID && Managers.Game.HasGamePackages[(int)EGamePackage.Elite])
-                        {
-                            _levelID = ++_maxLevelID;
-                            // int lv = Level;
-                            // int maxLv = MaxLevel;
-                            
-                            Owner.GetComponent<Hero>().HeroBody.ChangeSpriteSet(Managers.Data.HeroSpriteDataDict[_levelID]);
-                            Owner.BaseEffect.GenerateEffect(effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_GlobalHero_VFXHeroMaxUp);
-                        }
-
-                        if (Managers.Data.HeroStatDataDict.TryGetValue(key: _levelID, value: out HeroStatData heroStatData) == false)
-                        {
-                            Debug.LogError($"{nameof(BaseStat)}::{nameof(LevelUp)}, Failed to load HeroStatData.");
-                            return false;
-                        }
-                    }
-                    break;
-
-                case EObjectType.Monster:
-                    if (Managers.Data.MonsterStatDataDict.TryGetValue(key: _levelID, value: out MonsterStatData monsterStatData) == false)
-                    {
-                        Debug.LogError($"{nameof(BaseStat)}::{nameof(LevelUp)}, Failed to load HeroStatData.");
-                        return false;
-                    }
-                    break;
-            }
-
-            SetBaseStatFromData();
+            SetBaseStat();
+            // + Apply Effect Stat
             Debug.Log($"<color=white>Success to LvUp - Lv: {Level} / {MaxLevel}</color>");
             return true;
         }
@@ -243,59 +197,55 @@ namespace STELLAREST_F1
             _dataTemplateID = dataID;
             _levelID = dataID;
             Owner = owner;
-            
+
             _subStat = Owner.gameObject.GetOrAddComponent<SubStat>();
             _subStat.InitialSetInfo(baseStat: this);
-
             if (Owner.ObjectType == EObjectType.Hero)
             {
                 for (int i = dataID; i < dataID + ReadOnly.Util.HeroMaxLevel;)
                     _maxLevelID = i++;
             }
-            else if (Owner.ObjectType == EObjectType.Monster)
-            {
-                // _maxLevelID = dataID; (이제 모든 몬스터의 레벨이 1이 아님)
-                // *** MonsterMaxLevel이 몬스터 데이터에 추가되었으므로 추후에 MonsterStatData 작성할 때 주의해야함. 
-                MonsterData monsterData = Managers.Data.MonsterDataDict[dataID];
-                for (int i = dataID; i < dataID + monsterData.MonsterMaxLevel;)
-                    _maxLevelID = i++;
-            }
-            else if (Owner.ObjectType == EObjectType.Env)
+            else
                 _maxLevelID = dataID;
 
             Dev_NameTextID = $"Lv: {((_levelID % _dataTemplateID) + 1).ToString()} / {MaxLevel.ToString()}";
         }
 
-        public void SetBaseStatFromData()
+        public void SetBaseStat()
         {
-            StatData statData = null;
+            CreatureData creatureData = null;
             switch (Owner.ObjectType)
             {
                 case EObjectType.Hero:
-                    statData = Managers.Data.HeroStatDataDict[_levelID];
+                    creatureData = (Owner as Hero).HeroData;
                     break;
 
                 case EObjectType.Monster:
-                    statData = Managers.Data.MonsterStatDataDict[_levelID];
+                    creatureData = (Owner as Monster).MonsterData;
                     break;
 
                 case EObjectType.Env:
                     {
-                        EnvData envData = Managers.Data.EnvDataDict[_dataTemplateID];
+                        EnvData envData = (Owner as Env).EnvData;
                         Health = envData.MaxHealth;
                         MaxHealth = MaxHealthBase = envData.MaxHealth;
                         return;
                     }
             }
 
-            Health = statData.MaxHealth;
-            MaxHealth = MaxHealthBase = statData.MaxHealth;
-            MinAttack = MinAttackBase = statData.MinAttack;
-            MaxAttack = MaxAttackBase = statData.MaxAttack;
-            CriticalRate = CriticalRateBase = statData.CriticalRate;
-            DodgeRate = DodgeRateBase = statData.DodgeRate;
-            MovementSpeed = MovementSpeedBase = statData.MovementSpeed;
-            Luck = LuckBase = statData.Luck;
+            MaxHealth = MaxHealthBase = creatureData.MaxHealth;
+            Health = creatureData.MaxHealth;
+            MinDamage = MinDamageBase = creatureData.MinDamage;
+            MaxDamage = MaxDamageBase = creatureData.MaxDamage;
+
+            AttackRate = AttackRateBase = creatureData.AttackRate;
+            (Owner as Creature).CreatureAnim.SetAttackRate(creatureData.AttackRate);
+
+            CriticalRate = CriticalRateBase = creatureData.CriticalRate;
+            DodgeRate = DodgeRateBase = creatureData.DodgeRate;
+            MovementSpeed = MovementSpeedBase = creatureData.MovementSpeed;
+            Luck = LuckBase = creatureData.Luck;
+            // + ApplyEffectStat (_levelID) -- 여기다가 하면 안됨...
         }
 
         public void ApplyStat()

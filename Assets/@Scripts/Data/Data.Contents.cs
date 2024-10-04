@@ -25,6 +25,14 @@ namespace STELLAREST_F1.Data
         public string AnimatorLabel;
         public float ColliderRadius;
         public Vector2 ColliderOffset;
+        public float MaxHealth;
+        public float MinDamage;
+        public float MaxDamage;
+        public float AttackRate;
+        public float CriticalRate;
+        public float DodgeRate;
+        public float MovementSpeed;
+        public float Luck;
         public int Skill_A_ID;
         public int Skill_B_ID;
         public int Skill_C_ID;
@@ -212,7 +220,6 @@ namespace STELLAREST_F1.Data
     {
         public EMonsterType MonsterType;
         public EObjectSize MonsterSize;
-        public int MonsterMaxLevel;
         public int DropItemID;
     }
 
@@ -416,73 +423,6 @@ namespace STELLAREST_F1.Data
         }
     }
 
-    public class StatData : BaseData
-    {
-        public float MaxHealth;
-        public float MinAttack;
-        public float MaxAttack;
-        public float CriticalRate;
-	    public float DodgeRate;
-        public float MovementSpeed;
-	    public float Luck;
-    }
-
-    [Serializable]
-    public class HeroStatData : StatData
-    {
-    }
-
-    public class HeroStatDataLoader : ILoader<int, HeroStatData>
-    {
-        public List<HeroStatData> HeroesStats = new List<HeroStatData>();
-
-        public Dictionary<int, HeroStatData> MakeDict()
-        {
-            Dictionary<int, HeroStatData> dict = new Dictionary<int, HeroStatData>();
-            foreach (HeroStatData data in HeroesStats)
-                dict.Add(data.DataID, data);
-
-            return dict;
-        }
-    }
-
-    [Serializable]
-    public class MonsterStatData : StatData
-    {
-    }
-
-    public class MonsterStatDataLoader : ILoader<int, MonsterStatData>
-    {
-        public List<MonsterStatData> MonstersStats = new List<MonsterStatData>();
-
-        public Dictionary<int, MonsterStatData> MakeDict()
-        {
-            Dictionary<int, MonsterStatData> dict = new Dictionary<int, MonsterStatData>();
-            foreach (MonsterStatData data in MonstersStats)
-                dict.Add(data.DataID, data);
-
-            return dict;
-        }
-    }
-
-    // [Serializable]
-    // public class EnvStatData : StatData
-    // {
-    // }
-    // public class EnvStatDataLoader : ILoader<int, EnvStatData>
-    // {
-    //     public List<EnvStatData> EnvsStats = new List<EnvStatData>();
-
-    //     public Dictionary<int, EnvStatData> MakeDict()
-    //     {
-    //         Dictionary<int, EnvStatData> dict = new Dictionary<int, EnvStatData>();
-    //         foreach (EnvStatData data in EnvsStats)
-    //             dict.Add(data.DataID, data);
-
-    //         return dict;
-    //     }
-    // }
-
     public class SkillData : BaseData
     {
         public ESkillType SkillType;
@@ -567,7 +507,7 @@ namespace STELLAREST_F1.Data
     [Serializable]
     public class EffectData : BaseData
     {
-        public bool IsLoop;
+        public bool IsLoop; // Period랑 Duration 있어서 필요 없을 것 같은데,,,
         public float AddAmount;
         public float AddPercent;
         public float AddPercentMulti;

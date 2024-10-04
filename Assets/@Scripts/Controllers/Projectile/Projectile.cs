@@ -67,7 +67,7 @@ namespace STELLAREST_F1
             InitialSetProjectileMotion(projectileData.ProjectileMotionType);
             ProjectileMotionType = projectileData.ProjectileMotionType;
             
-            Skill = Owner.CreatureSkill.FindSkill(DataTemplateID);
+            // Skill = Owner.CreatureSkill.FindSkill(DataTemplateID);
             _targetRange = Skill.SkillData.TargetRange;
             _targetDistance = Skill.SkillData.TargetDistance;
         }

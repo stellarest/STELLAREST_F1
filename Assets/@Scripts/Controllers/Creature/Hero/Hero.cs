@@ -268,16 +268,13 @@ namespace STELLAREST_F1
                 return false;
 
             CreatureSkill.LevelUpSkill(ownerLevelID: BaseStat.LevelID);
-            RefreshCreatureBaseBuff();
-            // if (IsMaxLevel)
-            // {
-            //     Debug.Log($"<color=yellow>MaxUp Hero</color>");
-            //     HeroBody.ChangeSpriteSet(Managers.Data.HeroSpriteDataDict[BaseStat.LevelID]);
-
-            //     // --- MaxUp Effect.
-            //     BaseEffect.GenerateEffect(effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_GlobalHero_VFXHeroMaxUp);
-            //     Debug.Log("<color=yellow>Your game is premium version.</color>");
-            // }
+            ApplyPassive();
+            if (IsMaxLevel)
+            {
+                Debug.Log($"<color=yellow>MaxUp Hero</color>");
+                HeroBody.ChangeSpriteSet(Managers.Data.HeroSpriteDataDict[BaseStat.LevelID]);
+                BaseEffect.GenerateEffect(effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_GlobalHero_VFXHeroMaxUp);
+            }
 
             return true;
         }

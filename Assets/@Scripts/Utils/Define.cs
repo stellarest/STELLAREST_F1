@@ -11,11 +11,23 @@ namespace STELLAREST_F1
     public static class Define
     {
         // --- 독립적인 게임 패키지
-        public enum EGamePackage
+        public enum EShopPackages
         {
-            Elite,                  // --- KRW: 6,600(모든 기능 잠금 해제)
-            Premium,                // --- KRW: 14,900(인게임 플레이 지원, 히어로 추가)
-            Max = Premium + 1
+            V1,
+            V2, 
+            V3,
+            Max = V3 + 1
+        }
+
+        // --- Skill제외, Stat Gacha, Item Gacha 부분만 적용.
+        public enum EGameGrade
+        {
+            Common,
+            Uncommon,
+            Rare,
+            Epic,
+            Legendary,
+            Max = Legendary + 1
         }
 
         public enum EHeroGrade
@@ -459,8 +471,8 @@ namespace STELLAREST_F1
             Luck,
 
             BonusHealth,
-            DamageReductionRate,
-            Max = DamageReductionRate + 1
+            Armor,
+            Max = Armor + 1
         }
 
         public enum EStatModType
@@ -690,30 +702,8 @@ namespace STELLAREST_F1
                 public static readonly string Upper_SkillC = "Upper_SkillC";
                 public static readonly string Upper_CollectEnv = "Upper_CollectEnv";
                 public static readonly string Upper_Dead = "Upper_Dead";
-
-                // --- Lower Anim States (New)
                 public static readonly string Lower_Idle = "Lower_Idle";
                 public static readonly string Lower_Move = "Lower_Move";
-
-                // --- States for State Machine (Prev)
-                // Upper Layers
-                // public static readonly string Upper_Idle = "Upper_Idle";
-                // public static readonly string Upper_Idle_To_Skill_A = "Upper_Idle_To_Skill_A";
-                // public static readonly string Upper_Idle_To_Skill_B = "Upper_Idle_To_Skill_B";
-                // public static readonly string Upper_Idle_To_Skill_C = "Upper_Idle_To_Skill_C";
-                // public static readonly string Upper_Idle_To_CollectEnv = "Upper_Idle_To_CollectEnv";
-
-                // public static readonly string Upper_Move = "Upper_Move";
-                // public static readonly string Upper_Move_To_Skill_A = "Upper_Move_To_Skill_A";
-                // public static readonly string Upper_Move_To_Skill_B = "Upper_Move_To_Skill_B";
-                // public static readonly string Upper_Move_To_Skill_C = "Upper_Move_To_Skill_C";
-
-                //public static readonly string Upper_Dead = "Upper_Dead";
-
-                // Lower Layers (Prev)
-                // public static readonly string Lower_Idle = "Lower_Idle";
-                // public static readonly string Lower_Idle_To_Skill_A = "Lower_Idle_To_Skill_A";
-                // public static readonly string Lower_Move = "Lower_Move";
 
                 // --- Params
                 public static readonly string IsMoving = "IsMoving";
@@ -723,7 +713,7 @@ namespace STELLAREST_F1
                 public static readonly string OnSkillC = "OnSkillC";
                 public static readonly string OnCollectEnv = "OnCollectEnv";
                 public static readonly string OnDead = "OnDead";
-                //public static readonly string LowerIdleToSkillA = "LowerIdleToSkillA";                 
+                public static readonly string AttackRate = "AttackRate";
             }
 
             public static class SortingLayers
@@ -819,6 +809,7 @@ namespace STELLAREST_F1
                 public static readonly float CheckFarFromHeroesLeaderTick = 1.0F;
                 public static readonly float CheckFarFromHeroesLeaderDistanceForWarp = 30.0F; // 15F(15칸, 상하좌우 기준) -> 30칸
                 //public static readonly float WaitMovementDistanceSQRFromLeader = 2.4F;
+                public static readonly float MaxArmorRate = 0.9F;
 
                 public static readonly float MinSecPatrolPingPong = 1.0F;
                 public static readonly float MaxSecPatrolPingPong = 2.0F;

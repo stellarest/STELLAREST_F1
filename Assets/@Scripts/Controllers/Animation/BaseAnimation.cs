@@ -44,6 +44,7 @@ namespace STELLAREST_F1
         
         public void Dead() => Animator.SetTrigger(OnDead);
 
+        // --- A*랑 같이 Creature로 옮겨야함.
         public virtual void Flip(ELookAtDirection lookAtDir) { }
     }
 }

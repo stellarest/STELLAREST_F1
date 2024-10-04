@@ -68,63 +68,6 @@ namespace STELLAREST_F1
             }
         }
 
-        /*  [Stat Data]
-
-            public float MaxHealth;
-            public float MinAttack;
-            public float MaxAttack;
-            public float CriticalRate;
-            public float DamageReductionRate;
-	        public float DodgeRate;
-            public float MovementSpeed;
-
-
-	        public float Luck;                  
-	        public int InvincibleCount;
-        */
-
-        // ***** Stat Prev *****
-        // --- Stat: Level
-        // [SerializeField] protected int _levelID = 0;
-        // public int Level => (_levelID % DataTemplateID) + 1;
-
-        // [SerializeField] protected int _maxLevelID = 0;
-        // public int MaxLevel => (_maxLevelID % DataTemplateID) + 1;
-        // protected bool IsMaxLevel => _levelID == _maxLevelID;
-
-        // // --- Stat
-        // [SerializeField] private float _health = 0.0f;
-        // public float Health
-        // {
-        //     get => _health;
-        //     protected set => _health = value;
-        // }
-
-        // [field: SerializeField] public float BonusHealth { get; set; } = 0.0f;
-
-        // [field: SerializeField] public float MaxHealth { get; set; } = 0.0f;
-        // public float MaxHealthBase { get; protected set; } = 0.0f;
-
-
-        // public float MinAttackBase { get; protected set; } = 0.0f;
-        // public float MaxAttackBase { get; protected set; } = 0.0f;
-        // public float MovementSpeedRateBase { get; protected set; } = 0.0f;
-        
-        // public float MaxHpBase { get; set; } = 0.0f;
-        // public float MinAtkBase { get; set; } = 0.0f;
-        // public float MaxAtkBase { get; set; } = 0.0f;
-        // public float CriticalRateBase { get; set; } = 0.0f;
-        // public float DodgeRateBase { get; set; } = 0.0f;
-        // public float MovementSpeedBase { get; set; } = 0.0f;
-
-        // [field: SerializeField] public float MaxHp { get; set; } = 0.0f;
-        // [field: SerializeField] public float MinAtk { get; set; } = 0.0f;
-        // [field: SerializeField] public float MaxAtk { get; set; } = 0.0f;
-        // [field: SerializeField] public float CriticalRate { get; set; } = 0.0f;
-        // [field: SerializeField] public float DodgeRate { get; set; } = 0.0f;
-        // [field: SerializeField] public float MovementSpeed { get; set; } = 0.0f;
-
-
         #region Core
         public override bool Init()
         {
@@ -140,9 +83,9 @@ namespace STELLAREST_F1
         protected override void InitialSetInfo(int dataID)
         {
             base.InitialSetInfo(dataID);
-            BaseBody.InitialSetInfo(dataID, this);
-            BaseAnim.InitialSetInfo(dataID, this);
-            BaseStat.InitialSetInfo(dataID, this);            
+            BaseBody.InitialSetInfo(dataID, owner: this);
+            BaseAnim.InitialSetInfo(dataID, owner: this);
+            BaseStat.InitialSetInfo(dataID, owner: this);            
 
             BaseEffect = gameObject.GetOrAddComponent<EffectComponent>();
             BaseEffect.InitialSetInfo(this);
@@ -153,10 +96,7 @@ namespace STELLAREST_F1
         {
             base.EnterInGame(spawnPos);
             Targets.Clear();
-
-            BaseStat.SetBaseStatFromData();
-            // GeneratePassiveEffect();
-
+            BaseStat.SetBaseStat();
             BaseBody.ResetMaterialsAndColors();
             BaseBody.StartCoFadeInEffect();
             SpawnedCellPos = Managers.Map.WorldToCell(spawnPos);
@@ -175,7 +115,7 @@ namespace STELLAREST_F1
         
         #region Background
         public void ApplyStat() 
-            => BaseStat.ApplyStat(); 
+            => BaseStat.ApplyStat();
 
         // public virtual void ApplyStat_T() // ---> Move to Stat.cs
         // {
@@ -520,11 +460,14 @@ namespace STELLAREST_F1
         public float MaxHealth { get => BaseStat.MaxHealth; set => BaseStat.MaxHealth = value; }
         public float MaxHealthBase => BaseStat.MaxHealthBase;
 
-        public float MinAttack { get => BaseStat.MinAttack; set => BaseStat.MinAttack = value; }
-        public float MinAttackBase => BaseStat.MinAttackBase;
+        public float MinDamage { get => BaseStat.MinDamage; set => BaseStat.MinDamage = value; }
+        public float MinDamageBase => BaseStat.MinDamageBase;
 
-        public float MaxAttack { get => BaseStat.MaxAttack; set => BaseStat.MaxAttack = value; }
-        public float MaxAttackBase => BaseStat.MaxAttackBase;
+        public float MaxDamage { get => BaseStat.MaxDamage; set => BaseStat.MaxDamage = value; }
+        public float MaxDamageBase => BaseStat.MaxDamageBase;
+
+        public float AttackRate { get => BaseStat.AttackRate; set => BaseStat.AttackRate = value; }
+        public float AttackRateBase => BaseStat.AttackRateBase;
 
         public float CriticalRate { get => BaseStat.CriticalRate; set => BaseStat.CriticalRate = value; }
         public float CriticalRateBase => BaseStat.CriticalRateBase;
@@ -541,7 +484,7 @@ namespace STELLAREST_F1
         // --- Sub Stat
         public float BonusHealth { get => BaseStat.BonusHealth; set => BaseStat.BonusHealth = value; }
         public float FixedBonusAttackAmount { get => BaseStat.FixedBonusAttackAmount; set => BaseStat.FixedBonusAttackAmount = value; }
-        public float DamageReductinoRate { get => BaseStat.DamageReductinoRate; set => BaseStat.DamageReductinoRate = value; }
+        public float ArmorRate { get => BaseStat.ArmorRate; set => BaseStat.ArmorRate = value; }
         public float DebuffResistanceRate { get => BaseStat.DebuffResistanceRate; set => BaseStat.DebuffResistanceRate = value; }
         public int InvincibleCountPerWave { get => BaseStat.InvincibleCountPerWave; set => BaseStat.InvincibleCountPerWave = value; }
 

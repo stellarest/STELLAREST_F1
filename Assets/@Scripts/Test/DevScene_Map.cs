@@ -87,8 +87,8 @@ namespace STELLAREST_F1
                     dataID: ReadOnly.DataAndPoolingID.DNPID_Hero_Paladin);
                 leaderController.Leader = firstHero;
 
-                StartCoroutine(CoContinuousSpawnMonster_Test(5.5f));
-                StartCoroutine(CoContinuousSpawnEnv_Test(1f));
+                // StartCoroutine(CoContinuousSpawnMonster_Test(5.5f));
+                // StartCoroutine(CoContinuousSpawnEnv_Test(1f));
 
                 // // // // // --- Projectile Target Range Test List
                 // SpawnChicken_Test(-8, 8);
@@ -467,9 +467,6 @@ namespace STELLAREST_F1
                     Managers.MonoContents.Init();
                     Managers.Game.Init();
 #if UNITY_EDITOR
-                    // Load HasGamePackages
-                    Managers.Game.HasGamePackages[(int)EGamePackage.Elite] = true;
-                    Managers.Game.HasGamePackages[(int)EGamePackage.Premium] = false;
 #endif
                     //Managers.Sprite.Init();
                     //Managers.Animation.Init();

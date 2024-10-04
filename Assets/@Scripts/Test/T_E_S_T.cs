@@ -8,23 +8,38 @@ using DG.Tweening;
 using UnityEditor;
 
 /*
+--- Elite 제거. 그냥 Max Level로 통일
+기존 히어로: 10종(다소 약꼴로 추가 제작해야함, 단순히 체험판 수준으로, 가장 나중에)
+패시브 버프 이펙트랑 스킬해결하고, BaseAnim Flip이랑 A* 부분 모조리 Creature쪽으로,,,
 
+// 상점
+[Premium Heroes Pack I: 3,300 KRW]
+- 프리미엄 히어로 추가 4종(팔라딘, 아쳐, 랜서, 위자드)
++ 스테이지 입장시 보상형 광고 스킵권 n개 지급
+
+[Premium Heroes Package II: 6,600 KRW]
+- 프리미엄 히어로 추가 8종(...)
++ 스테이지 입장시 보상형 광고 스킵권 n개 지급
+
+[Premium Heroes Pack III: 15,000 KRW]
+- 프리미엄 히어로 추가 12종(...)
++ 스테이지 입장시 보상형 광고 스킵권 n개 지급
+
+// 앞으로 히어로를 생각해야할듯.
+[Default]
+
+[Premium I]
+1. Paladin
+2. Archer
+3. Lancer
+4. Wizard
+
+[Premium II]
+[Premium III]
+
+// *** Projectile: FindSkill 주석 참고
 // Hero Skill 수정(Skill_A, B(Lv.3부터 자동 잠금 해제), C(Lv.5(Max)에서 자동 잠금 해제), Elite Skill
-
-[ Unlock Elite Package: 6,500 ]
-1. 스테이지 종료시 등장하는 의무 광고 제거(4스테이지 부터, 이거 광고를 제거 안하면 시청하거나 무조건 앱을 다시 시작해야함)
-2. 자동 채집 NPC 추가(나무꾼 1명, 광부 1명) 
-3. 엘리트 히어로 진화 활성화
-4. 엘리트 훈련소 활성화
-5. ...
-
-[ Unlock Premium Package: 9,900 ]
-1. 스테이지 종료시 등장하는 의무 광고 제거(4스테이지 부터, 이거 광고를 제거 안하면 시청하거나 무조건 앱을 다시 시작해야함)
-2. 자동 채집 NPC 추가(나무꾼 2명, 광부 2명)
-3. 히어로 8종 추가(기존 12종, 총 20종)
-4. 스테이지 입장시 보상형 광고 스킵권 10회 제공
-5. 경험치 획득량 +100%
-
+// HeroData, Stat 재설정, DataID에 따른 패시브만 기본적으로 들고있고, 나머지는 레벨업하면서 가챠돌리면서 스탯찍는 방식으로
 ————————————————————————————
 팔라딘 lv.1
 Skill_A: 기본 공격

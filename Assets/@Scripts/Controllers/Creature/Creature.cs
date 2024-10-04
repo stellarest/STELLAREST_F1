@@ -199,7 +199,7 @@ namespace STELLAREST_F1
                       callbackWaitCompleted: () =>
                       {
                           base.EnterInGame(spawnPos);
-                          RefreshCreatureBaseBuff();
+                          ApplyPassive();
                           CreatureAI.EnterInGame();
                           CreatureAnim.EnterInGame();
                           StartCoUpdateAI();
@@ -219,16 +219,16 @@ namespace STELLAREST_F1
             if (attacker.IsValid() == false)
                 return;
 
-            float damage = UnityEngine.Random.Range(attacker.MinAttack, attacker.MaxAttack);
+            float damage = UnityEngine.Random.Range(attacker.MinDamage, attacker.MaxDamage);
             bool isCritical = UnityEngine.Random.Range(0.0f, 1.0f) <= attacker.CriticalRate;
             if (isCritical)
                 damage *= 1 + 0.5f;
 
             float remainedDamage = 0.0f;
             float finalDamage = 0.0f;
-            if (DamageReductinoRate > 0.0f)
+            if (ArmorRate > 0.0f)
             {
-                finalDamage = Mathf.Max(damage * (1 - DamageReductinoRate), 1.0f);
+                finalDamage = Mathf.Max(damage * (1 - ArmorRate), 1.0f);
                 finalDamage = Mathf.Floor(finalDamage);
             }
             else
@@ -330,12 +330,6 @@ namespace STELLAREST_F1
             // --- Damage to Default Health (기본 데미지 처리)
             else
             {
-                if (DamageReductinoRate > 0.0f)
-                {
-                    // finalDamage = 100f;
-                    // Health = 
-                }
-
                 Health = Mathf.Clamp(Health - finalDamage, 0.0f, MaxHealth);
 
                 ShowDamageFont(damage: finalDamage, fontColor: ObjectType == EObjectType.Monster ? Color.white : Color.red,
@@ -543,29 +537,19 @@ namespace STELLAREST_F1
                                                 fontAssetType: EFontAssetType.Comic, fontAnimType: fontAnimType);
         #endregion
 
-        #region Util - Passive Buff
-        protected void RefreshCreatureBaseBuff()
+        #region Passive
+        protected void ApplyPassive()
         {
-            if (this.IsValid() == false)
-                return;
-
-            // 기획적인 요소를 변경해야하나.
-            // 어차피 웨이브마다 진행되는 거라,,,
-            // Lv.1 특성 찍을 수 있는 것
-            // Lv.2 특성 찍을 수 있는 것 
-            // Lv.3 ...
-
-            // Endurance: 0.05(C) -> 0.12(U) -> 0.2(R) -> 0.3(E) -> 0.4(L)
+            // 25 -> 30 -> 35 -> 50 -> 65
             EffectBase findEffect = BaseEffect.ActiveEffects.Find(n => n.EffectData.DataID == LevelID);
             if (findEffect == null)
             {
                 if (Util.GetEffectData(dataID: LevelID, owner: this) == null)
                     return;
 
-                var effectTest = BaseEffect.GenerateEffect(effectID: LevelID);
-                Debug.Log(effectTest.Dev_NameTextID);
+                BaseEffect.GenerateEffect(effectID: LevelID);
             }
-            
+
             // Remove Prev Effect
             int prevLevelID = LevelID - 1;
             findEffect = BaseEffect.ActiveEffects.Find(n => n.EffectData.DataID == prevLevelID);

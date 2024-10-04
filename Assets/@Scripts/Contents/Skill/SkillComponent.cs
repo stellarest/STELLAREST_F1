@@ -7,11 +7,15 @@ using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
+    // Hero Skills
+    // --- Skill_A: Default
+    // --- Skill_B: Unlock Lv.3 
+    // --- Skill_C: Unlock Lv.5
     public class SkillComponent : InitBase
     {
         private Creature _owner = null;
 
-        public List<SkillBase> Skills { get; } = new List<SkillBase>();
+        // public List<SkillBase> Skills { get; } = new List<SkillBase>();
 
         // --- Hero 기준
         // - Skill_A: Default
@@ -27,11 +31,11 @@ namespace STELLAREST_F1
         public string ActiveSkillB = "";
         public string ActiveSkillC = "";
 #endif
-        // --- Projectile에서 참고하고 있는거 고작 하나 때문에 이 컨테이너는 필요 없을지도
-        public SkillBase FindSkill(int skillDataID) 
-            => Skills.FirstOrDefault(s => s.DataTemplateID == skillDataID);
-        public SkillBase FindSkill(ESkillType skillType) 
-            => Skills.FirstOrDefault(s => s.SkillType == skillType);
+        // --- *** Projectile: FindSkill에서 참고하고 있는거 고작 하나 때문에 이 컨테이너는 필요 없을지도
+        // public SkillBase FindSkill(int skillDataID) 
+        //     => Skills.FirstOrDefault(s => s.DataTemplateID == skillDataID);
+        // public SkillBase FindSkill(ESkillType skillType) 
+        //     => Skills.FirstOrDefault(s => s.SkillType == skillType);
 
 
         // public SkillBase[] SkillArray { get; private set; } = new SkillBase[(int)ESkillType.Max]; // --- Caching
@@ -87,7 +91,7 @@ namespace STELLAREST_F1
 
             // --- Default Skill(A)
             SkillArray[(int)ESkillType.Skill_A] = AddSkill(creatureData.Skill_A_ID);
-            Skills.Add(SkillArray[(int)ESkillType.Skill_A]);
+            // Skills.Add(SkillArray[(int)ESkillType.Skill_A]);
 
             // --- 지금 이 부분을 추가하면 안되고, 히어로 레벨이 Lv.3, Lv.5가 되었을 때로 변경해야함
             // --- Active Skill(B)
@@ -96,7 +100,7 @@ namespace STELLAREST_F1
             {
                 // ActiveSkills.Add(SkillArray[(int)ESkillType.Skill_B]);
                 AddActiveSkill(SkillArray[(int)ESkillType.Skill_B]);
-                Skills.Add(SkillArray[(int)ESkillType.Skill_B]);
+                // Skills.Add(SkillArray[(int)ESkillType.Skill_B]);
             }
             
             // --- Active Skill(C)
@@ -105,7 +109,7 @@ namespace STELLAREST_F1
             {
                 // ActiveSkills.Add(SkillArray[(int)ESkillType.Skill_C]);
                 AddActiveSkill(SkillArray[(int)ESkillType.Skill_C]);
-                Skills.Add(SkillArray[(int)ESkillType.Skill_C]);
+                // Skills.Add(SkillArray[(int)ESkillType.Skill_C]);
             }
 
             // --- Check Validation (All Creatures must have one skill at least.)
@@ -183,20 +187,6 @@ namespace STELLAREST_F1
         public void OnSkillStateExit(ESkillType skillType)
                 => SkillArray[(int)skillType]?.OnSkillStateExit();
 
-        /*
-            // LevelUpSkill Ref
-
-            [Paladin]: 101000 ~ 101004
-            - Skill_A: 101100 ~ 101104
-            - Skill_B: 101200 ~ 101204
-            - Skill_C: 101300 ~ 101304
-
-            1. 일반 (Common)
-            2. 고급 (Uncommon)
-            3. 레어 (Rare)
-            4. 에픽 (Epic)
-            5. 전설 (Legendary)
-        */
         public void LevelUpSkill(int ownerLevelID)
         {
             // --- Creature는 Skill_A를 무조건 가지고 있어야함.
@@ -230,7 +220,7 @@ namespace STELLAREST_F1
                     // ActiveSkills.Add(nextSkill);
                 }
 
-                Skills.Remove(prevSkill);
+                // Skills.Remove(prevSkill);
 
                 Debug.Log($"--- Success to remove prev Skill: {prevSkill.Dev_NameTextID}");
                 UnityEngine.Object.Destroy(prevSkill);

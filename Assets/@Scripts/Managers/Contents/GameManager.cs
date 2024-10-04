@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO.Enumeration;
 using UnityEngine;
 using static STELLAREST_F1.Define;
 
@@ -8,11 +9,8 @@ namespace STELLAREST_F1
 {
     public class GameManager
     {
-        #if UNITY_EDITOR
-        // 원래는 유저마다 데이터를 가지고 있어야함. 아니면 유저 데이터에서 구매 여부만 체크해서 여기서 세팅해도 됨.
-        // public bool HasPremiumPack { get; set; } = false;
-        public bool[] HasGamePackages { get; set; } = null;
-        // 일단은 테스트 용도로만 사용.
+        #if UNITY_EDITOR // --- 상점 패키지 전용
+        public bool[] HasHeroesPackages { get; } = new bool[(int)EShopPackages.Max];
         #endif
 
         private Vector2 _moveDir = Vector2.zero;
@@ -42,9 +40,8 @@ namespace STELLAREST_F1
 
         public void Init()
         {
-            HasGamePackages = new bool[(int)EGamePackage.Max];
-            for (int i = 0; i < HasGamePackages.Length; ++i)
-                HasGamePackages[i] = false;
+            for (int i = 0; i < HasHeroesPackages.Length; ++i)
+                HasHeroesPackages[i] = false;
         }
 
         // Leader Change CoolTime 필요... 1초 정도?
