@@ -89,7 +89,6 @@ namespace STELLAREST_F1
 
             BaseEffect = gameObject.GetOrAddComponent<EffectComponent>();
             BaseEffect.InitialSetInfo(this);
-            // _levelID = dataID;
         }
 
         protected override void EnterInGame(Vector3 spawnPos)
@@ -484,7 +483,7 @@ namespace STELLAREST_F1
         // --- Sub Stat
         public float BonusHealth { get => BaseStat.BonusHealth; set => BaseStat.BonusHealth = value; }
         public float FixedBonusAttackAmount { get => BaseStat.FixedBonusAttackAmount; set => BaseStat.FixedBonusAttackAmount = value; }
-        public float ArmorRate { get => BaseStat.ArmorRate; set => BaseStat.ArmorRate = value; }
+        public float Armor { get => BaseStat.Armor; set => BaseStat.Armor = value; }
         public float DebuffResistanceRate { get => BaseStat.DebuffResistanceRate; set => BaseStat.DebuffResistanceRate = value; }
         public int InvincibleCountPerWave { get => BaseStat.InvincibleCountPerWave; set => BaseStat.InvincibleCountPerWave = value; }
 

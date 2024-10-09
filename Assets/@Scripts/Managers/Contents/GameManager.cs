@@ -10,7 +10,9 @@ namespace STELLAREST_F1
     public class GameManager
     {
         #if UNITY_EDITOR // --- 상점 패키지 전용
-        public bool[] HasHeroesPackages { get; } = new bool[(int)EShopPackages.Max];
+        public bool[] HasGamePackages { get; } = new bool[(int)EGamePackages.Max];
+        public bool HasElitePackage => HasGamePackages[(int)EGamePackages.ElitePack];
+        public bool HasPremiumPackage => HasGamePackages[(int)EGamePackages.PremiumPack];
         #endif
 
         private Vector2 _moveDir = Vector2.zero;
@@ -40,8 +42,8 @@ namespace STELLAREST_F1
 
         public void Init()
         {
-            for (int i = 0; i < HasHeroesPackages.Length; ++i)
-                HasHeroesPackages[i] = false;
+            for (int i = 0; i < HasGamePackages.Length; ++i)
+                HasGamePackages[i] = false;
         }
 
         // Leader Change CoolTime 필요... 1초 정도?

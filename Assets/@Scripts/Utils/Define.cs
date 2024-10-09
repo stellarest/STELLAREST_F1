@@ -11,29 +11,25 @@ namespace STELLAREST_F1
     public static class Define
     {
         // --- 독립적인 게임 패키지
-        public enum EShopPackages
+        public enum EGamePackages
         {
-            V1,
-            V2, 
-            V3,
-            Max = V3 + 1
-        }
-
-        // --- Skill제외, Stat Gacha, Item Gacha 부분만 적용.
-        public enum EGameGrade
-        {
-            Common,
-            Uncommon,
-            Rare,
-            Epic,
-            Legendary,
-            Max = Legendary + 1
+            ElitePack,                // 3,500 KRW
+            PremiumPack,              // 12,000 KRW
+            Max = PremiumPack + 1
         }
 
         public enum EHeroGrade
         {
             Default,
-            Elite
+            Max
+        }
+
+        public enum EGameGrade
+        {
+            Common,         // white
+            Rare,           // green
+            Unique,         // purple
+            Elite           // yellow
         }
 
         public enum EMonsterType
@@ -322,9 +318,9 @@ namespace STELLAREST_F1
         public enum ESkillType
         {
             None = -1,
-            Skill_A,
-            Skill_B,
-            Skill_C,
+            Skill_A,        // Default
+            Skill_B,        // Active_1
+            Skill_C,        // Active_2
             Max = Skill_C + 1
         }
 
@@ -788,7 +784,8 @@ namespace STELLAREST_F1
                 public static readonly string Tilemap_Collision = "Tilemap_Collision";
 
                 // [ INTEGER ]
-                public static readonly int HeroMaxLevel = 5;
+                public static readonly int HeroMaxLevel = 7;
+                public static readonly int EliteHeroMaxLevel = 8;
                 public static readonly int CanTryMaxSpawnCount = 999;
 
                 public static readonly int RockElementsCount = 3;
@@ -809,7 +806,7 @@ namespace STELLAREST_F1
                 public static readonly float CheckFarFromHeroesLeaderTick = 1.0F;
                 public static readonly float CheckFarFromHeroesLeaderDistanceForWarp = 30.0F; // 15F(15칸, 상하좌우 기준) -> 30칸
                 //public static readonly float WaitMovementDistanceSQRFromLeader = 2.4F;
-                public static readonly float MaxArmorRate = 0.9F;
+                public static readonly float MaxArmor = 0.8F;
 
                 public static readonly float MinSecPatrolPingPong = 1.0F;
                 public static readonly float MaxSecPatrolPingPong = 2.0F;

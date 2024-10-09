@@ -193,6 +193,7 @@ namespace STELLAREST_F1
 
 #if UNITY_EDITOR
             Dev_NameTextID = SkillData.Dev_NameTextID;
+            Dev_DescriptionTextID = SkillData.Dev_DescriptionTextID;
 #endif
 
             InvokeRange = SkillData.InvokeRange;

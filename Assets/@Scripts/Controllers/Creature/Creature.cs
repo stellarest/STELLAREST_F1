@@ -191,6 +191,10 @@ namespace STELLAREST_F1
             CreatureSkill = gameObject.GetOrAddComponent<SkillComponent>();
             CreatureSkill.InitialSetInfo(owner: this, creatureData: CreatureData);
             CreatureAnimCallback.InitialSetInfo(this);
+
+            // --- Init Creature Passive
+            if (Util.GetEffectData(dataID: LevelID, owner: this) != null)
+                BaseEffect.GenerateEffect(effectID: LevelID);
         }
 
         protected override void EnterInGame(Vector3 spawnPos)
@@ -199,7 +203,6 @@ namespace STELLAREST_F1
                       callbackWaitCompleted: () =>
                       {
                           base.EnterInGame(spawnPos);
-                          ApplyPassive();
                           CreatureAI.EnterInGame();
                           CreatureAnim.EnterInGame();
                           StartCoUpdateAI();
@@ -226,9 +229,9 @@ namespace STELLAREST_F1
 
             float remainedDamage = 0.0f;
             float finalDamage = 0.0f;
-            if (ArmorRate > 0.0f)
+            if (Armor > 0.0f)
             {
-                finalDamage = Mathf.Max(damage * (1 - ArmorRate), 1.0f);
+                finalDamage = Mathf.Max(damage * (1 - Armor), 1.0f);
                 finalDamage = Mathf.Floor(finalDamage);
             }
             else
@@ -538,26 +541,24 @@ namespace STELLAREST_F1
         #endregion
 
         #region Passive
-        protected void ApplyPassive()
+        protected void ApplyNewPassive()
         {
-            // 25 -> 30 -> 35 -> 50 -> 65
-            EffectBase findEffect = BaseEffect.ActiveEffects.Find(n => n.EffectData.DataID == LevelID);
-            if (findEffect == null)
+            if (Util.GetEffectData(dataID: LevelID, owner: this) == null)
             {
-                if (Util.GetEffectData(dataID: LevelID, owner: this) == null)
-                    return;
-
-                BaseEffect.GenerateEffect(effectID: LevelID);
+                Debug.LogWarning($"Invalid Effect Data - {ObjectType}: {LevelID}");
+                return;
             }
 
-            // Remove Prev Effect
-            int prevLevelID = LevelID - 1;
-            findEffect = BaseEffect.ActiveEffects.Find(n => n.EffectData.DataID == prevLevelID);
-            if (findEffect != null)
+            /*
+                Passive Lv: 01(Common) -> 03(Rare) -> 05(Unique) -> 08(Elite)
+                Paladin Ex: 101000(0.2) -> 101002(0.3) -> 101004(0.4) -> 101007(0.65)
+            */
+            EffectBase prevPassive = BaseEffect.FindPrevEffect(dataID: LevelID);
+            if (prevPassive != null)
             {
-                BaseEffect.RemoveEffect(findEffect);
-                BaseStat.ApplyStat();
-                findEffect.ExitEffect();
+                Debug.Log($"Remove Passive: {prevPassive.Dev_NameTextID}");
+                BaseEffect.RemoveEffect(prevPassive);
+                BaseEffect.GenerateEffect(effectID: LevelID); // 알아서 ApplyStat이 될 테므로,,,
             }
         }
         #endregion

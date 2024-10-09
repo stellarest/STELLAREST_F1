@@ -34,8 +34,8 @@ namespace STELLAREST_F1.Data
         public float MovementSpeed;
         public float Luck;
         public int Skill_A_ID;
-        public int Skill_B_ID;
-        public int Skill_C_ID;
+        public int Skill_B_TemplateID;
+        public int Skill_C_TemplateID;
     }
 
     [Serializable]
@@ -433,6 +433,7 @@ namespace STELLAREST_F1.Data
         public int TargetDistance;
         public int ProjectileID;
 		public float CoolTime;
+        public int[] AwakeEffectIDs;
         public int[] EnterStateEffectIDs;
         public int[] OnStateEffectIDs;
         public int[] EndStateEffectIDs;

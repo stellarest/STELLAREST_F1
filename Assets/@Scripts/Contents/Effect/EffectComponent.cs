@@ -35,6 +35,24 @@ namespace STELLAREST_F1
             // + Apply Base Effect
         }
 
+        public EffectBase FindPrevEffect(int dataID)
+        {
+            // 이전 -10까지 돌려서 없으면 null로 박아버리기. 그러니까 최대 -10임.
+            if (ActiveEffects.Count == 0)
+                return null;
+
+            // i = 101002; 
+            // i < 101002 - 10(100,992)
+            for (int i = dataID; i > dataID - 10; --i)
+            {
+                EffectBase prevEffect = ActiveEffects.Find(e => e.EffectData.DataID == i);
+                if (prevEffect != null)
+                    return prevEffect;
+            }
+
+            return null;
+        }
+
         public void SetIsOnEffectBuff(EEffectBuffType buffType, bool isOn)
             => IsOnEffectBuffDict[buffType] = isOn;
 

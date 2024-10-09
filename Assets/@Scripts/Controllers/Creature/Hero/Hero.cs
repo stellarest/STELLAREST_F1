@@ -18,7 +18,6 @@ namespace STELLAREST_F1
             {
                 if (LevelUp() == false)
                     Debug.LogWarning($"Faield to LvUp, IsMaxLv: {IsMaxLevel}");
-                // BaseStat.LevelUp();
             }
         }
         #endif
@@ -267,9 +266,78 @@ namespace STELLAREST_F1
             if (BaseStat.LevelUp() == false)
                 return false;
 
-            CreatureSkill.LevelUpSkill(ownerLevelID: BaseStat.LevelID);
-            ApplyPassive();
-            if (IsMaxLevel)
+            /*
+                Passive: 101000(Lv.01), 101002(Lv.03), 101004(Lv.05), 101007(Lv.08)
+                Skill_A: 101100(Lv.01, None)
+                Skill_B: 101201(Lv.02), 101203(Lv.04), 101205(Lv.06), 102007(Lv.08)
+                Skill_C: 101302(Lv.03), 101304(Lv.05), 101306(Lv.07), 103007(Lv.08)
+            */
+
+            /*
+                Lv.01
+                - Passive(Common)
+
+                Lv.02
+                - Passive(Common)
+                - Skill_B(Common)
+
+                Lv.03
+                - Passive(Rare)
+                - Skill_B(Common)
+                - Skill_C(Common)
+
+                Lv.04
+                - Passive(Rare)
+                - Skill_B(Rare)
+                - Skill_C(Common)
+
+                Lv.05
+                - Passive(Unique)
+                - Skill_B(Rare)
+                - Skill_C(Rare)
+
+                Lv.06
+                - Passive(Unique)
+                - Skill_B(Unique)
+                - Skill_C(Rare)
+
+                Lv.07
+                - Passive(Unique)
+                - Skill_B(Unique)
+                - Skill_C(Unique)
+
+                Lv.08
+                - Passive(Elite)
+                - Skill_B(Elite)
+                - Skill_C(Elite)
+            */
+
+            SkillBase skillB = CreatureSkill.SkillArray[(int)ESkillType.Skill_B];
+            int skillB_ID = CreatureData.Skill_B_TemplateID + (Level - 1);
+            if (skillB == null)
+                skillB = CreatureSkill.UnlockSkill(dataID: skillB_ID);
+            else
+                skillB = CreatureSkill.LevelUpMySkill(currentSkill: skillB, dataID: skillB_ID);
+
+#if UNITY_EDITOR
+            if (skillB != null)
+                Debug.Log($"Unlock | LvUp: {skillB.Dev_DescriptionTextID}");
+#endif
+
+            SkillBase skillC = CreatureSkill.SkillArray[(int)ESkillType.Skill_C];
+            int skillC_ID = CreatureData.Skill_C_TemplateID + (Level - 1);
+            if (skillC == null)
+                skillC = CreatureSkill.UnlockSkill(dataID: skillC_ID);
+            else
+                skillC = CreatureSkill.LevelUpMySkill(currentSkill: skillC, dataID: skillC_ID);
+
+#if UNITY_EDITOR
+            if (skillC != null)
+                Debug.Log($"Unlock | LvUp: {skillC.Dev_DescriptionTextID}");
+#endif
+
+            ApplyNewPassive();
+            if (IsMaxLevel && Managers.Game.HasElitePackage)
             {
                 Debug.Log($"<color=yellow>MaxUp Hero</color>");
                 HeroBody.ChangeSpriteSet(Managers.Data.HeroSpriteDataDict[BaseStat.LevelID]);

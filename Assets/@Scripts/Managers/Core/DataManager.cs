@@ -18,6 +18,7 @@ namespace STELLAREST_F1
         public Dictionary<int, HeroData> HeroDataDict { get; private set; } = new Dictionary<int, HeroData>();
         public Dictionary<int, HeroSpriteData> HeroSpriteDataDict { get; private set; } = new Dictionary<int, HeroSpriteData>();
         public Dictionary<int, HeroSkillData> HeroSkillDataDict { get; private set; } = new Dictionary<int, HeroSkillData>();
+        public Dictionary<int, HeroEffectData> HeroEffectDataDict { get; private set; } = new Dictionary<int, HeroEffectData>();
         #endregion
        
         #region Monsters
@@ -25,26 +26,21 @@ namespace STELLAREST_F1
         public Dictionary<int, MonsterBirdSpriteData> MonsterBirdSpriteDataDict { get; private set; } = new Dictionary<int, MonsterBirdSpriteData>();
         public Dictionary<int, MonsterQuadrupedsSpriteData> MonsterQuadrupedSpriteDataDict { get; private set; } = new Dictionary<int, MonsterQuadrupedsSpriteData>();
         public Dictionary<int, MonsterSkillData> MonsterSkillDataDict { get; private set; } = new Dictionary<int, MonsterSkillData>();
+        public Dictionary<int, MonsterEffectData> MonsterEffectDataDict { get; private set; } = new Dictionary<int, MonsterEffectData>();
         #endregion
 
         #region Envs
         public Dictionary<int, EnvData> EnvDataDict { get; private set; } = new Dictionary<int, EnvData>();
         public Dictionary<int, EnvTreeSpriteData> EnvTreeSpriteDataDict { get; private set; } = new Dictionary<int, EnvTreeSpriteData>();
         public Dictionary<int, EnvRockSpriteData> RockSpriteDataDict { get; private set; } = new Dictionary<int, EnvRockSpriteData>();
+        public Dictionary<int, EnvEffectData> EnvEffectDataDict { get; private set; } = new Dictionary<int, EnvEffectData>();
         #endregion
 
         #region Projectiles
         public Dictionary<int, ProjectileData> ProjectileDataDict { get; private set; } = new Dictionary<int, ProjectileData>();
         #endregion
 
-        #region Effects
-        public Dictionary<int, HeroEffectData> HeroEffectDataDict { get; private set; } = new Dictionary<int, HeroEffectData>();
-        public Dictionary<int, MonsterEffectData> MonsterEffectDataDict { get; private set; } = new Dictionary<int, MonsterEffectData>();
-        public Dictionary<int, EnvEffectData> EnvEffectDataDict { get; private set; } = new Dictionary<int, EnvEffectData>();
-        #endregion
-
         #region Items
-        // TODO: Item
         #endregion
 
         public void Init()

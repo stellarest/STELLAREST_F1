@@ -153,7 +153,7 @@ namespace STELLAREST_F1
 
                 float angle = UnityEngine.Random.Range(0f, 360f);
                 float rad = angle * Mathf.Deg2Rad;
-                float dist = UnityEngine.Random.Range(randMinPos-- ,randMaxPos++);
+                float dist = UnityEngine.Random.Range(randMinPos--, randMaxPos++);
 
                 float x = Mathf.Cos(rad) * dist;
                 float y = Mathf.Sin(rad) * dist;
@@ -249,19 +249,16 @@ namespace STELLAREST_F1
         }
 
         public static bool IsBaseStat(EApplyStatType statType)
-            => EApplyStatType.MaxHealth     == statType     ||
-               EApplyStatType.AttackPower   == statType     ||
-               EApplyStatType.CriticalRate  == statType     ||
-               EApplyStatType.DodgeRate     == statType     ||
-               EApplyStatType.MovementSpeed == statType     ||
-               EApplyStatType.Luck          == statType;
+            => EApplyStatType.MaxHealth == statType ||
+               EApplyStatType.AttackPower == statType ||
+               EApplyStatType.CriticalRate == statType ||
+               EApplyStatType.DodgeRate == statType ||
+               EApplyStatType.MovementSpeed == statType ||
+               EApplyStatType.Luck == statType;
 
         public static EffectData GetEffectData(int dataID, BaseObject owner)
         {
-            if (owner == null)
-                return null;
-
-            switch (owner.ObjectType)
+            switch (owner?.ObjectType)
             {
                 case EObjectType.Hero:
                     {
@@ -281,6 +278,28 @@ namespace STELLAREST_F1
                     {
                         if (Managers.Data.EnvEffectDataDict.TryGetValue(dataID, out EnvEffectData envEffectData))
                             return envEffectData;
+                    }
+                    break;
+            }
+
+            return null;
+        }
+
+        public static SkillData GetSkillData(int dataID, Creature owner)
+        {
+            switch (owner?.ObjectType)
+            {
+                case EObjectType.Hero:
+                    {
+                        if (Managers.Data.HeroSkillDataDict.TryGetValue(dataID, out HeroSkillData heroSkillData))
+                            return heroSkillData;
+                    }
+                    break;
+
+                case EObjectType.Monster:
+                    {
+                        if (Managers.Data.MonsterSkillDataDict.TryGetValue(dataID, out MonsterSkillData monsterSkillData))
+                            return monsterSkillData;
                     }
                     break;
             }

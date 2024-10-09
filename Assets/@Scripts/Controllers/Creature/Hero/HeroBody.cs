@@ -2338,12 +2338,12 @@ namespace STELLAREST_F1
         {
             Sprite[] envWeapons = new Sprite[(int)EEnvType.Max];
             envWeapons[(int)EHeroGrade.Default] = Managers.Resource.Load<Sprite>(ReadOnly.Util.WoodcutterAxe_Default_SP);
-            envWeapons[(int)EHeroGrade.Elite] = Managers.Resource.Load<Sprite>(ReadOnly.Util.WoodcutterAxe_Max_SP);
+            envWeapons[(int)EHeroGrade.Max] = Managers.Resource.Load<Sprite>(ReadOnly.Util.WoodcutterAxe_Max_SP);
             _envHeroWeaponDict.Add(EEnvType.Tree, envWeapons);
 
             envWeapons = new Sprite[(int)EEnvType.Max];
             envWeapons[(int)EHeroGrade.Default] = Managers.Resource.Load<Sprite>(ReadOnly.Util.Pickaxe_Default_SP);
-            envWeapons[(int)EHeroGrade.Elite] = Managers.Resource.Load<Sprite>(ReadOnly.Util.Pickaxe_Max_SP);
+            envWeapons[(int)EHeroGrade.Max] = Managers.Resource.Load<Sprite>(ReadOnly.Util.Pickaxe_Max_SP);
             _envHeroWeaponDict.Add(EEnvType.Rock, envWeapons);
         }
         #endregion
