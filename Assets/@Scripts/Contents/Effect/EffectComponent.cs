@@ -10,7 +10,7 @@ using static STELLAREST_F1.Define;
 namespace STELLAREST_F1
 {
     /// <summary>
-    /// All of BaseCellObject have this component.
+    /// All of BaseCellObject must have this component.
     /// </summary> <summary>
     public class EffectComponent : InitBase
     {
@@ -21,12 +21,16 @@ namespace STELLAREST_F1
         [field: SerializeField] public List<EffectBase> ActiveEffects { get; private set; } = new List<EffectBase>();
 
         // --- 이게 필요할까
-        public Dictionary<EEffectBuffType, bool> IsOnEffectBuffDict { get; private set; } = null;
+        // public Dictionary<EEffectBuffType, bool> IsOnEffectBuffDict { get; private set; } = null;
+
+        // EEffectType: Buff, Debuff, CC, Dot..
+        public Dictionary<EEffectType, bool> IsOnEffectBuffDict { get; private set; } = null;
+
 
         public void InitialSetInfo(BaseObject owner)
         {
             _owner = owner.GetComponent<BaseCellObject>();
-            IsOnEffectBuffDict = new Dictionary<EEffectBuffType, bool>();
+            IsOnEffectBuffDict = new Dictionary<EEffectType, bool>();
         }
 
         public void EnterInGame()
@@ -51,18 +55,16 @@ namespace STELLAREST_F1
             return null;
         }
 
-        public void SetIsOnEffectBuff(EEffectBuffType buffType, bool isOn)
-            => IsOnEffectBuffDict[buffType] = isOn;
+        public void SetIsOnEffectBuff(EEffectType buffType, bool isOn)
+        {
+            if (Util.IsEffectBuffType(buffType) == false)
+                return;
 
-        public bool IsOnEffectBuff(EEffectBuffType buffType)
-            => IsOnEffectBuffDict.TryGetValue(key: buffType, out bool isOn) == false ? false : true;
-        // public bool IsOnEffectBuff(EEffectBuffType buffType)
-        // {
-        //     if (IsOnEffectBuffDict.TryGetValue(key: buffType, out bool isOn) == false)
-        //         return false;
+            IsOnEffectBuffDict[buffType] = isOn;
+        }
 
-        //     return isOn;
-        // }
+        public bool IsOnEffectBuff(EEffectType buffType)
+            => IsOnEffectBuffDict.TryGetValue(key: buffType, out bool isOnBuff) == false ? false : isOnBuff;
 
         public EffectBase GenerateEffect(int effectID, SkillBase skill = null)
         {
@@ -175,36 +177,55 @@ namespace STELLAREST_F1
             return value;
         }
 
-        public void DoBuffEffects(EEffectBuffType effectBuffType)
+        public void DoBuffEffect(EEffectType effectBuffType)
         {
             for (int i = 0; i < ActiveEffects.Count; ++i)
             {
-                if (ActiveEffects[i].EffectType == EEffectType.Buff)
+                if (Util.IsEffectBuffType(ActiveEffects[i].EffectType) == false)
+                    continue;
+
+                if (ActiveEffects[i].EffectType == effectBuffType)
                 {
                     BuffBase buff = ActiveEffects[i].GetComponent<BuffBase>();
-                    if (buff != null && buff.EffectBuffType == effectBuffType)
+                    if (buff != null)
                         buff.DoEffect();
                 }
             }
         }
 
-        public void ExitShowBuffEffects(EEffectBuffType effectBuffType)
+        public void RemoveBuffEffect(EEffectType effectBuffType, bool destroyOrigin = false)
         {
             for (int i = 0; i < ActiveEffects.Count; ++i)
             {
-                if (ActiveEffects[i].EffectType == EEffectType.Buff)
+                if (Util.IsEffectBuffType(ActiveEffects[i].EffectType) == false)
+                    continue;
+
+                if (ActiveEffects[i].EffectType == effectBuffType)
                 {
                     BuffBase buff = ActiveEffects[i].GetComponent<BuffBase>();
-                    if (buff != null && buff.EffectBuffType == effectBuffType)
-                        buff.ExitEffect();
+                    if (buff != null)
+                        RemoveEffect(effect: buff, destroyOrigin: destroyOrigin);
                 }
-            }
+            }   
         }
 
-        private bool CanApplyStatEffectType(EEffectType type)
-            => type == EEffectType.Buff || type == EEffectType.DeBuff;
+        // public void RemoveBuffEffects(EEffectBuffType buffType, bool destroyPooling = false)
+        // {
+        //     for (int i = 0; i < ActiveEffects.Count; ++i)
+        //     {
+        //         if (ActiveEffects[i].EffectType == EEffectType.Buff)
+        //         {
+        //             BuffBase buff = ActiveEffects[i].GetComponent<BuffBase>();
+        //             if (buff != null && buff.EffectBuffType == buffType)
+        //                 this.RemoveEffect(effect: buff, destroyPooling: destroyPooling);
+        //         }
+        //     }
+        // }
 
-        public void RemoveEffect(EffectBase effect, bool destroyPooling = false)
+        private bool CanApplyStatEffectType(EEffectType effectType)
+            => Util.IsEffectBuffType(effectType); // || Util.IsEffectDebuffType(effectType)
+
+        public void RemoveEffect(EffectBase effect, bool destroyOrigin = false)
         {
             if (effect.IsValid() == false)
                 return;
@@ -214,7 +235,7 @@ namespace STELLAREST_F1
             {
                 ActiveEffects.Remove(effect);
                 effect.transform.SetParent(Managers.Object.EffectRoot); //--- FORCE
-                if (destroyPooling)
+                if (destroyOrigin)
                 {
                     Managers.Pool.Remove(effect.DataPoolingID);
                     UnityEngine.Object.Destroy(effect.gameObject, Time.deltaTime);
@@ -227,7 +248,7 @@ namespace STELLAREST_F1
                 {
                     ActiveEffects.Remove(effect);
                     effect.transform.SetParent(Managers.Object.EffectRoot); //--- FORCE
-                    if (destroyPooling)
+                    if (destroyOrigin)
                     {
                         Managers.Pool.Remove(effect.DataPoolingID);
                         UnityEngine.Object.Destroy(effect.gameObject, Time.deltaTime);
@@ -235,19 +256,6 @@ namespace STELLAREST_F1
                     else
                         Managers.Object.Despawn(effect, effect.DataTemplateID);
                 });
-        }
-
-        public void RemoveBuffEffects(EEffectBuffType buffType, bool destroyPooling = false)
-        {
-            for (int i = 0; i < ActiveEffects.Count; ++i)
-            {
-                if (ActiveEffects[i].EffectType == EEffectType.Buff)
-                {
-                    BuffBase buff = ActiveEffects[i].GetComponent<BuffBase>();
-                    if (buff != null && buff.EffectBuffType == buffType)
-                        this.RemoveEffect(effect: buff, destroyPooling: destroyPooling);
-                }
-            }
         }
 
         public void RemoveAllActiveEffects()

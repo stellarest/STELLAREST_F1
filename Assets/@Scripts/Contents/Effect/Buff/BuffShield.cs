@@ -19,7 +19,7 @@ namespace STELLAREST_F1
         protected override void InitialSetInfo(int dataID)
         {
             base.InitialSetInfo(dataID);
-            EffectBuffType = EEffectBuffType.BonusHealthShield;
+            //EffectBuffType = EEffectBuffType.BonusHealthShield;
             //EffectBuffType = EEffectBuffType.BonusHealth;
 
             _onShields = transform.GetChild(0).gameObject.GetComponentsInChildren<ParticleSystem>(includeInactive: true);

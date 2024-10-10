@@ -418,27 +418,27 @@ namespace STELLAREST_F1
         public enum EEffectType
         {
             None = -1,
-            SimpleVFX = 1, // --- Instant로 바꿔야할듯?
-            //Instant,
-            //Infinite, ---> 없어도 될 것 같음. Duration을 -1로 지정한게 Infinite임.
-            Buff,
-            DeBuff,
-            Dot,
-            Airborne,
-            Knockback,
-            Freeze,
-            Stun,
-            Pull,
-        }
+            VFX_Base = 1, 
 
-        public enum EEffectBuffType
-        {
-            None = -1,
-            DamageReduction,
-            BonusHealth,
-            BonusHealthShield,
-            AttackPowerUp,
-            SpeedUp,
+            Buff_Armor,
+            Buff_BonusHealth,
+            Buff_BonusHealthShield,
+            Buff_AttackPowerUp,
+            Buff_MovementSpeedUp,
+
+            DeBuff_Armor,
+            Debuff_BonusHealth,
+            Debuff_BonusHealthShield,
+            Debuff_AttackPowerUp,
+            Debuff_MovementSpeedUp,
+
+            CC_Airborne,
+            CC_Knockback,
+            CC_Freeze,
+            CC_Stun,
+            CC_Pull,
+
+            Dot_Base,
         }
 
         public enum EEffectSpawnType

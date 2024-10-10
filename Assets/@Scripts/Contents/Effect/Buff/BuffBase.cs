@@ -8,12 +8,12 @@ namespace STELLAREST_F1
 {
     public class BuffBase : EffectBase
     {
-        public EEffectBuffType EffectBuffType { get; protected set; } = EEffectBuffType.None;
+        // public EEffectBuffType EffectBuffType { get; protected set; } = EEffectBuffType.None;
 
         protected override void InitialSetInfo(int dataID)
         {
             base.InitialSetInfo(dataID);
-            EffectType = EEffectType.Buff;
+            // EffectType = EEffectType.Buff;
         }
 
         public override void ApplyEffect()
@@ -23,10 +23,15 @@ namespace STELLAREST_F1
         }
 
         public override void EnterEffect()
-            => Owner.BaseEffect.SetIsOnEffectBuff(EffectBuffType, true);
+            => Owner.BaseEffect.SetIsOnEffectBuff(this.EffectType, true);
         public override void ExitEffect()
-            => Owner.BaseEffect.SetIsOnEffectBuff(EffectBuffType, false);
+            => Owner.BaseEffect.SetIsOnEffectBuff(this.EffectType, false);
 
         public override void DoEffect() { }
+
+        protected override void OnRemoveSelfByCondition(Action endCallback = null)
+        {
+            endCallback?.Invoke();
+        }
     }
 }

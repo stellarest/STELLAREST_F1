@@ -12,6 +12,10 @@ using UnityEditor;
 - GenerateEffect할 때 Pooling의 대상인지 아닌지 체크.
 > 그리고 Pooling의 대상이 아닌 녀석은 제거할 때 자동으로 오브젝트 제거.
 - Util.GetEffectData, Util.GetSkillData로 변경해야함.
+- Paladin Skill, Effect부터 모두 완성
+- Effect_BuffDamageReduction: 프리팹 제거할 준비
+- Monster::Attack_Rate 적용되었나?? 할필요도 없을 듯 싶지만
+- 아직 Armor OnDamaged에서 적용 안됨
 *******************************************************
 - Passive: 101000(Lv.01), 101002(Lv.03), 101004(Lv.05), 101007(Lv.08)
 - Skill_A: 101100(Lv.01, None)

@@ -58,18 +58,14 @@ namespace STELLAREST_F1
         protected override void InitialSetInfo(int dataID)
         {
             base.InitialSetInfo(dataID);
-
-            if (Owner.ObjectType == EObjectType.Hero)
-                EffectData = Managers.Data.HeroEffectDataDict[dataID];
-            else if (Owner.ObjectType == EObjectType.Monster)
-                EffectData = Managers.Data.MonsterEffectDataDict[dataID];
-            else if (Owner.ObjectType == EObjectType.Env)
-                EffectData = Managers.Data.EnvEffectDataDict[dataID];
+            EffectData = Util.GetEffectData(dataID, _owner);
+            EffectType = Util.GetEnumFromString<EEffectType>(EffectData.EffectType);
 
 #if UNITY_EDITOR
             Dev_NameTextID = EffectData.Dev_NameTextID;
             gameObject.name += $"_{EffectData.Dev_NameTextID}";
 #endif
+
             IsLoop = EffectData.IsLoop;
             Period = EffectData.Period;
             InitialSetSize(EffectData.EffectSize);
@@ -161,15 +157,14 @@ namespace STELLAREST_F1
             EnterEffect();
         }
         public abstract void EnterEffect();
+        public abstract void DoEffect();
         public abstract void ExitEffect();
 
-        public abstract void DoEffect();
         protected virtual void ProcessDot() { }
-
         protected IEnumerator CoStartLifeTimer()
         {
-            if (EffectType == EEffectType.Airborne || EffectType == EEffectType.Knockback)
-                yield break;
+            // if (EffectType == EEffectType.Airborne || EffectType == EEffectType.Knockback)
+            //     yield break;
 
             ProcessDot();
             float tickTimer = 0f;
@@ -197,19 +192,19 @@ namespace STELLAREST_F1
                 return;
         }
 
-        public bool IsCroudControl()
-        {
-            switch (EffectType)
-            {
-                case EEffectType.Airborne:
-                case EEffectType.Knockback:
-                case EEffectType.Freeze:
-                case EEffectType.Stun:
-                    return true;
-            }
+        // public bool IsCroudControl()
+        // {
+        //     switch (EffectType)
+        //     {
+        //         case EEffectType.Airborne:
+        //         case EEffectType.Knockback:
+        //         case EEffectType.Freeze:
+        //         case EEffectType.Stun:
+        //             return true;
+        //     }
 
-            return false;
-        }
+        //     return false;
+        // }
     }
 }
 

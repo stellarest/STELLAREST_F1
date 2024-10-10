@@ -252,11 +252,11 @@ namespace STELLAREST_F1
         }
 
         public static bool IsBaseStat(EApplyStatType statType)
-            => EApplyStatType.MaxHealth == statType ||
-               EApplyStatType.AttackPower == statType ||
-               EApplyStatType.CriticalRate == statType ||
-               EApplyStatType.DodgeRate == statType ||
-               EApplyStatType.MovementSpeed == statType ||
+            => EApplyStatType.MaxHealth == statType             ||
+               EApplyStatType.AttackPower == statType           ||
+               EApplyStatType.CriticalRate == statType          ||
+               EApplyStatType.DodgeRate == statType             ||
+               EApplyStatType.MovementSpeed == statType         ||
                EApplyStatType.Luck == statType;
 
         public static CreatureData GetCreatureData(int dataID, Creature owner)
@@ -280,6 +280,13 @@ namespace STELLAREST_F1
 
             return null;
         }
+
+        public static bool IsEffectBuffType(EEffectType effectType)
+            => effectType == EEffectType.Buff_Armor                     ||
+               effectType == EEffectType.Buff_BonusHealth               ||
+               effectType == EEffectType.Buff_BonusHealthShield         ||
+               effectType == EEffectType.Buff_AttackPowerUp             ||
+               effectType == EEffectType.Buff_MovementSpeedUp;
 
         public static EffectData GetEffectData(int dataID, BaseObject owner)
         {

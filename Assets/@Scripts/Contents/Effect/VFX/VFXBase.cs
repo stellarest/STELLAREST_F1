@@ -12,7 +12,7 @@ namespace STELLAREST_F1
         protected override void InitialSetInfo(int dataID)
         {
             base.InitialSetInfo(dataID);
-            EffectType = EEffectType.SimpleVFX;
+            // EffectType = EEffectType.SimpleVFX;
         }
 
         public override void ApplyEffect()

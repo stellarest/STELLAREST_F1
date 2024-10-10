@@ -197,32 +197,6 @@ namespace STELLAREST_F1
             return lvUpSkill;
         }
 
-        public SkillBase LevelUpMySkill(SkillBase skill) // --- DEPRECIATED
-        {
-            // 101201
-            for (int i = skill.SkillData.DataID; i < ReadOnly.Util.HeroMaxLevel; ++i)
-            {
-                SkillData skillData = Util.GetSkillData(dataID: i, owner: _owner);
-                if (skillData != null)
-                {
-                    Type skillClassType = Util.GetTypeFromName(skillData.ClassName);
-                    SkillBase lvUpSkill = gameObject.AddComponent(skillClassType) as SkillBase;
-                    if (lvUpSkill != null)
-                    {
-                        lvUpSkill.InitialSetInfo(dataID: i, owner: _owner);
-                        SkillBase prevSkill = SkillArray[(int)lvUpSkill.SkillType];
-                        RemoveActiveSkill(prevSkill);
-
-                        SkillArray[(int)lvUpSkill.SkillType] = lvUpSkill;
-                        AddActiveSkill(lvUpSkill);
-                        return lvUpSkill;
-                    }
-                }
-            }
-
-            return null;
-        }
-
         public void LevelUpSkill(int ownerLevelID)
         {
             if (SkillArray[(int)ESkillType.Skill_B] != null)

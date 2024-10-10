@@ -514,6 +514,7 @@ namespace STELLAREST_F1.Data
         public float AddPercentMulti;
         public float Period;
         public float Duration;
+        public string EffectType;   // 이펙트가 매우 많아질 것 같아서 가독성 때문에 string으로
         public EObjectSize EffectSize;
         public EEffectSpawnType EffectSpawnType;
         public EApplyStatType ApplyStatType;

@@ -11,7 +11,7 @@ namespace STELLAREST_F1
         protected override void InitialSetInfo(int dataID)
         {
             base.InitialSetInfo(dataID);
-            EffectBuffType = EEffectBuffType.DamageReduction;
+            // EffectBuffType = EEffectBuffType.DamageReduction;
         }
 
         protected override void OnRemoveSelfByCondition(Action endCallback = null)
