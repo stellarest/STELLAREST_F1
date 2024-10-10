@@ -159,7 +159,8 @@ namespace STELLAREST_F1
 
         public override void EnterInGame()
         {
-            AddAnimClipEvents();
+            //AddAnimClipEvents();
+            RefreshAddAnimEvents();
             AddAnimStateEvents();
         }
         #endregion
@@ -182,6 +183,41 @@ namespace STELLAREST_F1
 
             _creatureAnimCallback.OnDustEffectHandler -= OnDustEffectCallback;
             _creatureAnimCallback.OnDustEffectHandler += OnDustEffectCallback;
+        }
+
+        public void RefreshAddAnimEvents()
+        {
+            if (_creatureOwner == null || _creatureAnimCallback == null)
+                return;
+
+            SkillBase[] skills = _creatureOwner.CreatureSkill.SkillArray;
+            if (skills == null)
+            {
+                Debug.LogError("Creatute must have Skill_A at least.");
+                return;
+            }
+
+            // --- Remove
+            for (int i = 0; i < skills.Length; ++i)
+            {
+                if (skills[i] != null)
+                    _creatureAnimCallback.OnSkillHandler -= skills[i].OnSkillCallback;
+            }
+
+            _creatureAnimCallback.OnCollectEnvHandler -= OnCollectEnvCallback;
+            _creatureAnimCallback.OnDustEffectHandler -= OnDustEffectCallback;
+
+            // --- Add Again
+            for (int i = 0; i < skills.Length; ++i)
+            {
+                if (skills[i] != null)
+                    _creatureAnimCallback.OnSkillHandler += skills[i].OnSkillCallback;
+            }
+
+            _creatureAnimCallback.OnCollectEnvHandler += OnCollectEnvCallback;
+            _creatureAnimCallback.OnDustEffectHandler += OnDustEffectCallback;
+
+            Debug.Log($"<color=yellow>{nameof(CreatureAnimation)}</color><color=white>::</color><color=cyan>{nameof(RefreshAddAnimEvents)}</color>");
         }
 
         public virtual void OnCollectEnvCallback() { }

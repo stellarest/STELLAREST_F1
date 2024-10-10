@@ -86,6 +86,7 @@ namespace STELLAREST_F1
             SkillArray[(int)ESkillType.Skill_A] = UnlockSkill(dataID: creatureData.Skill_A_ID);
 #if UNITY_EDITOR
             DefaultSkillA = SkillArray[(int)ESkillType.Skill_A].SkillData.Dev_NameTextID;
+            Dev_NameTextID = $"{_owner.Dev_NameTextID}_Skills";
 #endif
             // Skills.Add(SkillArray[(int)ESkillType.Skill_A]);
             // --- 지금 이 부분을 추가하면 안되고, 히어로 레벨이 Lv.3, Lv.5가 되었을 때로 변경해야함
@@ -134,9 +135,9 @@ namespace STELLAREST_F1
             for (int i = 0; i < SkillArray.Length; ++i)
             {
                 SkillBase skill = SkillArray[i];
-                if (skill != null && skill.SkillData.DataID == dataID)
+                if (skill != null && skill.SkillType == skillData.SkillType)
                 {
-                    Debug.LogWarning($"Failed: {nameof(UnlockSkill)}, {skill.Dev_NameTextID} already exists.");
+                    Debug.LogError($"Failed: {nameof(UnlockSkill)}, {skill.Dev_NameTextID} already exists.");
                     return null;
                 }
             }

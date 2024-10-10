@@ -185,12 +185,12 @@ namespace STELLAREST_F1
         {
             Owner = owner as Creature;
             DataTemplateID = dataID;
-
-            if (owner.ObjectType == EObjectType.Hero)
-                SkillData = Managers.Data.HeroSkillDataDict[dataID];
-            else if (owner.ObjectType == EObjectType.Monster)
-                SkillData = Managers.Data.MonsterSkillDataDict[dataID];
-
+            // if (owner.ObjectType == EObjectType.Hero)
+            //     SkillData = Managers.Data.HeroSkillDataDict[dataID];
+            // else if (owner.ObjectType == EObjectType.Monster)
+            //     SkillData = Managers.Data.MonsterSkillDataDict[dataID];
+            
+            SkillData = Util.GetSkillData(dataID, Owner);
 #if UNITY_EDITOR
             Dev_NameTextID = SkillData.Dev_NameTextID;
             Dev_DescriptionTextID = SkillData.Dev_DescriptionTextID;

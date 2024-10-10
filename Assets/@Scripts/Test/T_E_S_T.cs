@@ -9,10 +9,56 @@ using UnityEditor;
 
 /*
 *******************************************************
-[Elite Package]: 3,900 KRW (별도 or 제한)
+- GenerateEffect할 때 Pooling의 대상인지 아닌지 체크.
+> 그리고 Pooling의 대상이 아닌 녀석은 제거할 때 자동으로 오브젝트 제거.
+- Util.GetEffectData, Util.GetSkillData로 변경해야함.
+*******************************************************
+- Passive: 101000(Lv.01), 101002(Lv.03), 101004(Lv.05), 101007(Lv.08)
+- Skill_A: 101100(Lv.01, None)
+- Skill_B: 101201(Lv.02), 101203(Lv.04), 101205(Lv.06), 102007(Lv.08)
+- Skill_C: 101302(Lv.03), 101304(Lv.05), 101306(Lv.07), 103007(Lv.08)
+
+- Lv.01
+> Passive(Common)
+
+- Lv.02
+> Passive(Common)
+> Skill_B(Common)
+
+- Lv.03
+> Passive(Rare)
+> Skill_B(Common)
+> Skill_C(Common)
+
+- Lv.04
+> Passive(Rare)
+> Skill_B(Rare)
+> Skill_C(Common)
+
+- Lv.05
+> Passive(Unique)
+> Skill_B(Rare)
+> Skill_C(Rare)
+
+- Lv.06
+> Passive(Unique)
+> Skill_B(Unique)
+> Skill_C(Rare)
+
+- Lv.07
+> Passive(Unique)
+> Skill_B(Unique)
+> Skill_C(Unique)
+
+- Lv.08
+> Passive(Elite)
+> Skill_B(Elite)
+> Skill_C(Elite)
+*******************************************************
+[Elite Package]: 3,900 KRW
 - 스테이지 종료 후 의무 광고 제거.
 - 스테이지 입장시 보상형 광고 스킵권 3개 제공.
-- 히어로 엘리트 레벨 활성화(7 -> 8, Elite: 히어로 패시브, 스킬 능력치 대폭 증가).
+- 히어로 엘리트 레벨 활성화(7 -> 8, 외형 변화, 패시브, 스킬 능력치 대폭 증가).
 
 [Premium Package]: 15,600 KRW
 - 스테이지 종료 후 의무 광고 제거.
@@ -156,14 +202,6 @@ S2: Line Rush I -> ... -> Line Rush IV -> Ultimate Line Rush
 - 아쳐 머즐이펙트, 발바닥 Dust(랜서, 위자드 포함)
 - Related FindPathMethods in Creature.cs -> in BaseCellObject (아직 미완인 것 같긴 함)
 
-// --- NOTE
-
-// --- SKILLS NOTE
-[Paladin] Hmmm...
-P: Second Wind (E)
-S1: Double Slash(C) -> Triple Slash (E)
-S2: Shield(C) -> Heaven's Shield (E)
-
 - Instant,    // --- DotBase
 - Buff,       // --- BuffBase
 - Debuff,     // --- BuffBase
@@ -197,12 +235,6 @@ S2: Shield(C) -> Heaven's Shield (E)
 - Effect Swing Flip Test (O)
 - Fix Skill Trggers (O)
 
-// --- TODO LIST
-- Skill_C 넣으면 동작 또 이상해짐...
-- BaseStat 1차 정리
-- Next Commit: [Feat]Paladin Skill_C(Shield)
-- Add Skill Value
-- ...
 
 // --- LATER LIST
 - 몬스터가 Hero에게 이동할 때, 길이 막혀있는 경우 무한 와리가리하다가 자리를 찾아 오는 경우가 있음(심각한 버그는 아님)

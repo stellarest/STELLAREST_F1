@@ -12,6 +12,8 @@ namespace STELLAREST_F1
     public class BaseObject : InitBase
     {
         [field: SerializeField] public int DataTemplateID { get; protected set; } = -1;
+        public int DataPoolingID { get; set; } = -1;
+
         public EObjectType ObjectType { get; protected set; } = EObjectType.None;
         public SortingGroup SortingGroup { get; private set; } = null;
         public CircleCollider2D Collider { get; private set; } = null;

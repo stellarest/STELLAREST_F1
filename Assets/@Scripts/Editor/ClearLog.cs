@@ -23,6 +23,17 @@ namespace STELLAREST_F1
         {
             Util.ClearLog();
         }
+
+        [MenuItem("Tools/SimpleLog %#H")]
+        public static void SimpleLog()
+        {
+            int[] numbers = {1, 2, 3, 4, 5};
+            var plusNums = from n in numbers
+                           select n + 1;
+
+            foreach (var num in plusNums)
+                Debug.Log($"num: {num}");
+        }
 #endif
     }
 }

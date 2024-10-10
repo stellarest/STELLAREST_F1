@@ -29,7 +29,7 @@ namespace STELLAREST_F1
 
         public EffectData EffectData { get; private set; } = null;
         public EEffectType EffectType { get; protected set; } = EEffectType.None;
-        public EEffectClearType EffectClearType { get; protected set; } = EEffectClearType.OnDisable;
+        public EEffectClearType EffectClearType { get; protected set; } = EEffectClearType.TimeOut;
         
         // --- 지금 당장 우아한 방법은 아니긴 하지만, ByCondition에 의한 이펙트는 OnRemoveSelfByCondition에서 재정의만 하면 됨
         public Action<Action> OnRemoveSelfByConditionHandler = null;

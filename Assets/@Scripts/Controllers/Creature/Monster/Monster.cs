@@ -10,7 +10,7 @@ namespace STELLAREST_F1
     public class Monster : Creature
     {
 #if UNITY_EDITOR
-        private static int SpawnNumber = 0;
+        private static int LabelNumber = 0;
 #endif
 
         public MonsterData MonsterData { get; private set; } = null;
@@ -91,16 +91,10 @@ namespace STELLAREST_F1
         {
             base.InitialSetInfo(dataID);
             _monsterAI = CreatureAI as MonsterAI;
-            MonsterData = Managers.Data.MonsterDataDict[dataID];
-#if UNITY_EDITOR
-            Dev_NameTextID = MonsterData.Dev_NameTextID;
-#endif
-
-            // --- BaseStat
-            // _maxLevelID = dataID;
-
+            MonsterData = CreatureData as MonsterData;
             MonsterType = MonsterData.MonsterType;
-            gameObject.name += $"_{MonsterData.Dev_NameTextID.Replace(" ", "")}_{SpawnNumber++}";
+            gameObject.name += $"_{MonsterData.Dev_NameTextID}_{LabelNumber.ToString("D2")}";
+            LabelNumber++;
         }
 
         protected override void EnterInGame(Vector3 spawnPos)

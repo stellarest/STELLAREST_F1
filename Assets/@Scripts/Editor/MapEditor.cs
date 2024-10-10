@@ -20,45 +20,45 @@ namespace STELLAREST_F1
     {
 
 #if UNITY_EDITOR
-        [MenuItem("Tools/PrintTest %#H")]
-        private static void PrintTest()
-        {
-            // List<int> myNums = new List<int>();
-            // for (int i = 1; i <= 5; ++i)
-            // {
-            //     myNums.Add(i);
-            // }
+        // [MenuItem("Tools/PrintTest %#H")]
+        // private static void PrintTest()
+        // {
+        //     // List<int> myNums = new List<int>();
+        //     // for (int i = 1; i <= 5; ++i)
+        //     // {
+        //     //     myNums.Add(i);
+        //     // }
 
-            // PrintNums(myNums);
+        //     // PrintNums(myNums);
 
-            // ###
-            // int value = 0;
-            // int[,] arr = new int[3,5];
-            // /*
-            //     [0,0]: 0 | [0,1]: 1 | [0,2]: 2 | [0,3]: 3 | [0,4]: 4
-            //     [1,0]: 5 | [1,1]: 6 | [1,2]: 7 | [0,3]: 8 | [0,4]: 9
-            //     [2,0]: 10 | [2,1]: 11 | [2,2]: 12 | [2,3]: 13 | [2,4]: 14
-            // */
+        //     // ###
+        //     // int value = 0;
+        //     // int[,] arr = new int[3,5];
+        //     // /*
+        //     //     [0,0]: 0 | [0,1]: 1 | [0,2]: 2 | [0,3]: 3 | [0,4]: 4
+        //     //     [1,0]: 5 | [1,1]: 6 | [1,2]: 7 | [0,3]: 8 | [0,4]: 9
+        //     //     [2,0]: 10 | [2,1]: 11 | [2,2]: 12 | [2,3]: 13 | [2,4]: 14
+        //     // */
 
-            // for (int i = 0; i < arr.GetLength(0); ++i)
-            // {
-            //     for (int j = 0; j < arr.GetLength(1); ++j)
-            //         arr[i, j] = value++;
-            // }
+        //     // for (int i = 0; i < arr.GetLength(0); ++i)
+        //     // {
+        //     //     for (int j = 0; j < arr.GetLength(1); ++j)
+        //     //         arr[i, j] = value++;
+        //     // }
 
-            // for (int i = 0; i < arr.GetLength(0); ++i)
-            // {
-            //     for (int j = 0; j < arr.GetLength(1); ++j)
-            //         Debug.Log($"arr[{i}][{j}]: {arr[i, j]}");
-            //     Debug.Log("");
-            // }
+        //     // for (int i = 0; i < arr.GetLength(0); ++i)
+        //     // {
+        //     //     for (int j = 0; j < arr.GetLength(1); ++j)
+        //     //         Debug.Log($"arr[{i}][{j}]: {arr[i, j]}");
+        //     //     Debug.Log("");
+        //     // }
 
-            // ###
-            // List<int> lst = new List<int>() { 3, 5, 7, 9 ,12 };
-            // int[] arr = lst.Where(n => n <= 7).ToArray();
-            // for (int i = 0; i < arr.Length; ++i)
-            //     Debug.Log($"arr[{i}]: {arr[i]}");
-        }
+        //     // ###
+        //     // List<int> lst = new List<int>() { 3, 5, 7, 9 ,12 };
+        //     // int[] arr = lst.Where(n => n <= 7).ToArray();
+        //     // for (int i = 0; i < arr.Length; ++i)
+        //     //     Debug.Log($"arr[{i}]: {arr[i]}");
+        // }
 
         public static void PrintNums(IEnumerable<int> nums)
         {

@@ -13,6 +13,8 @@ namespace STELLAREST_F1
         #region Events
         public override bool OnSkillStateEnter()
         {
+            Debug.Log(Dev_DescriptionTextID);
+
             if (base.OnSkillStateEnter() == false)
                 return false;
 

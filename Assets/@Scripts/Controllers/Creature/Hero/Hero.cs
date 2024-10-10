@@ -153,11 +153,8 @@ namespace STELLAREST_F1
         {
             base.InitialSetInfo(dataID);
             HeroAI = CreatureAI as HeroAI;
-            HeroData = Managers.Data.HeroDataDict[dataID];
-#if UNITY_EDITOR
-            Dev_NameTextID = HeroData.Dev_NameTextID;
-#endif
-            gameObject.name += $"_{HeroData.Dev_NameTextID.Replace(" ", "")}";
+            HeroData = CreatureData as HeroData;
+            gameObject.name += $"_{HeroData.Dev_NameTextID}";
         }
 
         protected override void EnterInGame(Vector3 spawnPos)
@@ -265,14 +262,12 @@ namespace STELLAREST_F1
         {
             if (BaseStat.LevelUp() == false)
                 return false;
-
             /*
                 Passive: 101000(Lv.01), 101002(Lv.03), 101004(Lv.05), 101007(Lv.08)
                 Skill_A: 101100(Lv.01, None)
                 Skill_B: 101201(Lv.02), 101203(Lv.04), 101205(Lv.06), 102007(Lv.08)
                 Skill_C: 101302(Lv.03), 101304(Lv.05), 101306(Lv.07), 103007(Lv.08)
             */
-
             /*
                 Lv.01
                 - Passive(Common)
@@ -311,7 +306,6 @@ namespace STELLAREST_F1
                 - Skill_B(Elite)
                 - Skill_C(Elite)
             */
-
             SkillBase skillB = CreatureSkill.SkillArray[(int)ESkillType.Skill_B];
             int skillB_ID = CreatureData.Skill_B_TemplateID + (Level - 1);
             if (skillB == null)
@@ -337,6 +331,7 @@ namespace STELLAREST_F1
 #endif
 
             ApplyNewPassive();
+            CreatureAnim.RefreshAddAnimEvents();
             if (IsMaxLevel && Managers.Game.HasElitePackage)
             {
                 Debug.Log($"<color=yellow>MaxUp Hero</color>");

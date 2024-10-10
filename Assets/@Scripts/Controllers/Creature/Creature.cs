@@ -176,10 +176,15 @@ namespace STELLAREST_F1
         protected override void InitialSetInfo(int dataID)
         {
             base.InitialSetInfo(dataID);
-            if (ObjectType == EObjectType.Hero)
-                CreatureData = Managers.Data.HeroDataDict[dataID];
-            else if (ObjectType == EObjectType.Monster)
-                CreatureData = Managers.Data.MonsterDataDict[dataID];
+            // if (ObjectType == EObjectType.Hero)
+            //     CreatureData = Managers.Data.HeroDataDict[dataID];
+            // else if (ObjectType == EObjectType.Monster)
+            //     CreatureData = Managers.Data.MonsterDataDict[dataID];
+            CreatureData = Util.GetCreatureData(dataID, this);
+
+#if UNITY_EDITOR
+            Dev_NameTextID = CreatureData.Dev_NameTextID;
+#endif
 
             Type aiClassType = Util.GetTypeFromName(CreatureData.AIClassName);
             CreatureAI = gameObject.AddComponent(aiClassType) as CreatureAI;
@@ -190,7 +195,8 @@ namespace STELLAREST_F1
 
             CreatureSkill = gameObject.GetOrAddComponent<SkillComponent>();
             CreatureSkill.InitialSetInfo(owner: this, creatureData: CreatureData);
-            CreatureAnimCallback.InitialSetInfo(this);
+            CreatureAnimCallback.InitialSetInfo(this); // --- ??? 이게 있어야 하나??? Anim에 있으면 안되나.
+            // --- CreatureAnim에서 InitialSetInfo하고 CreatureAnimCallback을 들고있는게 더 좋을 것 같은데.
 
             // --- Init Creature Passive
             if (Util.GetEffectData(dataID: LevelID, owner: this) != null)
@@ -446,8 +452,8 @@ namespace STELLAREST_F1
         protected Coroutine _coUpdateAI = null;
         protected IEnumerator CoUpdateAI()
         {
-            // if (ObjectType == EObjectType.Monster)
-            //     yield break;
+            if (ObjectType == EObjectType.Monster)
+                yield break;
 
             while (true)
             {
@@ -549,15 +555,11 @@ namespace STELLAREST_F1
                 return;
             }
 
-            /*
-                Passive Lv: 01(Common) -> 03(Rare) -> 05(Unique) -> 08(Elite)
-                Paladin Ex: 101000(0.2) -> 101002(0.3) -> 101004(0.4) -> 101007(0.65)
-            */
             EffectBase prevPassive = BaseEffect.FindPrevEffect(dataID: LevelID);
             if (prevPassive != null)
             {
                 Debug.Log($"Remove Passive: {prevPassive.Dev_NameTextID}");
-                BaseEffect.RemoveEffect(prevPassive);
+                BaseEffect.RemoveEffect(prevPassive, destroyPooling: true);
                 BaseEffect.GenerateEffect(effectID: LevelID); // 알아서 ApplyStat이 될 테므로,,,
             }
         }

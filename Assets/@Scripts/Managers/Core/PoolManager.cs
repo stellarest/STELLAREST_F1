@@ -55,7 +55,6 @@ namespace STELLAREST_F1
         {
             // if (_pools.ContainsKey(go.name) == false)
             //     return false;
-
             if (_pools.ContainsKey(poolingID) == false)
                 return false;
 
@@ -72,12 +71,21 @@ namespace STELLAREST_F1
             return _pools[poolingID].Pop();
         }
 
+        public void Remove(int poolingID)
+        {
+            Debug.Log($"CurrentCount: {_pools.Count}");
+            if (_pools.TryGetValue(key: poolingID, out Pool pool) == false)
+                return;
+
+            _pools.Remove(poolingID);
+            Debug.Log($"RemoveCount: {_pools.Count}");
+        }
+
         public void Clear() => _pools.Clear();
 
         private void CreatePool(GameObject original, Transform parent, int poolingID)
         {
-            //_pools.Add(original.name, new Pool(original, parent));
-            _pools.Add(poolingID, new Pool(original, parent));
+            _pools.Add(poolingID, new Pool(prefab: original, parent: parent));
         }
     }
 }

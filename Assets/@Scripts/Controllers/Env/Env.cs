@@ -47,13 +47,11 @@ namespace STELLAREST_F1
         {
             base.InitialSetInfo(dataID);
             EnvData = Managers.Data.EnvDataDict[dataID];
+            
 #if UNITY_EDITOR
             Dev_NameTextID = EnvData.Dev_NameTextID;
 #endif
             EnvType = EnvData.EnvType;
-            // --- BaseStat
-            // _maxLevelID = dataID;
-
             gameObject.name += $"_{EnvData.Dev_NameTextID.Replace(" ", "")}";
         }
 

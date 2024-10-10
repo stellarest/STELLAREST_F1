@@ -222,6 +222,9 @@ namespace STELLAREST_F1
 
         public static int GetPoolingID(EObjectType objType, int dataID)
         {
+            if (dataID == -1)
+                return -1;
+
             switch (objType)
             {
                 case EObjectType.Hero:
@@ -255,6 +258,28 @@ namespace STELLAREST_F1
                EApplyStatType.DodgeRate == statType ||
                EApplyStatType.MovementSpeed == statType ||
                EApplyStatType.Luck == statType;
+
+        public static CreatureData GetCreatureData(int dataID, Creature owner)
+        {
+            switch (owner?.ObjectType)
+            {
+                case EObjectType.Hero:
+                    {
+                        if (Managers.Data.HeroDataDict.TryGetValue(dataID, out HeroData heroData))
+                            return heroData;
+                    }
+                    break;
+
+                case EObjectType.Monster:
+                    {
+                        if (Managers.Data.MonsterDataDict.TryGetValue(dataID, out MonsterData monsterData))
+                            return monsterData;
+                    }
+                    break;
+            }
+
+            return null;
+        }
 
         public static EffectData GetEffectData(int dataID, BaseObject owner)
         {

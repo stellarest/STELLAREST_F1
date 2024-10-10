@@ -31,18 +31,16 @@ namespace STELLAREST_F1
 
         public void EnterInGame()
         {
-            RemoveAllEffects();
+            RemoveAllActiveEffects();
             // + Apply Base Effect
         }
 
         public EffectBase FindPrevEffect(int dataID)
         {
-            // 이전 -10까지 돌려서 없으면 null로 박아버리기. 그러니까 최대 -10임.
             if (ActiveEffects.Count == 0)
                 return null;
 
-            // i = 101002; 
-            // i < 101002 - 10(100,992)
+            // dataID - 10까지 강제로 찾음
             for (int i = dataID; i > dataID - 10; --i)
             {
                 EffectBase prevEffect = ActiveEffects.Find(e => e.EffectData.DataID == i);
@@ -57,12 +55,14 @@ namespace STELLAREST_F1
             => IsOnEffectBuffDict[buffType] = isOn;
 
         public bool IsOnEffectBuff(EEffectBuffType buffType)
-        {
-            if (IsOnEffectBuffDict.TryGetValue(key: buffType, out bool isOn) == false)
-                return false;
+            => IsOnEffectBuffDict.TryGetValue(key: buffType, out bool isOn) == false ? false : true;
+        // public bool IsOnEffectBuff(EEffectBuffType buffType)
+        // {
+        //     if (IsOnEffectBuffDict.TryGetValue(key: buffType, out bool isOn) == false)
+        //         return false;
 
-            return isOn;
-        }
+        //     return isOn;
+        // }
 
         public EffectBase GenerateEffect(int effectID, SkillBase skill = null)
         {
@@ -71,7 +71,7 @@ namespace STELLAREST_F1
                     spawnPos: _owner.CenterPosition, // --- Default Value
                     dataID: effectID,
                     owner: _owner
-                    );
+                );
 
             ActiveEffects.Add(effect);
             if (skill != null)
@@ -204,7 +204,7 @@ namespace STELLAREST_F1
         private bool CanApplyStatEffectType(EEffectType type)
             => type == EEffectType.Buff || type == EEffectType.DeBuff;
 
-        public void RemoveEffect(EffectBase effect)
+        public void RemoveEffect(EffectBase effect, bool destroyPooling = false)
         {
             if (effect.IsValid() == false)
                 return;
@@ -214,19 +214,30 @@ namespace STELLAREST_F1
             {
                 ActiveEffects.Remove(effect);
                 effect.transform.SetParent(Managers.Object.EffectRoot); //--- FORCE
-                Managers.Object.Despawn(effect, effect.DataTemplateID);
+                if (destroyPooling)
+                {
+                    Managers.Pool.Remove(effect.DataPoolingID);
+                    UnityEngine.Object.Destroy(effect.gameObject, Time.deltaTime);
+                }
+                else
+                    Managers.Object.Despawn(effect, effect.DataTemplateID);
             }
             else
                 effect.OnRemoveSelfByConditionHandler?.Invoke(() =>
                 {
                     ActiveEffects.Remove(effect);
                     effect.transform.SetParent(Managers.Object.EffectRoot); //--- FORCE
-                    Managers.Object.Despawn(effect, effect.DataTemplateID);
-                    Debug.Log($"<color=yellow>REMOVE: {effect.Dev_NameTextID}</color>");
+                    if (destroyPooling)
+                    {
+                        Managers.Pool.Remove(effect.DataPoolingID);
+                        UnityEngine.Object.Destroy(effect.gameObject, Time.deltaTime);
+                    }
+                    else
+                        Managers.Object.Despawn(effect, effect.DataTemplateID);
                 });
         }
 
-        public void RemoveBuffEffects(EEffectBuffType buffType)
+        public void RemoveBuffEffects(EEffectBuffType buffType, bool destroyPooling = false)
         {
             for (int i = 0; i < ActiveEffects.Count; ++i)
             {
@@ -234,12 +245,12 @@ namespace STELLAREST_F1
                 {
                     BuffBase buff = ActiveEffects[i].GetComponent<BuffBase>();
                     if (buff != null && buff.EffectBuffType == buffType)
-                        this.RemoveEffect(buff);
+                        this.RemoveEffect(effect: buff, destroyPooling: destroyPooling);
                 }
             }
         }
 
-        public void RemoveAllEffects()
+        public void RemoveAllActiveEffects()
         {
             for (int i = 0; i < ActiveEffects.Count; ++i)
             {

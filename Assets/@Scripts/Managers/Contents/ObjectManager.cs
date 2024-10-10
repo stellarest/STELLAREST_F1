@@ -102,7 +102,7 @@ namespace STELLAREST_F1
                 case EObjectType.Monster:
                     {
                         MonsterData data = Managers.Data.MonsterDataDict[dataID];
-                        go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: MonsterRoot, poolingID:  Util.GetPoolingID(EObjectType.Monster, dataID));
+                        go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: MonsterRoot, poolingID: Util.GetPoolingID(EObjectType.Monster, dataID));
                         if (go == null)
                         {
                             Debug.LogError($"{nameof(SpawnBaseObject)}, {nameof(EObjectType.Monster)}, Input: \"{dataID}\"");
@@ -153,7 +153,7 @@ namespace STELLAREST_F1
                 case EObjectType.Projectile:
                     {
                         ProjectileData data = Managers.Data.ProjectileDataDict[dataID];
-                        go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: ProjectileRoot, poolingID:  Util.GetPoolingID(EObjectType.Projectile, dataID));
+                        go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: ProjectileRoot, poolingID: Util.GetPoolingID(EObjectType.Projectile, dataID));
                         if (go == null)
                         {
                             Debug.LogError($"{nameof(SpawnBaseObject)}, {nameof(EObjectType.Projectile)}, Input: \"{dataID}\"");
@@ -166,19 +166,15 @@ namespace STELLAREST_F1
                         return projectile as T;
                     }
 
-                // --- TEMP
                 case EObjectType.Effect:
                     {
-                        //EffectData data = Managers.Data.EffectDataDict[dataID];
-                        // *** Effect데이터는 Global이든 뭐든 반드시 각 객체의 데이터에서 포함하도록 변경. ***
                         EffectData data = Util.GetEffectData(dataID, owner);
                         if (data == null)
-                        {
-                            //Debug.LogError($"{nameof(SpawnBaseObject)}, {nameof(EObjectType.Effect)}");
                             return null;
-                        }
 
-                        go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: EffectRoot, poolingID: Util.GetPoolingID(EObjectType.Effect, dataID));
+                        //go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: EffectRoot, poolingID: Util.GetPoolingID(EObjectType.Effect, dataID));
+                        int poolingID = Util.GetPoolingID(EObjectType.Effect, dataID);
+                        go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: EffectRoot, poolingID: poolingID);
                         if (go == null)
                         {
                             Debug.LogError($"{nameof(SpawnBaseObject)}, {nameof(EObjectType.Effect)}, Input: \"{dataID}\"");
@@ -186,6 +182,7 @@ namespace STELLAREST_F1
                         }
 
                         EffectBase effect = go.GetComponent<EffectBase>();
+                        effect.DataPoolingID = poolingID;
                         effect.Owner = owner.GetComponent<BaseCellObject>();
                         effect.SetInfo(dataID, spawnPos);
                         return effect as T;
