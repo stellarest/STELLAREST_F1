@@ -22,9 +22,10 @@ namespace STELLAREST_F1
             return true;
         }
 
+        int canSpawnCount = 0;
         private IEnumerator CoContinuousSpawnMonster_Test(float waitTime = 0.1f)
         {
-            while (true)
+            while (canSpawnCount++ < 3)
             {
                 yield return new WaitUntil(() => Managers.Object.Monsters.Count == 0);
                 yield return new WaitForSeconds(waitTime);
@@ -87,15 +88,15 @@ namespace STELLAREST_F1
                     dataID: ReadOnly.DataAndPoolingID.DNPID_Hero_Paladin);
                 leaderController.Leader = firstHero;
 
+                // SHADER,
                 // StartCoroutine(CoContinuousSpawnMonster_Test(5.5f));
                 // StartCoroutine(CoContinuousSpawnEnv_Test(1f));
 
-                // // // // // --- Projectile Target Range Test List
-                // SpawnChicken_Test(-8, 8);
-                // SpawnChicken_Test(-7, 8); // --> 0, 8
-                // SpawnChicken_Test(-6, 8); // --> 1, 8
-                // // // SpawnChicken_Test(0, 8); // --> 0, 8
-                // // // SpawnChicken_Test(1, 8); // --> 1, 8
+                // ddd
+                SpawnChicken_Test(-8, 8);
+                // SpawnChicken_Test(-7, 8);
+                // SpawnChicken_Test(-6, 8);
+
                 // SpawnChicken_Test(-9, 10);
                 // SpawnChicken_Test(-8, 10);
                 // SpawnChicken_Test(-7, 10);
@@ -115,6 +116,8 @@ namespace STELLAREST_F1
                 // SpawnChicken_Test(-8, 6);
                 // SpawnChicken_Test(-7, 6);
                 // SpawnChicken_Test(-6, 6);
+                // ddddd
+
 
                 // SpawnChicken_Test(-5, 6);
                 // SpawnChicken_Test(-5, 7);

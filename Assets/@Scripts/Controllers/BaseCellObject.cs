@@ -98,7 +98,7 @@ namespace STELLAREST_F1
             BaseStat.SetBaseStat();
             BaseBody.ResetMaterialsAndColors();
             BaseBody.StartCoFadeInEffect();
-            SpawnedCellPos = Managers.Map.WorldToCell(spawnPos);
+            //SpawnedCellPos = Managers.Map.WorldToCell(spawnPos);
             Managers.Map.ForceMove(cellObj: this, cellPos: SpawnedCellPos, ignoreCellObjType: EObjectType.None);
         }
 

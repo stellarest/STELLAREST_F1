@@ -205,6 +205,7 @@ namespace STELLAREST_F1
 
         protected override void EnterInGame(Vector3 spawnPos)
         {            
+            SpawnedCellPos = Managers.Map.WorldToCell(spawnPos);
             StartCoWait(waitCondition: () => BaseAnim.IsPlay() == false,
                       callbackWaitCompleted: () =>
                       {
