@@ -47,7 +47,6 @@ namespace STELLAREST_F1
         {
             HeroDataDict = LoadJson<HeroDataLoader, int, HeroData>(ReadOnly.DataSet.HeroData).MakeDict();
             HeroSpriteDataDict = LoadJson<HeroSpriteDataLoader, int, HeroSpriteData>(ReadOnly.DataSet.HeroSpriteData).MakeDict();
-            // HeroStatDataDict = LoadJson<HeroStatDataLoader, int, HeroStatData>(ReadOnly.DataSet.HeroStatData).MakeDict();
             HeroSkillDataDict = LoadJson<HeroSkillDataLoader, int, HeroSkillData>(ReadOnly.DataSet.HeroSkillData).MakeDict();
 
             MonsterDataDict = LoadJson<MonsterDataLoader, int, MonsterData>(ReadOnly.DataSet.MonsterData).MakeDict();
@@ -58,7 +57,6 @@ namespace STELLAREST_F1
             EnvDataDict = LoadJson<EnvDataLoader, int, EnvData>(ReadOnly.DataSet.EnvData).MakeDict();
             EnvTreeSpriteDataDict = LoadJson<EnvTreeSpriteDataLoader, int, EnvTreeSpriteData>(ReadOnly.DataSet.EnvTreeSpriteData).MakeDict();
             RockSpriteDataDict = LoadJson<RockSpriteDataLoader, int, EnvRockSpriteData>(ReadOnly.DataSet.EnvRockSpriteData).MakeDict();
-            //EnvStatDataDict = LoadJson<EnvStatDataLoader, int, EnvStatData>(ReadOnly.DataSet.EnvStatData).MakeDict();
 
             // --- TEMP
             // StatDataDict = LoadJson<StatDataLoader, int, StatData>(ReadOnly.DataSet.StatData).MakeDict();

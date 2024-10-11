@@ -175,17 +175,30 @@ namespace STELLAREST_F1
                         //go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: EffectRoot, poolingID: Util.GetPoolingID(EObjectType.Effect, dataID));
                         int poolingID = Util.GetPoolingID(EObjectType.Effect, dataID);
                         go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: EffectRoot, poolingID: poolingID);
-                        if (go == null)
+                        if (go != null)
                         {
-                            Debug.LogError($"{nameof(SpawnBaseObject)}, {nameof(EObjectType.Effect)}, Input: \"{dataID}\"");
-                            return null;
+                            EffectBase effect = go.GetComponent<EffectBase>();
+                            // effect.DataPoolingID = poolingID;
+                            effect.Owner = owner.GetComponent<BaseCellObject>();
+                            effect.SetInfo(dataID, spawnPos);
+                            return effect as T;
+                        }
+                        // --- 별도의 프리팹이 존재하지 않을 경우,,,
+                        else if (owner != null)
+                        {
+                            BuffBase buff = null;
+                            if (Util.IsEffectStatType(data.EffectType))
+                            {
+                                // 별도의 프리팹이 존재하지 않을 경우 오브젝트 생성이 아닌 컴포넌트 추가
+                                buff = owner.gameObject.AddComponent<BuffBase>();
+                                buff.Owner = owner.GetComponent<BaseCellObject>();
+                                buff.SetInfo(dataID, owner.transform.position);
+                                Debug.Log($"<color=cyan>SUCCESS: ADD COMP BUFF BASE, {buff.Dev_NameTextID}</color>");
+                                return buff as T;
+                            }
                         }
 
-                        EffectBase effect = go.GetComponent<EffectBase>();
-                        effect.DataPoolingID = poolingID;
-                        effect.Owner = owner.GetComponent<BaseCellObject>();
-                        effect.SetInfo(dataID, spawnPos);
-                        return effect as T;
+                        return null;
                     }
             }
 

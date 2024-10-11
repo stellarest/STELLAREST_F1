@@ -93,7 +93,7 @@ namespace STELLAREST_F1
                 // StartCoroutine(CoContinuousSpawnEnv_Test(1f));
 
                 // ddd
-                SpawnChicken_Test(-8, 8);
+                // SpawnChicken_Test(-8, 8);
                 // SpawnChicken_Test(-7, 8);
                 // SpawnChicken_Test(-6, 8);
 

@@ -508,16 +508,16 @@ namespace STELLAREST_F1.Data
     [Serializable]
     public class EffectData : BaseData
     {
-        public bool IsLoop; // Period랑 Duration 있어서 필요 없을 것 같은데,,,
+        public bool IsLoop;
         public float AddAmount;
         public float AddPercent;
         public float AddPercentMulti;
         public float Period;
         public float Duration;
-        public string EffectType;   // 이펙트가 매우 많아질 것 같아서 가독성 때문에 string으로
+        public EEffectType EffectType;
         public EObjectSize EffectSize;
         public EEffectSpawnType EffectSpawnType;
-        public EApplyStatType ApplyStatType;
+        // public EApplyStatType ApplyStatType;
     }
 
     // public class EffectDataLoader : ILoader<int, EffectData>

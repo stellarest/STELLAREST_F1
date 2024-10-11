@@ -251,14 +251,42 @@ namespace STELLAREST_F1
             return dataID;
         }
 
-        public static bool IsBaseStat(EApplyStatType statType)
-            => EApplyStatType.MaxHealth == statType             ||
-               EApplyStatType.AttackPower == statType           ||
-               EApplyStatType.CriticalRate == statType          ||
-               EApplyStatType.DodgeRate == statType             ||
-               EApplyStatType.MovementSpeed == statType         ||
-               EApplyStatType.Luck == statType;
+        // public static bool IsBaseStat(EApplyStatType statType)
+        //     => EApplyStatType.MaxHealth == statType             ||
+        //        EApplyStatType.DamageBase == statType            ||
+        //        EApplyStatType.CriticalRate == statType          ||
+        //        EApplyStatType.DodgeRate == statType             ||
+        //        EApplyStatType.MovementSpeed == statType         ||
+        //        EApplyStatType.Luck == statType;
 
+        private static HashSet<EEffectType> EffectBuffBaseStats = new HashSet<EEffectType>
+        {
+            EEffectType.Buff_BaseStat_MaxHealth,
+            EEffectType.Buff_BaseStat_Damage,
+            EEffectType.Buff_BaseStat_CriticalRate,
+            EEffectType.Buff_BaseStat_DodgeRate,
+            EEffectType.Buff_BaseStat_MovementSpeed,
+            EEffectType.Buff_BaseStat_Luck
+        };
+        public static bool IsEffectBuffBastStat(EEffectType effectType)
+            => EffectBuffBaseStats.Contains(effectType);
+
+        private static HashSet<EEffectType> EffectBuffSubStats = new HashSet<EEffectType>
+        {
+            EEffectType.Buff_SubStat_BonusHealth,
+            EEffectType.Buff_SubStat_BonusHealthShield,
+            EEffectType.Buff_SubStat_Armor,
+            EEffectType.Buff_SubStat_Damage,
+            EEffectType.Buff_SubStat_InvincibleCount,
+            EEffectType.Buff_SubStat_AttackRate,
+            EEffectType.Buff_SubStat_MovementSpeed,
+        };
+        public static bool IsEffectBuffSubStat(EEffectType effectType)
+            => EffectBuffSubStats.Contains(effectType);
+
+        public static bool IsEffectStatType(EEffectType effectType)
+            => IsEffectBuffBastStat(effectType) || IsEffectBuffSubStat(effectType);
+       
         public static CreatureData GetCreatureData(int dataID, Creature owner)
         {
             switch (owner?.ObjectType)
@@ -280,13 +308,6 @@ namespace STELLAREST_F1
 
             return null;
         }
-
-        public static bool IsEffectBuffType(EEffectType effectType)
-            => effectType == EEffectType.Buff_Armor                     ||
-               effectType == EEffectType.Buff_BonusHealth               ||
-               effectType == EEffectType.Buff_BonusHealthShield         ||
-               effectType == EEffectType.Buff_AttackPowerUp             ||
-               effectType == EEffectType.Buff_MovementSpeedUp;
 
         public static EffectData GetEffectData(int dataID, BaseObject owner)
         {

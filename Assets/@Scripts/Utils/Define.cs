@@ -414,31 +414,65 @@ namespace STELLAREST_F1
             ForceStop
         }
 
+        // public enum EApplyStatType
+        // {
+        //     None = -1,
+        //     MaxHealth,
+        //     BaseDamage,
+        //     CriticalRate,
+        //     DodgeRate,
+        //     MovementSpeed,
+        //     Luck,
+
+        //     BonusHealth,
+        //     SubDamage,
+        //     Armor,
+        //     Max = Armor + 1
+        // }
+
         // --- 이것부터 제대로 정의해야할듯.
         public enum EEffectType
         {
             None = -1,
-            VFX_Base = 1, 
+            
+            // VFX
+            VFX_Base,
 
-            Buff_Armor,
-            Buff_BonusHealth,
-            Buff_BonusHealthShield,
-            Buff_AttackPowerUp,
-            Buff_MovementSpeedUp,
+            // BUFF BASE STATS
+            Buff_BaseStat_MaxHealth,
+            Buff_BaseStat_Damage,
+            Buff_BaseStat_CriticalRate,
+            Buff_BaseStat_DodgeRate,
+            Buff_BaseStat_MovementSpeed,
+            Buff_BaseStat_Luck,
 
-            DeBuff_Armor,
-            Debuff_BonusHealth,
-            Debuff_BonusHealthShield,
-            Debuff_AttackPowerUp,
-            Debuff_MovementSpeedUp,
+            // BUFF SUB STATS
+            Buff_SubStat_BonusHealth,
+            Buff_SubStat_BonusHealthShield,
+            Buff_SubStat_Armor,
+            Buff_SubStat_Damage,
+            Buff_SubStat_InvincibleCount,
+            Buff_SubStat_AttackRate,
+            Buff_SubStat_MovementSpeed,
+            
 
+            // DEBUFF BASE STATS
+            Debuff_BaseStat_Example01,
+
+            // DEBUFF SUB STATS
+            Debuff_SubStat_Example01,
+
+            // DOT
+            Dot_Example01,
+
+            // CC
             CC_Airborne,
             CC_Knockback,
             CC_Freeze,
             CC_Stun,
             CC_Pull,
 
-            Dot_Base,
+            Max = CC_Pull + 1
         }
 
         public enum EEffectSpawnType
@@ -453,21 +487,6 @@ namespace STELLAREST_F1
         {
             TimeOut,
             ByCondition,
-        }
-
-        public enum EApplyStatType
-        {
-            None = -1,
-            MaxHealth,
-            AttackPower,
-            CriticalRate,
-            DodgeRate,
-            MovementSpeed,
-            Luck,
-
-            BonusHealth,
-            Armor,
-            Max = Armor + 1
         }
 
         public enum EStatModType

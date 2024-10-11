@@ -59,11 +59,12 @@ namespace STELLAREST_F1
         {
             base.InitialSetInfo(dataID);
             EffectData = Util.GetEffectData(dataID, _owner);
-            EffectType = Util.GetEnumFromString<EEffectType>(EffectData.EffectType);
+            EffectType = EffectData.EffectType;
+            //EffectType = Util.GetEnumFromString<EEffectType>(EffectData.EffectType);
 
 #if UNITY_EDITOR
             Dev_NameTextID = EffectData.Dev_NameTextID;
-            gameObject.name += $"_{EffectData.Dev_NameTextID}";
+            //gameObject.name += $"_{EffectData.Dev_NameTextID}";
 #endif
 
             IsLoop = EffectData.IsLoop;

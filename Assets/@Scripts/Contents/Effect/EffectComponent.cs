@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using STELLAREST_F1.Data;
+using UnityEditor.Playables;
 using UnityEngine;
 using UnityEngine.UI;
 using static STELLAREST_F1.Define;
@@ -20,22 +21,19 @@ namespace STELLAREST_F1
         // --- 원래 ReadOnly Property였음. 일단 개발용으로 Property로 바꿈.
         [field: SerializeField] public List<EffectBase> ActiveEffects { get; private set; } = new List<EffectBase>();
 
-        // --- 이게 필요할까
-        // public Dictionary<EEffectBuffType, bool> IsOnEffectBuffDict { get; private set; } = null;
-
         // EEffectType: Buff, Debuff, CC, Dot..
         public Dictionary<EEffectType, bool> IsOnEffectBuffDict { get; private set; } = null;
 
-
         public void InitialSetInfo(BaseObject owner)
         {
+            ActiveEffects = ActiveEffects == null ? new List<EffectBase>() : ActiveEffects;
             _owner = owner.GetComponent<BaseCellObject>();
             IsOnEffectBuffDict = new Dictionary<EEffectType, bool>();
         }
 
         public void EnterInGame()
         {
-            RemoveAllActiveEffects();
+            // RemoveAllActiveEffects();
             // + Apply Base Effect
         }
 
@@ -55,12 +53,12 @@ namespace STELLAREST_F1
             return null;
         }
 
-        public void SetIsOnEffectBuff(EEffectType buffType, bool isOn)
+        public void SetIsOnEffectBuff(EEffectType effectBuffType, bool isOn)
         {
-            if (Util.IsEffectBuffType(buffType) == false)
+            if (Util.IsEffectBuffBastStat(effectBuffType) == false || Util.IsEffectBuffSubStat(effectBuffType) == false)
                 return;
 
-            IsOnEffectBuffDict[buffType] = isOn;
+            IsOnEffectBuffDict[effectBuffType] = isOn;
         }
 
         public bool IsOnEffectBuff(EEffectType buffType)
@@ -144,47 +142,93 @@ namespace STELLAREST_F1
             return generatedEffects;
         }
 
-        public float GetStatModifier(EApplyStatType applyStatType, EStatModType statModType)
+        // public float GetStatModifier(EApplyStatType applyStatType, EStatModType statModType) // PREV
+        // {
+        //     float value = 0.0f;
+        //     for (int i = 0; i < ActiveEffects.Count; ++i)
+        //     {
+        //         if (ActiveEffects[i].EffectData.ApplyStatType != applyStatType)
+        //             continue;
+
+        //         if (CanApplyStatEffectType(ActiveEffects[i].EffectType))
+        //         {
+        //             switch (statModType)
+        //             {
+        //                 case EStatModType.AddAmount:
+        //                     value += ActiveEffects[i].EffectData.AddAmount;
+        //                     break;
+
+        //                 case EStatModType.AddPercent:
+        //                     value += ActiveEffects[i].EffectData.AddPercent;
+        //                     break;
+
+        //                 case EStatModType.AddPercentMulti:
+        //                     value += ActiveEffects[i].EffectData.AddPercentMulti;
+        //                     break;
+        //             }
+
+        //             // value = statModType == EStatModType.AddAmount ? 
+        //             //         ActiveEffects[i].EffectData.AddAmount : ActiveEffects[i].EffectData.AddPercent;
+        //         }
+        //     }
+
+        //     return value;
+        // }
+
+        public float GetStatModifier(EEffectType effectType, EStatModType statModType) // NEW
         {
             float value = 0.0f;
             for (int i = 0; i < ActiveEffects.Count; ++i)
             {
-                if (ActiveEffects[i].EffectData.ApplyStatType != applyStatType)
+                if (ActiveEffects[i].EffectType != effectType)
                     continue;
 
-                if (CanApplyStatEffectType(ActiveEffects[i].EffectType))
+                if (Util.IsEffectStatType(effectType) == false)
+                    continue;
+
+                switch (statModType)
                 {
-                    switch (statModType)
-                    {
-                        case EStatModType.AddAmount:
-                            value += ActiveEffects[i].EffectData.AddAmount;
-                            break;
+                    case EStatModType.AddAmount:
+                        value += ActiveEffects[i].EffectData.AddAmount;
+                        break;
 
-                        case EStatModType.AddPercent:
-                            value += ActiveEffects[i].EffectData.AddPercent;
-                            break;
+                    case EStatModType.AddPercent:
+                        value += ActiveEffects[i].EffectData.AddPercent;
+                        break;
 
-                        case EStatModType.AddPercentMulti:
-                            value += ActiveEffects[i].EffectData.AddPercentMulti;
-                            break;
-                    }
-
-                    // value = statModType == EStatModType.AddAmount ? 
-                    //         ActiveEffects[i].EffectData.AddAmount : ActiveEffects[i].EffectData.AddPercent;
+                    case EStatModType.AddPercentMulti:
+                        value += ActiveEffects[i].EffectData.AddPercentMulti;
+                        break;
                 }
             }
 
             return value;
         }
 
-        public void DoBuffEffect(EEffectType effectBuffType)
+        // public void DoBuffEffect(EEffectType effectBuffType) // PREV
+        // {
+        //     for (int i = 0; i < ActiveEffects.Count; ++i)
+        //     {
+        //         if (Util.IsEffectBuffType(ActiveEffects[i].EffectType) == false)
+        //             continue;
+
+        //         if (ActiveEffects[i].EffectType == effectBuffType)
+        //         {
+        //             BuffBase buff = ActiveEffects[i].GetComponent<BuffBase>();
+        //             if (buff != null)
+        //                 buff.DoEffect();
+        //         }
+        //     }
+        // }
+
+        public void DoBuffEffect(EEffectType effectType) // NEW
         {
             for (int i = 0; i < ActiveEffects.Count; ++i)
             {
-                if (Util.IsEffectBuffType(ActiveEffects[i].EffectType) == false)
+                if (Util.IsEffectStatType(ActiveEffects[i].EffectType) == false)
                     continue;
 
-                if (ActiveEffects[i].EffectType == effectBuffType)
+                if (ActiveEffects[i].EffectType == effectType)
                 {
                     BuffBase buff = ActiveEffects[i].GetComponent<BuffBase>();
                     if (buff != null)
@@ -193,20 +237,36 @@ namespace STELLAREST_F1
             }
         }
 
-        public void RemoveBuffEffect(EEffectType effectBuffType, bool destroyOrigin = false)
+        // public void RemoveBuffEffect(EEffectType effectBuffType, bool destroyOrigin = false) // PREV
+        // {
+        //     for (int i = 0; i < ActiveEffects.Count; ++i)
+        //     {
+        //         if (Util.IsEffectBuffType(ActiveEffects[i].EffectType) == false)
+        //             continue;
+
+        //         if (ActiveEffects[i].EffectType == effectBuffType)
+        //         {
+        //             BuffBase buff = ActiveEffects[i].GetComponent<BuffBase>();
+        //             if (buff != null)
+        //                 RemoveEffect(effect: buff, destroyOrigin: destroyOrigin);
+        //         }
+        //     }   
+        // }
+
+        public void RemoveBuffEffect(EEffectType effectType)
         {
             for (int i = 0; i < ActiveEffects.Count; ++i)
             {
-                if (Util.IsEffectBuffType(ActiveEffects[i].EffectType) == false)
+                if (Util.IsEffectStatType(effectType) == false)
                     continue;
 
-                if (ActiveEffects[i].EffectType == effectBuffType)
+                if (ActiveEffects[i].EffectType == effectType)
                 {
                     BuffBase buff = ActiveEffects[i].GetComponent<BuffBase>();
                     if (buff != null)
-                        RemoveEffect(effect: buff, destroyOrigin: destroyOrigin);
+                        RemoveEffect(buff);
                 }
-            }   
+            }
         }
 
         // public void RemoveBuffEffects(EEffectBuffType buffType, bool destroyPooling = false)
@@ -222,10 +282,10 @@ namespace STELLAREST_F1
         //     }
         // }
 
-        private bool CanApplyStatEffectType(EEffectType effectType)
-            => Util.IsEffectBuffType(effectType); // || Util.IsEffectDebuffType(effectType)
+        // private bool CanApplyStatEffectType(EEffectType effectType)
+        //     => Util.IsEffectBuffType(effectType); // || Util.IsEffectDebuffType(effectType)
 
-        public void RemoveEffect(EffectBase effect, bool destroyOrigin = false)
+        public void RemoveEffect(EffectBase effect)
         {
             if (effect.IsValid() == false)
                 return;
@@ -234,27 +294,33 @@ namespace STELLAREST_F1
             if (effect.EffectClearType != EEffectClearType.ByCondition)
             {
                 ActiveEffects.Remove(effect);
-                effect.transform.SetParent(Managers.Object.EffectRoot); //--- FORCE
-                if (destroyOrigin)
+
+                if (effect.EffectData.PrefabLabel != null)
                 {
-                    Managers.Pool.Remove(effect.DataPoolingID);
-                    UnityEngine.Object.Destroy(effect.gameObject, Time.deltaTime);
-                }
-                else
+                    effect.transform.SetParent(Managers.Object.EffectRoot); //--- FORCE
                     Managers.Object.Despawn(effect, effect.DataTemplateID);
+                }
+                else if (effect.Owner != null)
+                {
+                    // --- Component만 제거
+                    UnityEngine.Object.Destroy(effect, Time.deltaTime);
+                }
             }
             else
                 effect.OnRemoveSelfByConditionHandler?.Invoke(() =>
                 {
                     ActiveEffects.Remove(effect);
-                    effect.transform.SetParent(Managers.Object.EffectRoot); //--- FORCE
-                    if (destroyOrigin)
+                    if (effect.EffectData.PrefabLabel != null)
                     {
-                        Managers.Pool.Remove(effect.DataPoolingID);
-                        UnityEngine.Object.Destroy(effect.gameObject, Time.deltaTime);
-                    }
-                    else
+                        effect.transform.SetParent(Managers.Object.EffectRoot); //--- FORCE
                         Managers.Object.Despawn(effect, effect.DataTemplateID);
+                    }
+                    else if (effect.Owner != null)
+                    {
+                        // --- Component만 제거
+                        // 잘 되긴 하는데 제거가 아닌 단순 데이터 교체방식으로 해야할까? 이대로 해도 되긴 함
+                        UnityEngine.Object.Destroy(effect, Time.deltaTime);
+                    }
                 });
         }
 

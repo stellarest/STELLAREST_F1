@@ -495,15 +495,15 @@ namespace STELLAREST_F1
         #endregion
 
         #region Util - Effect Comp
-        public void RequestRemoveEffect(EffectBase effect)
-        {
-            if (effect.IsValid() == false)
-                return;
+        // public void RequestRemoveEffect(EffectBase effect)
+        // {
+        //     if (effect.IsValid() == false)
+        //         return;
 
-            BaseEffect.ActiveEffects.Remove(effect);
-            effect.transform.SetParent(Managers.Object.EffectRoot);
-            Managers.Object.Despawn(effect, effect.DataTemplateID);
-        }
+        //     BaseEffect.ActiveEffects.Remove(effect);
+        //     effect.transform.SetParent(Managers.Object.EffectRoot);
+        //     Managers.Object.Despawn(effect, effect.DataTemplateID);
+        // }
         #endregion
     }
 }

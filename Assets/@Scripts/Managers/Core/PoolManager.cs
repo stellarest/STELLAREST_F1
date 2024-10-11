@@ -71,15 +71,13 @@ namespace STELLAREST_F1
             return _pools[poolingID].Pop();
         }
 
-        public void Remove(int poolingID)
-        {
-            Debug.Log($"CurrentCount: {_pools.Count}");
-            if (_pools.TryGetValue(key: poolingID, out Pool pool) == false)
-                return;
+        // public void Remove(int poolingID)
+        // {
+        //     if (_pools.TryGetValue(key: poolingID, out Pool pool) == false)
+        //         return;
 
-            _pools.Remove(poolingID);
-            Debug.Log($"RemoveCount: {_pools.Count}");
-        }
+        //     _pools.Remove(poolingID);
+        // }
 
         public void Clear() => _pools.Clear();
 

@@ -36,37 +36,99 @@ namespace STELLAREST_F1
             InvincibleCountPerWave = (int)c_ZeroBase;
         }
 
-        public void ApplySubStat(EApplyStatType statType)
+        // public void ApplySubStat(EApplyStatType statType) // PREV
+        // {
+        //     float baseValue = c_ZeroBase;
+        //     if (statType == EApplyStatType.BonusHealth)
+        //     {
+        //         // BonusHealth의 Base는 MaxHealth
+        //         baseValue = _baseStat.MaxHealth;
+
+        //         // 1. FIXED AMOUNT
+        //         baseValue += _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.BonusHealth,
+        //                                         statModType: EStatModType.AddAmount); // + ITEM + STAT + ETC...
+
+        //         // 2. ADD PERCENT
+        //         baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.BonusHealth,
+        //                                         statModType: EStatModType.AddPercent);
+
+        //         // 3. ADD PERCENT MULTI
+        //         baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.BonusHealth,
+        //                                         statModType: EStatModType.AddPercentMulti);
+
+        //         BonusHealth = Mathf.Clamp(baseValue - _baseStat.MaxHealth, 0.0f, _baseStat.MaxHealth);
+        //     }
+        //     else if (statType == EApplyStatType.Armor)
+        //     {
+        //         baseValue += _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.Armor,
+        //                                         statModType: EStatModType.AddAmount);
+
+        //         baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.Armor,
+        //                                         statModType: EStatModType.AddPercent);
+
+        //         baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.Armor,
+        //                                         statModType: EStatModType.AddPercentMulti);
+
+        //         Armor = Mathf.Clamp(baseValue, 0.0f, ReadOnly.Util.MaxArmor);
+
+        //         // --- PREV: 0.5이상부터 곱연산으로 했던 부분
+        //         // --- 데미지 감소율은 Fixed AddAmount로 최대 50%까지 가능.
+        //         // baseValue = Mathf.Clamp(baseValue, 0.0f, 0.5f);
+        //         // if (baseValue >= 0.5f)
+        //         // {
+        //         //     // --- 전부 곱연산으로 적용 (로직 재확인 필요)
+        //         //     baseValue *= 1 - (1 - baseValue) * (1 - _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.Armor,
+        //         //                 statModType: EStatModType.AddAmount));
+
+        //         //     baseValue *= 1 - (1 - baseValue) * (1 - _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.Armor,
+        //         //                 statModType: EStatModType.AddPercent));
+
+        //         //     baseValue *= 1 - (1 - baseValue) * (1 - _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.Armor,
+        //         //                 statModType: EStatModType.AddPercentMulti));
+        //         // }
+
+        //         // --- 그 이후로는 곱연산을 적용하여 100%의 피해 감소율을 막는다(데미지 감소율로 인한 100% 무적상태 방지)
+        //         // --- 삭제 금지. 이게 맞음.
+        //         // baseValue *= 1 - (1 - baseValue) * ( 1 - _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.DamageReductionRate,
+        //         //                                 statModType: EStatModType.AddPercentMulti))
+        //         //                                 * (1 - Inventory.Armor)
+        //         //                                 * (1 - TrainingStat.Endurance);
+
+        //         // ArmorRate = baseValue;
+        //     }
+        // }
+
+        public void ApplySubStat(EEffectType effectType)
         {
             float baseValue = c_ZeroBase;
-            if (statType == EApplyStatType.BonusHealth)
+            if (effectType == EEffectType.Buff_SubStat_BonusHealth || effectType == EEffectType.Buff_SubStat_BonusHealthShield)
             {
                 // BonusHealth의 Base는 MaxHealth
                 baseValue = _baseStat.MaxHealth;
 
                 // 1. FIXED AMOUNT
-                baseValue += _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.BonusHealth,
+                baseValue += _baseStat.Owner.BaseEffect.GetStatModifier(effectType: EEffectType.Buff_SubStat_BonusHealth,
                                                 statModType: EStatModType.AddAmount); // + ITEM + STAT + ETC...
 
                 // 2. ADD PERCENT
-                baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.BonusHealth,
+                baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(effectType: EEffectType.Buff_SubStat_BonusHealth,
                                                 statModType: EStatModType.AddPercent);
 
                 // 3. ADD PERCENT MULTI
-                baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.BonusHealth,
+                baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(effectType: EEffectType.Buff_SubStat_BonusHealth,
                                                 statModType: EStatModType.AddPercentMulti);
 
                 BonusHealth = Mathf.Clamp(baseValue - _baseStat.MaxHealth, 0.0f, _baseStat.MaxHealth);
             }
-            else if (statType == EApplyStatType.Armor)
+            else if (effectType == EEffectType.Buff_SubStat_Armor)
             {
-                baseValue += _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.Armor,
+                baseValue += _baseStat.Owner.BaseEffect.GetStatModifier(effectType: EEffectType.Buff_SubStat_Armor,
                                                 statModType: EStatModType.AddAmount);
 
-                baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.Armor,
+                baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(effectType: EEffectType.Buff_SubStat_Armor,
                                                 statModType: EStatModType.AddPercent);
 
-                baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.Armor,
+                baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(effectType: EEffectType.Buff_SubStat_Armor,
                                                 statModType: EStatModType.AddPercentMulti);
 
                 Armor = Mathf.Clamp(baseValue, 0.0f, ReadOnly.Util.MaxArmor);
@@ -140,7 +202,6 @@ namespace STELLAREST_F1
                 {
                     _attackRate = value;
                     (Owner as Creature).CreatureAnim.SetAttackRate(value);
-                    Debug.Log("SET NEW ATTACK RATE.");
                 }
             }
         }
@@ -305,13 +366,13 @@ namespace STELLAREST_F1
         public void ApplyStat()
         {
             float prevMaxHealth = MaxHealth;
-            for (int i = 0; i < (int)EApplyStatType.Max; ++i)
+            for (int i = 0; i < (int)EEffectType.Max; ++i)
             {
-                EApplyStatType statType = (EApplyStatType)i;
-                if (Util.IsBaseStat(statType))
-                    ApplyBaseStat(statType);
-                else
-                    _subStat.ApplySubStat(statType);
+                EEffectType effectType = (EEffectType)i;
+                if (Util.IsEffectBuffBastStat(effectType))
+                    ApplyBaseStat(effectType);
+                else if (Util.IsEffectBuffSubStat(effectType))
+                    _subStat.ApplySubStat(effectType);
             }
 
             // MaxHp = MaxHpBase, MaxHpBase가 증가했을 경우
@@ -327,12 +388,12 @@ namespace STELLAREST_F1
         }
 
         // 각각의 스탯을 여기서 별도로 처리한다.
-        private void ApplyBaseStat(EApplyStatType statType)
+        private void ApplyBaseStat(EEffectType statType)
         {
-            if (statType == EApplyStatType.MaxHealth)
+            if (statType == EEffectType.Buff_BaseStat_MaxHealth)
             {
             }
-            else if (statType == EApplyStatType.AttackPower)
+            else if (statType == EEffectType.Buff_BaseStat_Damage)
             {
             }
         }

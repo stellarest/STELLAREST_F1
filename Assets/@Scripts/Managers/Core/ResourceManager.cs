@@ -21,15 +21,13 @@ namespace STELLAREST_F1
 
         public GameObject Instantiate(string key, Transform parent = null, int poolingID = -1)
         {
+            if (key == null) // ADD
+                return null;
+            
             GameObject prefab = this.Load<GameObject>(key);
             if (prefab == null)
-            {
-                Debug.LogError($"{nameof(ResourceManager)}, {nameof(Instantiate)}, Input : \"{key}\"");
-                Debug.Break();
                 return null;
-            }
 
-            // PoolManager
             if (poolingID != -1)
                 return Managers.Pool.Pop(prefab, parent, poolingID); // CreatePool
 

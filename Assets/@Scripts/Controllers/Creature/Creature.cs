@@ -176,10 +176,6 @@ namespace STELLAREST_F1
         protected override void InitialSetInfo(int dataID)
         {
             base.InitialSetInfo(dataID);
-            // if (ObjectType == EObjectType.Hero)
-            //     CreatureData = Managers.Data.HeroDataDict[dataID];
-            // else if (ObjectType == EObjectType.Monster)
-            //     CreatureData = Managers.Data.MonsterDataDict[dataID];
             CreatureData = Util.GetCreatureData(dataID, this);
 
 #if UNITY_EDITOR
@@ -255,9 +251,9 @@ namespace STELLAREST_F1
                 float prevBonusHealth = finalDamage > BonusHealth ? BonusHealth : 0.0f;
                 remainedDamage = OnDamagedBonusHealth(finalDamage);
                 // --- Bonus Health: Shield
-                if (BaseEffect.IsOnEffectBuff(EEffectType.Buff_BonusHealthShield))
+                if (BaseEffect.IsOnEffectBuff(EEffectType.Buff_SubStat_BonusHealthShield))
                 {
-                    BaseEffect.DoBuffEffect(EEffectType.Buff_BonusHealthShield);
+                    BaseEffect.DoBuffEffect(EEffectType.Buff_SubStat_BonusHealthShield);
                     if (BonusHealth == 0.0f || remainedDamage > 0.0f) // Bonus Helath가 0.0이라는 의미다.
                     {
                         // --- Shield의 경우에는 보호막이 깨지면, 나머지 잔여 데미지량은 무시(무효)한다.
@@ -271,7 +267,7 @@ namespace STELLAREST_F1
                         ShowTextFont(text: "SHIELD\n  BREAK !!", fontSize: 5.5f, textColor: Managers.MonoContents.BrightBlue, fontAnimType: shieldBreakAnimType);
                         //BaseEffect.ExitShowBuffEffects(EEffectBuffType.BonusHealthShield);
                         //BaseEffect.RemoveBuffEffects(EEffectBuffType.BonusHealthShield);
-                        BaseEffect.RemoveBuffEffect(EEffectType.Buff_BonusHealthShield, destroyOrigin: false);
+                        BaseEffect.RemoveBuffEffect(EEffectType.Buff_SubStat_BonusHealthShield);
                         return;
                     }
                     else
@@ -288,10 +284,10 @@ namespace STELLAREST_F1
                 }
                 // --- Bonus Health: Other (잔여 데미지 처리)
                 // --- 나중에 쉴드 버프 종류가 추가되면 분기처리 로직으로 변경(지금은 일반 보너스 체력으로 가정)
-                else if (BaseEffect.IsOnEffectBuff(EEffectType.Buff_BonusHealth))
+                else if (BaseEffect.IsOnEffectBuff(EEffectType.Buff_SubStat_BonusHealth))
                 {
                     // DO SOMETHING...
-                    BaseEffect.DoBuffEffect(EEffectType.Buff_BonusHealth);
+                    BaseEffect.DoBuffEffect(EEffectType.Buff_SubStat_BonusHealth);
                     if (BonusHealth == 0.0f || remainedDamage > 0.0f) // Bonus Helath가 0.0이라는 의미다.
                     {
                         // --- 잔여 데미지 처리
@@ -318,7 +314,7 @@ namespace STELLAREST_F1
 
                         // BaseEffect.ExitShowBuffEffects(EEffectBuffType.BonusHealth); -- ???
                         // BaseEffect.RemoveBuffEffects(EEffectBuffType.BonusHealth);
-                        BaseEffect.RemoveBuffEffect(EEffectType.Buff_BonusHealth, destroyOrigin: false);
+                        BaseEffect.RemoveBuffEffect(EEffectType.Buff_SubStat_BonusHealth);
                         Health = Mathf.Clamp(Health - remainedDamage, 0.0f, MaxHealth);
                         if (Health <= 0.0f)
                         {
@@ -457,8 +453,8 @@ namespace STELLAREST_F1
         protected Coroutine _coUpdateAI = null;
         protected IEnumerator CoUpdateAI()
         {
-            // if (ObjectType == EObjectType.Monster)
-            //     yield break;
+            if (ObjectType == EObjectType.Monster)
+                yield break;
 
             while (true)
             {
@@ -564,7 +560,7 @@ namespace STELLAREST_F1
             if (prevPassive != null)
             {
                 Debug.Log($"Remove Passive: {prevPassive.Dev_NameTextID}");
-                BaseEffect.RemoveEffect(prevPassive, destroyOrigin: true);
+                BaseEffect.RemoveEffect(prevPassive);
                 BaseEffect.GenerateEffect(effectID: LevelID); // 알아서 ApplyStat이 될 테므로,,,
             }
         }
