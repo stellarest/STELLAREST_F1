@@ -227,7 +227,8 @@ namespace STELLAREST_F1
 
             // --- TODO: Armor Rate 적용해야함
 
-            float damage = UnityEngine.Random.Range(attacker.MinDamage, attacker.MaxDamage);
+            //float damage = UnityEngine.Random.Range(attacker.MinDamage, attacker.MaxDamage);
+            float damage = Mathf.Max(UnityEngine.Random.Range(attacker.MinDamage, attacker.MaxDamage), 1.0f);
             bool isCritical = UnityEngine.Random.Range(0.0f, 1.0f) <= attacker.CriticalRate;
             if (isCritical)
                 damage *= 1 + 0.5f;

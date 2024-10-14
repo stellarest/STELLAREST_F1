@@ -331,7 +331,7 @@ namespace STELLAREST_F1
 #endif
 
             ApplyNewPassive();
-            CreatureAnim.RefreshAddAnimEvents();
+            CreatureAnim.RefreshAnimEventHandlers();
             if (IsMaxLevel && Managers.Game.HasElitePackage)
             {
                 Debug.Log($"<color=yellow>MaxUp Hero</color>");

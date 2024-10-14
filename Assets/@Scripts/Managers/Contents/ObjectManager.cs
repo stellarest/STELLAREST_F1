@@ -187,7 +187,7 @@ namespace STELLAREST_F1
                         else if (owner != null)
                         {
                             BuffBase buff = null;
-                            if (Util.IsEffectStatType(data.EffectType))
+                            if (Util.IsEffectStatType(effectType: data.EffectType))
                             {
                                 // 별도의 프리팹이 존재하지 않을 경우 오브젝트 생성이 아닌 컴포넌트 추가
                                 buff = owner.gameObject.AddComponent<BuffBase>();

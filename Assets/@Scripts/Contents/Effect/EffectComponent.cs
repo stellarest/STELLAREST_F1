@@ -317,6 +317,7 @@ namespace STELLAREST_F1
                     }
                     else if (effect.Owner != null)
                     {
+                        Debug.Log($"<color=red>REMOVE: {effect.Dev_NameTextID}</color>");
                         // --- Component만 제거
                         // 잘 되긴 하는데 제거가 아닌 단순 데이터 교체방식으로 해야할까? 이대로 해도 되긴 함
                         UnityEngine.Object.Destroy(effect, Time.deltaTime);

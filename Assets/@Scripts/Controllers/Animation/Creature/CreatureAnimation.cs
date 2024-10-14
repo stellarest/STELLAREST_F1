@@ -160,7 +160,7 @@ namespace STELLAREST_F1
         public override void EnterInGame()
         {
             //AddAnimClipEvents();
-            RefreshAddAnimEvents();
+            RefreshAnimEventHandlers();
             AddAnimStateEvents();
         }
         #endregion
@@ -185,7 +185,7 @@ namespace STELLAREST_F1
             _creatureAnimCallback.OnDustEffectHandler += OnDustEffectCallback;
         }
 
-        public void RefreshAddAnimEvents()
+        public void RefreshAnimEventHandlers()
         {
             if (_creatureOwner == null || _creatureAnimCallback == null)
                 return;
@@ -217,7 +217,7 @@ namespace STELLAREST_F1
             _creatureAnimCallback.OnCollectEnvHandler += OnCollectEnvCallback;
             _creatureAnimCallback.OnDustEffectHandler += OnDustEffectCallback;
 
-            Debug.Log($"<color=yellow>{nameof(CreatureAnimation)}</color><color=white>::</color><color=cyan>{nameof(RefreshAddAnimEvents)}</color>");
+            Debug.Log($"<color=yellow>{nameof(CreatureAnimation)}</color><color=white>::</color><color=cyan>{nameof(RefreshAnimEventHandlers)}</color>");
         }
 
         public virtual void OnCollectEnvCallback() { }
