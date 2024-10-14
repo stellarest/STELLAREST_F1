@@ -454,8 +454,8 @@ namespace STELLAREST_F1
         protected Coroutine _coUpdateAI = null;
         protected IEnumerator CoUpdateAI()
         {
-            if (ObjectType == EObjectType.Monster)
-                yield break;
+            // if (ObjectType == EObjectType.Monster)
+            //     yield break;
 
             while (true)
             {

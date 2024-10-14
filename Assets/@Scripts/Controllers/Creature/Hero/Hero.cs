@@ -12,12 +12,18 @@ namespace STELLAREST_F1
     public class Hero : Creature
     {
         #if UNITY_EDITOR
+        public bool DEV_IsOnShield = false;
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.T))
             {
                 if (LevelUp() == false)
                     Debug.LogWarning($"Faield to LvUp, IsMaxLv: {IsMaxLevel}");
+            }
+
+            if (BaseEffect != null)
+            {
+                DEV_IsOnShield = BaseEffect.IsOnEffectBuff(EEffectType.Buff_SubStat_BonusHealthShield);
             }
         }
         #endif

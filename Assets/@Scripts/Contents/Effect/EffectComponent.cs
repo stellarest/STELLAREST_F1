@@ -55,7 +55,10 @@ namespace STELLAREST_F1
 
         public void SetIsOnEffectBuff(EEffectType effectBuffType, bool isOn)
         {
-            if (Util.IsEffectBuffBastStat(effectBuffType) == false || Util.IsEffectBuffSubStat(effectBuffType) == false)
+            // if (Util.IsEffectBuffBastStat(effectBuffType) == false || Util.IsEffectBuffSubStat(effectBuffType) == false)
+            //     return;
+
+            if (Util.IsEffectStatType(effectBuffType) == false)
                 return;
 
             IsOnEffectBuffDict[effectBuffType] = isOn;
@@ -189,16 +192,13 @@ namespace STELLAREST_F1
                 switch (statModType)
                 {
                     case EStatModType.AddAmount:
-                        value += ActiveEffects[i].EffectData.AddAmount;
-                        break;
+                        return value += ActiveEffects[i].EffectData.AddAmount;
 
                     case EStatModType.AddPercent:
-                        value += ActiveEffects[i].EffectData.AddPercent;
-                        break;
+                        return value += ActiveEffects[i].EffectData.AddPercent;
 
                     case EStatModType.AddPercentMulti:
-                        value += ActiveEffects[i].EffectData.AddPercentMulti;
-                        break;
+                        return value += ActiveEffects[i].EffectData.AddPercentMulti;
                 }
             }
 

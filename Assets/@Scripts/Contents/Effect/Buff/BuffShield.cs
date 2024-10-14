@@ -53,6 +53,7 @@ namespace STELLAREST_F1
             base.ApplyEffect();
             if (Owner.BonusHealth == 0.0f)
             {
+                // --- TODO FIX 
                 Debug.LogWarning("Zero Health of the Shield");
                 ExitEffect();
                 return;

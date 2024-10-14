@@ -15,6 +15,8 @@ namespace STELLAREST_F1
     {
         public const float c_ZeroBase = 0.0f;
         private BaseStat _baseStat = null;
+        private BaseCellObject _owner = null;
+
         [field: SerializeField] public float BonusHealth { get; set; } = 0.0f;
         [field: SerializeField] public float FixedBonusAttackAmount { get; set; } = 0.0f;
         public float FixedBonusAttackAmountBase { get; private set; } = 0.0f;
@@ -29,6 +31,7 @@ namespace STELLAREST_F1
         public void InitialSetInfo(BaseStat baseStat)
         {
             _baseStat = baseStat;
+            _owner = baseStat.Owner;
             BonusHealth = c_ZeroBase;
             FixedBonusAttackAmount = c_ZeroBase;
             Armor = c_ZeroBase;
@@ -101,63 +104,86 @@ namespace STELLAREST_F1
         public void ApplySubStat(EEffectType effectType)
         {
             float baseValue = c_ZeroBase;
-            if (effectType == EEffectType.Buff_SubStat_BonusHealth || effectType == EEffectType.Buff_SubStat_BonusHealthShield)
+            switch (effectType)
             {
-                // BonusHealth의 Base는 MaxHealth
-                baseValue = _baseStat.MaxHealth;
+                case EEffectType.Buff_SubStat_BonusHealth:
+                case EEffectType.Buff_SubStat_BonusHealthShield:
+                    {
+                        baseValue = _baseStat.MaxHealth;
+                        baseValue += _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddAmount);
+                        baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercent);
+                        baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercentMulti);
+                        BonusHealth = Mathf.Clamp(baseValue - _baseStat.MaxHealth, 0.0f, _baseStat.MaxHealth);
+                    }
+                    break;
 
-                // 1. FIXED AMOUNT
-                baseValue += _baseStat.Owner.BaseEffect.GetStatModifier(effectType: EEffectType.Buff_SubStat_BonusHealth,
-                                                statModType: EStatModType.AddAmount); // + ITEM + STAT + ETC...
-
-                // 2. ADD PERCENT
-                baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(effectType: EEffectType.Buff_SubStat_BonusHealth,
-                                                statModType: EStatModType.AddPercent);
-
-                // 3. ADD PERCENT MULTI
-                baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(effectType: EEffectType.Buff_SubStat_BonusHealth,
-                                                statModType: EStatModType.AddPercentMulti);
-
-                BonusHealth = Mathf.Clamp(baseValue - _baseStat.MaxHealth, 0.0f, _baseStat.MaxHealth);
+                case EEffectType.Buff_SubStat_Armor:
+                    {
+                        baseValue += _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddAmount);
+                        baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercent);
+                        baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercentMulti);
+                        Armor = Mathf.Clamp(baseValue, 0.0f, ReadOnly.Util.MaxArmor);
+                    }
+                    break;
             }
-            else if (effectType == EEffectType.Buff_SubStat_Armor)
-            {
-                baseValue += _baseStat.Owner.BaseEffect.GetStatModifier(effectType: EEffectType.Buff_SubStat_Armor,
-                                                statModType: EStatModType.AddAmount);
 
-                baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(effectType: EEffectType.Buff_SubStat_Armor,
-                                                statModType: EStatModType.AddPercent);
+            // if (effectType == EEffectType.Buff_SubStat_BonusHealth || effectType == EEffectType.Buff_SubStat_BonusHealthShield)
+            // {
+            //     // BonusHealth의 Base는 MaxHealth
+            //     baseValue = _baseStat.MaxHealth;
 
-                baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(effectType: EEffectType.Buff_SubStat_Armor,
-                                                statModType: EStatModType.AddPercentMulti);
+            //     // 1. FIXED AMOUNT
+            //     baseValue += _baseStat.Owner.BaseEffect.GetStatModifier(effectType: EEffectType.Buff_SubStat_BonusHealth,
+            //                                     statModType: EStatModType.AddAmount); // + ITEM + STAT + ETC...
 
-                Armor = Mathf.Clamp(baseValue, 0.0f, ReadOnly.Util.MaxArmor);
+            //     // 2. ADD PERCENT
+            //     baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(effectType: EEffectType.Buff_SubStat_BonusHealth,
+            //                                     statModType: EStatModType.AddPercent);
 
-                // --- PREV: 0.5이상부터 곱연산으로 했던 부분
-                // --- 데미지 감소율은 Fixed AddAmount로 최대 50%까지 가능.
-                // baseValue = Mathf.Clamp(baseValue, 0.0f, 0.5f);
-                // if (baseValue >= 0.5f)
-                // {
-                //     // --- 전부 곱연산으로 적용 (로직 재확인 필요)
-                //     baseValue *= 1 - (1 - baseValue) * (1 - _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.Armor,
-                //                 statModType: EStatModType.AddAmount));
+            //     // 3. ADD PERCENT MULTI
+            //     baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(effectType: EEffectType.Buff_SubStat_BonusHealth,
+            //                                     statModType: EStatModType.AddPercentMulti);
 
-                //     baseValue *= 1 - (1 - baseValue) * (1 - _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.Armor,
-                //                 statModType: EStatModType.AddPercent));
+            //     BonusHealth = Mathf.Clamp(baseValue - _baseStat.MaxHealth, 0.0f, _baseStat.MaxHealth);
+            // }
+            // else if (effectType == EEffectType.Buff_SubStat_Armor)
+            // {
+            //     baseValue += _baseStat.Owner.BaseEffect.GetStatModifier(effectType: EEffectType.Buff_SubStat_Armor,
+            //                                     statModType: EStatModType.AddAmount);
 
-                //     baseValue *= 1 - (1 - baseValue) * (1 - _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.Armor,
-                //                 statModType: EStatModType.AddPercentMulti));
-                // }
+            //     baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(effectType: EEffectType.Buff_SubStat_Armor,
+            //                                     statModType: EStatModType.AddPercent);
 
-                // --- 그 이후로는 곱연산을 적용하여 100%의 피해 감소율을 막는다(데미지 감소율로 인한 100% 무적상태 방지)
-                // --- 삭제 금지. 이게 맞음.
-                // baseValue *= 1 - (1 - baseValue) * ( 1 - _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.DamageReductionRate,
-                //                                 statModType: EStatModType.AddPercentMulti))
-                //                                 * (1 - Inventory.Armor)
-                //                                 * (1 - TrainingStat.Endurance);
+            //     baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(effectType: EEffectType.Buff_SubStat_Armor,
+            //                                     statModType: EStatModType.AddPercentMulti);
 
-                // ArmorRate = baseValue;
-            }
+            //     Armor = Mathf.Clamp(baseValue, 0.0f, ReadOnly.Util.MaxArmor);
+
+            //     // --- PREV: 0.5이상부터 곱연산으로 했던 부분
+            //     // --- 데미지 감소율은 Fixed AddAmount로 최대 50%까지 가능.
+            //     // baseValue = Mathf.Clamp(baseValue, 0.0f, 0.5f);
+            //     // if (baseValue >= 0.5f)
+            //     // {
+            //     //     // --- 전부 곱연산으로 적용 (로직 재확인 필요)
+            //     //     baseValue *= 1 - (1 - baseValue) * (1 - _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.Armor,
+            //     //                 statModType: EStatModType.AddAmount));
+
+            //     //     baseValue *= 1 - (1 - baseValue) * (1 - _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.Armor,
+            //     //                 statModType: EStatModType.AddPercent));
+
+            //     //     baseValue *= 1 - (1 - baseValue) * (1 - _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.Armor,
+            //     //                 statModType: EStatModType.AddPercentMulti));
+            //     // }
+
+            //     // --- 그 이후로는 곱연산을 적용하여 100%의 피해 감소율을 막는다(데미지 감소율로 인한 100% 무적상태 방지)
+            //     // --- 삭제 금지. 이게 맞음.
+            //     // baseValue *= 1 - (1 - baseValue) * ( 1 - _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.DamageReductionRate,
+            //     //                                 statModType: EStatModType.AddPercentMulti))
+            //     //                                 * (1 - Inventory.Armor)
+            //     //                                 * (1 - TrainingStat.Endurance);
+
+            //     // ArmorRate = baseValue;
+            // }
         }
     }
 
