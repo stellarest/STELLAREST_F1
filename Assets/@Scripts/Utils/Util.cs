@@ -8,6 +8,7 @@ using UnityEngine;
 using Debug = UnityEngine.Debug;
 using static STELLAREST_F1.Define;
 using STELLAREST_F1.Data;
+using UnityEngine.UIElements;
 
 namespace STELLAREST_F1
 {
@@ -82,7 +83,7 @@ namespace STELLAREST_F1
         public static string GetStringFromEnum<T>(T enumValue) where T : struct, Enum
             => enumValue.ToString();
 
-        public static Type GetTypeFromName(string className)
+        public static Type GetTypeFromClassName(string className)
         {
             EClassName eClassName = GetEnumFromString<EClassName>(className);
             switch (eClassName)
@@ -124,7 +125,7 @@ namespace STELLAREST_F1
                     return typeof(NewSkillComp); // --- TEST
 
                 default:
-                    Debug.LogError($"{nameof(Util)}, {nameof(GetTypeFromName)}, Input : \"{className}, Please check Define.EClassName\"");
+                    Debug.LogError($"{nameof(Util)}, {nameof(GetTypeFromClassName)}, Input : \"{className}, Please check Define.EClassName\"");
                     Debug.Break();
                     return null;
             }
@@ -263,10 +264,8 @@ namespace STELLAREST_F1
         {
             EEffectType.Buff_BaseStat_MaxHealth,
             EEffectType.Buff_BaseStat_Damage,
-            EEffectType.Buff_BaseStat_CriticalRate,
-            EEffectType.Buff_BaseStat_DodgeRate,
-            EEffectType.Buff_BaseStat_MovementSpeed,
-            EEffectType.Buff_BaseStat_Luck
+            EEffectType.Buff_BaseStat_AttackRate,
+            EEffectType.Buff_BaseStat_MovementSpeed
         };
         public static bool IsEffectBuffBastStat(EEffectType effectType)
             => EffectBuffBaseStats.Contains(effectType);
@@ -276,10 +275,9 @@ namespace STELLAREST_F1
             EEffectType.Buff_SubStat_BonusHealth,
             EEffectType.Buff_SubStat_BonusHealthShield,
             EEffectType.Buff_SubStat_Armor,
-            EEffectType.Buff_SubStat_Damage,
-            EEffectType.Buff_SubStat_InvincibleCount,
-            EEffectType.Buff_SubStat_AttackRate,
-            EEffectType.Buff_SubStat_MovementSpeed,
+            EEffectType.Buff_SubStat_CriticalRate,
+            EEffectType.Buff_SubStat_DodgeRate,
+            EEffectType.Buff_SubStat_Luck
         };
         public static bool IsEffectBuffSubStat(EEffectType effectType)
             => EffectBuffSubStats.Contains(effectType);
@@ -309,8 +307,64 @@ namespace STELLAREST_F1
             return null;
         }
 
+        /*
+            public enum EGlobalEffectID
+        {
+            ImpactHit = 900000,
+            ImpactCriticalHit = 900001,
+            ImpactFire = 900002,
+            ImpactShockwave = 900003,
+
+            TeleportRed = 900020,
+            TeleportGreen = 900021,
+            TeleportBlue = 900022,
+            TeleportPurple = 900023,
+            
+            Dust = 990000,
+            OnDeadSkull = 990001,
+            EvolutionGlow = 990002
+        }
+        */
+
+        private static readonly int GlobalEffect_VFX_ImpactHit = (int)EGlobalEffectID.ImpactHit;
+        private static readonly int GlobalEffect_VFX_ImpactCriticalHit = (int)EGlobalEffectID.ImpactCriticalHit;
+        private static readonly int GlobalEffect_VFX_ImpactFire = (int)EGlobalEffectID.ImpactFire;
+        private static readonly int GlobalEffect_VFX_ImpactShockwave = (int)EGlobalEffectID.ImpactShockwave;
+
+        private static readonly int GlobalEffect_VFX_TeleportRed = (int)EGlobalEffectID.TeleportRed;
+        private static readonly int GlobalEffect_VFX_TeleportGreen = (int)EGlobalEffectID.TeleportGreen;
+        private static readonly int GlobalEffect_VFX_TeleportBlue = (int)EGlobalEffectID.TeleportBlue;
+        private static readonly int GlobalEffect_VFX_TeleportPurple = (int)EGlobalEffectID.TeleportPurple;
+
+        private static readonly int GlobalEffect_VFX_Dust = (int)EGlobalEffectID.Dust;
+        private static readonly int GlobalEffect_VFX_OnDeadSkull = (int)EGlobalEffectID.OnDeadSkull;
+        private static readonly int GlobalEffect_VFX_EvolutionGlow = (int)EGlobalEffectID.EvolutionGlow;
+
+        public static int GlobalDataID(EGlobalEffectID globalEffectID)
+        {
+            return globalEffectID switch
+            {
+                EGlobalEffectID.ImpactHit => GlobalEffect_VFX_ImpactHit,
+                EGlobalEffectID.ImpactCriticalHit => GlobalEffect_VFX_ImpactCriticalHit,
+                EGlobalEffectID.ImpactFire => GlobalEffect_VFX_ImpactFire,
+                EGlobalEffectID.ImpactShockwave => GlobalEffect_VFX_ImpactShockwave,
+                EGlobalEffectID.TeleportRed => GlobalEffect_VFX_TeleportRed,
+                EGlobalEffectID.TeleportGreen => GlobalEffect_VFX_TeleportGreen,
+                EGlobalEffectID.TeleportBlue => GlobalEffect_VFX_TeleportBlue,
+                EGlobalEffectID.TeleportPurple => GlobalEffect_VFX_TeleportPurple,
+                EGlobalEffectID.Dust => GlobalEffect_VFX_Dust,
+                EGlobalEffectID.OnDeadSkull => GlobalEffect_VFX_OnDeadSkull,
+                EGlobalEffectID.EvolutionGlow => GlobalEffect_VFX_EvolutionGlow,
+                _ => throw new ArgumentOutOfRangeException(nameof(globalEffectID), $"Invalid global effect type: {globalEffectID.ToString()}")
+            };
+        }
+
         public static EffectData GetEffectData(int dataID, BaseObject owner)
         {
+            // --- Check Global Effect Data First
+            if (Managers.Data.EffectDataDict.TryGetValue(dataID, out EffectData globalEffectData))
+                return globalEffectData;
+
             switch (owner?.ObjectType)
             {
                 case EObjectType.Hero:

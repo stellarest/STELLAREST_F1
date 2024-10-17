@@ -216,8 +216,6 @@ namespace STELLAREST_F1
 
             _creatureAnimCallback.OnCollectEnvHandler += OnCollectEnvCallback;
             _creatureAnimCallback.OnDustEffectHandler += OnDustEffectCallback;
-
-            Debug.Log($"<color=yellow>{nameof(CreatureAnimation)}</color><color=white>::</color><color=cyan>{nameof(RefreshAnimEventHandlers)}</color>");
         }
 
         public virtual void OnCollectEnvCallback() { }
@@ -232,10 +230,6 @@ namespace STELLAREST_F1
              {
                 creatureStateMachines[i].OnAnimStateEnterHandler -= OnAnimStateEnter;
                 creatureStateMachines[i].OnAnimStateEnterHandler += OnAnimStateEnter;
-
-                // --- 일단 생략
-                // creatureStateMachines[i].OnAnimStateUpdateHandler -= OnAnimStateUpdate;
-                // creatureStateMachines[i].OnAnimStateUpdateHandler += OnAnimStateUpdate;
 
                 creatureStateMachines[i].OnAnimStateExitHandler -= OnAnimStateExit;
                 creatureStateMachines[i].OnAnimStateExitHandler += OnAnimStateExit;

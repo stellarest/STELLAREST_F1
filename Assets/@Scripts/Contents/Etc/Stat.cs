@@ -9,8 +9,6 @@ using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
-    // Hero LevelUp Info
-    // --- 히어로별 1개의 Passive Buff 고정
     public class SubStat : InitBase
     {
         public const float c_ZeroBase = 0.0f;
@@ -18,88 +16,19 @@ namespace STELLAREST_F1
         private BaseCellObject _owner = null;
 
         [field: SerializeField] public float BonusHealth { get; set; } = 0.0f;
-        [field: SerializeField] public float FixedBonusAttackAmount { get; set; } = 0.0f;
-        public float FixedBonusAttackAmountBase { get; private set; } = 0.0f;
         [field: SerializeField] public float Armor { get; set; } = 0.0f;
-
-        [field: SerializeField] public float DebuffResistanceRate { get; set; } = 0.0f;
-        public float DebuffResistanceRateBase { get; private set; } = 0.0f;
-
-        [field: SerializeField] public int InvincibleCountPerWave { get; set; } = 0;
-        public int InvincibleCountPerWaveBase { get; private set; } = 0;
+        [field: SerializeField] public float CriticalRate { get; set; } = 0.0f;
+        [field: SerializeField] public float DodgeRate { get; set; } = 0.0f;
+        [field: SerializeField] public float Luck { get; set; } = 0.0f;
+        [field: SerializeField] public int InvincibleBlockCountPerWave { get; set; } = 0;
 
         public void InitialSetInfo(BaseStat baseStat)
         {
             _baseStat = baseStat;
             _owner = baseStat.Owner;
-            BonusHealth = c_ZeroBase;
-            FixedBonusAttackAmount = c_ZeroBase;
-            Armor = c_ZeroBase;
-            DebuffResistanceRate = c_ZeroBase;
-            InvincibleCountPerWave = (int)c_ZeroBase;
+            BonusHealth = Armor = CriticalRate = DodgeRate = Luck = c_ZeroBase;
+            InvincibleBlockCountPerWave = (int)c_ZeroBase;
         }
-
-        // public void ApplySubStat(EApplyStatType statType) // PREV
-        // {
-        //     float baseValue = c_ZeroBase;
-        //     if (statType == EApplyStatType.BonusHealth)
-        //     {
-        //         // BonusHealth의 Base는 MaxHealth
-        //         baseValue = _baseStat.MaxHealth;
-
-        //         // 1. FIXED AMOUNT
-        //         baseValue += _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.BonusHealth,
-        //                                         statModType: EStatModType.AddAmount); // + ITEM + STAT + ETC...
-
-        //         // 2. ADD PERCENT
-        //         baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.BonusHealth,
-        //                                         statModType: EStatModType.AddPercent);
-
-        //         // 3. ADD PERCENT MULTI
-        //         baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.BonusHealth,
-        //                                         statModType: EStatModType.AddPercentMulti);
-
-        //         BonusHealth = Mathf.Clamp(baseValue - _baseStat.MaxHealth, 0.0f, _baseStat.MaxHealth);
-        //     }
-        //     else if (statType == EApplyStatType.Armor)
-        //     {
-        //         baseValue += _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.Armor,
-        //                                         statModType: EStatModType.AddAmount);
-
-        //         baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.Armor,
-        //                                         statModType: EStatModType.AddPercent);
-
-        //         baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.Armor,
-        //                                         statModType: EStatModType.AddPercentMulti);
-
-        //         Armor = Mathf.Clamp(baseValue, 0.0f, ReadOnly.Util.MaxArmor);
-
-        //         // --- PREV: 0.5이상부터 곱연산으로 했던 부분
-        //         // --- 데미지 감소율은 Fixed AddAmount로 최대 50%까지 가능.
-        //         // baseValue = Mathf.Clamp(baseValue, 0.0f, 0.5f);
-        //         // if (baseValue >= 0.5f)
-        //         // {
-        //         //     // --- 전부 곱연산으로 적용 (로직 재확인 필요)
-        //         //     baseValue *= 1 - (1 - baseValue) * (1 - _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.Armor,
-        //         //                 statModType: EStatModType.AddAmount));
-
-        //         //     baseValue *= 1 - (1 - baseValue) * (1 - _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.Armor,
-        //         //                 statModType: EStatModType.AddPercent));
-
-        //         //     baseValue *= 1 - (1 - baseValue) * (1 - _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.Armor,
-        //         //                 statModType: EStatModType.AddPercentMulti));
-        //         // }
-
-        //         // --- 그 이후로는 곱연산을 적용하여 100%의 피해 감소율을 막는다(데미지 감소율로 인한 100% 무적상태 방지)
-        //         // --- 삭제 금지. 이게 맞음.
-        //         // baseValue *= 1 - (1 - baseValue) * ( 1 - _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.DamageReductionRate,
-        //         //                                 statModType: EStatModType.AddPercentMulti))
-        //         //                                 * (1 - Inventory.Armor)
-        //         //                                 * (1 - TrainingStat.Endurance);
-
-        //         // ArmorRate = baseValue;
-        //     }
-        // }
 
         public void ApplySubStat(EEffectType effectType)
         {
@@ -125,65 +54,16 @@ namespace STELLAREST_F1
                         Armor = Mathf.Clamp(baseValue, 0.0f, ReadOnly.Util.MaxArmor);
                     }
                     break;
+
+                // case EEffectType.Buff_SubStat_DamageRate:
+                //     {
+                //         baseValue = _baseStat.Damage;
+                //         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercent);
+                //         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercentMulti);
+                //         Sub_DamageRate = baseValue;
+                //     }
+                //     break;
             }
-
-            // if (effectType == EEffectType.Buff_SubStat_BonusHealth || effectType == EEffectType.Buff_SubStat_BonusHealthShield)
-            // {
-            //     // BonusHealth의 Base는 MaxHealth
-            //     baseValue = _baseStat.MaxHealth;
-
-            //     // 1. FIXED AMOUNT
-            //     baseValue += _baseStat.Owner.BaseEffect.GetStatModifier(effectType: EEffectType.Buff_SubStat_BonusHealth,
-            //                                     statModType: EStatModType.AddAmount); // + ITEM + STAT + ETC...
-
-            //     // 2. ADD PERCENT
-            //     baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(effectType: EEffectType.Buff_SubStat_BonusHealth,
-            //                                     statModType: EStatModType.AddPercent);
-
-            //     // 3. ADD PERCENT MULTI
-            //     baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(effectType: EEffectType.Buff_SubStat_BonusHealth,
-            //                                     statModType: EStatModType.AddPercentMulti);
-
-            //     BonusHealth = Mathf.Clamp(baseValue - _baseStat.MaxHealth, 0.0f, _baseStat.MaxHealth);
-            // }
-            // else if (effectType == EEffectType.Buff_SubStat_Armor)
-            // {
-            //     baseValue += _baseStat.Owner.BaseEffect.GetStatModifier(effectType: EEffectType.Buff_SubStat_Armor,
-            //                                     statModType: EStatModType.AddAmount);
-
-            //     baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(effectType: EEffectType.Buff_SubStat_Armor,
-            //                                     statModType: EStatModType.AddPercent);
-
-            //     baseValue *= 1 + _baseStat.Owner.BaseEffect.GetStatModifier(effectType: EEffectType.Buff_SubStat_Armor,
-            //                                     statModType: EStatModType.AddPercentMulti);
-
-            //     Armor = Mathf.Clamp(baseValue, 0.0f, ReadOnly.Util.MaxArmor);
-
-            //     // --- PREV: 0.5이상부터 곱연산으로 했던 부분
-            //     // --- 데미지 감소율은 Fixed AddAmount로 최대 50%까지 가능.
-            //     // baseValue = Mathf.Clamp(baseValue, 0.0f, 0.5f);
-            //     // if (baseValue >= 0.5f)
-            //     // {
-            //     //     // --- 전부 곱연산으로 적용 (로직 재확인 필요)
-            //     //     baseValue *= 1 - (1 - baseValue) * (1 - _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.Armor,
-            //     //                 statModType: EStatModType.AddAmount));
-
-            //     //     baseValue *= 1 - (1 - baseValue) * (1 - _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.Armor,
-            //     //                 statModType: EStatModType.AddPercent));
-
-            //     //     baseValue *= 1 - (1 - baseValue) * (1 - _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.Armor,
-            //     //                 statModType: EStatModType.AddPercentMulti));
-            //     // }
-
-            //     // --- 그 이후로는 곱연산을 적용하여 100%의 피해 감소율을 막는다(데미지 감소율로 인한 100% 무적상태 방지)
-            //     // --- 삭제 금지. 이게 맞음.
-            //     // baseValue *= 1 - (1 - baseValue) * ( 1 - _baseStat.Owner.BaseEffect.GetStatModifier(applyStatType: EApplyStatType.DamageReductionRate,
-            //     //                                 statModType: EStatModType.AddPercentMulti))
-            //     //                                 * (1 - Inventory.Armor)
-            //     //                                 * (1 - TrainingStat.Endurance);
-
-            //     // ArmorRate = baseValue;
-            // }
         }
     }
 
@@ -193,7 +73,7 @@ namespace STELLAREST_F1
         public BaseCellObject Owner { get; private set; } = null;
         [SerializeField] private SubStat _subStat = null;
 
-        // --- Main
+        // --- Main Stat
         [SerializeField] private float _health = 0.0f;
         public float Health
         {
@@ -215,6 +95,8 @@ namespace STELLAREST_F1
         [field: SerializeField] public float MaxDamage { get; set; } = 0.0f;
         public float MaxDamageBase { get; private set; } = 0.0f;
 
+        public float Damage => Mathf.Max(UnityEngine.Random.Range(MinDamage, MaxDamage), 1.0f);
+
         [SerializeField] private float _attackRate = 0.0f;
         public float AttackRate
         {
@@ -233,24 +115,25 @@ namespace STELLAREST_F1
         }
         public float AttackRateBase { get; private set; } = 0.0f;
 
-        [field: SerializeField] public float CriticalRate { get; set; } = 0.0f;
-        public float CriticalRateBase { get; private set; } = 0.0f;
-
-        [field: SerializeField] public float DodgeRate { get; set; } = 0.0f;
-        public float DodgeRateBase { get; private set; } = 0.0f;
-
         [field: SerializeField] public float MovementSpeed { get; set; } = 0.0f;
         public float MovementSpeedBase { get; private set; } = 0.0f;
 
-        [field: SerializeField] public float Luck { get; set; } = 0.0f;
-        public float LuckBase { get; private set; } = 0.0f;
+        // --- Util: SubStat
+        /*
+            Buff_SubStat_BonusHealth,
+            Buff_SubStat_BonusHealthShield,
+            Buff_SubStat_Armor,
+            Buff_SubStat_CriticalRate,
+            Buff_SubStat_DodgeRate,
+            Buff_SubStat_Luck,
+        */
 
-        // --- Util SubStat
         public float BonusHealth { get => _subStat.BonusHealth; set => _subStat.BonusHealth = value; }
-        public float FixedBonusAttackAmount { get => _subStat.FixedBonusAttackAmount; set => _subStat.FixedBonusAttackAmount = value; }
         public float Armor { get => _subStat.Armor; set => _subStat.Armor = value; }
-        public float DebuffResistanceRate { get => _subStat.DebuffResistanceRate; set => _subStat.DebuffResistanceRate = value; }
-        public int InvincibleCountPerWave { get => _subStat.InvincibleCountPerWave; set => _subStat.InvincibleCountPerWave = value; }
+        public float CriticalRate { get => _subStat.CriticalRate; set => _subStat.CriticalRate = value; }
+        public float DodgeRate { get => _subStat.DodgeRate; set => _subStat.DodgeRate = value; }
+        public float Luck { get => _subStat.Luck; set => _subStat.Luck = value; }
+        public int InvincibleBlockCountPerWave { get => _subStat.InvincibleBlockCountPerWave; set => _subStat.InvincibleBlockCountPerWave = value; }
 
         // --- Level
         public int Level
@@ -346,51 +229,13 @@ namespace STELLAREST_F1
             Health = creatureData.MaxHealth;
             MinDamage = MinDamageBase = creatureData.MinDamage;
             MaxDamage = MaxDamageBase = creatureData.MaxDamage;
-
             AttackRate = AttackRateBase = creatureData.AttackRate;
-            //(Owner as Creature).CreatureAnim.SetAttackRate(creatureData.AttackRate);
-
-            CriticalRate = CriticalRateBase = creatureData.CriticalRate;
-            DodgeRate = DodgeRateBase = creatureData.DodgeRate;
             MovementSpeed = MovementSpeedBase = creatureData.MovementSpeed;
-            Luck = LuckBase = creatureData.Luck;
-            // + ApplyEffectStat (_levelID) -- 여기다가 하면 안됨...
-        }
-
-        public void SetBaseAndEffectStat() // TEMP
-        {
-            if (Owner.ObjectType == EObjectType.Env)
-                return;
-
-            CreatureData creatureData = null;
-            switch (Owner.ObjectType)
-            {
-                case EObjectType.Hero:
-                    creatureData = (Owner as Hero).HeroData;
-                    break;
-
-                case EObjectType.Monster:
-                    creatureData = (Owner as Monster).MonsterData;
-                    break;
-            }
-
-            MaxHealth = MaxHealthBase = creatureData.MaxHealth;
-            Health = creatureData.MaxHealth;
-            MinDamage = MinDamageBase = creatureData.MinDamage;
-            MaxDamage = MaxDamageBase = creatureData.MaxDamage;
-
-            AttackRate = AttackRateBase = creatureData.AttackRate;
-            (Owner as Creature).CreatureAnim.SetAttackRate(creatureData.AttackRate);
-
-            CriticalRate = CriticalRateBase = creatureData.CriticalRate;
-            DodgeRate = DodgeRateBase = creatureData.DodgeRate;
-            MovementSpeed = MovementSpeedBase = creatureData.MovementSpeed;
-            Luck = LuckBase = creatureData.Luck;
-            // + ApplyEffectStat (_levelID) -- 여기다가 하면 안됨...
         }
 
         public void ApplyStat()
         {
+            Debug.Log(Owner.Dev_NameTextID);
             float prevMaxHealth = MaxHealth;
             for (int i = 0; i < (int)EEffectType.Max; ++i)
             {

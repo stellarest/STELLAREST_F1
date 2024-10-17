@@ -172,9 +172,15 @@ namespace STELLAREST_F1
             base.EnterInGame(spawnPos);
             HeroBody.StartCoFadeInEffect(startCallback: () =>
             {
-                BaseEffect.GenerateEffect(
-                            effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_Global_TeleportBlue,
-                            spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos)
+                // BaseEffect.GenerateEffect(
+                //             effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_Global_TeleportBlue,
+                //             spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos)
+                //             );
+
+                BaseEffect.GenerateEffect
+                            (
+                                effectID: Util.GlobalDataID(EGlobalEffectID.TeleportBlue),
+                                spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos)
                             );
             });
             
@@ -342,7 +348,8 @@ namespace STELLAREST_F1
             {
                 Debug.Log($"<color=yellow>MaxUp Hero</color>");
                 HeroBody.ChangeSpriteSet(Managers.Data.HeroSpriteDataDict[BaseStat.LevelID]);
-                BaseEffect.GenerateEffect(effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_GlobalHero_VFXHeroMaxUp);
+                //BaseEffect.GenerateEffect(effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_GlobalHero_VFXHeroMaxUp);
+                BaseEffect.GenerateEffect(effectID: Util.GlobalDataID(EGlobalEffectID.EvolutionGlow));
             }
 
             return true;

@@ -1,26 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using STELLAREST_F1;
-using static STELLAREST_F1.Define;
-using UnityEngine;
-using DG.Tweening;
-using UnityEditor;
 
 /*
-*******************************************************
-- GenerateEffect할 때 Pooling의 대상인지 아닌지 체크.
-> 그리고 Pooling의 대상이 아닌 녀석은 제거할 때 자동으로 오브젝트 제거.
-- Paladin Skill, Effect부터 모두 완성
-- Effect_BuffDamageReduction: 프리팹 제거할 준비
-- Monster::Attack_Rate 적용되었나?? 할필요도 없을 듯 싶지만
-- 안쓰는 컴포넌트 제거(DmgReduction), 안쓰는 프리팹 제거,,, 안쓰는 데이터 정리(몬스터쪽), EnvData 폴더 생성, 배치
-- 아직 Armor OnDamaged에서 적용 안됨
-*******************************************************
-- Passive: 101000(Lv.01), 101002(Lv.03), 101004(Lv.05), 101007(Lv.08)
-- Skill_A: 101100(Lv.01, None)
-- Skill_B: 101201(Lv.02), 101203(Lv.04), 101205(Lv.06), 102007(Lv.08)
-- Skill_C: 101302(Lv.03), 101304(Lv.05), 101306(Lv.07), 103007(Lv.08)
+// Skill Data ID
+AwakeEffectIDs -> OnCreateEffectIDs
+EnterStateEffectIDs -> OnSkillEnterEffectIDs
+OnStateEffectIDs -> OnSkillCallbackEffectIDs
+EndStateEffectIDs -> OnSkillExitEffectIDs
+HitEffectIDs -> OnHitEffectIDs
+
+// CreatureStateMachine for SkillBase
+OnSkillStateEnter
+OnSkillCallback
+OnSkillStateExit
 
 - Lv.01
 > Passive(Common)

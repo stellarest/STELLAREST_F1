@@ -36,7 +36,8 @@ namespace STELLAREST_F1
         public Dictionary<int, EnvEffectData> EnvEffectDataDict { get; private set; } = new Dictionary<int, EnvEffectData>();
         #endregion
 
-        #region Projectiles
+        #region Global
+        public Dictionary<int, EffectData> EffectDataDict { get; private set; } = new Dictionary<int, EffectData>();
         public Dictionary<int, ProjectileData> ProjectileDataDict { get; private set; } = new Dictionary<int, ProjectileData>();
         #endregion
 
@@ -45,29 +46,30 @@ namespace STELLAREST_F1
 
         public void Init()
         {
+            // --- Heroes Data
             HeroDataDict = LoadJson<HeroDataLoader, int, HeroData>(ReadOnly.DataSet.HeroData).MakeDict();
             HeroSpriteDataDict = LoadJson<HeroSpriteDataLoader, int, HeroSpriteData>(ReadOnly.DataSet.HeroSpriteData).MakeDict();
             HeroSkillDataDict = LoadJson<HeroSkillDataLoader, int, HeroSkillData>(ReadOnly.DataSet.HeroSkillData).MakeDict();
+            HeroEffectDataDict = LoadJson<HeroEffectDataLoader, int, HeroEffectData>(ReadOnly.DataSet.HeroEffectData).MakeDict();
 
+            // --- Monsters Data
             MonsterDataDict = LoadJson<MonsterDataLoader, int, MonsterData>(ReadOnly.DataSet.MonsterData).MakeDict();
             MonsterBirdSpriteDataDict = LoadJson<MonsterBirdSpriteDataLoader, int, MonsterBirdSpriteData>(ReadOnly.DataSet.MonsterBirdSpriteData).MakeDict();
             MonsterQuadrupedSpriteDataDict = LoadJson<MonsterQuadrupedsSpriteDataLoader, int, MonsterQuadrupedsSpriteData>(ReadOnly.DataSet.MonsterQuadrupedSpriteData).MakeDict();
             MonsterSkillDataDict = LoadJson<MonsterSkillDataLoader, int, MonsterSkillData>(ReadOnly.DataSet.MonsterSkillData).MakeDict();
+            MonsterEffectDataDict = LoadJson<MonsterEffectDataLoader, int, MonsterEffectData>(ReadOnly.DataSet.MonsterEffectData).MakeDict();
 
+            // --- Envs Data
             EnvDataDict = LoadJson<EnvDataLoader, int, EnvData>(ReadOnly.DataSet.EnvData).MakeDict();
             EnvTreeSpriteDataDict = LoadJson<EnvTreeSpriteDataLoader, int, EnvTreeSpriteData>(ReadOnly.DataSet.EnvTreeSpriteData).MakeDict();
             RockSpriteDataDict = LoadJson<RockSpriteDataLoader, int, EnvRockSpriteData>(ReadOnly.DataSet.EnvRockSpriteData).MakeDict();
+            EnvEffectDataDict = LoadJson<EnvEffectDataLoader, int, EnvEffectData>(ReadOnly.DataSet.EnvEffectData).MakeDict();
 
-            // --- TEMP
-            // StatDataDict = LoadJson<StatDataLoader, int, StatData>(ReadOnly.DataSet.StatData).MakeDict();
-            // SkillDataDict = LoadJson<SkillDataLoader, int, SkillData>(ReadOnly.DataSet.SkillData).MakeDict();
-            
+            // --- Global Data
+            EffectDataDict = LoadJson<EffectDataLoader, int, EffectData>(ReadOnly.DataSet.EffectData).MakeDict();
             ProjectileDataDict = LoadJson<ProjectileDataLoader, int, ProjectileData>(ReadOnly.DataSet.ProjectileData).MakeDict();
             // EffectDataDict = LoadJson<EffectDataLoader, int, EffectData>(ReadOnly.DataSet.EffectData).MakeDict();
             
-            HeroEffectDataDict = LoadJson<HeroEffectDataLoader, int, HeroEffectData>(ReadOnly.DataSet.HeroEffectData).MakeDict();
-            MonsterEffectDataDict = LoadJson<MonsterEffectDataLoader, int, MonsterEffectData>(ReadOnly.DataSet.MonsterEffectData).MakeDict();
-            EnvEffectDataDict = LoadJson<EnvEffectDataLoader, int, EnvEffectData>(ReadOnly.DataSet.EnvEffectData).MakeDict();
         }
 
         private T LoadJson<T, Key, Value>(string path) where T : ILoader<Key, Value>

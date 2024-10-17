@@ -220,9 +220,9 @@ namespace STELLAREST_F1
             EnteredTargetDir = Owner.Target.CellPos - Owner.CellPos;
             EnteredSignX = (Owner.LookAtDir == ELookAtDirection.Left) ? 1 : 0;
             Owner.Moving = false; // --- Blending Anim(Move to Idle)
-            if (SkillData.EnterStateEffectIDs.Length != 0)
+            if (SkillData.OnSkillEnterEffectIDs.Length != 0)
             {
-                List<EffectBase> enterStateEffects = GenerateSkillEffects(effectIDs: SkillData.EnterStateEffectIDs, skill: this);
+                List<EffectBase> onSkillEnterEffects = GenerateSkillEffects(effectIDs: SkillData.OnSkillEnterEffectIDs, skill: this);
             }
             
             return true;
@@ -235,9 +235,9 @@ namespace STELLAREST_F1
         {
             if (IsCorrectSkillType)
             {
-                if (SkillData.OnStateEffectIDs.Length != 0)
+                if (SkillData.OnSkillCallbackEffectIDs.Length != 0)
                 {
-                    List<EffectBase> onStateEffects = GenerateSkillEffects(effectIDs: SkillData.OnStateEffectIDs, skill: this);
+                    List<EffectBase> onSkillCallbackEffects = GenerateSkillEffects(effectIDs: SkillData.OnSkillCallbackEffectIDs, skill: this);
                 }
                 return true;
             }
@@ -248,9 +248,9 @@ namespace STELLAREST_F1
         public virtual void OnSkillStateExit()
         {
             _skillTargets.Clear();
-            if (SkillData.EndStateEffectIDs.Length != 0)
+            if (SkillData.OnSkillExitEffectIDs.Length != 0)
             {
-                List<EffectBase> endStateEffects = GenerateSkillEffects(effectIDs: SkillData.EndStateEffectIDs, skill: this);
+                List<EffectBase> onSkillExitEffects = GenerateSkillEffects(effectIDs: SkillData.OnSkillExitEffectIDs, skill: this);
             }
         }
         #endregion Events

@@ -60,11 +60,17 @@ namespace STELLAREST_F1
             base.EnterInGame(spawnPos);
             EnvBody.StartCoFadeInEffect(startCallback: () =>
                         {
+                            // BaseEffect.GenerateEffect(
+                            //         effectID: EnvType == EEnvType.Tree ?  ReadOnly.DataAndPoolingID.DNPID_Effect_Global_TeleportGreen :
+                            //                                               ReadOnly.DataAndPoolingID.DNPID_Effect_Global_TeleportRed,
+                            //         spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos)
+                            //     );
+
                             BaseEffect.GenerateEffect(
-                                    effectID: EnvType == EEnvType.Tree ?  ReadOnly.DataAndPoolingID.DNPID_Effect_Global_TeleportGreen :
-                                                                          ReadOnly.DataAndPoolingID.DNPID_Effect_Global_TeleportRed,
-                                    spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos)
-                                );
+                                    effectID: EnvType == EEnvType.Tree ? Util.GlobalDataID(EGlobalEffectID.TeleportGreen) :
+                                                                         Util.GlobalDataID(EGlobalEffectID.TeleportRed),
+                                            spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos)
+    );
                         });
                         
             EnvState = EEnvState.Idle;

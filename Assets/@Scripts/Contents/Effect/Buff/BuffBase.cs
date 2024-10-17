@@ -8,12 +8,9 @@ namespace STELLAREST_F1
 {
     public class BuffBase : EffectBase
     {
-        // public EEffectBuffType EffectBuffType { get; protected set; } = EEffectBuffType.None;
-
         protected override void InitialSetInfo(int dataID)
         {
             base.InitialSetInfo(dataID);
-            // EffectType = EEffectType.Buff;
         }
 
         public override void ApplyEffect()

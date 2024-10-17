@@ -1,10 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data.SqlTypes;
-using Unity.VisualScripting;
-using UnityEditor.AddressableAssets.Settings;
-using UnityEngine;
 
 namespace STELLAREST_F1
 {
@@ -414,23 +407,18 @@ namespace STELLAREST_F1
             ForceStop
         }
 
-        // public enum EApplyStatType
-        // {
-        //     None = -1,
-        //     MaxHealth,
-        //     BaseDamage,
-        //     CriticalRate,
-        //     DodgeRate,
-        //     MovementSpeed,
-        //     Luck,
+        // --- Main
+        // Health:
+        // Damage:
+        // MoveSpeed: 동료들은 Leader의 스피드를 따라간다.
+        // AttackSpeed: 
+        // 
 
-        //     BonusHealth,
-        //     SubDamage,
-        //     Armor,
-        //     Max = Armor + 1
-        // }
-
-        // --- 이것부터 제대로 정의해야할듯.
+        // --- Sub
+        // BonueHealth (Not Showing in UI)
+        // Armor
+        // Critical Rate
+        // Dodge
         public enum EEffectType
         {
             None = -1,
@@ -441,20 +429,17 @@ namespace STELLAREST_F1
             // BUFF BASE STATS
             Buff_BaseStat_MaxHealth,
             Buff_BaseStat_Damage,
-            Buff_BaseStat_CriticalRate,
-            Buff_BaseStat_DodgeRate,
+            Buff_BaseStat_AttackRate,
             Buff_BaseStat_MovementSpeed,
-            Buff_BaseStat_Luck,
 
             // BUFF SUB STATS
             Buff_SubStat_BonusHealth,
             Buff_SubStat_BonusHealthShield,
             Buff_SubStat_Armor,
-            Buff_SubStat_Damage,
-            Buff_SubStat_InvincibleCount,
-            Buff_SubStat_AttackRate,
-            Buff_SubStat_MovementSpeed,
-            
+            Buff_SubStat_CriticalRate,
+            Buff_SubStat_DodgeRate,
+            Buff_SubStat_Luck,
+            Buff_SubStat_InvincibleBlockCountPerWave,
 
             // DEBUFF BASE STATS
             Debuff_BaseStat_Example01,
@@ -553,6 +538,27 @@ namespace STELLAREST_F1
             Max,
         }
 
+        public enum EGlobalEffectID
+        {
+            ImpactHit = 900000,
+            ImpactCriticalHit = 900001,
+            ImpactFire = 900002,
+            ImpactShockwave = 900003,
+
+            TeleportRed = 900020,
+            TeleportGreen = 900021,
+            TeleportBlue = 900022,
+            TeleportPurple = 900023,
+            
+            Dust = 990000,
+            OnDeadSkull = 990001,
+            EvolutionGlow = 990002
+        }
+
+        public enum EGlobalProjectileID
+        {
+        }
+
         // ####################################################
         public static class ReadOnly
         {
@@ -585,31 +591,30 @@ namespace STELLAREST_F1
 
             public static class DataSet
             {
+                // --- Heroes Data
                 public static readonly string HeroData = "HeroData";
                 public static readonly string HeroSpriteData = "HeroSpriteData";
                 public static readonly string HeroStatData = "HeroStatData";
                 public static readonly string HeroSkillData = "HeroSkillData";
+                public static readonly string HeroEffectData = "HeroEffectData";
 
+                // --- Monsters Data
                 public static readonly string MonsterData = "MonsterData";
                 public static readonly string MonsterBirdSpriteData = "MonsterBirdSpriteData";
                 public static readonly string MonsterQuadrupedSpriteData = "MonsterQuadrupedSpriteData";
                 public static readonly string MonsterStatData = "MonsterStatData";
                 public static readonly string MonsterSkillData = "MonsterSkillData";
+                public static readonly string MonsterEffectData = "MonsterEffectData";
 
+                // --- Envs Data
                 public static readonly string EnvData = "EnvData";
                 public static readonly string EnvTreeSpriteData = "EnvTreeSpriteData";
                 public static readonly string EnvRockSpriteData = "EnvRockSpriteData";
-                // public static readonly string EnvStatData = "EnvStatData";
-
-                // --- TEMP
-                // public static readonly string StatData = "StatData";
-                // public static readonly string SkillData = "SkillData";
-
-                public static readonly string ProjectileData = "ProjectileData";
-                // public static readonly string EffectData = "EffectData"; // --- 제거 예정
-                public static readonly string HeroEffectData = "HeroEffectData";
-                public static readonly string MonsterEffectData = "MonsterEffectData";
                 public static readonly string EnvEffectData = "EnvEffectData";
+
+                // --- Global Data
+                public static readonly string EffectData = "EffectData";
+                public static readonly string ProjectileData = "ProjectileData";
             }
 
             public static class DataAndPoolingID
@@ -692,18 +697,18 @@ namespace STELLAREST_F1
                 public static readonly int DNPID_Env_WhetstoneRock = 101018;
                 public static readonly int DNPID_Env_ZincRock = 101019;
 
-                // --- Effects(VFX)
-                public static readonly int DNPID_Effect_GlobalHero_VFXHeroMaxUp = 800000;
-                public static readonly int DNPID_Effect_Global_ImpactDefaultHit = 900000;
-                public static readonly int DNPID_Effect_Global_ImpactCriticalHit = 900001;
-                public static readonly int DNPID_Effect_Global_TeleportRed = 900002;     // --- ENV ROCK
-                public static readonly int DNPID_Effect_Global_TeleportGreen = 900003;   // --- ENV TREE
-                public static readonly int DNPID_Effect_Global_TeleportBlue = 900004;    // --- HERO + PET(Allies, Etc)
-                public static readonly int DNPID_Effect_Global_TeleportPurple = 900005;  // --- MONSTER
-                public static readonly int DNPID_Effect_Global_Dust = 900006;
-                public static readonly int DNPID_Effect_Global_OnDeadSkull = 900007;
-                public static readonly int DNPID_Effect_Global_ImpactFire = 900008;
-                public static readonly int DNPID_Effect_Global_ImpactShockwave = 900009;
+                // --- Effects(VFX): DEPRECIATED
+                // public static readonly int DNPID_Effect_Global_VFX_ImpactHit = 800000;
+                // public static readonly int DNPID_Effect_Global_VFX_ImpactCriticalHit = 800001;
+                // public static readonly int DNPID_Effect_Global_VFX_ImpactFire = 800002;
+                // public static readonly int DNPID_Effect_Global_VFX_ImpactShockwave = 800003;
+                // public static readonly int DNPID_Effect_Global_VFX_TeleportRed = 800010;     // --- ENV ROCK
+                // public static readonly int DNPID_Effect_Global_VFX_TeleportGreen = 800011;   // --- ENV TREE
+                // public static readonly int DNPID_Effect_Global_VFX_TeleportBlue = 800012;    // --- HERO + PET(Allies, Etc)
+                // public static readonly int DNPID_Effect_Global_VFX_TeleportPurple = 800013;  // --- MONSTER
+                // public static readonly int DNPID_Effect_Global_VFX_Dust = 900000;
+                // public static readonly int DNPID_Effect_Global_VFX_OnDeadSkull = 900001;
+                // public static readonly int DNPID_Effect_Global_VFX_EvolutionGlow = 900002;
             }
 
             public static class AnimationParams

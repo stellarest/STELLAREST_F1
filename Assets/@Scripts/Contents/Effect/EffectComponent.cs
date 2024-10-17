@@ -57,7 +57,6 @@ namespace STELLAREST_F1
         {
             // if (Util.IsEffectBuffBastStat(effectBuffType) == false || Util.IsEffectBuffSubStat(effectBuffType) == false)
             //     return;
-
             if (Util.IsEffectStatType(effectBuffType) == false)
                 return;
 

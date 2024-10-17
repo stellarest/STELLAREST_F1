@@ -61,11 +61,16 @@ namespace STELLAREST_F1
                 return;
 
             Vector3 spawnPos = _heroOwner.HeroBody.GetContainer(EHeroBody_Lower.LegR).TR.position;
+            // EffectBase dustEffect = _heroOwner.BaseEffect.GenerateEffect(
+            //                             effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_Global_Dust,
+            //                             spawnPos: spawnPos
+            //                             );
+
             EffectBase dustEffect = _heroOwner.BaseEffect.GenerateEffect(
-                                        effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_Global_Dust,
-                                        spawnPos: spawnPos
-                                        );
-            
+                            effectID: Util.GlobalDataID(EGlobalEffectID.Dust),
+                            spawnPos: spawnPos
+                            );
+
             dustEffect.SortingGroup.sortingOrder = ReadOnly.SortingLayers.SLOrder_BaseObject;
         }
         #endregion

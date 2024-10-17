@@ -28,8 +28,15 @@ namespace STELLAREST_F1
             }
         }
 
-        public override void EnterEffect() { }
-        public override void ExitEffect() { }
+        // Knock Back Test
+        public override void EnterEffect() 
+        { 
+            Debug.Log($"{nameof(EnterEffect)}: CC-KnockBack");
+        }
+        public override void ExitEffect() 
+        { 
+            Debug.Log($"{nameof(ExitEffect)}: CC-KnockBack");
+        }
 
         public override void DoEffect() { }
     }

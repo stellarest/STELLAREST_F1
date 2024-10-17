@@ -142,7 +142,7 @@ namespace STELLAREST_F1
                 }
             }
 
-            Type skillClassType = Util.GetTypeFromName(skillData.ClassName);
+            Type skillClassType = Util.GetTypeFromClassName(skillData.ClassName);
             SkillBase newSkill = gameObject.AddComponent(skillClassType) as SkillBase;
             if (newSkill == null)
             {
@@ -173,7 +173,7 @@ namespace STELLAREST_F1
                 return null;
             }
 
-            Type skillClassType = Util.GetTypeFromName(skillData.ClassName);
+            Type skillClassType = Util.GetTypeFromClassName(skillData.ClassName);
             SkillBase lvUpSkill = gameObject.AddComponent(skillClassType) as SkillBase;
             if (lvUpSkill == null)
             {
@@ -249,7 +249,7 @@ namespace STELLAREST_F1
             else if (_owner.ObjectType == EObjectType.Monster)
                 skillData = Managers.Data.MonsterSkillDataDict[dataID];
 
-            Type skillClassType = Util.GetTypeFromName(skillData.ClassName);
+            Type skillClassType = Util.GetTypeFromClassName(skillData.ClassName);
             SkillBase skill = gameObject.AddComponent(skillClassType) as SkillBase;
             if (skill == null)
             {

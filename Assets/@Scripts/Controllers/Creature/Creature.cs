@@ -182,7 +182,7 @@ namespace STELLAREST_F1
             Dev_NameTextID = CreatureData.Dev_NameTextID;
 #endif
 
-            Type aiClassType = Util.GetTypeFromName(CreatureData.AIClassName);
+            Type aiClassType = Util.GetTypeFromClassName(CreatureData.AIClassName);
             CreatureAI = gameObject.AddComponent(aiClassType) as CreatureAI;
             CreatureAI.InitialSetInfo(this);
 
@@ -225,10 +225,10 @@ namespace STELLAREST_F1
             if (attacker.IsValid() == false)
                 return;
 
-            // --- TODO: Armor Rate 적용해야함
-
-            //float damage = UnityEngine.Random.Range(attacker.MinDamage, attacker.MaxDamage);
             float damage = Mathf.Max(UnityEngine.Random.Range(attacker.MinDamage, attacker.MaxDamage), 1.0f);
+            // damage buff를 여기서 불러온다.
+            // if ()
+
             bool isCritical = UnityEngine.Random.Range(0.0f, 1.0f) <= attacker.CriticalRate;
             if (isCritical)
                 damage *= 1 + 0.5f;
@@ -388,7 +388,8 @@ namespace STELLAREST_F1
                 startCallback: () =>
                 {
                     BaseEffect.GenerateEffect(
-                            effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_Global_OnDeadSkull,
+                            //effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_Global_OnDeadSkull,
+                            effectID: Util.GlobalDataID(EGlobalEffectID.OnDeadSkull),
                             spawnPos: CenterPosition
                             );
                 },
@@ -454,8 +455,8 @@ namespace STELLAREST_F1
         protected Coroutine _coUpdateAI = null;
         protected IEnumerator CoUpdateAI()
         {
-            // if (ObjectType == EObjectType.Monster)
-            //     yield break;
+            if (ObjectType == EObjectType.Monster)
+                yield break;
 
             while (true)
             {
@@ -532,14 +533,16 @@ namespace STELLAREST_F1
 
         protected void ShowImpactHit(SkillBase skillByAttacker, bool isCritical)
         {
+            // if (isCritical)
+            //     BaseEffect.GenerateEffect(effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_Global_ImpactCriticalHit, skill: null);
             if (isCritical)
-                BaseEffect.GenerateEffect(effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_Global_ImpactCriticalHit, skill: null);
+                BaseEffect.GenerateEffect(effectID: Util.GlobalDataID(EGlobalEffectID.ImpactCriticalHit), skill: null);
 
-            List<EffectBase> hitEffects = skillByAttacker.GenerateSkillEffects
-                                    (
-                                        effectIDs: skillByAttacker.SkillData.HitEffectIDs,
-                                        spawnPos: Util.GetRandomQuadPosition(this.CenterPosition)
-                                    );
+            List<EffectBase> onHitEffects = skillByAttacker.GenerateSkillEffects
+                                        (
+                                            effectIDs: skillByAttacker.SkillData.OnHitEffectIDs,
+                                            spawnPos: Util.GetRandomQuadPosition(this.CenterPosition)
+                                        );
         }
 
         // TextFont의 FontAssetType은 일단 Comic으로 고정

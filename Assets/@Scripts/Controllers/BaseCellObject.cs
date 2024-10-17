@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.Http.Headers;
 using STELLAREST_F1.Data;
 using UnityEngine;
 using UnityEngine.UI;
@@ -457,35 +458,25 @@ namespace STELLAREST_F1
         // --- Main Stat
         public float Health { get => BaseStat.Health; set => BaseStat.Health = value; }
         public float MaxHealth { get => BaseStat.MaxHealth; set => BaseStat.MaxHealth = value; }
-        public float MaxHealthBase => BaseStat.MaxHealthBase;
 
         public float MinDamage { get => BaseStat.MinDamage; set => BaseStat.MinDamage = value; }
-        public float MinDamageBase => BaseStat.MinDamageBase;
-
         public float MaxDamage { get => BaseStat.MaxDamage; set => BaseStat.MaxDamage = value; }
-        public float MaxDamageBase => BaseStat.MaxDamageBase;
+        public float Damage => BaseStat.Damage;
 
         public float AttackRate { get => BaseStat.AttackRate; set => BaseStat.AttackRate = value; }
-        public float AttackRateBase => BaseStat.AttackRateBase;
-
-        public float CriticalRate { get => BaseStat.CriticalRate; set => BaseStat.CriticalRate = value; }
-        public float CriticalRateBase => BaseStat.CriticalRateBase;
-
-        public float DodgeRate { get => BaseStat.DodgeRate; set => BaseStat.DodgeRate = value; }
-        public float DodgeRateBase => BaseStat.DodgeRateBase;
-
         public float MovementSpeed { get => BaseStat.MovementSpeed; set => BaseStat.MovementSpeed = value; }
-        public float MovementSpeedBase => BaseStat.MovementSpeedBase;
-
-        public float Luck { get => BaseStat.Luck; set => BaseStat.Luck = value; }
-        public float LuckBase => BaseStat.LuckBase;
 
         // --- Sub Stat
         public float BonusHealth { get => BaseStat.BonusHealth; set => BaseStat.BonusHealth = value; }
-        public float FixedBonusAttackAmount { get => BaseStat.FixedBonusAttackAmount; set => BaseStat.FixedBonusAttackAmount = value; }
         public float Armor { get => BaseStat.Armor; set => BaseStat.Armor = value; }
-        public float DebuffResistanceRate { get => BaseStat.DebuffResistanceRate; set => BaseStat.DebuffResistanceRate = value; }
-        public int InvincibleCountPerWave { get => BaseStat.InvincibleCountPerWave; set => BaseStat.InvincibleCountPerWave = value; }
+        public float CriticalRate { get => BaseStat.CriticalRate; set => CriticalRate = value; }
+        public float DodgeRate { get => BaseStat.DodgeRate; set => BaseStat.DodgeRate = value; }
+        public float Luck { get => BaseStat.Luck; set => BaseStat.Luck = value; }
+        public int InvincibleBlockCountPerWave
+        {
+            get => BaseStat.InvincibleBlockCountPerWave;
+            set => BaseStat.InvincibleBlockCountPerWave = value;
+        }
 
         // --- Level
         public int LevelID => BaseStat.LevelID;

@@ -29,10 +29,7 @@ namespace STELLAREST_F1.Data
         public float MinDamage;
         public float MaxDamage;
         public float AttackRate;
-        public float CriticalRate;
-        public float DodgeRate;
         public float MovementSpeed;
-        public float Luck;
         public int Skill_A_ID;
         public int Skill_B_TemplateID;
         public int Skill_C_TemplateID;
@@ -433,11 +430,11 @@ namespace STELLAREST_F1.Data
         public int TargetDistance;
         public int ProjectileID;
 		public float CoolTime;
-        public int[] AwakeEffectIDs;
-        public int[] EnterStateEffectIDs;
-        public int[] OnStateEffectIDs;
-        public int[] EndStateEffectIDs;
-        public int[] HitEffectIDs;
+        public int[] OnCreateEffectIDs;            // UnlockSkill로 AddComponent로 새롭게 생성 되었을 때, 최초 한 번
+        public int[] OnSkillEnterEffectIDs;        // OnSkillEnterState
+        public int[] OnSkillCallbackEffectIDs;     // OnSkillCallback 
+        public int[] OnSkillExitEffectIDs;         // OnSkillExitState
+        public int[] OnHitEffectIDs;               // OnDamaged, etc..
     }
 
     [Serializable]
@@ -514,26 +511,25 @@ namespace STELLAREST_F1.Data
         public float AddPercentMulti;
         public float Period;
         public float Duration;
-        public EEffectType EffectType;
+        //public EEffectType EffectType;
+        public string EffectType; // EEffectType이 자주 바뀌어서 일단 string으로 변경.
         public EObjectSize EffectSize;
         public EEffectSpawnType EffectSpawnType;
-        // public EApplyStatType ApplyStatType;
     }
 
-    // public class EffectDataLoader : ILoader<int, EffectData>
-    // {
-    //     public List<EffectData> Effects = new List<EffectData>();
+    public class EffectDataLoader : ILoader<int, EffectData>
+    {
+        public List<EffectData> Effects = new List<EffectData>();
 
-    //     public Dictionary<int, EffectData> MakeDict()
-    //     {
-    //         Dictionary<int, EffectData> dict = new Dictionary<int,EffectData>();
-    //         foreach (EffectData data in Effects)
-    //             dict.Add(data.DataID, data);
+        public Dictionary<int, EffectData> MakeDict()
+        {
+            Dictionary<int, EffectData> dict = new Dictionary<int,EffectData>();
+            foreach (EffectData data in Effects)
+                dict.Add(data.DataID, data);
 
-    //         return dict;
-    //     }
-    // }
-
+            return dict;
+        }
+    }
 
     [Serializable]
     public class HeroEffectData : EffectData

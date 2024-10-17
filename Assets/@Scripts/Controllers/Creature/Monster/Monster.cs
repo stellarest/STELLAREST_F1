@@ -106,9 +106,14 @@ namespace STELLAREST_F1
             base.EnterInGame(spawnPos);
             MonsterBody.StartCoFadeInEffect(startCallback: () =>
             {
+                // BaseEffect.GenerateEffect(
+                //             effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_Global_TeleportPurple,
+                //             spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos)
+                //             );
+
                 BaseEffect.GenerateEffect(
-                            effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_Global_TeleportPurple,
-                            spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos)
+                                effectID: Util.GlobalDataID(EGlobalEffectID.TeleportPurple),
+                                spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos)
                             );
             });
         }

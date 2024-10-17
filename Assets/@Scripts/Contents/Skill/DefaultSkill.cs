@@ -13,8 +13,6 @@ namespace STELLAREST_F1
         #region Events
         public override bool OnSkillStateEnter()
         {
-            Debug.Log(Dev_DescriptionTextID);
-
             if (base.OnSkillStateEnter() == false)
                 return false;
 
@@ -53,7 +51,7 @@ namespace STELLAREST_F1
                         continue;
 
                     BaseCellObject target = _skillTargets[i];
-                    target.OnDamaged(attacker: Owner, skillByAttacker: this);
+                    target?.OnDamaged(attacker: Owner, skillByAttacker: this);
                 }
             }
 
