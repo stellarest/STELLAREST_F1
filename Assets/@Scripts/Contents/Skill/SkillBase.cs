@@ -25,8 +25,10 @@ namespace STELLAREST_F1
         public int TargetDistance { get; private set; } = -1;
         public int DataTemplateID { get; private set; } = -1;
         public ESkillType SkillType { get; private set; } = ESkillType.None;
+        public ESkillElementType SkillElementType { get; private set; } = ESkillElementType.None;
+
         // --- 이게 필요 없을 것 같긴 한데
-        public EAttachmentPoint SkillFromPoint { get; private set; } = EAttachmentPoint.None;
+        // public EAttachmentPoint SkillFromPoint { get; private set; } = EAttachmentPoint.None;
         protected bool[] _lockTargetDirs = null;
         protected bool IsLockTargetDir(ETargetDirection targetDir) 
             => _lockTargetDirs[(int)targetDir];
@@ -58,6 +60,7 @@ namespace STELLAREST_F1
                 }
             }
         }
+
         [SerializeField] private float _remainCoolTime = 0f;
         public virtual float RemainCoolTime
         {
@@ -185,29 +188,23 @@ namespace STELLAREST_F1
         {
             Owner = owner as Creature;
             DataTemplateID = dataID;
-            // if (owner.ObjectType == EObjectType.Hero)
-            //     SkillData = Managers.Data.HeroSkillDataDict[dataID];
-            // else if (owner.ObjectType == EObjectType.Monster)
-            //     SkillData = Managers.Data.MonsterSkillDataDict[dataID];
-            
             SkillData = Util.GetSkillData(dataID, Owner);
+            GenerateSkillEffects(SkillData.OnCreateEffectIDs);
 #if UNITY_EDITOR
             Dev_NameTextID = SkillData.Dev_NameTextID;
             Dev_DescriptionTextID = SkillData.Dev_DescriptionTextID;
 #endif
-
             InvokeRange = SkillData.InvokeRange;
             TargetRange = SkillData.TargetRange;
             TargetDistance = SkillData.TargetDistance;
             SkillType = SkillData.SkillType;
-            // --- AttachmentPoint: 필요할까??
-            SkillFromPoint = Util.GetEnumFromString<EAttachmentPoint>(SkillData.AttachmentPoint);
+            SkillElementType = SkillData.SkillElementType;
         }
         #endregion
 
         #region Events
         protected ESkillType _currentSkillType= ESkillType.None;
-        public virtual bool OnSkillStateEnter()
+        public virtual bool OnSkillEnter()
         {
             if (Owner.IsValid() == false || Owner.Target.IsValid() == false)
             {
@@ -221,9 +218,7 @@ namespace STELLAREST_F1
             EnteredSignX = (Owner.LookAtDir == ELookAtDirection.Left) ? 1 : 0;
             Owner.Moving = false; // --- Blending Anim(Move to Idle)
             if (SkillData.OnSkillEnterEffectIDs.Length != 0)
-            {
-                List<EffectBase> onSkillEnterEffects = GenerateSkillEffects(effectIDs: SkillData.OnSkillEnterEffectIDs, skill: this);
-            }
+                GenerateSkillEffects(SkillData.OnSkillEnterEffectIDs);
             
             return true;
         }
@@ -236,39 +231,28 @@ namespace STELLAREST_F1
             if (IsCorrectSkillType)
             {
                 if (SkillData.OnSkillCallbackEffectIDs.Length != 0)
-                {
-                    List<EffectBase> onSkillCallbackEffects = GenerateSkillEffects(effectIDs: SkillData.OnSkillCallbackEffectIDs, skill: this);
-                }
+                    GenerateSkillEffects(SkillData.OnSkillCallbackEffectIDs);
+    
                 return true;
             }
 
             return false;
         }
         
-        public virtual void OnSkillStateExit()
+        public virtual void OnSkillExit()
         {
             _skillTargets.Clear();
-            if (SkillData.OnSkillExitEffectIDs.Length != 0)
-            {
-                List<EffectBase> onSkillExitEffects = GenerateSkillEffects(effectIDs: SkillData.OnSkillExitEffectIDs, skill: this);
-            }
+            GenerateSkillEffects(SkillData.OnSkillExitEffectIDs);
         }
         #endregion Events
 
-        public List<EffectBase> GenerateSkillEffects(IEnumerable<int> effectIDs, SkillBase skill = null)
+        private void GenerateSkillEffects(IEnumerable<int> effectIDs)
         {
-            if (Owner.IsValid() == false)
-                return null;
+            if (Owner == null)
+                return;
 
-            return Owner.BaseEffect.GenerateEffects(effectIDs, this);
-        }
-
-        public List<EffectBase> GenerateSkillEffects(IEnumerable<int> effectIDs, Vector3 spawnPos, SkillBase skill = null)
-        {
-            if (Owner.IsValid() == false)
-                return null;
-
-            return Owner.BaseEffect.GenerateEffects(effectIDs, spawnPos, this);
+            foreach (var effectID in effectIDs)
+                Owner.GenerateSkillEffect(effectID, this);
         }
 
         protected void GatherMeleeTargets()

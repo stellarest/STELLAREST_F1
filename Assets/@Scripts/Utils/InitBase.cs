@@ -22,6 +22,11 @@ namespace STELLAREST_F1
                 return false;
 
             _awake = true;
+
+#if UNITY_EDITOR
+            Dev_NameTextID = string.Empty;
+            Dev_DescriptionTextID = string.Empty;
+#endif
             return true;
         }
     }

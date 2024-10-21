@@ -15,16 +15,16 @@ namespace STELLAREST_F1
 
         public override void ApplyEffect()
         {
-            Owner.ApplyStat();
             base.ApplyEffect();
+            Owner.ApplyStat();
+            Debug.Log("DevName: " + Dev_NameTextID);
         }
 
-        public override void EnterEffect()
-            => Owner.BaseEffect.SetIsOnEffectBuff(this.EffectType, true);
-        public override void ExitEffect()
-            => Owner.BaseEffect.SetIsOnEffectBuff(this.EffectType, false);
+        public override void OnShowEffect()
+            => base.OnShowEffect();
 
-        public override void DoEffect() { }
+        public override void ExitEffect()
+            => base.ExitEffect();
 
         protected override void OnRemoveSelfByCondition(Action endCallback = null)
         {

@@ -11,9 +11,9 @@ namespace STELLAREST_F1
     public class DefaultSkill : SkillBase
     {
         #region Events
-        public override bool OnSkillStateEnter()
+        public override bool OnSkillEnter()
         {
-            if (base.OnSkillStateEnter() == false)
+            if (base.OnSkillEnter() == false)
                 return false;
 
             Owner.LookAtValidTarget();
@@ -58,8 +58,8 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public override void OnSkillStateExit()
-            => base.OnSkillStateExit();
+        public override void OnSkillExit()
+            => base.OnSkillExit();
         #endregion Events
 
     }

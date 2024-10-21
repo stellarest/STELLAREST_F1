@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace STELLAREST_F1
 {
-    public class VFXSwing : VFXBase
+    public class VFXWindBlade : VFXBase
     {
         protected float _movementSpeed = 0.0f;
         private ParticleSystem[] _particles = null;
@@ -18,8 +18,9 @@ namespace STELLAREST_F1
             _particleRenderers = GetComponentsInChildren<ParticleSystemRenderer>();
         }
 
-        public override void EnterEffect()
+        public override void ApplyEffect()
         {
+            base.ApplyEffect();
             if (_particles == null || _particleRenderers == null)
                 return;
 

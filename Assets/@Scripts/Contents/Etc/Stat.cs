@@ -16,6 +16,7 @@ namespace STELLAREST_F1
         private BaseCellObject _owner = null;
 
         [field: SerializeField] public float BonusHealth { get; set; } = 0.0f;
+        [field: SerializeField] public float BonusHealthShield { get; set; } = 0.0f;
         [field: SerializeField] public float Armor { get; set; } = 0.0f;
         [field: SerializeField] public float CriticalRate { get; set; } = 0.0f;
         [field: SerializeField] public float DodgeRate { get; set; } = 0.0f;
@@ -26,7 +27,7 @@ namespace STELLAREST_F1
         {
             _baseStat = baseStat;
             _owner = baseStat.Owner;
-            BonusHealth = Armor = CriticalRate = DodgeRate = Luck = c_ZeroBase;
+            BonusHealth = BonusHealthShield = Armor = CriticalRate = DodgeRate = Luck = c_ZeroBase;
             InvincibleBlockCountPerWave = (int)c_ZeroBase;
         }
 
@@ -42,7 +43,13 @@ namespace STELLAREST_F1
                         baseValue += _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddAmount);
                         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercent);
                         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercentMulti);
-                        BonusHealth = Mathf.Clamp(baseValue - _baseStat.MaxHealth, 0.0f, _baseStat.MaxHealth);
+                        if (effectType == EEffectType.Buff_SubStat_BonusHealth)
+                            BonusHealth = Mathf.Clamp(baseValue - _baseStat.MaxHealth, 0.0f, _baseStat.MaxHealth);
+                        else
+                        {
+                            BonusHealthShield = Mathf.Clamp(baseValue - _baseStat.MaxHealth, 0.0f, _baseStat.MaxHealth);
+                            Debug.Log("Yaho Yaho Yaho");
+                        }
                     }
                     break;
 
@@ -127,8 +134,8 @@ namespace STELLAREST_F1
             Buff_SubStat_DodgeRate,
             Buff_SubStat_Luck,
         */
-
         public float BonusHealth { get => _subStat.BonusHealth; set => _subStat.BonusHealth = value; }
+        public float BonusHealthShield { get => _subStat.BonusHealthShield; set => _subStat.BonusHealthShield = value; }
         public float Armor { get => _subStat.Armor; set => _subStat.Armor = value; }
         public float CriticalRate { get => _subStat.CriticalRate; set => _subStat.CriticalRate = value; }
         public float DodgeRate { get => _subStat.DodgeRate; set => _subStat.DodgeRate = value; }

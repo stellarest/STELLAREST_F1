@@ -14,7 +14,9 @@ namespace STELLAREST_F1
         public SkillComponent CreatureSkill { get; protected set; } = null; // Skills
         public CreatureBody CreatureBody { get; protected set; } = null;
         public CreatureAnimation CreatureAnim { get; private set; } = null;
-        public CreatureAnimationCallback CreatureAnimCallback { get; private set; } = null;
+
+        // --- CreatureAnimation으로 이동. 여기서만 서용하는중.
+        // public CreatureAnimationCallback CreatureAnimCallback { get; private set; } = null;
 
         public bool CanSkill
         {
@@ -169,7 +171,7 @@ namespace STELLAREST_F1
 
             CreatureBody = BaseBody as CreatureBody;
             CreatureAnim = BaseAnim as CreatureAnimation;
-            CreatureAnimCallback = CreatureAnim.GetComponent<CreatureAnimationCallback>();
+            // CreatureAnimCallback = CreatureAnim.GetComponent<CreatureAnimationCallback>();
             return true;
         }
 
@@ -190,13 +192,7 @@ namespace STELLAREST_F1
             Collider.offset = CreatureData.ColliderOffset;
 
             CreatureSkill = gameObject.GetOrAddComponent<SkillComponent>();
-            CreatureSkill.InitialSetInfo(owner: this, creatureData: CreatureData);
-            CreatureAnimCallback.InitialSetInfo(this); // --- ??? 이게 있어야 하나??? Anim에 있으면 안되나.
-            // --- CreatureAnim에서 InitialSetInfo하고 CreatureAnimCallback을 들고있는게 더 좋을 것 같은데.
-
-            // --- Init Creature Passive
-            if (Util.GetEffectData(dataID: LevelID, owner: this) != null)
-                BaseEffect.GenerateEffect(effectID: LevelID);
+            CreatureSkill.InitialSetInfo(owner: this);
         }
 
         protected override void EnterInGame(Vector3 spawnPos)
@@ -242,36 +238,35 @@ namespace STELLAREST_F1
             }
             else
                 finalDamage = Mathf.Round(damage);
-            
-            // DO SOMETHING: + Check Dodge, etc...
-            // if (InvincibleCountPerWave > 0) { ... }
-            // --- Bonus Health
-            if (BonusHealth > 0.0f)
+
+            // --- 순서는 BonusHealthShield부터..
+            float prevBonusHealth = finalDamage > BonusHealth ? BonusHealth : 0.0f;
+            remainedDamage = OnDamagedBonusHealth(finalDamage);
+            if (BonusHealthShield > 0.0f)
             {
-                // --- 남아있있던 쉴드에 적용된 데미지 폰트를 표시하기 위해 이전의 마지막 보너스 데미지를 받아놓음.(EEffectBuffType.BonusHealth)
-                float prevBonusHealth = finalDamage > BonusHealth ? BonusHealth : 0.0f;
-                remainedDamage = OnDamagedBonusHealth(finalDamage);
-                // --- Bonus Health: Shield
-                if (BaseEffect.IsOnEffectBuff(EEffectType.Buff_SubStat_BonusHealthShield))
+                if (BaseEffect.IsAppliedEffect(EEffectType.VFX_ShieldBlue))
                 {
-                    BaseEffect.DoBuffEffect(EEffectType.Buff_SubStat_BonusHealthShield);
+                    BaseEffect.OnShowEffect(EEffectType.VFX_ShieldBlue);
                     if (BonusHealth == 0.0f || remainedDamage > 0.0f) // Bonus Helath가 0.0이라는 의미다.
                     {
                         // --- Shield의 경우에는 보호막이 깨지면, 나머지 잔여 데미지량은 무시(무효)한다.
                         // --- FontAnim에 Random Height도 있으면 좋을 것 같은데.
                         // --- Height + 좌측을 바라볼 때 BouncingRight, 우측을 바라볼 때 BouncingLeft.
-                        EFontAnimationType shieldBreakAnimType =  LookAtDir == ELookAtDirection.Left ? 
+                        EFontAnimationType shieldBreakAnimType = LookAtDir == ELookAtDirection.Left ?
                                                                EFontAnimationType.EndBouncingRightUp :
                                                                EFontAnimationType.EndBouncingLeftUp;
 
                         // --- Duration 추가해야 할 것 같은데.. BREAK !! 부분은 yellow로 하고 싶기도 하고
                         ShowTextFont(text: "SHIELD\n  BREAK !!", fontSize: 5.5f, textColor: Managers.MonoContents.BrightBlue, fontAnimType: shieldBreakAnimType);
-                        //BaseEffect.ExitShowBuffEffects(EEffectBuffType.BonusHealthShield);
-                        //BaseEffect.RemoveBuffEffects(EEffectBuffType.BonusHealthShield);
-                        BaseEffect.RemoveBuffEffect(EEffectType.Buff_SubStat_BonusHealthShield);
+
+                        // --- VFX 제거
+                        BaseEffect.RemoveEffect(EEffectType.VFX_ShieldBlue);
+                        // --- 버프 제거
+                        BaseEffect.RemoveEffect(EEffectType.Buff_SubStat_BonusHealthShield);
+                        // --- 쉴드의 경우, 잔여 데미지량과 관계 없이 쉴드가 깨질때 무조건 데미지 무효화
                         return;
                     }
-                    else
+                    else // 보너스 체력 쉴드 적용중
                     {
                         // --- 좌측을 바라볼 땐, EndBouncingRightUp, 우측을 바라볼 땐 EndBouncingLeftUp으로 설정하고
                         // --- 데미지 폰트가 출력되는 높이를 랜덤으로 하는게 좋을듯.
@@ -283,18 +278,15 @@ namespace STELLAREST_F1
                             fontSignType: EFontSignType.Minus, isCritical: isCritical, fontAnimType: fontAnimType);
                     }
                 }
-                // --- Bonus Health: Other (잔여 데미지 처리)
-                // --- 나중에 쉴드 버프 종류가 추가되면 분기처리 로직으로 변경(지금은 일반 보너스 체력으로 가정)
-                else if (BaseEffect.IsOnEffectBuff(EEffectType.Buff_SubStat_BonusHealth))
+            }
+            else if (BonusHealth > 0.0f)
+            {
+                if (BaseEffect.IsAppliedEffect(EEffectType.VFX_BonusHealth))
                 {
-                    // DO SOMETHING...
-                    BaseEffect.DoBuffEffect(EEffectType.Buff_SubStat_BonusHealth);
+                    BaseEffect.OnShowEffect(EEffectType.VFX_BonusHealth);
                     if (BonusHealth == 0.0f || remainedDamage > 0.0f) // Bonus Helath가 0.0이라는 의미다.
                     {
-                        // --- 잔여 데미지 처리
-                        // BaseEffect.ExitShowBuffEffects(EEffectBuffType.BonusHealth);
-                        // BaseEffect.RemoveBuffEffects(EEffectBuffType.BonusHealth);
-
+                        // --- 남아 있는 잔여 데미지를 실체로 입힌다.
                         // --- 남아있있던 쉴드에 적용된 데미지 폰트 표시
                         if (prevBonusHealth != 0.0f)
                         {
@@ -303,7 +295,7 @@ namespace STELLAREST_F1
                                 fontSignType: EFontSignType.Minus, isCritical: isCritical, fontAnimType: EFontAnimationType.EndBouncingLeftUp);
                         }
 
-                        // --- 실제로체력에 적용된 데미지 포트 표시
+                        // --- 실제로 체력에 적용된 데미지 폰트 표시
                         if (remainedDamage != 0.0f)
                         {
                             // --- Damage FontColor: BrightRed
@@ -313,9 +305,11 @@ namespace STELLAREST_F1
                         else
                             ShowTextFont(text: "ZERO DAMAGE", fontSize: 4.0f, textColor: Managers.MonoContents.BrightRed, fontAnimType: EFontAnimationType.EndBouncingRightUp);
 
-                        // BaseEffect.ExitShowBuffEffects(EEffectBuffType.BonusHealth); -- ???
-                        // BaseEffect.RemoveBuffEffects(EEffectBuffType.BonusHealth);
-                        BaseEffect.RemoveBuffEffect(EEffectType.Buff_SubStat_BonusHealth);
+                        // --- VFX 제거
+                        BaseEffect.RemoveEffect(EEffectType.VFX_BonusHealth);
+                        // --- 버프 제거
+                        BaseEffect.RemoveEffect(EEffectType.Buff_SubStat_BonusHealth);
+                        // --- 잔여 데미지 처리
                         Health = Mathf.Clamp(Health - remainedDamage, 0.0f, MaxHealth);
                         if (Health <= 0.0f)
                         {
@@ -327,7 +321,7 @@ namespace STELLAREST_F1
                             BaseBody.StartCoHurtFlashEffect(isCritical: isCritical);
                         }
                     }
-                    else
+                    else // 보너스 체력 적용중
                     {
                         EFontAnimationType fontAnimType = UnityEngine.Random.Range(0, 2) == 0 ?
                                                             EFontAnimationType.EndBouncingLeftUp :
@@ -338,8 +332,7 @@ namespace STELLAREST_F1
                     }
                 }
             }
-            // --- Damage to Default Health (기본 데미지 처리)
-            else
+            else // 보호와 관련된 아무 버프도 없을 경우
             {
                 Health = Mathf.Clamp(Health - finalDamage, 0.0f, MaxHealth);
 
@@ -356,10 +349,128 @@ namespace STELLAREST_F1
                     OnDead(attacker, skillByAttacker);
                 }
                 else
-                {
                     BaseBody.StartCoHurtFlashEffect(isCritical: isCritical);
-                }
             }
+
+            // ----- CUT -----
+            // ------------------------------------------------------------------------------------------------------------
+            // DO SOMETHING: + Check Dodge, etc...
+            // if (InvincibleCountPerWave > 0) { ... }
+            // --- Bonus Health
+            // if (BonusHealth > 0.0f)
+            // {
+            //     // --- 남아있있던 쉴드에 적용된 데미지 폰트를 표시하기 위해 이전의 마지막 보너스 데미지를 받아놓음.(EEffectBuffType.BonusHealth)
+            //     float prevBonusHealth = finalDamage > BonusHealth ? BonusHealth : 0.0f;
+            //     remainedDamage = OnDamagedBonusHealth(finalDamage);
+            //     // --- Bonus Health: Shield
+            //     if (BaseEffect.IsOnEffectBuff(EEffectType.Buff_SubStat_BonusHealthShield))
+            //     {
+            //         BaseEffect.DoBuffEffect(EEffectType.Buff_SubStat_BonusHealthShield);
+            //         if (BonusHealth == 0.0f || remainedDamage > 0.0f) // Bonus Helath가 0.0이라는 의미다.
+            //         {
+            //             // --- Shield의 경우에는 보호막이 깨지면, 나머지 잔여 데미지량은 무시(무효)한다.
+            //             // --- FontAnim에 Random Height도 있으면 좋을 것 같은데.
+            //             // --- Height + 좌측을 바라볼 때 BouncingRight, 우측을 바라볼 때 BouncingLeft.
+            //             EFontAnimationType shieldBreakAnimType =  LookAtDir == ELookAtDirection.Left ? 
+            //                                                    EFontAnimationType.EndBouncingRightUp :
+            //                                                    EFontAnimationType.EndBouncingLeftUp;
+
+            //             // --- Duration 추가해야 할 것 같은데.. BREAK !! 부분은 yellow로 하고 싶기도 하고
+            //             ShowTextFont(text: "SHIELD\n  BREAK !!", fontSize: 5.5f, textColor: Managers.MonoContents.BrightBlue, fontAnimType: shieldBreakAnimType);
+            //             //BaseEffect.ExitShowBuffEffects(EEffectBuffType.BonusHealthShield);
+            //             //BaseEffect.RemoveBuffEffects(EEffectBuffType.BonusHealthShield);
+            //             BaseEffect.RemoveBuffEffect(EEffectType.Buff_SubStat_BonusHealthShield);
+            //             return;
+            //         }
+            //         else
+            //         {
+            //             // --- 좌측을 바라볼 땐, EndBouncingRightUp, 우측을 바라볼 땐 EndBouncingLeftUp으로 설정하고
+            //             // --- 데미지 폰트가 출력되는 높이를 랜덤으로 하는게 좋을듯.
+            //             EFontAnimationType fontAnimType = UnityEngine.Random.Range(0, 2) == 0 ?
+            //                                                 EFontAnimationType.EndBouncingLeftUp :
+            //                                                 EFontAnimationType.EndBouncingRightUp;
+
+            //             ShowDamageFont(damage: finalDamage, fontColor: ObjectType == EObjectType.Hero ? Color.cyan : Color.blue,
+            //                 fontSignType: EFontSignType.Minus, isCritical: isCritical, fontAnimType: fontAnimType);
+            //         }
+            //     }
+            //     // --- Bonus Health: Other (잔여 데미지 처리)
+            //     // --- 나중에 쉴드 버프 종류가 추가되면 분기처리 로직으로 변경(지금은 일반 보너스 체력으로 가정)
+            //     else if (BaseEffect.IsOnEffectBuff(EEffectType.Buff_SubStat_BonusHealth))
+            //     {
+            //         // DO SOMETHING...
+            //         BaseEffect.DoBuffEffect(EEffectType.Buff_SubStat_BonusHealth);
+            //         if (BonusHealth == 0.0f || remainedDamage > 0.0f) // Bonus Helath가 0.0이라는 의미다.
+            //         {
+            //             // --- 잔여 데미지 처리
+            //             // BaseEffect.ExitShowBuffEffects(EEffectBuffType.BonusHealth);
+            //             // BaseEffect.RemoveBuffEffects(EEffectBuffType.BonusHealth);
+
+            //             // --- 남아있있던 쉴드에 적용된 데미지 폰트 표시
+            //             if (prevBonusHealth != 0.0f)
+            //             {
+            //                 // --- 이전 컬러는 BrightBlue였음. (기본 쉴드 데미지 폰터 컬러로 다시 변경함)
+            //                 ShowDamageFont(damage: prevBonusHealth, fontColor: ObjectType == EObjectType.Hero ? Color.cyan : Color.blue,
+            //                     fontSignType: EFontSignType.Minus, isCritical: isCritical, fontAnimType: EFontAnimationType.EndBouncingLeftUp);
+            //             }
+
+            //             // --- 실제로체력에 적용된 데미지 포트 표시
+            //             if (remainedDamage != 0.0f)
+            //             {
+            //                 // --- Damage FontColor: BrightRed
+            //                 ShowDamageFont(damage: remainedDamage, fontColor: Managers.MonoContents.BrightRed,
+            //                     fontSignType: EFontSignType.None, isCritical: isCritical, fontAnimType: EFontAnimationType.EndBouncingRightUp);
+            //             }
+            //             else
+            //                 ShowTextFont(text: "ZERO DAMAGE", fontSize: 4.0f, textColor: Managers.MonoContents.BrightRed, fontAnimType: EFontAnimationType.EndBouncingRightUp);
+
+            //             // BaseEffect.ExitShowBuffEffects(EEffectBuffType.BonusHealth); -- ???
+            //             // BaseEffect.RemoveBuffEffects(EEffectBuffType.BonusHealth);
+            //             BaseEffect.RemoveBuffEffect(EEffectType.Buff_SubStat_BonusHealth);
+            //             Health = Mathf.Clamp(Health - remainedDamage, 0.0f, MaxHealth);
+            //             if (Health <= 0.0f)
+            //             {
+            //                 Health = 0.0f;
+            //                 OnDead(attacker, skillByAttacker);
+            //             }
+            //             else
+            //             {
+            //                 BaseBody.StartCoHurtFlashEffect(isCritical: isCritical);
+            //             }
+            //         }
+            //         else
+            //         {
+            //             EFontAnimationType fontAnimType = UnityEngine.Random.Range(0, 2) == 0 ?
+            //                                                 EFontAnimationType.EndBouncingLeftUp :
+            //                                                 EFontAnimationType.EndBouncingRightUp;
+
+            //             ShowDamageFont(damage: finalDamage, fontColor: ObjectType == EObjectType.Hero ? Color.cyan : Color.blue,
+            //                 fontSignType: EFontSignType.Minus, isCritical: isCritical, fontAnimType: fontAnimType);
+            //         }
+            //     }
+            // }
+            // // --- Damage to Default Health (기본 데미지 처리)
+            // else
+            // {
+            //     Health = Mathf.Clamp(Health - finalDamage, 0.0f, MaxHealth);
+
+            //     ShowDamageFont(damage: finalDamage, fontColor: ObjectType == EObjectType.Monster ? Color.white : Color.red,
+            //         isCritical: isCritical, fontSignType: EFontSignType.None, EFontAnimationType.EndFalling);
+
+            //     ShowImpactHit(skillByAttacker, isCritical);
+            //     if (isCritical)
+            //         ShowTextFont(text: "CRITICAL", fontSize: 5.0f, textColor: Color.red, fontAnimType: EFontAnimationType.EndFallingShake);
+
+            //     if (Health <= 0.0f)
+            //     {
+            //         Health = 0.0f;
+            //         OnDead(attacker, skillByAttacker);
+            //     }
+            //     else
+            //     {
+            //         BaseBody.StartCoHurtFlashEffect(isCritical: isCritical);
+            //     }
+            // }
         }
 
         private float OnDamagedBonusHealth(float finalDamage)
@@ -387,11 +498,12 @@ namespace STELLAREST_F1
             CreatureBody.StartCoFadeOutEffect(
                 startCallback: () =>
                 {
-                    BaseEffect.GenerateEffect(
-                            //effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_Global_OnDeadSkull,
-                            effectID: Util.GlobalDataID(EGlobalEffectID.OnDeadSkull),
-                            spawnPos: CenterPosition
-                            );
+                    GenerateGlobalEffect(EGlobalEffectID.OnDeadSkull, CenterPosition);
+                    // BaseEffect.GenerateEffect(
+                    //         //effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_Global_OnDeadSkull,
+                    //         effectID: Util.GlobalDataID(EGlobalEffectID.OnDeadSkull),
+                    //         spawnPos: CenterPosition
+                    //         );
                 },
                 endCallback: () => OnDeadFadeOutCompleted()
             );
@@ -533,16 +645,15 @@ namespace STELLAREST_F1
 
         protected void ShowImpactHit(SkillBase skillByAttacker, bool isCritical)
         {
-            // if (isCritical)
-            //     BaseEffect.GenerateEffect(effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_Global_ImpactCriticalHit, skill: null);
             if (isCritical)
-                BaseEffect.GenerateEffect(effectID: Util.GlobalDataID(EGlobalEffectID.ImpactCriticalHit), skill: null);
+                GenerateGlobalEffect(EGlobalEffectID.ImpactCriticalHit, CenterPosition);
+            else
+                GenerateGlobalEffect(EGlobalEffectID.ImpactHit, CenterPosition);
 
-            List<EffectBase> onHitEffects = skillByAttacker.GenerateSkillEffects
-                                        (
-                                            effectIDs: skillByAttacker.SkillData.OnHitEffectIDs,
-                                            spawnPos: Util.GetRandomQuadPosition(this.CenterPosition)
-                                        );
+            if (skillByAttacker.SkillElementType != ESkillElementType.Fire)
+            {
+                // DO SOMETHING(FIRE, ICE AND ETC...)
+            }
         }
 
         // TextFont의 FontAssetType은 일단 Comic으로 고정
@@ -560,13 +671,13 @@ namespace STELLAREST_F1
                 return;
             }
 
-            EffectBase prevPassive = BaseEffect.FindPrevEffect(dataID: LevelID);
-            if (prevPassive != null)
-            {
-                Debug.Log($"Remove Passive: {prevPassive.Dev_NameTextID}");
-                BaseEffect.RemoveEffect(prevPassive);
-                BaseEffect.GenerateEffect(effectID: LevelID); // 알아서 ApplyStat이 될 테므로,,,
-            }
+            // EffectBase prevPassive = BaseEffect.FindPrevEffect(dataID: LevelID);
+            // if (prevPassive != null)
+            // {
+            //     Debug.Log($"Remove Passive: {prevPassive.Dev_NameTextID}");
+            //     BaseEffect.RemoveEffect(prevPassive);
+            //     BaseEffect.GenerateEffect(effectID: LevelID); // 알아서 ApplyStat이 될 테므로,,,
+            // }
         }
         #endregion
 

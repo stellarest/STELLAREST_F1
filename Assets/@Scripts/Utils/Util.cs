@@ -121,9 +121,6 @@ namespace STELLAREST_F1
                 case EClassName.MonsterAI:
                     return typeof(MonsterAI);
 
-                case EClassName.NewSkillComp:
-                    return typeof(NewSkillComp); // --- TEST
-
                 default:
                     Debug.LogError($"{nameof(Util)}, {nameof(GetTypeFromClassName)}, Input : \"{className}, Please check Define.EClassName\"");
                     Debug.Break();
@@ -277,7 +274,8 @@ namespace STELLAREST_F1
             EEffectType.Buff_SubStat_Armor,
             EEffectType.Buff_SubStat_CriticalRate,
             EEffectType.Buff_SubStat_DodgeRate,
-            EEffectType.Buff_SubStat_Luck
+            EEffectType.Buff_SubStat_Luck,
+            EEffectType.Buff_SubStat_InvincibleBlockCountPerWave
         };
         public static bool IsEffectBuffSubStat(EEffectType effectType)
             => EffectBuffSubStats.Contains(effectType);
@@ -339,10 +337,9 @@ namespace STELLAREST_F1
         private static readonly int GlobalEffect_VFX_Dust = (int)EGlobalEffectID.Dust;
         private static readonly int GlobalEffect_VFX_OnDeadSkull = (int)EGlobalEffectID.OnDeadSkull;
         private static readonly int GlobalEffect_VFX_EvolutionGlow = (int)EGlobalEffectID.EvolutionGlow;
-
-        public static int GlobalDataID(EGlobalEffectID globalEffectID)
+        public static int GlobalDataID(EGlobalEffectID effectID)
         {
-            return globalEffectID switch
+            return effectID switch
             {
                 EGlobalEffectID.ImpactHit => GlobalEffect_VFX_ImpactHit,
                 EGlobalEffectID.ImpactCriticalHit => GlobalEffect_VFX_ImpactCriticalHit,
@@ -355,11 +352,16 @@ namespace STELLAREST_F1
                 EGlobalEffectID.Dust => GlobalEffect_VFX_Dust,
                 EGlobalEffectID.OnDeadSkull => GlobalEffect_VFX_OnDeadSkull,
                 EGlobalEffectID.EvolutionGlow => GlobalEffect_VFX_EvolutionGlow,
-                _ => throw new ArgumentOutOfRangeException(nameof(globalEffectID), $"Invalid global effect type: {globalEffectID.ToString()}")
+                _ => throw new ArgumentOutOfRangeException(nameof(effectID), $"Invalid value type: {effectID}")
             };
         }
 
-        public static EffectData GetEffectData(int dataID, BaseObject owner)
+        public static int GlobalDataID(EGlobalProjectileID projectileID)
+        {
+            return -1;
+        }
+
+        public static EffectData GetEffectData(int dataID, BaseCellObject owner)
         {
             // --- Check Global Effect Data First
             if (Managers.Data.EffectDataDict.TryGetValue(dataID, out EffectData globalEffectData))

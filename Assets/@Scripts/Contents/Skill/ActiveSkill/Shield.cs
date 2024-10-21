@@ -7,7 +7,7 @@ namespace STELLAREST_F1
     // 애초에 스킬 클래스도...
     // - SkillBase
     // - DefaultSkill, ActiveSkill, 
-    public class Shield : SkillBase
+    public class Shield : ActiveSkill
     {
         #region Events
         public override bool Init()
@@ -19,9 +19,9 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public override bool OnSkillStateEnter()
+        public override bool OnSkillEnter()
         {
-            if (base.OnSkillStateEnter() == false)
+            if (base.OnSkillEnter() == false)
                 return false;
 
             return true;
@@ -35,8 +35,8 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public override void OnSkillStateExit()
-            => base.OnSkillStateExit();
+        public override void OnSkillExit()
+            => base.OnSkillExit();
         #endregion
     }
 }

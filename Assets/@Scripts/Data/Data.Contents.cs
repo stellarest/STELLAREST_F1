@@ -30,7 +30,7 @@ namespace STELLAREST_F1.Data
         public float MaxDamage;
         public float AttackRate;
         public float MovementSpeed;
-        public int Skill_A_ID;
+        public int Skill_A_TemplateID;
         public int Skill_B_TemplateID;
         public int Skill_C_TemplateID;
     }
@@ -423,10 +423,10 @@ namespace STELLAREST_F1.Data
     public class SkillData : BaseData
     {
         public ESkillType SkillType;
+        public ESkillElementType SkillElementType;
 		public string ClassName;
-        public string AttachmentPoint;
-        public int InvokeRange; // --- 시전 조건
-        public ESkillTargetRange TargetRange; // --- 시전 범위
+        public int InvokeRange;                     // --- 시전 조건
+        public ESkillTargetRange TargetRange;       // --- 시전 범위
         public int TargetDistance;
         public int ProjectileID;
 		public float CoolTime;
@@ -434,7 +434,6 @@ namespace STELLAREST_F1.Data
         public int[] OnSkillEnterEffectIDs;        // OnSkillEnterState
         public int[] OnSkillCallbackEffectIDs;     // OnSkillCallback 
         public int[] OnSkillExitEffectIDs;         // OnSkillExitState
-        public int[] OnHitEffectIDs;               // OnDamaged, etc..
     }
 
     [Serializable]

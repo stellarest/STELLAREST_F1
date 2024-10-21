@@ -317,6 +317,14 @@ namespace STELLAREST_F1
             Max = Skill_C + 1
         }
 
+        public enum ESkillElementType
+        {
+            None = -1,
+            Fire,
+            Ice,
+            Poision,
+        }
+
         // ********************************************************************************
         // Melee는 완료했으므로 일단 이거 세개(Single, Half, Around) Projectile 부분 정의 완료하기
         // 그 다음에 모양을 더 추가하던지 (예시, XShaped)
@@ -354,8 +362,6 @@ namespace STELLAREST_F1
             MeleeHeroAI,
             RangedHeroAI,
             MonsterAI,
-
-            NewSkillComp
         }
 
         public enum EProjectileMotionType
@@ -371,15 +377,15 @@ namespace STELLAREST_F1
             ChildGroup = 1
         }
 
-        public enum EAttachmentPoint
-        {
-            None = -1,
-            WeaponL,
-            WeaponLSocket,
-            WeaponR,
-            WeaponRSocket,
-            Max = WeaponRSocket + 1
-        }
+        // public enum EAttachmentPoint
+        // {
+        //     None = -1,
+        //     WeaponL,
+        //     WeaponLSocket,
+        //     WeaponR,
+        //     WeaponRSocket,
+        //     Max = WeaponRSocket + 1
+        // }
 
         public enum ECellCollisionType
         {
@@ -425,6 +431,9 @@ namespace STELLAREST_F1
             
             // VFX
             VFX_Base,
+            VFX_WindBlade,
+            VFX_ShieldBlue,
+            VFX_BonusHealth, // --- TEMP
 
             // BUFF BASE STATS
             Buff_BaseStat_MaxHealth,
@@ -433,8 +442,9 @@ namespace STELLAREST_F1
             Buff_BaseStat_MovementSpeed,
 
             // BUFF SUB STATS
-            Buff_SubStat_BonusHealth,
-            Buff_SubStat_BonusHealthShield,
+            // 둘중에 하나라면 어쩔...?
+            Buff_SubStat_BonusHealth, // 그 다음에는 이거 (초록색 -> 노란색 체력바)
+            Buff_SubStat_BonusHealthShield, // 이것부터 처리하고 (회색 또는 하늘색 체력바)
             Buff_SubStat_Armor,
             Buff_SubStat_CriticalRate,
             Buff_SubStat_DodgeRate,

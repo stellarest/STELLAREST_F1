@@ -5,7 +5,7 @@ using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
-    public class BodyAttack : SkillBase
+    public class BodyAttack : ActiveSkill
     {
         private float _delta = 0f;
         private float _desiredTimeToReach = 0.35f;
@@ -19,8 +19,8 @@ namespace STELLAREST_F1
         }
 
         #region Events
-        public override bool OnSkillStateEnter()
-            => base.OnSkillStateEnter();
+        public override bool OnSkillEnter()
+            => base.OnSkillEnter();
 
         public override bool OnSkillCallback()
         {
@@ -38,7 +38,7 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public override void OnSkillStateExit() { }
+        public override void OnSkillExit() { }
         #endregion Events
 
         private Vector3 _startPoint = Vector3.zero;

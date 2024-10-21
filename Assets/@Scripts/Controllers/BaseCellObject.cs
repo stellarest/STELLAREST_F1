@@ -99,13 +99,11 @@ namespace STELLAREST_F1
             BaseStat.SetBaseStat();
             BaseBody.ResetMaterialsAndColors();
             BaseBody.StartCoFadeInEffect();
-            //SpawnedCellPos = Managers.Map.WorldToCell(spawnPos);
             Managers.Map.ForceMove(cellObj: this, cellPos: SpawnedCellPos, ignoreCellObjType: EObjectType.None);
         }
 
         public virtual void OnDamaged(BaseCellObject attacker, SkillBase skillByAttacker) { }
 
-        //public virtual void OnDamaged(BaseCellObject attacker, SkillBase skillByAttacker) { }
         public virtual void OnDead(BaseCellObject attacker, SkillBase skillFromAttacker)
         {
             RigidBody.simulated = false;
@@ -116,30 +114,7 @@ namespace STELLAREST_F1
         #region Background
         public void ApplyStat() 
             => BaseStat.ApplyStat();
-
-        // public virtual void ApplyStat_T() // ---> Move to Stat.cs
-        // {
-        //     BonusHealth = ApplyFinalStat(baseValue: MaxHealthBase, applyStatType: EApplyStatType.BonusHealth);
-        //     //DamageReductinoRate = ApplyFinalStat(baseValue: DamageReductinoRate,)
-        //     // MaxHpBase
-        //     // AtkBase
-        //     // ...
-        //     // MovementSpeedBase
-        //     float prevMaxHealth = MaxHealth;
-        //     if (prevMaxHealth != MaxHealth)
-        //     {
-        //         // 현재의 hp를 증가된 MaxHp만큼의 비율로 조정한다.
-        //         Health = MaxHealth * (Health / prevMaxHealth);
-        //         // Final Min, Max Check
-        //         Health = Mathf.Clamp(value: Health, min: 0.0f, max: MaxHealth);
-        //     }
-        //     float ratio = Health / MaxHealth;
-        //     // HpBar.Refresh(ratio); -- LATER TODO
-        // }
-
-        // protected virtual float ApplyFinalStat(float baseValue, EApplyStatType applyStatType)
-        //     => baseValue;
-
+        
         public EFindPathResult FindPathAndMoveToCellPos(Vector3 destPos, int maxDepth, EObjectType ignoreCellObjType = EObjectType.None)
             => FindPathAndMoveToCellPos(Managers.Map.WorldToCell(destPos), maxDepth, ignoreCellObjType);
 
@@ -454,7 +429,7 @@ namespace STELLAREST_F1
         // }
         #endregion
 
-        #region Util - Stat
+        #region Util: Stat
         // --- Main Stat
         public float Health { get => BaseStat.Health; set => BaseStat.Health = value; }
         public float MaxHealth { get => BaseStat.MaxHealth; set => BaseStat.MaxHealth = value; }
@@ -468,6 +443,7 @@ namespace STELLAREST_F1
 
         // --- Sub Stat
         public float BonusHealth { get => BaseStat.BonusHealth; set => BaseStat.BonusHealth = value; }
+        public float BonusHealthShield { get => BaseStat.BonusHealthShield; set => BaseStat.BonusHealthShield = value; }
         public float Armor { get => BaseStat.Armor; set => BaseStat.Armor = value; }
         public float CriticalRate { get => BaseStat.CriticalRate; set => CriticalRate = value; }
         public float DodgeRate { get => BaseStat.DodgeRate; set => BaseStat.DodgeRate = value; }
@@ -485,7 +461,24 @@ namespace STELLAREST_F1
         public bool IsMaxLevel => BaseStat.IsMaxLevel;
         #endregion
 
-        #region Util - Effect Comp
+        #region Util: Effect
+        public EffectBase GenerateGlobalEffect(EGlobalEffectID globalEffectID, Vector3 spawnPos)
+            => BaseEffect.GenerateGlobalEffect(globalEffectID, spawnPos);
+
+        public EffectBase GenerateSkillEffect(int effectID, SkillBase skill)
+            => BaseEffect.GenerateSkillEffect(effectID, skill);
+
+        public void RemoveEffect(IEnumerable<int> effectIDs)
+            => BaseEffect.RemoveEffect(effectIDs);
+        
+        // public EffectBase GenerateEffect(int effectID, BaseCellObject owner)
+        // {
+        //     if (Util.GetEffectData(effectID, owner) == null)
+        //         return null;
+
+        //     return BaseEffect.GenerateEffect(effectID, );
+        // }
+
         // public void RequestRemoveEffect(EffectBase effect)
         // {
         //     if (effect.IsValid() == false)

@@ -100,21 +100,17 @@ namespace STELLAREST_F1
         protected override void EnterInGame(Vector3 spawnPos)
         {
             MonsterBody.MonsterEmoji = EMonsterEmoji.Normal;
-            LookAtDir = ELookAtDirection.Left; // --- Default Monsters Dir: Left
+            // --- Default Monsters Dir: Left
+            LookAtDir = ELookAtDirection.Left;
             CreatureAIState = ECreatureAIState.Idle;
 
             base.EnterInGame(spawnPos);
             MonsterBody.StartCoFadeInEffect(startCallback: () =>
             {
-                // BaseEffect.GenerateEffect(
-                //             effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_Global_TeleportPurple,
-                //             spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos)
-                //             );
-
-                BaseEffect.GenerateEffect(
-                                effectID: Util.GlobalDataID(EGlobalEffectID.TeleportPurple),
-                                spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos)
-                            );
+                GenerateGlobalEffect(
+                        globalEffectID: EGlobalEffectID.TeleportPurple,
+                        spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos)
+                    );
             });
         }
 

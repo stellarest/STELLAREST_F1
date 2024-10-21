@@ -18,13 +18,5 @@ namespace STELLAREST_F1
 
         public event System.Action OnCollectEnvHandler = null;
         public void OnCollectEnv() => OnCollectEnvHandler?.Invoke();
-
-
-        // public event System.Action OnEnterLowerAnimIdleToSkillACallbackHandler = null;
-        // public void OnEnterLowerAnimIdleToSkillA() => OnEnterLowerAnimIdleToSkillACallbackHandler?.Invoke();
-
-
-        // public event System.Action OnExitLowerAnimIdleToSkillACallbackHandler = null;
-        // public void OnExitLowerAnimIdleToSkillA() => OnExitLowerAnimIdleToSkillACallbackHandler?.Invoke();
     }
 }

@@ -12,7 +12,8 @@ namespace STELLAREST_F1
     // Ex. TickTime: 1, TickCount: 5 -> 1초 마다 5번 실행하겠다. 근데 난 그냥 Duration, Period로
     // Monster와 다르게 Effect 여러가지 상속 구조로 가기 위해 베이스 클래스가 이렇게 구성되어 있음. Effect의 핵심은 "상속"
     // --- 단순 VFX, Buff/DeBuff, Dot, CC
-    public abstract class EffectBase : BaseObject
+    // --- 무조건 스킬이 갖고 있게 해야겠는데...
+    public class EffectBase : BaseObject
     {
         private BaseCellObject _owner = null;
         public BaseCellObject Owner
@@ -25,12 +26,23 @@ namespace STELLAREST_F1
             }
         }
         protected SkillBase _skill = null;
-        public void SetSkill(SkillBase skill) => _skill = skill;
+        public void SetSkill(SkillBase skill)
+        {
+            _skill = skill;
+            _enteredDir = skill.EnteredTargetDir;
+            _enteredSignX = skill.EnteredSignX;
+            if (EffectData.EffectSpawnType == EEffectSpawnType.SetParentOwner)
+            {
+                transform.SetParent(Owner.transform);
+                transform.localPosition = Vector3.zero;
+                SpawnedPos = Vector3.zero;
+            }
+        }
 
         public EffectData EffectData { get; private set; } = null;
         public EEffectType EffectType { get; protected set; } = EEffectType.None;
         public EEffectClearType EffectClearType { get; protected set; } = EEffectClearType.TimeOut;
-        
+
         // --- 지금 당장 우아한 방법은 아니긴 하지만, ByCondition에 의한 이펙트는 OnRemoveSelfByCondition에서 재정의만 하면 됨
         public Action<Action> OnRemoveSelfByConditionHandler = null;
         protected virtual void OnRemoveSelfByCondition(Action endCallback = null) { }
@@ -66,7 +78,6 @@ namespace STELLAREST_F1
             Dev_NameTextID = EffectData.Dev_NameTextID;
             //gameObject.name += $"_{EffectData.Dev_NameTextID}";
 #endif
-
             IsLoop = EffectData.IsLoop;
             Period = EffectData.Period;
             InitialSetSize(EffectData.EffectSize);
@@ -94,6 +105,15 @@ namespace STELLAREST_F1
 
             transform.position = EffectSpawnInfo(EffectData.EffectSpawnType);
         }
+
+        public virtual void ApplyEffect()
+        {
+            if (EffectClearType == EEffectClearType.TimeOut)
+                StartCoroutine(CoStartLifeTimer());
+        }
+
+        public virtual void OnShowEffect() { }
+        public virtual void ExitEffect() { }
 
         private void InitialSetSize(EObjectSize objSize)
         {
@@ -150,17 +170,6 @@ namespace STELLAREST_F1
         }
         #endregion
 
-        public virtual void ApplyEffect()
-        {
-            if (EffectClearType == EEffectClearType.TimeOut)
-                StartCoroutine(CoStartLifeTimer());
-
-            EnterEffect();
-        }
-        public abstract void EnterEffect();
-        public abstract void DoEffect();
-        public abstract void ExitEffect();
-
         protected virtual void ProcessDot() { }
         protected IEnumerator CoStartLifeTimer()
         {
@@ -186,26 +195,6 @@ namespace STELLAREST_F1
             Remains = 0f;
             Owner.BaseEffect.RemoveEffect(this);
         }
-
-        public void ClearEffect(EEffectClearType clearType)
-        {
-             if (Owner.IsValid() == false)
-                return;
-        }
-
-        // public bool IsCroudControl()
-        // {
-        //     switch (EffectType)
-        //     {
-        //         case EEffectType.Airborne:
-        //         case EEffectType.Knockback:
-        //         case EEffectType.Freeze:
-        //         case EEffectType.Stun:
-        //             return true;
-        //     }
-
-        //     return false;
-        // }
     }
 }
 

@@ -11,13 +11,10 @@ namespace STELLAREST_F1
     public class SkillComponent : InitBase
     {
         private Creature _owner = null;
-        // public List<SkillBase> Skills { get; } = new List<SkillBase>();
 
-        public List<SkillBase> ActiveSkills = new List<SkillBase>();
+        [field: SerializeField] public List<SkillBase> ActiveSkills { get; private set; } = new List<SkillBase>();
+        [field: SerializeField] public SkillBase[] SkillArray { get; private set; } = new SkillBase[(int)ESkillType.Max];
 
-        private const int c_Skill_A_INTERVAL_NUMBER = 100; // --- 나중에 건드릴수도 있으므로
-        private const int c_Skill_B_INTERVAL_NUMBER = 200; // 필요 없어질 듯?
-        private const int c_Skill_C_INTERVAL_NUMBER = 300; // 필요 없어질 듯?
 #if UNITY_EDITOR
         public string DefaultSkillA = "";
         public string ActiveSkillB = "";
@@ -30,7 +27,6 @@ namespace STELLAREST_F1
         //     => Skills.FirstOrDefault(s => s.SkillType == skillType);
 
         // public SkillBase[] SkillArray { get; private set; } = new SkillBase[(int)ESkillType.Max]; // --- Caching
-        [field: SerializeField] public SkillBase[] SkillArray { get; private set; } = null; // --- Caching
 
         [field: SerializeField] public ESkillType CurrentSkillType { get; set; } = ESkillType.None;
         public SkillBase CurrentSkill
@@ -75,196 +71,109 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public void InitialSetInfo(Creature owner, CreatureData creatureData)
+        public void InitialSetInfo(Creature owner)
         {
             _owner = owner;
+            SkillBase skillA = TryUnlockSkill(ESkillType.Skill_A);
+            if (skillA == null)
+            {
+                Debug.LogError($"{nameof(SkillComponent)}::{nameof(InitialSetInfo)}, You must have one skill at least.");
+                Debug.Break();
+                return;
+            }
 
-            SkillArray = SkillArray == null ? new SkillBase[(int)ESkillType.Max] : SkillArray;
-
-            // --- Add: Skill_A(Default)
-            //SkillArray[(int)ESkillType.Skill_A] = AddSkill(dataID: creatureData.Skill_A_ID);
-            SkillArray[(int)ESkillType.Skill_A] = UnlockSkill(dataID: creatureData.Skill_A_ID);
 #if UNITY_EDITOR
             DefaultSkillA = SkillArray[(int)ESkillType.Skill_A].SkillData.Dev_NameTextID;
             Dev_NameTextID = $"{_owner.Dev_NameTextID}_Skills";
 #endif
-            // Skills.Add(SkillArray[(int)ESkillType.Skill_A]);
-            // --- 지금 이 부분을 추가하면 안되고, 히어로 레벨이 Lv.3, Lv.5가 되었을 때로 변경해야함
-            // --- Active Skill(B)
-            // SkillArray[(int)ESkillType.Skill_B] = AddSkill(creatureData.Skill_B_ID);
-            // if (SkillArray[(int)ESkillType.Skill_B] != null)
-            // {
-            //     // ActiveSkills.Add(SkillArray[(int)ESkillType.Skill_B]);
-            //     AddActiveSkill(SkillArray[(int)ESkillType.Skill_B]);
-            //     // Skills.Add(SkillArray[(int)ESkillType.Skill_B]);
-            // }
-
-            // // --- Active Skill(C)
-            // SkillArray[(int)ESkillType.Skill_C] = AddSkill(creatureData.Skill_C_ID);
-            // if (SkillArray[(int)ESkillType.Skill_C] != null)
-            // {
-            //     // ActiveSkills.Add(SkillArray[(int)ESkillType.Skill_C]);
-            //     AddActiveSkill(SkillArray[(int)ESkillType.Skill_C]);
-            //     // Skills.Add(SkillArray[(int)ESkillType.Skill_C]);
-            // }
-
-            // --- Check Validation (All Creatures must have one skill at least.)
-            // {
-            //     int skillCount = 0;
-            //     for (int i = 0; i < SkillArray.Length; ++i)
-            //     {
-            //         SkillBase skill = SkillArray[i];
-            //         if (skill != null)
-            //             ++skillCount;
-            //     }
-
-            //     if (skillCount == 0)
-            //     {
-            //         Debug.LogError($"{nameof(SkillComponent)}");
-            //         Debug.Break();
-            //     }
-            // }
         }
 
-        public SkillBase UnlockSkill(int dataID)
+        private int GetSkillID(ESkillType skillType, Creature owner)
         {
-            SkillData skillData = Util.GetSkillData(dataID, owner: _owner);
+            return skillType switch
+            {
+                ESkillType.Skill_A => owner.CreatureData.Skill_A_TemplateID + (owner.Level - 1),
+                ESkillType.Skill_B => owner.CreatureData.Skill_B_TemplateID + (owner.Level - 1),
+                ESkillType.Skill_C => owner.CreatureData.Skill_C_TemplateID + (owner.Level - 1),
+                _ => throw new ArgumentOutOfRangeException(nameof(GetSkillID), $"Invalid value type: {skillType}")
+            };
+        }
+
+        public SkillBase TryUnlockSkill(ESkillType skillType)
+        {
+            // 101000: 101100, 101200, 101300
+            /*
+                Passive: 101000(Lv.01), 101002(Lv.03), 101004(Lv.05), 101007(Lv.08)
+                Skill_A: 101100(Lv.01), 101002(Lv.03), 101004(Lv.05), 101007(Lv.08)
+                Skill_B: 101201(Lv.02), 101203(Lv.04), 101205(Lv.06), 102007(Lv.08)
+                Skill_C: 101302(Lv.03), 101304(Lv.05), 101306(Lv.07), 103007(Lv.08)
+            */
+            int skillID = GetSkillID(skillType, _owner);
+            SkillData skillData = Util.GetSkillData(skillID, owner: _owner);
             if (skillData == null)
                 return null;
 
-            for (int i = 0; i < SkillArray.Length; ++i)
-            {
-                SkillBase skill = SkillArray[i];
-                if (skill != null && skill.SkillType == skillData.SkillType)
-                {
-                    Debug.LogError($"Failed: {nameof(UnlockSkill)}, {skill.Dev_NameTextID} already exists.");
-                    return null;
-                }
-            }
+            // --- Simple Validation Check
+            if (CanUnlockSkill(skillData) == false)
+                return null;
 
             Type skillClassType = Util.GetTypeFromClassName(skillData.ClassName);
             SkillBase newSkill = gameObject.AddComponent(skillClassType) as SkillBase;
             if (newSkill == null)
             {
-                Debug.LogError($"Failed: {nameof(UnlockSkill)}");
+                Debug.LogError($"Failed: {nameof(TryUnlockSkill)}");
                 return null;
             }
 
-            newSkill.InitialSetInfo(dataID: dataID, owner: _owner);
+            newSkill.InitialSetInfo(dataID: skillID, owner: _owner);
+            SkillArray[(int)newSkill.SkillType] = newSkill;
             if (IsActiveSkill(newSkill.SkillType))
-            {
-                SkillArray[(int)newSkill.SkillType] = newSkill;
                 AddActiveSkill(newSkill);
-            }
             
             return newSkill;
         }
-
-        public SkillBase LevelUpMySkill(SkillBase currentSkill, int dataID)
+        
+        public SkillBase TryLevelUpSkill(SkillBase currentSkill)
         {
-            SkillData skillData = Util.GetSkillData(dataID, owner: _owner);
+            int skillID = GetSkillID(currentSkill.SkillType, _owner);
+            SkillData skillData = Util.GetSkillData(skillID, owner: _owner);
             if (skillData == null)
                 return null;
-
-            if (SkillArray[(int)currentSkill.SkillType] == null)
-            {
-                Debug.LogError($"{nameof(LevelUpMySkill)}: You need to try {nameof(UnlockSkill)}.");
-                Debug.Break();
-                return null;
-            }
 
             Type skillClassType = Util.GetTypeFromClassName(skillData.ClassName);
             SkillBase lvUpSkill = gameObject.AddComponent(skillClassType) as SkillBase;
             if (lvUpSkill == null)
             {
-                Debug.LogError($"{nameof(LevelUpMySkill)}");
-                return null;
-            }
-            
-            lvUpSkill.InitialSetInfo(dataID: dataID, owner: _owner);
-            if (lvUpSkill.SkillType != currentSkill.SkillType)
-            {
-                Debug.LogError($"{nameof(LevelUpMySkill)}, Difference of between skill type.");
-                UnityEngine.Object.Destroy(lvUpSkill);
+                Debug.LogError($"{nameof(TryLevelUpSkill)}");
                 return null;
             }
 
-            RemoveActiveSkill(currentSkill);
-            UnityEngine.Object.Destroy(currentSkill);
+            // --- 기존 스킬, 기존 스킬 이펙트 제거
+            SkillArray[(int)currentSkill.SkillType] = null;
+            DestroySkill(currentSkill);
 
+            // --- 새로운 스킬로 교체
+            lvUpSkill.InitialSetInfo(dataID: skillID, owner: _owner);
             SkillArray[(int)lvUpSkill.SkillType] = lvUpSkill;
             AddActiveSkill(lvUpSkill);
+
             return lvUpSkill;
         }
 
-        public void LevelUpSkill(int ownerLevelID)
+        private void DestroySkill(SkillBase skill)
         {
-            if (SkillArray[(int)ESkillType.Skill_B] != null)
-                LevelUpSkill(ownerLevelID + c_Skill_B_INTERVAL_NUMBER, ESkillType.Skill_B);
-            else
-                Debug.LogWarning($"Failed: {nameof(LevelUpSkill)}: Skill_B");
-
-            if (SkillArray[(int)ESkillType.Skill_C] != null)
-                LevelUpSkill(ownerLevelID + c_Skill_C_INTERVAL_NUMBER, ESkillType.Skill_C);
-            else
-                Debug.LogWarning($"Failed: {nameof(LevelUpSkill)}: Skill_C");
-        }
-
-        private void LevelUpSkill(int skillDataID, ESkillType skillType)
-        {
-            int nextSkillID = skillDataID;
-            SkillBase prevSkill = SkillArray[(int)skillType];
-            SkillBase nextSkill = AddSkill(nextSkillID);
-            if (nextSkill != null)
-            {
-                SkillArray[(int)skillType] = nextSkill;
-                if (IsActiveSkill(skillType))
-                {
-                    // ActiveSkills.Remove(prevSkill);
-                    RemoveActiveSkill(prevSkill);
-                    AddActiveSkill(nextSkill);
-                    // ActiveSkills.Add(nextSkill);
-                }
-
-                // Skills.Remove(prevSkill);
-
-                Debug.Log($"--- Success to remove prev Skill: {prevSkill.Dev_NameTextID}");
-                UnityEngine.Object.Destroy(prevSkill);
-                Debug.Log($"<color=white>Success {nameof(LevelUpSkill)}: {skillType}, {nextSkill.Dev_NameTextID}</color>");
-            }
-            else
-            {
-                Debug.LogError($"Failed to find next Skill data: {skillDataID}, {skillType}");
-            }
-        }
-
-        private SkillBase AddSkill(int dataID)
-        {
-            if (dataID == -1)
-                return null;
-
-            Data.SkillData skillData = null;
-            if (_owner.ObjectType == EObjectType.Hero)
-                skillData = Managers.Data.HeroSkillDataDict[dataID];
-            else if (_owner.ObjectType == EObjectType.Monster)
-                skillData = Managers.Data.MonsterSkillDataDict[dataID];
-
-            Type skillClassType = Util.GetTypeFromClassName(skillData.ClassName);
-            SkillBase skill = gameObject.AddComponent(skillClassType) as SkillBase;
-            if (skill == null)
-            {
-                Debug.LogError($"{nameof(AddSkill)}, You have a SkillDataID, but Add Failed.");
-                Debug.Break();
-                return null;
-            }
-
-            skill.InitialSetInfo(dataID: dataID, owner: _owner);
-            return skill;
+            RemoveActiveSkill(skill);
+            SkillData skillData = skill.SkillData;
+            _owner.RemoveEffect(skillData.OnCreateEffectIDs);
+            _owner.RemoveEffect(skillData.OnSkillEnterEffectIDs);
+            _owner.RemoveEffect(skillData.OnSkillCallbackEffectIDs);
+            _owner.RemoveEffect(skillData.OnSkillExitEffectIDs);
+            UnityEngine.Object.Destroy(skill, Time.deltaTime);
         }
 
         public void AddActiveSkill(SkillBase skill)
         {
-            if (skill.SkillType == ESkillType.Skill_A)
+            if (IsActiveSkill(skill.SkillType) == false)
                 return;
 
             Debug.Log($"<color=cyan>Ready(Add): {skill.Dev_NameTextID}</color>");
@@ -279,48 +188,39 @@ namespace STELLAREST_F1
 
         public void RemoveActiveSkill(SkillBase skill)
         {
-            if (skill.SkillType == ESkillType.Skill_A)
+            if (IsActiveSkill(skill.SkillType) == false)
                 return;
 
             Debug.Log($"<color=cyan>End(Remove): {skill.Dev_NameTextID}</color>");
             ActiveSkills.Remove(skill);
         }
 
-        public void OnSkillStateEnter(ESkillType skillType)
-                => SkillArray[(int)skillType]?.OnSkillStateEnter();
-        public void OnSkillStateExit(ESkillType skillType)
-                => SkillArray[(int)skillType]?.OnSkillStateExit();
-
-        public SkillBase UnlockOrLevelUpSkill(int levelID)
-        {
-            SkillBase skillB = SkillArray[(int)ESkillType.Skill_B];
-            // --- Unlock Skill_B
-            if (skillB == null)
-            {
-                int skill_B_ID = levelID + c_Skill_B_INTERVAL_NUMBER;
-                SkillBase newSkill_B = UnlockSkill(dataID: skill_B_ID);
-                if (newSkill_B != null)
-                {
-                    SkillArray[(int)ESkillType.Skill_B] = newSkill_B;
-#if UNITY_EDITOR
-                    ActiveSkillB = newSkill_B.SkillData.Dev_NameTextID;
-#endif
-                }
-            }
-            else // --- LevelUp Skill_B
-            {
-                RemoveActiveSkill(SkillArray[(int)ESkillType.Skill_B]);
-            }
-
-            return null;
-        }
+        public void OnSkillEnter(ESkillType skillType)
+                => SkillArray[(int)skillType]?.OnSkillEnter();
+        public void OnSkillExit(ESkillType skillType)
+                => SkillArray[(int)skillType]?.OnSkillExit();
 
         private bool IsActiveSkill(ESkillType skillType)
             => skillType == ESkillType.Skill_B || skillType == ESkillType.Skill_C;
 
-        private void OnDisable()
+        private void OnDisable() { }
+
+        #region Util
+        private bool CanUnlockSkill(SkillData skillData)
         {
+            for (int i = 0; i < SkillArray.Length; ++i)
+            {
+                SkillBase skill = SkillArray[i];
+                if (skill != null && skill.SkillType == skillData.SkillType)
+                {
+                    Debug.LogError($"Failed: {nameof(CanUnlockSkill)}, {skill.Dev_NameTextID} already exists.");
+                    return false;
+                }
+            }
+
+            return true;
         }
+        #endregion
     }
 }
 

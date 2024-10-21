@@ -154,6 +154,7 @@ namespace STELLAREST_F1
         {
             base.InitialSetInfo(dataID, owner);
             _creatureOwner = owner as Creature;
+            _creatureAnimCallback.InitialSetInfo(owner: _creatureOwner);
             CanSkillTrigger = true;
         }
 
@@ -282,20 +283,18 @@ namespace STELLAREST_F1
         protected virtual void OnUpperSkillAEnter()
         {
             EnteredAnimState(ECreatureAnimState.Upper_SkillA);
-            // _creatureOwner.LookAtValidTarget(); --- 굳이 여기서 해야하나?
-            _creatureOwner.CreatureSkill.OnSkillStateEnter(ESkillType.Skill_A);
+            _creatureOwner.CreatureSkill.OnSkillEnter(ESkillType.Skill_A);
         }
         protected virtual void OnUpperSkillBEnter()
         {
             EnteredAnimState(ECreatureAnimState.Upper_SkillB);
-            // _creatureOwner.LookAtValidTarget(); // --- 굳이 여기서 해야하나?
-            _creatureOwner.CreatureSkill.OnSkillStateEnter(ESkillType.Skill_B);
+            _creatureOwner.CreatureSkill.OnSkillEnter(ESkillType.Skill_B);
         }
 
         protected virtual void OnUpperSkillCEnter()
         {
             EnteredAnimState(ECreatureAnimState.Upper_SkillC);
-            _creatureOwner.CreatureSkill.OnSkillStateEnter(ESkillType.Skill_C);
+            _creatureOwner.CreatureSkill.OnSkillEnter(ESkillType.Skill_C);
         }
 
         protected virtual void OnUpperCollectEnvEnter()
@@ -376,7 +375,7 @@ namespace STELLAREST_F1
             if (skillType == ESkillType.None)
                 return;
 
-            _creatureOwner.CreatureSkill.OnSkillStateExit(skillType);
+            _creatureOwner.CreatureSkill.OnSkillExit(skillType);
         }
     }
 }
