@@ -11,6 +11,9 @@ namespace STELLAREST_F1
         protected override void InitialSetInfo(int dataID)
             => base.InitialSetInfo(dataID);
 
+        protected override void EnterInGame(Vector3 spawnPos)
+            => base.EnterInGame(spawnPos);
+
         public override void ApplyEffect()
             => base.ApplyEffect();
 

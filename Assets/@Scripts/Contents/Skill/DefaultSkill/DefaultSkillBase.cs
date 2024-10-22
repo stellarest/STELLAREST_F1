@@ -8,7 +8,7 @@ using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
-    public class DefaultSkill : SkillBase
+    public class DefaultSkillBase : SkillBase
     {
         #region Events
         public override bool OnSkillEnter()

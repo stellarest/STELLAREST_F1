@@ -394,39 +394,6 @@ namespace STELLAREST_F1
             else
                 LookAtDir = ELookAtDirection.Right;
         }
-
-        // --- PREV
-        // protected void SetStat(int levelID)
-        // {
-        //     StatData statData = null;
-        //     switch (ObjectType)
-        //     {
-        //         case EObjectType.Hero:
-        //             statData = Managers.Data.HeroStatDataDict[levelID];
-        //             break;
-
-        //         case EObjectType.Monster:
-        //             statData = Managers.Data.MonsterStatDataDict[levelID];
-        //             break;
-
-        //         case EObjectType.Env:
-        //             {
-        //                 EnvData envData = Managers.Data.EnvDataDict[levelID];
-                        
-        //                 Health = envData.MaxHealth;
-        //                 MaxHp = MaxHpBase = envData.MaxHealth;
-        //                 return;
-        //             }
-        //     }
-
-        //     Health = statData.MaxHealth;
-        //     MaxHp = MaxHpBase = statData.MaxHealth;
-        //     MinAtk = MinAtkBase = statData.MinAttack;
-        //     MaxAtk = MaxAtkBase = statData.MaxAttack;
-        //     CriticalRate = CriticalRateBase = statData.CriticalRate;
-        //     DodgeRate = DodgeRateBase = statData.DodgeRate;
-        //     MovementSpeed = MovementSpeedBase = statData.MovementSpeed;
-        // }
         #endregion
 
         #region Util: Stat
@@ -470,24 +437,6 @@ namespace STELLAREST_F1
 
         public void RemoveEffect(IEnumerable<int> effectIDs)
             => BaseEffect.RemoveEffect(effectIDs);
-        
-        // public EffectBase GenerateEffect(int effectID, BaseCellObject owner)
-        // {
-        //     if (Util.GetEffectData(effectID, owner) == null)
-        //         return null;
-
-        //     return BaseEffect.GenerateEffect(effectID, );
-        // }
-
-        // public void RequestRemoveEffect(EffectBase effect)
-        // {
-        //     if (effect.IsValid() == false)
-        //         return;
-
-        //     BaseEffect.ActiveEffects.Remove(effect);
-        //     effect.transform.SetParent(Managers.Object.EffectRoot);
-        //     Managers.Object.Despawn(effect, effect.DataTemplateID);
-        // }
         #endregion
     }
 }

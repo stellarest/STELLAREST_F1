@@ -40,26 +40,43 @@ namespace STELLAREST_F1
                 _lockTargetDirs[i] = false;
         }
 
-        // --- Data를 통해서, Skill이 Activate되어 있는 동안 다시 발동하지 않도록,,, 제어해야할듯. (ex) shield
-        private bool _manualCoolTimeSkill = false;
-        public bool LockCoolTimeSkill
+        private bool _manualCoolTime = false;
+        public void StartManualCoolTime()
         {
-            get => _manualCoolTimeSkill;
-            set
+            if (_manualCoolTime == false)
             {
-                _manualCoolTimeSkill = value;
-                if (value == false)
-                {
-                    if (Owner.IsValid() == false)
-                    {
-                        RemainCoolTime = 0.0f;
-                        return;
-                    }
-
-                    StartCoroutine(CoActivateCoolTime());
-                }
+                Debug.LogError($"{nameof(StartManualCoolTime)}, Something is wrong..");
+                Debug.Break();
+                return;
             }
+
+            if (Owner.IsValid() == false)
+            {
+                RemainCoolTime = 0.0f;
+                return;
+            }
+
+            StartCoroutine(CoSkillCoolTimeManually());
         }
+
+        // public bool LockCoolTimeSkill
+        // {
+        //     get => _manualCoolTime;
+        //     set
+        //     {
+        //         _manualCoolTime = value;
+        //         if (value == false)
+        //         {
+        //             if (Owner.IsValid() == false)
+        //             {
+        //                 RemainCoolTime = 0.0f;
+        //                 return;
+        //             }
+
+        //             StartCoroutine(CoActivateManualCoolTime());
+        //         }
+        //     }
+        // }
 
         [SerializeField] private float _remainCoolTime = 0f;
         public virtual float RemainCoolTime
@@ -111,30 +128,30 @@ namespace STELLAREST_F1
 
             Owner.CreatureSkill.RemoveActiveSkill(this);
             Owner.CreatureAnim.Skill(Owner.CreatureSkill.CurrentSkillType);
-            StartCoroutine(CoActivateSkill());
+            StartCoroutine(CoSkillCoolTime());
         }
 
-        private IEnumerator CoActivateSkill()
+        private IEnumerator CoSkillCoolTime()
         {
             RemainCoolTime = SkillData.CoolTime;
-            if (_manualCoolTimeSkill)
+            if (_manualCoolTime)
             {
-                Debug.Log($"<color=magenta>{nameof(_manualCoolTimeSkill)}, {SkillData.Dev_NameTextID}</color>");
+                Debug.Log($"<color=magenta>{nameof(_manualCoolTime)}, {SkillData.Dev_NameTextID}</color>");
                 yield break;
             }
 
             yield return new WaitForSeconds(SkillData.CoolTime);
             RemainCoolTime = 0f;
-            Owner.CreatureSkill.AddActiveSkill(this);
+            Owner.CreatureSkill.AddSpecialSkill(this);
         }
 
-        private IEnumerator CoActivateCoolTime()
+        private IEnumerator CoSkillCoolTimeManually()
         {
-            Debug.Log($"<color=brown>{this.SkillType} activates CoolTime...</color>");
+            Debug.Log($"<color=brown>{this.SkillType} activates manual CoolTime..</color>");
             yield return new WaitForSeconds(RemainCoolTime);
-            _manualCoolTimeSkill = true;
+            //_manualCoolTime = true;
             RemainCoolTime = 0f;
-            Owner.CreatureSkill.AddActiveSkill(this);
+            Owner.CreatureSkill.AddSpecialSkill(this);
         }
 
         protected virtual Projectile GenerateProjectile(Creature owner, Vector3 spawnPos)
@@ -189,7 +206,6 @@ namespace STELLAREST_F1
             Owner = owner as Creature;
             DataTemplateID = dataID;
             SkillData = Util.GetSkillData(dataID, Owner);
-            GenerateSkillEffects(SkillData.OnCreateEffectIDs);
 #if UNITY_EDITOR
             Dev_NameTextID = SkillData.Dev_NameTextID;
             Dev_DescriptionTextID = SkillData.Dev_DescriptionTextID;
@@ -199,6 +215,8 @@ namespace STELLAREST_F1
             TargetDistance = SkillData.TargetDistance;
             SkillType = SkillData.SkillType;
             SkillElementType = SkillData.SkillElementType;
+            _manualCoolTime = SkillData.ManualCoolTime;
+            GenerateSkillEffects(SkillData.OnCreateEffectIDs);
         }
         #endregion
 

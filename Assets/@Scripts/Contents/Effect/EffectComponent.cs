@@ -42,7 +42,7 @@ namespace STELLAREST_F1
         {
             EffectBase effect = Managers.Object.SpawnBaseObject<EffectBase>(
                         objectType: EObjectType.Effect,
-                        spawnPos: /*_owner.CenterPosition*/ spawnPos,
+                        spawnPos: spawnPos,
                         dataID: Util.GlobalDataID(globalEffectID),
                         owner: _owner
                     );
@@ -160,7 +160,10 @@ namespace STELLAREST_F1
             {
                 EffectBase effect = ActiveEffects[i];
                 if (effect.EffectType == effectType)
-                    RemoveEffect(effectType);
+                {
+                    RemoveEffect(effect);
+                    return;
+                }
             }
         }
 

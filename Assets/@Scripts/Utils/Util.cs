@@ -88,11 +88,11 @@ namespace STELLAREST_F1
             EClassName eClassName = GetEnumFromString<EClassName>(className);
             switch (eClassName)
             {
-                case EClassName.DefaultSkill:
-                    return typeof(DefaultSkill);
+                case EClassName.DefaultSkillBase:
+                    return typeof(DefaultSkillBase);
 
-                case EClassName.Shield:
-                    return typeof(Shield);
+                case EClassName.ActiveSkillBase:
+                    return typeof(ActiveSkillBase);
 
                 case EClassName.Projectile:
                     return typeof(Projectile);
@@ -170,7 +170,6 @@ namespace STELLAREST_F1
             quadCenters[1] = from + new Vector3(-offset, offset, 0);      // --- 2사분면 중앙
             quadCenters[2] = from + new Vector3(-offset, -offset, 0);     // --- 3사분면 중앙
             quadCenters[3] = from + new Vector3(offset, -offset, 0);      // --- 4사분면 중앙
-
             int randIdx = UnityEngine.Random.Range(0, quadCenters.Length + 1);
             if (randIdx == quadCenters.Length)                             // --- Center
                 return from;

@@ -12,46 +12,31 @@ namespace STELLAREST_F1
     {
         private Creature _owner = null;
 
-        [field: SerializeField] public List<SkillBase> ActiveSkills { get; private set; } = new List<SkillBase>();
+        // --- SpecialSkills: Skill_B, Skill_C
+        [field: SerializeField] public List<SkillBase> SpecialSkills { get; private set; } = new List<SkillBase>();
         [field: SerializeField] public SkillBase[] SkillArray { get; private set; } = new SkillBase[(int)ESkillType.Max];
 
 #if UNITY_EDITOR
-        public string DefaultSkillA = "";
-        public string ActiveSkillB = "";
-        public string ActiveSkillC = "";
+        public string Skill_A = ""; // --- Basic Skill (* All creatures must have one *)
+        public string Skill_B = ""; // --- Special Skill 1
+        public string Skill_C = ""; // --- Special Skill 2
 #endif
-        // --- *** Projectile: FindSkill에서 참고하고 있는거 고작 하나 때문에 이 컨테이너는 필요 없을지도
-        // public SkillBase FindSkill(int skillDataID) 
-        //     => Skills.FirstOrDefault(s => s.DataTemplateID == skillDataID);
-        // public SkillBase FindSkill(ESkillType skillType)
-        //     => Skills.FirstOrDefault(s => s.SkillType == skillType);
-
-        // public SkillBase[] SkillArray { get; private set; } = new SkillBase[(int)ESkillType.Max]; // --- Caching
-
         [field: SerializeField] public ESkillType CurrentSkillType { get; set; } = ESkillType.None;
         public SkillBase CurrentSkill
-        {
-            get
-            {
-                if (CurrentSkillType == ESkillType.None)
-                    return null;
-
-                return SkillArray[(int)CurrentSkillType];
-            }
-        }
+            => CurrentSkillType == ESkillType.None ? null : SkillArray[(int)CurrentSkillType];
 
         public SkillBase ReadyToActivate
         {
             get
             {
-                if (ActiveSkills.Count == 0)
+                if (SpecialSkills.Count == 0)
                     return SkillArray[(int)ESkillType.Skill_A];
 
-                int rand = UnityEngine.Random.Range(0, ActiveSkills.Count);
-                SkillBase getSkill = ActiveSkills[rand];
+                int rand = UnityEngine.Random.Range(0, SpecialSkills.Count);
+                SkillBase getSkill = SpecialSkills[rand];
                 if (getSkill.RemainCoolTime > 0f)
                 {
-                    getSkill = ActiveSkills[rand == 0 ? ++rand : --rand];
+                    getSkill = SpecialSkills[rand == 0 ? ++rand : --rand];
                     if (getSkill.RemainCoolTime > 0f)
                         return SkillArray[(int)ESkillType.Skill_A];
                 }
@@ -83,7 +68,7 @@ namespace STELLAREST_F1
             }
 
 #if UNITY_EDITOR
-            DefaultSkillA = SkillArray[(int)ESkillType.Skill_A].SkillData.Dev_NameTextID;
+            Skill_A = SkillArray[(int)ESkillType.Skill_A].SkillData.Dev_NameTextID;
             Dev_NameTextID = $"{_owner.Dev_NameTextID}_Skills";
 #endif
         }
@@ -127,8 +112,8 @@ namespace STELLAREST_F1
 
             newSkill.InitialSetInfo(dataID: skillID, owner: _owner);
             SkillArray[(int)newSkill.SkillType] = newSkill;
-            if (IsActiveSkill(newSkill.SkillType))
-                AddActiveSkill(newSkill);
+            if (IsSpecialSkill(newSkill))
+                AddSpecialSkill(newSkill);
             
             return newSkill;
         }
@@ -155,7 +140,7 @@ namespace STELLAREST_F1
             // --- 새로운 스킬로 교체
             lvUpSkill.InitialSetInfo(dataID: skillID, owner: _owner);
             SkillArray[(int)lvUpSkill.SkillType] = lvUpSkill;
-            AddActiveSkill(lvUpSkill);
+            AddSpecialSkill(lvUpSkill);
 
             return lvUpSkill;
         }
@@ -171,28 +156,28 @@ namespace STELLAREST_F1
             UnityEngine.Object.Destroy(skill, Time.deltaTime);
         }
 
-        public void AddActiveSkill(SkillBase skill)
+        public void AddSpecialSkill(SkillBase skill)
         {
-            if (IsActiveSkill(skill.SkillType) == false)
+            if (IsSpecialSkill(skill) == false)
                 return;
 
             Debug.Log($"<color=cyan>Ready(Add): {skill.Dev_NameTextID}</color>");
 #if UNITY_EDITOR
             if (skill.SkillType == ESkillType.Skill_B)
-                ActiveSkillB = skill.Dev_NameTextID;
+                Skill_B = skill.Dev_NameTextID;
             else if (skill.SkillType == ESkillType.Skill_C)
-                ActiveSkillC = skill.Dev_NameTextID;
+                Skill_C = skill.Dev_NameTextID;
 #endif
-            ActiveSkills.Add(skill);
+            SpecialSkills.Add(skill);
         }
 
         public void RemoveActiveSkill(SkillBase skill)
         {
-            if (IsActiveSkill(skill.SkillType) == false)
+            if (IsSpecialSkill(skill) == false)
                 return;
 
             Debug.Log($"<color=cyan>End(Remove): {skill.Dev_NameTextID}</color>");
-            ActiveSkills.Remove(skill);
+            SpecialSkills.Remove(skill);
         }
 
         public void OnSkillEnter(ESkillType skillType)
@@ -200,8 +185,8 @@ namespace STELLAREST_F1
         public void OnSkillExit(ESkillType skillType)
                 => SkillArray[(int)skillType]?.OnSkillExit();
 
-        private bool IsActiveSkill(ESkillType skillType)
-            => skillType == ESkillType.Skill_B || skillType == ESkillType.Skill_C;
+        private bool IsSpecialSkill(SkillBase skill)
+            => skill != null ? skill.SkillType != ESkillType.Skill_A : false; 
 
         private void OnDisable() { }
 

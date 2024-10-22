@@ -260,7 +260,6 @@ namespace STELLAREST_F1
                 CreatureSkill.TryLevelUpSkill(CreatureSkill.SkillArray[(int)ESkillType.Skill_C]);
 
             // --- Leader Skill (TODO, TEMP)
-
             // ApplyNewPassive();
             CreatureAnim.RefreshAnimEventHandlers();
             if (IsMaxLevel && Managers.Game.HasElitePackage)

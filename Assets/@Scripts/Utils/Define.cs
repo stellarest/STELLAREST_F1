@@ -351,8 +351,8 @@ namespace STELLAREST_F1
         // Util.GetTypeFromClassName에 반드시 타입 추가
         public enum EClassName
         {
-            DefaultSkill,
-            Shield,
+            DefaultSkillBase,
+            ActiveSkillBase,
             Projectile,
             StraightMotion,
             ParabolaMotion,

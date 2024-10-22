@@ -53,9 +53,6 @@ public class VFXShieldBlue : VFXBase
         {
             Debug.LogWarning("Zero value of BonusHealthShield.");
             ExitEffect();
-
-            // Owner.BaseEffect.RemoveEffect(EEffectType.Buff_SubStat_BonusHealthShield);
-            // Owner.BaseEffect.RemoveEffect(this);
             return;
         }
 
@@ -99,13 +96,13 @@ public class VFXShieldBlue : VFXBase
     private IEnumerator CoRemoveShield(Action endCallback)
     {
         yield return new WaitForSeconds(2.0F);
-
         for (int i = 0; i < _offShields.Length; ++i)
             _offShields[i].gameObject.SetActive(false);
 
         transform.localPosition = Vector3.zero;
         transform.localScale = Vector3.one;
-        _skill.LockCoolTimeSkill = false;
+        //_skill.LockCoolTimeSkill = false;
+        _skill.StartManualCoolTime();
         endCallback?.Invoke();
     }
 }

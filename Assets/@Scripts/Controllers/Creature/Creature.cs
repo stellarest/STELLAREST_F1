@@ -239,15 +239,15 @@ namespace STELLAREST_F1
             else
                 finalDamage = Mathf.Round(damage);
 
-            // --- 순서는 BonusHealthShield부터..
             float prevBonusHealth = finalDamage > BonusHealth ? BonusHealth : 0.0f;
-            remainedDamage = OnDamagedBonusHealth(finalDamage);
+            // --- 순서는 BonusHealthShield부터
             if (BonusHealthShield > 0.0f)
             {
+                remainedDamage = OnDamagedBonusHealth(finalDamage, EEffectType.Buff_SubStat_BonusHealthShield);
                 if (BaseEffect.IsAppliedEffect(EEffectType.VFX_ShieldBlue))
                 {
                     BaseEffect.OnShowEffect(EEffectType.VFX_ShieldBlue);
-                    if (BonusHealth == 0.0f || remainedDamage > 0.0f) // Bonus Helath가 0.0이라는 의미다.
+                    if (BonusHealthShield == 0.0f || remainedDamage > 0.0f) // Bonus Helath가 0.0이라는 의미다.
                     {
                         // --- Shield의 경우에는 보호막이 깨지면, 나머지 잔여 데미지량은 무시(무효)한다.
                         // --- FontAnim에 Random Height도 있으면 좋을 것 같은데.
@@ -259,7 +259,7 @@ namespace STELLAREST_F1
                         // --- Duration 추가해야 할 것 같은데.. BREAK !! 부분은 yellow로 하고 싶기도 하고
                         ShowTextFont(text: "SHIELD\n  BREAK !!", fontSize: 5.5f, textColor: Managers.MonoContents.BrightBlue, fontAnimType: shieldBreakAnimType);
 
-                        // --- VFX 제거
+                        // --- VFX 제거 (********** 여기서 튕김 **********)
                         BaseEffect.RemoveEffect(EEffectType.VFX_ShieldBlue);
                         // --- 버프 제거
                         BaseEffect.RemoveEffect(EEffectType.Buff_SubStat_BonusHealthShield);
@@ -281,6 +281,7 @@ namespace STELLAREST_F1
             }
             else if (BonusHealth > 0.0f)
             {
+                remainedDamage = OnDamagedBonusHealth(finalDamage, EEffectType.Buff_SubStat_BonusHealth);
                 if (BaseEffect.IsAppliedEffect(EEffectType.VFX_BonusHealth))
                 {
                     BaseEffect.OnShowEffect(EEffectType.VFX_BonusHealth);
@@ -473,16 +474,29 @@ namespace STELLAREST_F1
             // }
         }
 
-        private float OnDamagedBonusHealth(float finalDamage)
+        private float OnDamagedBonusHealth(float finalDamage, EEffectType effectBuffType)
         {
             float remainedDamage = 0.0f;
-            if (finalDamage > BonusHealth)
+            if (effectBuffType == EEffectType.Buff_SubStat_BonusHealth)
             {
-                remainedDamage = finalDamage - BonusHealth;
-                BonusHealth = 0.0f;
+                if (finalDamage > BonusHealth)
+                {
+                    remainedDamage = finalDamage - BonusHealth;
+                    BonusHealth = 0.0f;
+                }
+                else
+                    BonusHealth = Mathf.Clamp(BonusHealth - finalDamage, 0.0f, BonusHealth);
             }
-            else
-                BonusHealth = Mathf.Clamp(BonusHealth - finalDamage, 0.0f, BonusHealth);
+            else if (effectBuffType == EEffectType.Buff_SubStat_BonusHealthShield)
+            {
+                if (finalDamage > BonusHealthShield)
+                {
+                    remainedDamage = finalDamage - BonusHealthShield;
+                    BonusHealthShield = 0.0f;
+                }
+                else
+                    BonusHealthShield = Mathf.Clamp(BonusHealthShield - finalDamage, 0.0f, BonusHealthShield);
+            }
 
             return remainedDamage;
         }
@@ -567,8 +581,8 @@ namespace STELLAREST_F1
         protected Coroutine _coUpdateAI = null;
         protected IEnumerator CoUpdateAI()
         {
-            if (ObjectType == EObjectType.Monster)
-                yield break;
+            // if (ObjectType == EObjectType.Monster)
+            //     yield break;
 
             while (true)
             {
@@ -645,14 +659,15 @@ namespace STELLAREST_F1
 
         protected void ShowImpactHit(SkillBase skillByAttacker, bool isCritical)
         {
+            Vector3 impactVFXSpawnPos = Util.GetRandomQuadPosition(CenterPosition);
             if (isCritical)
-                GenerateGlobalEffect(EGlobalEffectID.ImpactCriticalHit, CenterPosition);
+                GenerateGlobalEffect(EGlobalEffectID.ImpactCriticalHit, impactVFXSpawnPos);
             else
-                GenerateGlobalEffect(EGlobalEffectID.ImpactHit, CenterPosition);
+                GenerateGlobalEffect(EGlobalEffectID.ImpactHit, impactVFXSpawnPos);
 
+            // DO SOMETHING(FIRE, ICE AND ETC...)
             if (skillByAttacker.SkillElementType != ESkillElementType.Fire)
             {
-                // DO SOMETHING(FIRE, ICE AND ETC...)
             }
         }
 

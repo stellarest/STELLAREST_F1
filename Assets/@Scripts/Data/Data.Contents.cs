@@ -430,6 +430,7 @@ namespace STELLAREST_F1.Data
         public int TargetDistance;
         public int ProjectileID;
 		public float CoolTime;
+        public bool ManualCoolTime;
         public int[] OnCreateEffectIDs;            // UnlockSkill로 AddComponent로 새롭게 생성 되었을 때, 최초 한 번
         public int[] OnSkillEnterEffectIDs;        // OnSkillEnterState
         public int[] OnSkillCallbackEffectIDs;     // OnSkillCallback 

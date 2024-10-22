@@ -5,7 +5,7 @@ using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
-    public class BodyAttack : ActiveSkill
+    public class BodyAttack : ActiveSkillBase
     {
         private float _delta = 0f;
         private float _desiredTimeToReach = 0.35f;
@@ -47,7 +47,6 @@ namespace STELLAREST_F1
         private IEnumerator CoBodyAttack()
         {
             //_startPoint = Managers.Map.GetCenterWorld(Owner.CellPos);
-            
             _startPoint = Owner.transform.position;
             _targetPoint = Managers.Map.CellToCenteredWorld(Owner.Target.CellPos);
             yield return new WaitUntil(() => IsReachedPoint(_startPoint, _targetPoint, _desiredTimeToReach, EAnimationCurveType.Linear));
@@ -60,6 +59,7 @@ namespace STELLAREST_F1
             // if ((Owner.CenterPosition - Owner.Target.CenterPosition).sqrMagnitude < 1.5f)
             //     Owner.Target.OnDamaged(Owner, this);
             // Debug.Log($"sqrMag: {(_startPoint - _targetPoint).sqrMagnitude}");
+
             if ((_startPoint - _targetPoint).sqrMagnitude <= _sqrTargetDist * _sqrTargetDist)
             {
                 if (IsValidTarget)

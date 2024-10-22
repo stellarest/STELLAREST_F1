@@ -103,7 +103,8 @@ namespace STELLAREST_F1
                 EffectClearType = EEffectClearType.TimeOut;
             }
 
-            transform.position = EffectSpawnInfo(EffectData.EffectSpawnType);
+            //transform.position = EffectSpawnInfo(EffectData.EffectSpawnType);
+            transform.position = spawnPos;
         }
 
         public virtual void ApplyEffect()
@@ -141,33 +142,33 @@ namespace STELLAREST_F1
             }
         }
 
-        private Vector3 EffectSpawnInfo(EEffectSpawnType effectSpawnType)
-        {
-            if (effectSpawnType == EEffectSpawnType.None)
-                return SpawnedPos;
-            else if (effectSpawnType == EEffectSpawnType.SetParentOwner)
-            {
-                transform.SetParent(Owner.transform);
-                return SpawnedPos;
-            }
+        // private Vector3 EffectSpawnInfo(EEffectSpawnType effectSpawnType)
+        // {
+        //     if (effectSpawnType == EEffectSpawnType.None)
+        //         return SpawnedPos;
+        //     else if (effectSpawnType == EEffectSpawnType.SetParentOwner)
+        //     {
+        //         transform.SetParent(Owner.transform);
+        //         return SpawnedPos;
+        //     }
 
-            SkillBase currentSkill = Owner.GetComponent<Creature>().CreatureSkill.CurrentSkill;
-            _enteredDir = currentSkill.EnteredTargetDir;
-            _enteredSignX = currentSkill.EnteredSignX;
+        //     SkillBase currentSkill = Owner.GetComponent<Creature>().CreatureSkill.CurrentSkill;
+        //     _enteredDir = currentSkill.EnteredTargetDir;
+        //     _enteredSignX = currentSkill.EnteredSignX;
 
-            if (effectSpawnType == EEffectSpawnType.SkillFromOwner)
-            {
-                SpawnedPos = currentSkill.EnteredOwnerPos;
-                return currentSkill.EnteredOwnerPos;
-            }
-            else if (effectSpawnType == EEffectSpawnType.SkillFromTarget)
-            {
-                SpawnedPos = currentSkill.EnteredTargetPos;
-                return currentSkill.EnteredTargetPos;
-            }
+        //     if (effectSpawnType == EEffectSpawnType.SkillFromOwner)
+        //     {
+        //         SpawnedPos = currentSkill.EnteredOwnerPos;
+        //         return currentSkill.EnteredOwnerPos;
+        //     }
+        //     else if (effectSpawnType == EEffectSpawnType.SkillFromTarget)
+        //     {
+        //         SpawnedPos = currentSkill.EnteredTargetPos;
+        //         return currentSkill.EnteredTargetPos;
+        //     }
 
-            return SpawnedPos;
-        }
+        //     return SpawnedPos;
+        // }
         #endregion
 
         protected virtual void ProcessDot() { }

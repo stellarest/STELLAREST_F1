@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace STELLAREST_F1
 {
-    public class AreaSkill : SkillBase
+    public class AreaSkillBase : SkillBase
     {
         public SpellIndicator Indicator { get; protected set; } = null;
 
