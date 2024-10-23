@@ -4,12 +4,13 @@ namespace STELLAREST_F1
     public static class Define
     {
         // --- 독립적인 게임 패키지
-        public enum EGamePackages
-        {
-            ElitePack,                // 3,500 KRW
-            PremiumPack,              // 12,000 KRW
-            Max = PremiumPack + 1
-        }
+        // ---> Apple Arcade로 변경
+        // public enum EGamePackages
+        // {
+        //     ElitePack,                // 3,500 KRW
+        //     PremiumPack,              // 12,000 KRW
+        //     Max = PremiumPack + 1
+        // }
 
         public enum EHeroGrade
         {
@@ -817,8 +818,7 @@ namespace STELLAREST_F1
                 public static readonly string Tilemap_Collision = "Tilemap_Collision";
 
                 // [ INTEGER ]
-                public static readonly int HeroMaxLevel = 7;
-                public static readonly int EliteHeroMaxLevel = 8;
+                public static readonly int HeroMaxLevel = 8;
                 public static readonly int CanTryMaxSpawnCount = 999;
 
                 public static readonly int RockElementsCount = 3;

@@ -68,7 +68,7 @@ namespace STELLAREST_F1
                 }
 
                 // --- If success making spawn position
-                spawnPos = Managers.Map.CellToCenteredWorld(cellSpawnPos);
+                spawnPos = Managers.Map.CellToCenterWorld(cellSpawnPos);
             }
 
             GameObject go = null;

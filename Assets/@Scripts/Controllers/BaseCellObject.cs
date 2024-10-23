@@ -38,7 +38,7 @@ namespace STELLAREST_F1
         {
             get
             {
-                Vector3 center = Managers.Map.CellToCenteredWorld(CellPos);
+                Vector3 center = Managers.Map.CellToCenterWorld(CellPos);
                 float threshold = 0.1f;
                 if ((center - transform.position).sqrMagnitude < threshold * threshold)
                     return true;
@@ -156,7 +156,7 @@ namespace STELLAREST_F1
 
         public void MoveToCellCenter()
         {
-            Vector3 center = Managers.Map.CellToCenteredWorld(CellPos);
+            Vector3 center = Managers.Map.CellToCenterWorld(CellPos);
             Vector3 dir = center - transform.position;
 
             float threshold = 0.1f;
@@ -193,7 +193,7 @@ namespace STELLAREST_F1
             Vector3 currentWorldPos = Managers.Map.CellToWorld(currentCellPos);
             while (pathQueue.Count != 0)
             {
-                Vector3 destPos = Managers.Map.CellToCenteredWorld(nextPos);
+                Vector3 destPos = Managers.Map.CellToCenterWorld(nextPos);
                 Vector3 dir = destPos - transform.position;
                 if (dir.x < 0f)
                     LookAtDir = ELookAtDirection.Left;
@@ -345,10 +345,10 @@ namespace STELLAREST_F1
         public void SetCellPos(Vector3Int cellPos)
         {
             Managers.Map.RemoveCellObject(this);
-            Managers.Map.Cells[cellPos] = this;
+            Managers.Map.Cells[cellPos] = this; // --- ADD OBJECT IN CELLS
             CellPos = cellPos;
             NextCellPos = cellPos;
-            transform.position = Managers.Map.CellToCenteredWorld(cellPos);
+            transform.position = Managers.Map.CellToCenterWorld(cellPos);
             LerpToCellPosCompleted = true;
         }
 
@@ -364,7 +364,7 @@ namespace STELLAREST_F1
             if (LerpToCellPosCompleted)
                 return;
 
-            Vector3 destPos = Managers.Map.CellToCenteredWorld(NextCellPos);
+            Vector3 destPos = Managers.Map.CellToCenterWorld(NextCellPos);
             Vector3 dir = destPos - transform.position;
             if (dir.x < 0f)
                 LookAtDir = ELookAtDirection.Left;

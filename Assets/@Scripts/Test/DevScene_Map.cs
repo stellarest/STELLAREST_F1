@@ -30,7 +30,7 @@ namespace STELLAREST_F1
                 yield return new WaitUntil(() => Managers.Object.Monsters.Count == 0);
                 yield return new WaitForSeconds(waitTime);
                 Monster chicken = Managers.Object.SpawnBaseObject<Monster>
-                    (objectType: EObjectType.Monster, spawnPos: Managers.Map.CellToCenteredWorld(new Vector3Int(-9, 8, 0)),
+                    (objectType: EObjectType.Monster, spawnPos: Managers.Map.CellToCenterWorld(new Vector3Int(-9, 8, 0)),
                      dataID: ReadOnly.DataAndPoolingID.DNPID_Monster_Chicken);
             }
         }
@@ -49,13 +49,13 @@ namespace STELLAREST_F1
                 if (_spawnEnvTypeFlag == false)
                 {
                     Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
-                       spawnPos: Managers.Map.CellToCenteredWorld(new Vector3Int(-6, 11, 0)),
+                       spawnPos: Managers.Map.CellToCenterWorld(new Vector3Int(-6, 11, 0)),
                        dataID: ReadOnly.DataAndPoolingID.DNPID_Env_AshTree);
                 }
                 else
                 {
                     Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
-                       spawnPos: Managers.Map.CellToCenteredWorld(new Vector3Int(-3, 11, 0)),
+                       spawnPos: Managers.Map.CellToCenterWorld(new Vector3Int(-3, 11, 0)),
                        dataID: ReadOnly.DataAndPoolingID.DNPID_Env_GoldRock);
                 }
 
@@ -66,7 +66,7 @@ namespace STELLAREST_F1
         private void SpawnChicken_Test(int cellPosX, int cellPosY)
         {
             Managers.Object.SpawnBaseObject<Monster>
-                (objectType: EObjectType.Monster, spawnPos: Managers.Map.CellToCenteredWorld(new Vector3Int(cellPosX, cellPosY, 0)),
+                (objectType: EObjectType.Monster, spawnPos: Managers.Map.CellToCenterWorld(new Vector3Int(cellPosX, cellPosY, 0)),
                 dataID: ReadOnly.DataAndPoolingID.DNPID_Monster_Chicken, owner: null);
         }
 
@@ -90,7 +90,7 @@ namespace STELLAREST_F1
 
                 // SHADER,
                 StartCoroutine(CoContinuousSpawnMonster_Test(5.5f));
-                //StartCoroutine(CoContinuousSpawnEnv_Test(1f));
+                StartCoroutine(CoContinuousSpawnEnv_Test(1f));
 
                 // ddd
                 // SpawnChicken_Test(-8, 8);
@@ -468,10 +468,6 @@ namespace STELLAREST_F1
                 {
                     Managers.Data.Init();
                     Managers.MonoContents.Init();
-                    Managers.Game.Init();
-#if UNITY_EDITOR
-                    Managers.Game.HasGamePackages[(int)EGamePackages.ElitePack] = true;
-#endif
                     Test();
                 }
             });

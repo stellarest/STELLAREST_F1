@@ -57,6 +57,7 @@ namespace STELLAREST_F1
 
         protected override void EnterInGame(Vector3 spawnPos)
         {
+            SpawnedCellPos = Managers.Map.WorldToCell(spawnPos);
             base.EnterInGame(spawnPos);
             EnvBody.StartCoFadeInEffect(startCallback: () =>
                         {
@@ -64,11 +65,12 @@ namespace STELLAREST_F1
                                     globalEffectID: EnvType == EEnvType.Tree ?
                                                         EGlobalEffectID.TeleportGreen :
                                                         EGlobalEffectID.TeleportRed,
-                                    spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos)
+                                    spawnPos: Managers.Map.CellToCenterWorld(Vector3Int.up + SpawnedCellPos)
                             );
-                        });
+                        }, endCallback: null);
                         
             EnvState = EEnvState.Idle;
+            Debug.Log($"{Dev_NameTextID}: {transform.position}");
 
             // switch (EnvType)
             // {

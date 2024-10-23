@@ -48,7 +48,7 @@ namespace STELLAREST_F1
         {
             //_startPoint = Managers.Map.GetCenterWorld(Owner.CellPos);
             _startPoint = Owner.transform.position;
-            _targetPoint = Managers.Map.CellToCenteredWorld(Owner.Target.CellPos);
+            _targetPoint = Managers.Map.CellToCenterWorld(Owner.Target.CellPos);
             yield return new WaitUntil(() => IsReachedPoint(_startPoint, _targetPoint, _desiredTimeToReach, EAnimationCurveType.Linear));
             // if (Owner.IsValid() == false || Owner.Target.IsValid() == false)
             // {

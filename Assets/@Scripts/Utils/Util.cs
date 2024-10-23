@@ -210,7 +210,7 @@ namespace STELLAREST_F1
 
         public static bool IsNearCellCenter(BaseObject baseObj, Vector3Int cellPos, float threshold = 0.1f)
         {
-            Vector3 center = Managers.Map.CellToCenteredWorld(cellPos);
+            Vector3 center = Managers.Map.CellToCenterWorld(cellPos);
             if ((center - baseObj.transform.position).sqrMagnitude < threshold * threshold)
                 return true;
 
@@ -429,7 +429,7 @@ namespace STELLAREST_F1
         public static GameObject SpawnTestObject(Vector3Int spawnCellPos)
         {
             GameObject obj = Managers.Resource.Instantiate("TestCircleObject");
-            obj.transform.position = Managers.Map.CellToCenteredWorld(spawnCellPos);
+            obj.transform.position = Managers.Map.CellToCenterWorld(spawnCellPos);
             return obj;
         }
 #endif

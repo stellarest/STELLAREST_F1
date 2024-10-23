@@ -46,10 +46,7 @@ namespace STELLAREST_F1
                         if (effectType == EEffectType.Buff_SubStat_BonusHealth)
                             BonusHealth = Mathf.Clamp(baseValue - _baseStat.MaxHealth, 0.0f, _baseStat.MaxHealth);
                         else
-                        {
                             BonusHealthShield = Mathf.Clamp(baseValue - _baseStat.MaxHealth, 0.0f, _baseStat.MaxHealth);
-                            Debug.Log("Yaho Yaho Yaho");
-                        }
                     }
                     break;
 
@@ -157,7 +154,6 @@ namespace STELLAREST_F1
 
         public int MaxLevel => (_maxLevelID % _dataTemplateID) + 1;
 
-
         [SerializeField] protected int _levelID = -1;
         public int LevelID => _levelID;
 
@@ -197,11 +193,7 @@ namespace STELLAREST_F1
             _subStat.InitialSetInfo(baseStat: this);
             if (Owner.ObjectType == EObjectType.Hero)
             {
-                int heroMaxLevel = Managers.Game.HasElitePackage ? 
-                                   ReadOnly.Util.EliteHeroMaxLevel :
-                                   ReadOnly.Util.HeroMaxLevel;
-
-                for (int i = dataID; i < dataID + heroMaxLevel;)
+                for (int i = dataID; i < dataID + ReadOnly.Util.HeroMaxLevel;)
                     _maxLevelID = i++;
             }
             else

@@ -170,7 +170,7 @@ namespace STELLAREST_F1
             {
                 GenerateGlobalEffect(
                         globalEffectID: EGlobalEffectID.TeleportBlue,
-                        spawnPos: Managers.Map.CellToCenteredWorld(Vector3Int.up + SpawnedCellPos)
+                        spawnPos: Managers.Map.CellToCenterWorld(Vector3Int.up + SpawnedCellPos)
                     );
             });
             
@@ -202,7 +202,7 @@ namespace STELLAREST_F1
                 return;
             }
 
-            Vector3 destPos = Managers.Map.CellToCenteredWorld(CellPos); // 이동은 가운데로.
+            Vector3 destPos = Managers.Map.CellToCenterWorld(CellPos); // 이동은 가운데로.
             Vector3 dir = destPos - transform.position;
 
             if (dir.x < 0f)
@@ -262,9 +262,9 @@ namespace STELLAREST_F1
             // --- Leader Skill (TODO, TEMP)
             // ApplyNewPassive();
             CreatureAnim.RefreshAnimEventHandlers();
-            if (IsMaxLevel && Managers.Game.HasElitePackage)
+            if (IsMaxLevel)
             {
-                Debug.Log($"<color=yellow>MaxUp(Elite) Hero</color>");
+                Debug.Log($"<color=yellow>MaxLv Hero</color>");
                 HeroBody.ChangeSpriteSet(Managers.Data.HeroSpriteDataDict[BaseStat.LevelID]);
             }
 

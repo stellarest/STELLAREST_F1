@@ -592,7 +592,7 @@ namespace STELLAREST_F1
             while (_leaderPath.Count != 0)
             {
                 Vector3Int nextPos = _leaderPath.Peek();
-                Vector3 destPos = Managers.Map.CellToCenteredWorld(nextPos);
+                Vector3 destPos = Managers.Map.CellToCenterWorld(nextPos);
                 Vector3 dir = destPos - _leader.transform.position;
 
                 // TODO: Out Leader CoPathFinding Immediately

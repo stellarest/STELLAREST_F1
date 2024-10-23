@@ -28,7 +28,7 @@ namespace STELLAREST_F1
 
         public Vector3Int WorldToCell(Vector3 worldPos) => CellGrid.WorldToCell(worldPos);
         public Vector3 CellToWorld(Vector3Int cellPos) => CellGrid.CellToWorld(cellPos);
-        public Vector3 CellToCenteredWorld(Vector3Int cellPos) => CellGrid.GetCellCenterWorld(cellPos);
+        public Vector3 CellToCenterWorld(Vector3Int cellPos) => CellGrid.GetCellCenterWorld(cellPos);
 
         private ECellCollisionType[,] _cellCollisionType = null;
 
@@ -114,7 +114,7 @@ namespace STELLAREST_F1
                     else if (tile.ObjectType == EObjectType.Monster)
                     {
                         Monster monster = Managers.Object.SpawnBaseObject<Monster>
-                            (objectType: EObjectType.Monster, spawnPos: Managers.Map.CellToCenteredWorld(cellPos), 
+                            (objectType: EObjectType.Monster, spawnPos: Managers.Map.CellToCenterWorld(cellPos), 
                             dataID: tile.DataID);
 
                         // --- Respawn Spawn Data 필요

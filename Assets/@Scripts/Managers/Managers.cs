@@ -25,7 +25,7 @@ namespace STELLAREST_F1
                         DontDestroyOnLoad(go);
                     }
 
-                    s_instance = go.AddComponent<Managers>();
+                    s_instance = go.GetOrAddComponent<Managers>();
                 }
 
                 return s_instance;

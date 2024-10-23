@@ -9,12 +9,6 @@ namespace STELLAREST_F1
 {
     public class GameManager
     {
-        #if UNITY_EDITOR // --- 상점 패키지 전용
-        public bool[] HasGamePackages { get; } = new bool[(int)EGamePackages.Max];
-        public bool HasElitePackage => HasGamePackages[(int)EGamePackages.ElitePack];
-        public bool HasPremiumPackage => HasGamePackages[(int)EGamePackages.PremiumPack];
-        #endif
-
         private Vector2 _moveDir = Vector2.zero;
         public Vector2 MoveDir
         {
@@ -39,12 +33,6 @@ namespace STELLAREST_F1
         }
         public event Action<EJoystickState> OnJoystickStateChangedHandler = null;
         public bool IsGameOver => Managers.Object.Heroes.Count == 0 ? true : false;
-
-        public void Init()
-        {
-            for (int i = 0; i < HasGamePackages.Length; ++i)
-                HasGamePackages[i] = false;
-        }
 
         // Leader Change CoolTime 필요... 1초 정도?
         public void ChangeHeroLeader(bool autoChangeFromDead)
