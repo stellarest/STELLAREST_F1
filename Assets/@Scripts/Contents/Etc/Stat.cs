@@ -9,17 +9,16 @@ using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
-    public class SubStat : InitBase
+    public class BuffStat : InitBase
     {
-        public const float c_ZeroBase = 0.0f;
         private BaseStat _baseStat = null;
         private BaseCellObject _owner = null;
 
+        [field: SerializeField] public float Shield { get; set; } = 0.0f;
         [field: SerializeField] public float BonusHealth { get; set; } = 0.0f;
-        [field: SerializeField] public float BonusHealthShield { get; set; } = 0.0f;
         [field: SerializeField] public float Armor { get; set; } = 0.0f;
-        [field: SerializeField] public float CriticalRate { get; set; } = 0.0f;
-        [field: SerializeField] public float DodgeRate { get; set; } = 0.0f;
+        [field: SerializeField] public float Critical { get; set; } = 0.0f;
+        [field: SerializeField] public float Dodge { get; set; } = 0.0f;
         [field: SerializeField] public float Luck { get; set; } = 0.0f;
         [field: SerializeField] public int InvincibleBlockCountPerWave { get; set; } = 0;
 
@@ -27,55 +26,139 @@ namespace STELLAREST_F1
         {
             _baseStat = baseStat;
             _owner = baseStat.Owner;
-            BonusHealth = BonusHealthShield = Armor = CriticalRate = DodgeRate = Luck = c_ZeroBase;
-            InvincibleBlockCountPerWave = (int)c_ZeroBase;
         }
 
-        public void ApplySubStat(EEffectType effectType)
+        public void ApplyBuffStat(EEffectType effectType)
         {
-            float baseValue = c_ZeroBase;
             switch (effectType)
             {
-                case EEffectType.Buff_SubStat_BonusHealth:
-                case EEffectType.Buff_SubStat_BonusHealthShield:
+                case EEffectType.BuffStat_MaxHealth:
                     {
-                        baseValue = _baseStat.MaxHealth;
-                        baseValue += _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddAmount);
+                        float baseValue = _baseStat.MaxHealth;
+                        baseValue += _owner.BaseEffect.GetStatModifier(effectType, EStatModType.Amount);
                         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercent);
                         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercentMulti);
-                        if (effectType == EEffectType.Buff_SubStat_BonusHealth)
-                            BonusHealth = Mathf.Clamp(baseValue - _baseStat.MaxHealth, 0.0f, _baseStat.MaxHealth);
-                        else
-                            BonusHealthShield = Mathf.Clamp(baseValue - _baseStat.MaxHealth, 0.0f, _baseStat.MaxHealth);
+                        _baseStat.MaxHealth = baseValue;
                     }
                     break;
 
-                case EEffectType.Buff_SubStat_Armor:
+                case EEffectType.BuffStat_Damage:
                     {
-                        baseValue += _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddAmount);
+                        float baseValue = _baseStat.MinDamage;
+                        baseValue += _owner.BaseEffect.GetStatModifier(effectType, EStatModType.Amount);
+                        baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercent);
+                        baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercentMulti);
+                        _baseStat.MinDamage = baseValue;
+
+                        baseValue = _baseStat.MaxDamage;
+                        baseValue += _owner.BaseEffect.GetStatModifier(effectType, EStatModType.Amount);
+                        baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercent);
+                        baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercentMulti);
+                        _baseStat.MaxDamage = baseValue;
+                    }
+                    break;
+
+                case EEffectType.BuffStat_AttackRate:
+                    {
+                        float baseValue = _baseStat.AttackRate;
+                        baseValue += _owner.BaseEffect.GetStatModifier(effectType, EStatModType.Amount);
+                        baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercent);
+                        baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercentMulti);
+                        _baseStat.AttackRate = Mathf.Clamp(baseValue, 0.1f, ReadOnly.Util.MaxAttackRate);
+                    }
+                    break;
+
+                case EEffectType.BuffStat_MovementSpeed:
+                    {
+                        float baseValue = _baseStat.MovementSpeed;
+                        baseValue += _owner.BaseEffect.GetStatModifier(effectType, EStatModType.Amount);
+                        baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercent);
+                        baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercentMulti);
+                        _baseStat.MovementSpeed = _baseStat.MovementSpeed;
+                    }
+                    break;
+
+                case EEffectType.BuffStat_Shield:
+                    {
+                        float baseValue = _baseStat.MaxHealth;
+                        baseValue += _owner.BaseEffect.GetStatModifier(effectType, EStatModType.Amount);
+                        baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercent);
+                        baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercentMulti);
+                        BonusHealth = Mathf.Clamp(baseValue - _baseStat.MaxHealth, 0.0f, _baseStat.MaxHealth);
+                    }
+                    break;
+
+                case EEffectType.BuffStat_BonusHealth:
+                    {
+                        float baseValue = _baseStat.MaxHealth;
+                        baseValue += _owner.BaseEffect.GetStatModifier(effectType, EStatModType.Amount);
+                        baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercent);
+                        baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercentMulti);
+                        Shield = Mathf.Clamp(baseValue - _baseStat.MaxHealth, 0.0f, _baseStat.MaxHealth);
+                    }
+                    break;
+
+                case EEffectType.BuffStat_Armor:
+                    {
+                        Debug.Log(_baseStat.MaxHealth);
+                        float baseValue = Armor;
+                        baseValue += _owner.BaseEffect.GetStatModifier(effectType, EStatModType.Amount);
                         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercent);
                         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercentMulti);
                         Armor = Mathf.Clamp(baseValue, 0.0f, ReadOnly.Util.MaxArmor);
                     }
                     break;
 
-                // case EEffectType.Buff_SubStat_DamageRate:
-                //     {
-                //         baseValue = _baseStat.Damage;
-                //         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercent);
-                //         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercentMulti);
-                //         Sub_DamageRate = baseValue;
-                //     }
-                //     break;
+
+                case EEffectType.BuffStat_Critical:
+                    {
+                        float baseValue = Critical;
+                        baseValue += _owner.BaseEffect.GetStatModifier(effectType, EStatModType.Amount);
+                        baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercent);
+                        baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercentMulti);
+                        Critical = Mathf.Clamp(baseValue, 0.0f, 1.0f);
+                    }
+                    break;
+
+                case EEffectType.BuffStat_Dodge:
+                    {
+                        float baseValue = Dodge;
+                        baseValue += _owner.BaseEffect.GetStatModifier(effectType, EStatModType.Amount);
+                        baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercent);
+                        baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercentMulti);
+                        Critical = Mathf.Clamp(Dodge, 0.0f, 1.0f);
+                    }
+                    break;
+
+                case EEffectType.BuffStat_Luck:
+                    {
+                        float baseValue = Luck;
+                        baseValue += _owner.BaseEffect.GetStatModifier(effectType, EStatModType.Amount);
+                        baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercent);
+                        baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectType, EStatModType.AddPercentMulti);
+                        Critical = Mathf.Clamp(Dodge, 0.0f, ReadOnly.Util.MaxLuck);
+                    }
+                    break;
+
+                case EEffectType.BuffStat_InvincibleBlockCountPerWave:
+                    {
+                        int baseValue = InvincibleBlockCountPerWave;
+                        baseValue += (int)_owner.BaseEffect.GetStatModifier(effectType, EStatModType.Amount);
+                        InvincibleBlockCountPerWave = baseValue;
+                    }
+                    break;
             }
         }
     }
 
+    /// <summary>
+    /// MaxHealth, Damage, AttackRate, MovementSpeed
+    /// </summary>
     public class BaseStat : InitBase
     {
         private int _dataTemplateID = -1;
         public BaseCellObject Owner { get; private set; } = null;
-        [SerializeField] private SubStat _subStat = null;
+        [SerializeField] private BuffStat _buffStat = null;
 
         // --- Main Stat
         [SerializeField] private float _health = 0.0f;
@@ -98,7 +181,6 @@ namespace STELLAREST_F1
 
         [field: SerializeField] public float MaxDamage { get; set; } = 0.0f;
         public float MaxDamageBase { get; private set; } = 0.0f;
-
         public float Damage => Mathf.Max(UnityEngine.Random.Range(MinDamage, MaxDamage), 1.0f);
 
         [SerializeField] private float _attackRate = 0.0f;
@@ -121,23 +203,6 @@ namespace STELLAREST_F1
 
         [field: SerializeField] public float MovementSpeed { get; set; } = 0.0f;
         public float MovementSpeedBase { get; private set; } = 0.0f;
-
-        // --- Util: SubStat
-        /*
-            Buff_SubStat_BonusHealth,
-            Buff_SubStat_BonusHealthShield,
-            Buff_SubStat_Armor,
-            Buff_SubStat_CriticalRate,
-            Buff_SubStat_DodgeRate,
-            Buff_SubStat_Luck,
-        */
-        public float BonusHealth { get => _subStat.BonusHealth; set => _subStat.BonusHealth = value; }
-        public float BonusHealthShield { get => _subStat.BonusHealthShield; set => _subStat.BonusHealthShield = value; }
-        public float Armor { get => _subStat.Armor; set => _subStat.Armor = value; }
-        public float CriticalRate { get => _subStat.CriticalRate; set => _subStat.CriticalRate = value; }
-        public float DodgeRate { get => _subStat.DodgeRate; set => _subStat.DodgeRate = value; }
-        public float Luck { get => _subStat.Luck; set => _subStat.Luck = value; }
-        public int InvincibleBlockCountPerWave { get => _subStat.InvincibleBlockCountPerWave; set => _subStat.InvincibleBlockCountPerWave = value; }
 
         // --- Level
         public int Level
@@ -178,6 +243,7 @@ namespace STELLAREST_F1
 
             _levelID = Mathf.Clamp(_levelID + 1, _dataTemplateID, _maxLevelID);
             SetBaseStat();
+
             // + Apply Effect Stat
             Debug.Log($"<color=white>Success to LvUp - Lv: {Level} / {MaxLevel}</color>");
             return true;
@@ -188,9 +254,10 @@ namespace STELLAREST_F1
             _dataTemplateID = dataID;
             _levelID = dataID;
             Owner = owner;
+            InitBaseStat(dataID, owner);
 
-            _subStat = Owner.gameObject.GetOrAddComponent<SubStat>();
-            _subStat.InitialSetInfo(baseStat: this);
+            _buffStat = Owner.gameObject.GetOrAddComponent<BuffStat>();
+            _buffStat.InitialSetInfo(baseStat: this);
             if (Owner.ObjectType == EObjectType.Hero)
             {
                 for (int i = dataID; i < dataID + ReadOnly.Util.HeroMaxLevel;)
@@ -202,50 +269,90 @@ namespace STELLAREST_F1
             Dev_NameTextID = $"Lv: {((_levelID % _dataTemplateID) + 1).ToString()} / {MaxLevel.ToString()}";
         }
 
-        public void SetBaseStat()
+        private void InitBaseStat(int dataID, BaseCellObject owner)
         {
-            CreatureData creatureData = null;
-            switch (Owner.ObjectType)
+            if (Util.IsCreatureType(owner))
             {
-                case EObjectType.Hero:
-                    creatureData = (Owner as Hero).HeroData;
-                    break;
+                CreatureData creatureData = Util.GetCreatureData(dataID, owner as Creature);
+                if (creatureData == null)
+                    return;
 
-                case EObjectType.Monster:
-                    creatureData = (Owner as Monster).MonsterData;
-                    break;
+                MaxHealth = MaxHealthBase = creatureData.MaxHealth;
+                Health = MaxHealth;
 
-                case EObjectType.Env:
-                    {
-                        EnvData envData = (Owner as Env).EnvData;
-                        Health = envData.MaxHealth;
-                        MaxHealth = MaxHealthBase = envData.MaxHealth;
-                        return;
-                    }
+                MinDamage = MinDamageBase = creatureData.MinDamage;
+                MaxDamage = MaxDamageBase = creatureData.MaxDamage;
+                AttackRate = AttackRateBase = creatureData.AttackRate;
+                MovementSpeed = MovementSpeedBase = creatureData.MovementSpeed;
             }
+            else
+            {
+                if (Managers.Data.EnvDataDict.TryGetValue(dataID, out EnvData envData) == false)
+                    return;
 
-            MaxHealth = MaxHealthBase = creatureData.MaxHealth;
-            Health = creatureData.MaxHealth;
-            MinDamage = MinDamageBase = creatureData.MinDamage;
-            MaxDamage = MaxDamageBase = creatureData.MaxDamage;
-            AttackRate = AttackRateBase = creatureData.AttackRate;
-            MovementSpeed = MovementSpeedBase = creatureData.MovementSpeed;
+                MaxHealth = MaxHealthBase = envData.MaxHealth;
+                Health = MaxHealth;
+            }
         }
 
-        public void ApplyStat()
+        public void SetBaseStat() // ***EnterInGame ***
         {
-            Debug.Log(Owner.Dev_NameTextID);
+            if (Util.IsCreatureType(Owner))
+            {
+                MaxHealth = MaxHealthBase;
+                Health = MaxHealthBase;
+                MinDamage = MinDamageBase;
+                MaxDamage = MaxDamageBase;
+                AttackRate = AttackRateBase;
+                MovementSpeed = MovementSpeedBase;
+            }
+            else // EnvType
+                MaxHealth = MaxHealthBase;
+
+            // CreatureData creatureData = null;
+            // switch (Owner.ObjectType)
+            // {
+            //     case EObjectType.Hero:
+            //         creatureData = (Owner as Hero).HeroData;
+            //         break;
+
+            //     case EObjectType.Monster:
+            //         creatureData = (Owner as Monster).MonsterData;
+            //         break;
+
+            //     case EObjectType.Env:
+            //         {
+            //             EnvData envData = (Owner as Env).EnvData;
+            //             Health = envData.MaxHealth;
+            //             MaxHealth = MaxHealthBase = envData.MaxHealth;
+            //             return;
+            //         }
+            // }
+
+            // // MaxHealth = MaxHealthBase = creatureData.MaxHealth;
+            // // Health = creatureData.MaxHealth;
+            // // MinDamage = MinDamageBase = creatureData.MinDamage;
+            // // MaxDamage = MaxDamageBase = creatureData.MaxDamage;
+            // // AttackRate = AttackRateBase = creatureData.AttackRate;
+            // // MovementSpeed = MovementSpeedBase = creatureData.MovementSpeed;
+            // MaxHealth = MaxHealthBase;
+            // Health = MaxHealthBase;
+            // MinDamage = MinDamageBase;
+            // MaxDamage = MaxDamageBase;
+            // AttackRate = AttackRateBase;
+            // MovementSpeed = MovementSpeedBase;
+        }
+
+        public void ApplyBuffStat()
+        {
             float prevMaxHealth = MaxHealth;
             for (int i = 0; i < (int)EEffectType.Max; ++i)
             {
                 EEffectType effectType = (EEffectType)i;
-                if (Util.IsEffectBuffBastStat(effectType))
-                    ApplyBaseStat(effectType);
-                else if (Util.IsEffectBuffSubStat(effectType))
-                    _subStat.ApplySubStat(effectType);
+                if (Util.IsEffectBuffStat(effectType))
+                    _buffStat.ApplyBuffStat(effectType);
             }
 
-            // MaxHp = MaxHpBase, MaxHpBase가 증가했을 경우
             if (prevMaxHealth != MaxHealth)
             {
                 // 현재의 체력을 증가된 최대 체력 만큼의 비율로 조정한다.
@@ -257,15 +364,14 @@ namespace STELLAREST_F1
             // _healthBar.Refresh(Health / MaxHealth)
         }
 
-        // 각각의 스탯을 여기서 별도로 처리한다.
-        private void ApplyBaseStat(EEffectType statType)
-        {
-            if (statType == EEffectType.Buff_BaseStat_MaxHealth)
-            {
-            }
-            else if (statType == EEffectType.Buff_BaseStat_Damage)
-            {
-            }
-        }
+        #region Util: Buff Stat
+        public float BonusHealth { get => _buffStat.BonusHealth; set => _buffStat.BonusHealth = value; }
+        public float Shield { get => _buffStat.Shield; set => _buffStat.Shield = value; }
+        public float Armor { get => _buffStat.Armor; set => _buffStat.Armor = value; }
+        public float Critical { get => _buffStat.Critical; set => _buffStat.Critical = value; }
+        public float Dodge { get => _buffStat.Dodge; set => _buffStat.Dodge = value; }
+        public float Luck { get => _buffStat.Luck; set => _buffStat.Luck = value; }
+        public int InvincibleBlockCountPerWave { get => _buffStat.InvincibleBlockCountPerWave; set => _buffStat.InvincibleBlockCountPerWave = value; }
+        #endregion
     }
 }

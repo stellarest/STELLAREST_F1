@@ -68,8 +68,8 @@ namespace STELLAREST_F1
             }
 
 #if UNITY_EDITOR
-            Skill_A = SkillArray[(int)ESkillType.Skill_A].SkillData.Dev_NameTextID;
-            Dev_NameTextID = $"{_owner.Dev_NameTextID}_Skills";
+            Dev_NameTextID = $"{_owner.Dev_NameTextID} Skills";
+            Skill_A = $"{skillA.SkillData.Dev_NameTextID}";
 #endif
         }
 
@@ -86,7 +86,6 @@ namespace STELLAREST_F1
 
         public SkillBase TryUnlockSkill(ESkillType skillType)
         {
-            // 101000: 101100, 101200, 101300
             /*
                 Passive: 101000(Lv.01), 101002(Lv.03), 101004(Lv.05), 101007(Lv.08)
                 Skill_A: 101100(Lv.01), 101002(Lv.03), 101004(Lv.05), 101007(Lv.08)
@@ -147,6 +146,7 @@ namespace STELLAREST_F1
 
         private void DestroySkill(SkillBase skill)
         {
+            skill.StopAllCoroutines();
             RemoveActiveSkill(skill);
             SkillData skillData = skill.SkillData;
             _owner.RemoveEffect(skillData.OnCreateEffectIDs);

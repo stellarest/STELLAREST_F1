@@ -156,6 +156,9 @@ namespace STELLAREST_F1
             HeroAI = CreatureAI as HeroAI;
             HeroData = CreatureData as HeroData;
             gameObject.name += $"_{HeroData.Dev_NameTextID}";
+#if UNITY_EDITOR
+            Dev_DescriptionTextID = $"{Dev_NameTextID} Lv.{Level.ToString("D2")}";
+#endif
         }
 
         protected override void EnterInGame(Vector3 spawnPos)
@@ -234,7 +237,11 @@ namespace STELLAREST_F1
         {
             if (BaseStat.LevelUp() == false)
                 return false;
-            /*
+
+#if UNITY_EDITOR
+            Dev_DescriptionTextID = $"{Dev_NameTextID} Lv.{Level.ToString("D2")}";
+#endif
+            /* 
                 Passive: 101000(Lv.01), 101002(Lv.03), 101004(Lv.05), 101007(Lv.08)
                 Skill_A: 101100(Lv.01), 101002(Lv.03), 101004(Lv.05), 101007(Lv.08)
                 Skill_B: 101201(Lv.02), 101203(Lv.04), 101205(Lv.06), 102007(Lv.08)

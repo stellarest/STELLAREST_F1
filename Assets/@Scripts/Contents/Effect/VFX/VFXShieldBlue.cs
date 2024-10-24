@@ -49,7 +49,7 @@ public class VFXShieldBlue : VFXBase
     public override void ApplyEffect()
     {
         base.ApplyEffect();
-        if (Owner.BonusHealthShield == 0.0f)
+        if (Owner.Shield == 0.0f)
         {
             Debug.LogWarning("Zero value of BonusHealthShield.");
             ExitEffect();
@@ -102,7 +102,10 @@ public class VFXShieldBlue : VFXBase
         transform.localPosition = Vector3.zero;
         transform.localScale = Vector3.one;
         //_skill.LockCoolTimeSkill = false;
-        _skill.StartManualCoolTime();
+
+        if (_skill != null)
+            _skill.StartManualCoolTime();
+
         endCallback?.Invoke();
     }
 }

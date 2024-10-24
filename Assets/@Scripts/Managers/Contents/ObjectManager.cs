@@ -187,12 +187,18 @@ namespace STELLAREST_F1
                         // --- 별도의 프리팹이 존재하지 않을 경우
                         else if (owner != null)
                         {
-                            if (Util.IsEffectStatType(effectType: Util.GetEnumFromString<EEffectType>(data.EffectType)))
+                            if (Util.IsEffectBuffStat(effectType: Util.GetEnumFromString<EEffectType>(data.EffectType)))
                             {
                                 effect = owner.gameObject.AddComponent<BuffBase>();
+                                if (effect == null)
+                                {
+                                    Debug.LogError("Faield: Add BuffBase Comp.");
+                                    Debug.Break();
+                                    return null;
+                                }
+
                                 effect.Owner = owner.GetComponent<BaseCellObject>();
                                 effect.SetInfo(dataID, owner.transform.position);
-                                Debug.Log($"<color=cyan>SUCCESS: ADD COMP BUFF BASE, {effect.Dev_NameTextID}</color>");
                             }
                         }
 

@@ -15,9 +15,6 @@ namespace STELLAREST_F1
         public CreatureBody CreatureBody { get; protected set; } = null;
         public CreatureAnimation CreatureAnim { get; private set; } = null;
 
-        // --- CreatureAnimation으로 이동. 여기서만 서용하는중.
-        // public CreatureAnimationCallback CreatureAnimCallback { get; private set; } = null;
-
         public bool CanSkill
         {
             get
@@ -191,6 +188,7 @@ namespace STELLAREST_F1
             Collider.radius = CreatureData.ColliderRadius;
             Collider.offset = CreatureData.ColliderOffset;
 
+            // Move to Hero, Monster.cs
             CreatureSkill = gameObject.GetOrAddComponent<SkillComponent>();
             CreatureSkill.InitialSetInfo(owner: this);
         }
@@ -221,13 +219,12 @@ namespace STELLAREST_F1
             if (attacker.IsValid() == false)
                 return;
 
-            float damage = Mathf.Max(UnityEngine.Random.Range(attacker.MinDamage, attacker.MaxDamage), 1.0f);
-            // damage buff를 여기서 불러온다.
-            // if ()
-
-            bool isCritical = UnityEngine.Random.Range(0.0f, 1.0f) <= attacker.CriticalRate;
+            float damage = Damage;
+            bool isCritical = attacker.IsCritical;
             if (isCritical)
-                damage *= 1 + 0.5f;
+                damage *= 1 + ReadOnly.Util.CriticalDamageUpRate;
+
+            // Get DamageUp BuffStat
 
             float remainedDamage = 0.0f;
             float finalDamage = 0.0f;
@@ -240,14 +237,14 @@ namespace STELLAREST_F1
                 finalDamage = Mathf.Round(damage);
 
             float prevBonusHealth = finalDamage > BonusHealth ? BonusHealth : 0.0f;
-            // --- 순서는 BonusHealthShield부터
-            if (BonusHealthShield > 0.0f)
+            // --- 순서는 Shield부터
+            if (Shield > 0.0f)
             {
-                remainedDamage = OnDamagedBonusHealth(finalDamage, EEffectType.Buff_SubStat_BonusHealthShield);
+                remainedDamage = OnDamagedBonusHealth(finalDamage, EEffectType.BuffStat_Shield);
                 if (BaseEffect.IsAppliedEffect(EEffectType.VFX_ShieldBlue))
                 {
                     BaseEffect.OnShowEffect(EEffectType.VFX_ShieldBlue);
-                    if (BonusHealthShield == 0.0f || remainedDamage > 0.0f) // Bonus Helath가 0.0이라는 의미다.
+                    if (Shield == 0.0f || remainedDamage > 0.0f) // Bonus Helath가 0.0이라는 의미다.
                     {
                         // --- Shield의 경우에는 보호막이 깨지면, 나머지 잔여 데미지량은 무시(무효)한다.
                         // --- FontAnim에 Random Height도 있으면 좋을 것 같은데.
@@ -262,7 +259,7 @@ namespace STELLAREST_F1
                         // --- VFX 제거 (********** 여기서 튕김 **********)
                         BaseEffect.RemoveEffect(EEffectType.VFX_ShieldBlue);
                         // --- 버프 제거
-                        BaseEffect.RemoveEffect(EEffectType.Buff_SubStat_BonusHealthShield);
+                        BaseEffect.RemoveEffect(EEffectType.BuffStat_Shield);
                         // --- 쉴드의 경우, 잔여 데미지량과 관계 없이 쉴드가 깨질때 무조건 데미지 무효화
                         return;
                     }
@@ -281,7 +278,7 @@ namespace STELLAREST_F1
             }
             else if (BonusHealth > 0.0f)
             {
-                remainedDamage = OnDamagedBonusHealth(finalDamage, EEffectType.Buff_SubStat_BonusHealth);
+                remainedDamage = OnDamagedBonusHealth(finalDamage, EEffectType.BuffStat_BonusHealth);
                 if (BaseEffect.IsAppliedEffect(EEffectType.VFX_BonusHealth))
                 {
                     BaseEffect.OnShowEffect(EEffectType.VFX_BonusHealth);
@@ -309,7 +306,7 @@ namespace STELLAREST_F1
                         // --- VFX 제거
                         BaseEffect.RemoveEffect(EEffectType.VFX_BonusHealth);
                         // --- 버프 제거
-                        BaseEffect.RemoveEffect(EEffectType.Buff_SubStat_BonusHealth);
+                        BaseEffect.RemoveEffect(EEffectType.BuffStat_BonusHealth);
                         // --- 잔여 데미지 처리
                         Health = Mathf.Clamp(Health - remainedDamage, 0.0f, MaxHealth);
                         if (Health <= 0.0f)
@@ -477,7 +474,7 @@ namespace STELLAREST_F1
         private float OnDamagedBonusHealth(float finalDamage, EEffectType effectBuffType)
         {
             float remainedDamage = 0.0f;
-            if (effectBuffType == EEffectType.Buff_SubStat_BonusHealth)
+            if (effectBuffType == EEffectType.BuffStat_BonusHealth)
             {
                 if (finalDamage > BonusHealth)
                 {
@@ -487,15 +484,15 @@ namespace STELLAREST_F1
                 else
                     BonusHealth = Mathf.Clamp(BonusHealth - finalDamage, 0.0f, BonusHealth);
             }
-            else if (effectBuffType == EEffectType.Buff_SubStat_BonusHealthShield)
+            else if (effectBuffType == EEffectType.BuffStat_Shield)
             {
-                if (finalDamage > BonusHealthShield)
+                if (finalDamage > Shield)
                 {
-                    remainedDamage = finalDamage - BonusHealthShield;
-                    BonusHealthShield = 0.0f;
+                    remainedDamage = finalDamage - Shield;
+                    Shield = 0.0f;
                 }
                 else
-                    BonusHealthShield = Mathf.Clamp(BonusHealthShield - finalDamage, 0.0f, BonusHealthShield);
+                    Shield = Mathf.Clamp(Shield - finalDamage, 0.0f, Shield);
             }
 
             return remainedDamage;

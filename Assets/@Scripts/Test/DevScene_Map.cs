@@ -89,8 +89,8 @@ namespace STELLAREST_F1
                 leaderController.Leader = firstHero;
 
                 // SHADER,
-                StartCoroutine(CoContinuousSpawnMonster_Test(5.5f));
-                StartCoroutine(CoContinuousSpawnEnv_Test(1f));
+                StartCoroutine(CoContinuousSpawnMonster_Test(5.0f));
+                // StartCoroutine(CoContinuousSpawnEnv_Test(1f));
 
                 // ddd
                 // SpawnChicken_Test(-8, 8);

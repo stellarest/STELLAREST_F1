@@ -112,8 +112,8 @@ namespace STELLAREST_F1
         #endregion
         
         #region Background
-        public void ApplyStat() 
-            => BaseStat.ApplyStat();
+        public void ApplyBuffStat() 
+            => BaseStat.ApplyBuffStat();
         
         public EFindPathResult FindPathAndMoveToCellPos(Vector3 destPos, int maxDepth, EObjectType ignoreCellObjType = EObjectType.None)
             => FindPathAndMoveToCellPos(Managers.Map.WorldToCell(destPos), maxDepth, ignoreCellObjType);
@@ -410,10 +410,13 @@ namespace STELLAREST_F1
 
         // --- Sub Stat
         public float BonusHealth { get => BaseStat.BonusHealth; set => BaseStat.BonusHealth = value; }
-        public float BonusHealthShield { get => BaseStat.BonusHealthShield; set => BaseStat.BonusHealthShield = value; }
+        public float Shield { get => BaseStat.Shield; set => BaseStat.Shield = value; }
         public float Armor { get => BaseStat.Armor; set => BaseStat.Armor = value; }
-        public float CriticalRate { get => BaseStat.CriticalRate; set => CriticalRate = value; }
-        public float DodgeRate { get => BaseStat.DodgeRate; set => BaseStat.DodgeRate = value; }
+
+        public float CriticalRate { get => BaseStat.Critical; set => CriticalRate = value; }
+        public bool IsCritical => UnityEngine.Random.Range(0.0f, 1.0f) <= CriticalRate;
+
+        public float DodgeRate { get => BaseStat.Dodge; set => BaseStat.Dodge = value; }
         public float Luck { get => BaseStat.Luck; set => BaseStat.Luck = value; }
         public int InvincibleBlockCountPerWave
         {

@@ -1,4 +1,6 @@
 
+using System;
+
 namespace STELLAREST_F1
 {
     public static class Define
@@ -434,29 +436,21 @@ namespace STELLAREST_F1
             VFX_Base,
             VFX_WindBlade,
             VFX_ShieldBlue,
-            VFX_BonusHealth, // --- TEMP
+            VFX_BonusHealth,
 
-            // BUFF BASE STATS
-            Buff_BaseStat_MaxHealth,
-            Buff_BaseStat_Damage,
-            Buff_BaseStat_AttackRate,
-            Buff_BaseStat_MovementSpeed,
+            // BUFF STATS
+            BuffStat_MaxHealth,
+            BuffStat_Damage,
+            BuffStat_AttackRate,
+            BuffStat_MovementSpeed,
 
-            // BUFF SUB STATS
-            // 둘중에 하나라면 어쩔...?
-            Buff_SubStat_BonusHealth, // 그 다음에는 이거 (초록색 -> 노란색 체력바)
-            Buff_SubStat_BonusHealthShield, // 이것부터 처리하고 (회색 또는 하늘색 체력바)
-            Buff_SubStat_Armor,
-            Buff_SubStat_CriticalRate,
-            Buff_SubStat_DodgeRate,
-            Buff_SubStat_Luck,
-            Buff_SubStat_InvincibleBlockCountPerWave,
-
-            // DEBUFF BASE STATS
-            Debuff_BaseStat_Example01,
-
-            // DEBUFF SUB STATS
-            Debuff_SubStat_Example01,
+            BuffStat_Shield,
+            BuffStat_BonusHealth,
+            BuffStat_Armor,
+            BuffStat_Critical,
+            BuffStat_Dodge,
+            BuffStat_Luck,
+            BuffStat_InvincibleBlockCountPerWave,
 
             // DOT
             Dot_Example01,
@@ -487,7 +481,7 @@ namespace STELLAREST_F1
 
         public enum EStatModType
         {
-            AddAmount,
+            Amount,
             AddPercent,
             AddPercentMulti
         }
@@ -835,6 +829,9 @@ namespace STELLAREST_F1
                 public static readonly int ScanAllyRange = ScanEnemyRange / 2;
 
                 // --- [ FLOATING ]
+                public static readonly float MaxLuck = 0.6F;
+                public static readonly float MaxAttackRate = 4.0F;
+                public static readonly float CriticalDamageUpRate = 0.5F;
                 public static readonly float CoForceWaitTime = 2.5F;
                 public static readonly float CheckFarFromHeroesLeaderTick = 1.0F;
                 public static readonly float CheckFarFromHeroesLeaderDistanceForWarp = 30.0F; // 15F(15칸, 상하좌우 기준) -> 30칸

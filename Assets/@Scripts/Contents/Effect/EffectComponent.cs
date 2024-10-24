@@ -101,13 +101,13 @@ namespace STELLAREST_F1
                 if (ActiveEffects[i].EffectType != effectType)
                     continue;
 
-                if (Util.IsEffectStatType(effectType) == false)
+                if (Util.IsEffectBuffStat(effectType) == false)
                     continue;
 
                 switch (statModType)
                 {
-                    case EStatModType.AddAmount:
-                        return value += ActiveEffects[i].EffectData.AddAmount;
+                    case EStatModType.Amount:
+                        return value += ActiveEffects[i].EffectData.Amount;
 
                     case EStatModType.AddPercent:
                         return value += ActiveEffects[i].EffectData.AddPercent;
@@ -147,10 +147,7 @@ namespace STELLAREST_F1
             {
                 EffectBase effect = ActiveEffects.Find(e => e.DataTemplateID == effectID);
                 if (effect != null)
-                {
-                    Debug.Log($"<color=red>REMOVE: {effect.Dev_NameTextID}</color>");
                     RemoveEffect(effect);
-                }
             }
         }
 

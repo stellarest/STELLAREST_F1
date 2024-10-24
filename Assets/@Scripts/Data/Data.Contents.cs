@@ -506,13 +506,12 @@ namespace STELLAREST_F1.Data
     public class EffectData : BaseData
     {
         public bool IsLoop;
-        public float AddAmount;
+        public float Amount;
         public float AddPercent;
         public float AddPercentMulti;
         public float Period;
         public float Duration;
-        //public EEffectType EffectType;
-        public string EffectType; // EEffectType이 자주 바뀌어서 일단 string으로 변경.
+        public string EffectType; // --- 완성후 다시 enum 타입으로 변경 필요
         public EObjectSize EffectSize;
         public EEffectSpawnType EffectSpawnType;
     }
