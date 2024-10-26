@@ -115,8 +115,8 @@ namespace STELLAREST_F1
         // public void ApplyBuffStat() 
         //     => BaseStat.ApplyBuffStat();
 
-        public void ApplyBuffStat(EEffectType effectBuffType)
-            => BaseStat.ApplyBuffStat(effectBuffType);
+        public void ApplyStat(EEffectType effectBuffType)
+            => BaseStat.ApplyStat(effectBuffType);
 
         public void RefreshAllStats()
             => BaseStat.RefreshAllStats();

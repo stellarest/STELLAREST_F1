@@ -10,15 +10,16 @@ using static STELLAREST_F1.Define;
 namespace STELLAREST_F1
 {
     /// <summary>
-    /// MaxHealth, Damage, AttackRate, MovementSpeed
+    /// Main: MaxHealth, Min/Max Damage, AttackRate, MovementSpeed
+    /// Sub: Shield, BonusHealth, Armor, Critical, Dodge, Luck, InvincibleBlockCount
     /// </summary>
     public class BaseStat : InitBase
     {
         private int _dataTemplateID = -1;
         public BaseCellObject Owner { get; private set; } = null;
-        [SerializeField] private BuffStat _buffStat = null;
+        [SerializeField] private StatModifier _modifier = null;
 
-        // --- Main Stat
+        #region Main Stats
         [SerializeField] private float _health = 0.0f;
         public float Health
         {
@@ -76,8 +77,9 @@ namespace STELLAREST_F1
             }
         }
         public float MovementSpeedBase { get; private set; } = 0.0f;
+        #endregion
 
-        // --- Level
+        #region Level
         public int Level
         {
             get
@@ -97,16 +99,28 @@ namespace STELLAREST_F1
 
         [SerializeField] protected int _maxLevelID = -1;
         public bool IsMaxLevel => _levelID == _maxLevelID;
+        #endregion
+
+        #region Sub Stats
+        [field: SerializeField] public float Shield { get; set; } = 0.0f;
+        [field: SerializeField] public float BonusHealth { get; set; } = 0.0f;
+        [field: SerializeField] public float Armor { get; set; } = 0.0f;
+        [field: SerializeField] public float Critical { get; set; } = 0.0f;
+        [field: SerializeField] public float Dodge { get; set; } = 0.0f;
+        [field: SerializeField] public float Luck { get; set; } = 0.0f;
+        [field: SerializeField] public int InvincibleBlockCountPerWave { get; set; } = 0;
+        #endregion
 
         public void InitialSetInfo(int dataID, BaseCellObject owner)
         {
             _dataTemplateID = dataID;
             _levelID = dataID;
             Owner = owner;
-            InitBaseStat(dataID, owner);
+            InitMainStats(dataID, owner);
+            SubStatsToZero();
 
-            _buffStat = Owner.gameObject.GetOrAddComponent<BuffStat>();
-            _buffStat.InitialSetInfo(baseStat: this);
+            _modifier = Owner.gameObject.GetOrAddComponent<StatModifier>();
+            _modifier.InitialSetInfo(baseStat: this);
             if (Owner.ObjectType == EObjectType.Hero)
             {
                 for (int i = dataID; i < dataID + ReadOnly.Util.HeroMaxLevel;)
@@ -120,7 +134,7 @@ namespace STELLAREST_F1
 #endif
         }
 
-        private void InitBaseStat(int dataID, BaseCellObject owner)
+        private void InitMainStats(int dataID, BaseCellObject owner)
         {
             if (Util.IsCreatureType(owner))
             {
@@ -144,6 +158,17 @@ namespace STELLAREST_F1
                 MaxHealth = MaxHealthBase = envData.MaxHealth;
                 Health = MaxHealth;
             }
+        }
+
+        private void SubStatsToZero()
+        {
+            Shield = 0.0f;
+            BonusHealth = 0.0f;
+            Armor = 0.0f;
+            Critical = 0.0f;
+            Dodge = 0.0f;
+            Luck = 0.0f;
+            InvincibleBlockCountPerWave = 0;
         }
 
         public bool LevelUp()
@@ -170,41 +195,52 @@ namespace STELLAREST_F1
 
         public void RefreshAllStats(bool currentHealthToMax = false)
         {
-            _buffStat.SetZeroBuffStats();
-            float prevMaxHealth = MaxHealth;
+            SubStatsToZero();
+            MaxHealth = MaxHealthBase;
+            MinDamage = MinDamageBase;
+            MaxDamage = MaxDamageBase;
+            AttackRate = AttackRateBase;
+            MovementSpeed = MovementSpeedBase;
             for (int i = 0; i < (int)EEffectType.Max; ++i)
             {
                 EEffectType effectType = (EEffectType)i;
                 if (Util.IsEffectBuffType(effectType))
-                    _buffStat.ApplyBuffStat(effectType);
-            }
-
-            if (prevMaxHealth != MaxHealth)
-            {
-                // 현재의 체력을 증가된 최대 체력 만큼의 비율로 조정한다.
-                // (Health / prevMaxHealth); 이전 Ratio
-                Health = MaxHealth * (Health / prevMaxHealth);
-                Health = Mathf.Clamp(Health, 0.0f, MaxHealth);
+                    ApplyStat(effectType);
             }
 
             if (currentHealthToMax)
                 Health = MaxHealth;
         }
 
-        public void ApplyBuffStat(EEffectType effectBuffType)
+        public void ApplyStat(EEffectType effectBuffType)
         {
             if (Util.IsEffectBuffType(effectBuffType) == false)
                 return;
 
             float prevMaxHealth = MaxHealth;
-            _buffStat.ApplyBuffStat(effectBuffType);
+            _modifier.ApplyBuffStat(effectBuffType);
             if (prevMaxHealth != MaxHealth)
             {
                 float prevRatio = Health / prevMaxHealth;
                 Health = Mathf.Clamp(MaxHealth * prevRatio, 0.0f, MaxHealth);
             }
+
+            // --- + Refresh HP Bar
         }
 
+        // #region Util: Stats
+        // public float BonusHealth { get => _modifier.BonusHealth; set => _modifier.BonusHealth = value; }
+        // public float Shield { get => _modifier.Shield; set => _modifier.Shield = value; }
+        // public float Armor { get => _modifier.Armor; set => _modifier.Armor = value; }
+        // public float Critical { get => _modifier.Critical; set => _modifier.Critical = value; }
+        // public float Dodge { get => _modifier.Dodge; set => _modifier.Dodge = value; }
+        // public float Luck { get => _modifier.Luck; set => _modifier.Luck = value; }
+        // public int InvincibleBlockCountPerWave { get => _modifier.InvincibleBlockCountPerWave; set => _modifier.InvincibleBlockCountPerWave = value; }
+        // #endregion
+    }
+}
+
+/*
         // PREV
         // public void ApplyBuffStat()
         // {
@@ -227,19 +263,6 @@ namespace STELLAREST_F1
         //     // _healthBar.Refresh(Health / MaxHealth)
         // }
 
-        #region Util: Buff Stat
-        public float BonusHealth { get => _buffStat.BonusHealth; set => _buffStat.BonusHealth = value; }
-        public float Shield { get => _buffStat.Shield; set => _buffStat.Shield = value; }
-        public float Armor { get => _buffStat.Armor; set => _buffStat.Armor = value; }
-        public float Critical { get => _buffStat.Critical; set => _buffStat.Critical = value; }
-        public float Dodge { get => _buffStat.Dodge; set => _buffStat.Dodge = value; }
-        public float Luck { get => _buffStat.Luck; set => _buffStat.Luck = value; }
-        public int InvincibleBlockCountPerWave { get => _buffStat.InvincibleBlockCountPerWave; set => _buffStat.InvincibleBlockCountPerWave = value; }
-        #endregion
-    }
-}
-
-/*
         // public void SetBaseStat() // ***EnterInGame ***
         // {
         //     if (Util.IsCreatureType(Owner))

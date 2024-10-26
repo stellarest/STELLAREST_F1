@@ -5,35 +5,38 @@ using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
-    public class BuffStat : InitBase
+    public class StatModifier : InitBase
     {
         private BaseStat _baseStat = null;
         private BaseCellObject _owner = null;
 
-        [field: SerializeField] public float Shield { get; set; } = 0.0f;
-        [field: SerializeField] public float BonusHealth { get; set; } = 0.0f;
-        [field: SerializeField] public float Armor { get; set; } = 0.0f;
-        [field: SerializeField] public float Critical { get; set; } = 0.0f;
-        [field: SerializeField] public float Dodge { get; set; } = 0.0f;
-        [field: SerializeField] public float Luck { get; set; } = 0.0f;
-        [field: SerializeField] public int InvincibleBlockCountPerWave { get; set; } = 0;
+        #region Util: Main Stats
+        public float Health { get => _baseStat.Health; set => _baseStat.Health = value; }
+        public float MaxHealth { get => _baseStat.MaxHealth; set => _baseStat.MaxHealth = value; }
+        public float MinDamage { get => _baseStat.MinDamage; set => _baseStat.MinDamage = value; }
+        public float MaxDamage { get => _baseStat.MaxDamage; set => _baseStat.MaxDamage = value; }
+        public float AttackRate { get => _baseStat.AttackRate; set => _baseStat.AttackRate = value; }
+        public float MovementSpeed { get => _baseStat.MovementSpeed; set => _baseStat.MovementSpeed = value; } 
+        #endregion
+
+        #region Util: Sub Stats
+        public float Shield { get => _baseStat.Shield; set => _baseStat.Shield = value; }
+        public float BonusHealth { get => _baseStat.BonusHealth; set => _baseStat.BonusHealth = value; }
+        public float Armor { get => _baseStat.Armor; set => _baseStat.Armor = value; }
+        public float Critical { get => _baseStat.Critical; set => _baseStat.Critical = value; }
+        public float Dodge { get => _baseStat.Dodge; set => _baseStat.Dodge = value; }
+        public float Luck { get => _baseStat.Luck; set => _baseStat.Luck = value; }
+        public int InvincibleBlockCountPerWave
+        {
+            get => _baseStat.InvincibleBlockCountPerWave;
+            set => _baseStat.InvincibleBlockCountPerWave = value;
+        }
+        #endregion
 
         public void InitialSetInfo(BaseStat baseStat)
         {
             _baseStat = baseStat;
             _owner = _baseStat.Owner;
-            SetZeroBuffStats();
-        }
-
-        public void SetZeroBuffStats()
-        {
-            Shield = 0.0f;
-            BonusHealth = 0.0f;
-            Armor = 0.0f;
-            Critical = 0.0f;
-            Dodge = 0.0f;
-            Luck = 0.0f;
-            InvincibleBlockCountPerWave = 0;
         }
 
         public void ApplyBuffStat(EEffectType effectBuffType)
@@ -42,11 +45,11 @@ namespace STELLAREST_F1
             {
                 case EEffectType.BuffStat_MaxHealth:
                     {
-                        float baseValue = _baseStat.MaxHealth;
+                        float baseValue = MaxHealth;
                         baseValue += _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddAmount);
                         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddPercent);
                         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddPercentMulti);
-                        _baseStat.MaxHealth = baseValue;
+                        MaxHealth = baseValue;
                     }
                     break;
 
