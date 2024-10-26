@@ -1,5 +1,6 @@
 
 using System;
+using Unity.Burst.CompilerServices;
 
 namespace STELLAREST_F1
 {
@@ -416,18 +417,6 @@ namespace STELLAREST_F1
             ForceStop
         }
 
-        // --- Main
-        // Health:
-        // Damage:
-        // MoveSpeed: 동료들은 Leader의 스피드를 따라간다.
-        // AttackSpeed: 
-        // 
-
-        // --- Sub
-        // BonueHealth (Not Showing in UI)
-        // Armor
-        // Critical Rate
-        // Dodge
         public enum EEffectType
         {
             None = -1,
@@ -439,18 +428,18 @@ namespace STELLAREST_F1
             VFX_BonusHealth,
 
             // BUFF STATS
-            BuffStat_MaxHealth,
-            BuffStat_Damage,
-            BuffStat_AttackRate,
-            BuffStat_MovementSpeed,
+            MainStat_MaxHealth,
+            MainStat_Damage,
+            MainStat_AttackRate,
+            MainStat_MovementSpeed,
 
-            BuffStat_Shield,
-            BuffStat_BonusHealth,
-            BuffStat_Armor,
-            BuffStat_Critical,
-            BuffStat_Dodge,
-            BuffStat_Luck,
-            BuffStat_InvincibleBlockCountPerWave,
+            SubStat_Shield,
+            SubStat_BonusHealth,
+            SubStat_Armor,
+            SubStat_Critical,
+            SubStat_Dodge,
+            SubStat_Luck,
+            SubStat_InvincibleBlockCountPerWave,
 
             // DOT
             Dot_Example01,
@@ -543,25 +532,89 @@ namespace STELLAREST_F1
             Max,
         }
 
-        public enum EGlobalEffectID
-        {
-            ImpactHit = 900000,
-            ImpactCriticalHit = 900001,
-            ImpactFire = 900002,
-            ImpactShockwave = 900003,
-
-            TeleportRed = 900020,
-            TeleportGreen = 900021,
-            TeleportBlue = 900022,
-            TeleportPurple = 900023,
-            
-            Dust = 990000,
-            OnDeadSkull = 990001,
-            EvolutionGlow = 990002
-        }
-
         public enum EGlobalProjectileID
         {
+        }
+
+        public enum EConstInteger
+        {
+            VFX_ImpactHit,
+            VFX_ImpactCriticalHit,
+            VFX_ImpactFire,
+            VFX_ImpactShockwave,
+            VFX_TeleportRed,
+            VFX_TeleportGreen,
+            VFX_TeleportBlue,
+            VFX_TeleportPurple,
+            VFX_Dust,
+            VFX_OnDeadSkull,
+            VFX_EvolutionGlow,
+
+            TextFont_Damage,
+            TextFont_Text,
+
+            Hero_Paladin,
+            Hero_Archer,
+            Hero_Lancer,
+            Hero_Wizard,
+            Hero_Assassin,
+            Hero_Gunner,
+            Hero_Trickster,
+            Hero_Druid,
+            Hero_Barbarian,
+            Hero_Ninja,
+            Hero_PhantomKnight,
+            Hero_FrostWeaver,
+            Hero_Queen,
+            Hero_Hunter,
+            Hero_Gladiator,
+            Hero_Priest,
+            Hero_Berserker,
+            Hero_Witch,
+            Hero_DragonKnight,
+            Hero_Alchemist,
+
+            Monster_Chicken,
+            Monster_Turkey,
+            Monster_Bunny,
+            Monster_Pug,
+
+            Env_AshTree,
+            Env_BlackOakTree,
+            Env_GreenAppleTree,
+            Env_IvyTree,
+            Env_ManticoreTree,
+            Env_MapleTree,
+            Env_OakTree,
+            Env_RedAppleTree,
+            Env_RedSandalTree,
+            Env_WillowTree,
+            Env_YewTree,
+            Env_CopperRock,
+            Env_GoldRock,
+            Env_IronRock,
+            Env_LimestoneRock,
+            Env_SilverRock,
+            Env_StoneRock,
+            Env_TinRock,
+            Env_WhetstoneRock,
+            Env_ZincRock,
+
+        }
+
+        public enum EConstFloat
+        {            
+            AttackRate,         // 1.0F ~ 2.0F
+            AttackAnimRate,     // 0.85F ~ 1.25F(TEMP) *TEMP: Paladin(0.85F -> 1.0F)
+
+            // + CollectRate,
+            // + CollectAnimRate, 추가해도 될 듯
+
+            Armor,
+            Luck,
+
+            MovementSpeed,
+            MovementAnimSpeed,
         }
 
         // ####################################################
@@ -625,38 +678,38 @@ namespace STELLAREST_F1
             public static class DataAndPoolingID
             {
                 // --- Damage Font
-                public static readonly int DNPID_DamageFont = 109;
-                public static readonly int DNPID_TextFont = 110;
+                // public static readonly int DNPID_DamageFont = 109;
+                // public static readonly int DNPID_TextFont = 110;
 
-                public static readonly int DNPID_Hero_Paladin = 101000;
-                public static readonly int DNPID_Hero_Archer = 102000;
+                // public static readonly int DNPID_Hero_Paladin = 101000;
+                // public static readonly int DNPID_Hero_Archer = 102000;
 
-                public static readonly int DNPID_Hero_Lancer = 103000;
-                public static readonly int DNPID_Hero_Wizard = 104000;
+                // public static readonly int DNPID_Hero_Lancer = 103000;
+                // public static readonly int DNPID_Hero_Wizard = 104000;
 
-                public static readonly int DNPID_Hero_Assassin = 105000;
-                public static readonly int DNPID_Hero_Gunner = 106000;
+                // public static readonly int DNPID_Hero_Assassin = 105000;
+                // public static readonly int DNPID_Hero_Gunner = 106000;
 
-                public static readonly int DNPID_Hero_Trickster = 107000;
-                public static readonly int DNPID_Hero_Druid = 108000;
+                // public static readonly int DNPID_Hero_Trickster = 107000;
+                // public static readonly int DNPID_Hero_Druid = 108000;
 
-                public static readonly int DNPID_Hero_Barbarian = 109000;
-                public static readonly int DNPID_Hero_Ninja = 110000;
+                // public static readonly int DNPID_Hero_Barbarian = 109000;
+                // public static readonly int DNPID_Hero_Ninja = 110000;
 
-                public static readonly int DNPID_Hero_PhantomKnight = 111000;
-                public static readonly int DNPID_Hero_FrostWeaver = 112000;
+                // public static readonly int DNPID_Hero_PhantomKnight = 111000;
+                // public static readonly int DNPID_Hero_FrostWeaver = 112000;
 
-                public static readonly int DNPID_Hero_Queen = 113000;
-                public static readonly int DNPID_Hero_Hunter = 114000;
+                // public static readonly int DNPID_Hero_Queen = 113000;
+                // public static readonly int DNPID_Hero_Hunter = 114000;
 
-                public static readonly int DNPID_Hero_Gladiator = 115000;
-                public static readonly int DNPID_Hero_Priest = 116000;
+                // public static readonly int DNPID_Hero_Gladiator = 115000;
+                // public static readonly int DNPID_Hero_Priest = 116000;
 
-                public static readonly int DNPID_Hero_Berserker = 117000;
-                public static readonly int DNPID_Hero_Witch = 118000;
+                // public static readonly int DNPID_Hero_Berserker = 117000;
+                // public static readonly int DNPID_Hero_Witch = 118000;
 
-                public static readonly int DNPID_Hero_DragonKnight = 119000;
-                public static readonly int DNPID_Hero_Alchemist = 120000;
+                // public static readonly int DNPID_Hero_DragonKnight = 119000;
+                // public static readonly int DNPID_Hero_Alchemist = 120000;
                 // ---------------------------------------------------------------------- // 20 Heroes
                 // + Monk
                 // + Blood Mage
@@ -674,33 +727,33 @@ namespace STELLAREST_F1
                 // + Necromancer
                 // ---------------------------------------------------------------------- // 30 Heroes
 
-                // --- Monsters
-                public static readonly int DNPID_Monster_Chicken = 101000;
-                public static readonly int DNPID_Monster_Turkey = 101001;
-                public static readonly int DNPID_Monster_Bunny = 101002;
-                public static readonly int DNPID_Monster_Pug = 101003;
+                // // --- Monsters
+                // public static readonly int DNPID_Monster_Chicken = 101000;
+                // public static readonly int DNPID_Monster_Turkey = 101001;
+                // public static readonly int DNPID_Monster_Bunny = 101002;
+                // public static readonly int DNPID_Monster_Pug = 101003;
 
-                // --- Envs
-                public static readonly int DNPID_Env_AshTree = 101000;
-                public static readonly int DNPID_Env_BlackOakTree = 101001;
-                public static readonly int DNPID_Env_GreenAppleTree = 101002;
-                public static readonly int DNPID_Env_IvyTree = 101003;
-                public static readonly int DNPID_Env_ManticoreTree = 101004;
-                public static readonly int DNPID_Env_MapleTree = 101005;
-                public static readonly int DNPID_Env_OakTree = 101006;
-                public static readonly int DNPID_Env_RedAppleTree = 101007;
-                public static readonly int DNPID_Env_RedSandalTree = 101008;
-                public static readonly int DNPID_Env_WillowTree = 101009;
-                public static readonly int DNPID_Env_YewTree = 101010;
-                public static readonly int DNPID_Env_CopperRock = 101011;
-                public static readonly int DNPID_Env_GoldRock = 101012;
-                public static readonly int DNPID_Env_IronRock = 101013;
-                public static readonly int DNPID_Env_LimestoneRock = 101014;
-                public static readonly int DNPID_Env_SilverRock = 101015;
-                public static readonly int DNPID_Env_StoneRock = 101016;
-                public static readonly int DNPID_Env_TinRock = 101017;
-                public static readonly int DNPID_Env_WhetstoneRock = 101018;
-                public static readonly int DNPID_Env_ZincRock = 101019;
+                // // --- Envs
+                // public static readonly int DNPID_Env_AshTree = 101000;
+                // public static readonly int DNPID_Env_BlackOakTree = 101001;
+                // public static readonly int DNPID_Env_GreenAppleTree = 101002;
+                // public static readonly int DNPID_Env_IvyTree = 101003;
+                // public static readonly int DNPID_Env_ManticoreTree = 101004;
+                // public static readonly int DNPID_Env_MapleTree = 101005;
+                // public static readonly int DNPID_Env_OakTree = 101006;
+                // public static readonly int DNPID_Env_RedAppleTree = 101007;
+                // public static readonly int DNPID_Env_RedSandalTree = 101008;
+                // public static readonly int DNPID_Env_WillowTree = 101009;
+                // public static readonly int DNPID_Env_YewTree = 101010;
+                // public static readonly int DNPID_Env_CopperRock = 101011;
+                // public static readonly int DNPID_Env_GoldRock = 101012;
+                // public static readonly int DNPID_Env_IronRock = 101013;
+                // public static readonly int DNPID_Env_LimestoneRock = 101014;
+                // public static readonly int DNPID_Env_SilverRock = 101015;
+                // public static readonly int DNPID_Env_StoneRock = 101016;
+                // public static readonly int DNPID_Env_TinRock = 101017;
+                // public static readonly int DNPID_Env_WhetstoneRock = 101018;
+                // public static readonly int DNPID_Env_ZincRock = 101019;
 
                 // --- Effects(VFX): DEPRECIATED
                 // public static readonly int DNPID_Effect_Global_VFX_ImpactHit = 800000;
@@ -835,14 +888,15 @@ namespace STELLAREST_F1
                 public static readonly float MinMovementSpeed = 1.0F;
                 public static readonly float MaxMovementSpeed = 12.0F;
 
-                public static readonly float MaxLuck = 0.6F;
+                //public static readonly float MaxLuck = 0.6F;
                 public static readonly float MaxAttackRate = 4.0F;
                 public static readonly float CriticalDamageUpRate = 0.5F;
                 public static readonly float CoForceWaitTime = 2.5F;
                 public static readonly float CheckFarFromHeroesLeaderTick = 1.0F;
                 public static readonly float CheckFarFromHeroesLeaderDistanceForWarp = 30.0F; // 15F(15칸, 상하좌우 기준) -> 30칸
+                
                 //public static readonly float WaitMovementDistanceSQRFromLeader = 2.4F;
-                public static readonly float MaxArmor = 0.8F;
+                // public static readonly float MaxArmor = 0.8F;
 
                 public static readonly float MinSecPatrolPingPong = 1.0F;
                 public static readonly float MaxSecPatrolPingPong = 2.0F;

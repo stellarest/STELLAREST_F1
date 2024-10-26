@@ -9,6 +9,7 @@ using Debug = UnityEngine.Debug;
 using static STELLAREST_F1.Define;
 using STELLAREST_F1.Data;
 using UnityEngine.UIElements;
+using UnityEngine.AI;
 
 namespace STELLAREST_F1
 {
@@ -248,60 +249,170 @@ namespace STELLAREST_F1
             return dataID;
         }
 
-        private static HashSet<EEffectType> EffectBuffTypes = new HashSet<EEffectType>
+    private static HashSet<EEffectType> s_effectStatTypes = new HashSet<EEffectType>
         {
-            EEffectType.BuffStat_MaxHealth,
-            EEffectType.BuffStat_Damage,
-            EEffectType.BuffStat_AttackRate,
-            EEffectType.BuffStat_MovementSpeed,
+            EEffectType.MainStat_MaxHealth,
+            EEffectType.MainStat_Damage,
+            EEffectType.MainStat_AttackRate,
+            EEffectType.MainStat_MovementSpeed,
 
-            EEffectType.BuffStat_Shield,
-            EEffectType.BuffStat_BonusHealth,
-            EEffectType.BuffStat_Armor,
-            EEffectType.BuffStat_Critical,
-            EEffectType.BuffStat_Dodge,
-            EEffectType.BuffStat_Luck,
-            EEffectType.BuffStat_InvincibleBlockCountPerWave
+            EEffectType.SubStat_Shield,
+            EEffectType.SubStat_BonusHealth,
+            EEffectType.SubStat_Armor,
+            EEffectType.SubStat_Critical,
+            EEffectType.SubStat_Dodge,
+            EEffectType.SubStat_Luck,
+            EEffectType.SubStat_InvincibleBlockCountPerWave
         };
 
-        public static bool IsEffectBuffType(EEffectType effectType)
-            => EffectBuffTypes.Contains(effectType);
+        public static bool IsEffectStatType(EEffectType effectType)
+            => s_effectStatTypes.Contains(effectType);
 
-        private static readonly int GlobalEffect_VFX_ImpactHit = (int)EGlobalEffectID.ImpactHit;
-        private static readonly int GlobalEffect_VFX_ImpactCriticalHit = (int)EGlobalEffectID.ImpactCriticalHit;
-        private static readonly int GlobalEffect_VFX_ImpactFire = (int)EGlobalEffectID.ImpactFire;
-        private static readonly int GlobalEffect_VFX_ImpactShockwave = (int)EGlobalEffectID.ImpactShockwave;
-
-        private static readonly int GlobalEffect_VFX_TeleportRed = (int)EGlobalEffectID.TeleportRed;
-        private static readonly int GlobalEffect_VFX_TeleportGreen = (int)EGlobalEffectID.TeleportGreen;
-        private static readonly int GlobalEffect_VFX_TeleportBlue = (int)EGlobalEffectID.TeleportBlue;
-        private static readonly int GlobalEffect_VFX_TeleportPurple = (int)EGlobalEffectID.TeleportPurple;
-
-        private static readonly int GlobalEffect_VFX_Dust = (int)EGlobalEffectID.Dust;
-        private static readonly int GlobalEffect_VFX_OnDeadSkull = (int)EGlobalEffectID.OnDeadSkull;
-        private static readonly int GlobalEffect_VFX_EvolutionGlow = (int)EGlobalEffectID.EvolutionGlow;
-        public static int GlobalDataID(EGlobalEffectID effectID)
+        public static int GlobalEffectID(EConstInteger constInt)
         {
-            return effectID switch
+            return constInt switch
             {
-                EGlobalEffectID.ImpactHit => GlobalEffect_VFX_ImpactHit,
-                EGlobalEffectID.ImpactCriticalHit => GlobalEffect_VFX_ImpactCriticalHit,
-                EGlobalEffectID.ImpactFire => GlobalEffect_VFX_ImpactFire,
-                EGlobalEffectID.ImpactShockwave => GlobalEffect_VFX_ImpactShockwave,
-                EGlobalEffectID.TeleportRed => GlobalEffect_VFX_TeleportRed,
-                EGlobalEffectID.TeleportGreen => GlobalEffect_VFX_TeleportGreen,
-                EGlobalEffectID.TeleportBlue => GlobalEffect_VFX_TeleportBlue,
-                EGlobalEffectID.TeleportPurple => GlobalEffect_VFX_TeleportPurple,
-                EGlobalEffectID.Dust => GlobalEffect_VFX_Dust,
-                EGlobalEffectID.OnDeadSkull => GlobalEffect_VFX_OnDeadSkull,
-                EGlobalEffectID.EvolutionGlow => GlobalEffect_VFX_EvolutionGlow,
-                _ => throw new ArgumentOutOfRangeException(nameof(effectID), $"Invalid value: {effectID}")
+                EConstInteger.VFX_ImpactHit => 900000,
+                EConstInteger.VFX_ImpactCriticalHit => 900001,
+                EConstInteger.VFX_ImpactFire => 900002,
+                EConstInteger.VFX_ImpactShockwave => 900003,
+                EConstInteger.VFX_TeleportRed => 900020,
+                EConstInteger.VFX_TeleportGreen => 900021,
+                EConstInteger.VFX_TeleportBlue => 900022,
+                EConstInteger.VFX_TeleportPurple => 900023,
+                EConstInteger.VFX_Dust => 990000,
+                EConstInteger.VFX_OnDeadSkull => 990001,
+                EConstInteger.VFX_EvolutionGlow => 990002,
+                _ => throw new ArgumentOutOfRangeException(nameof(GlobalEffectID), $"\nInvalid value: {constInt}")
             };
         }
 
-        public static int GlobalDataID(EGlobalProjectileID projectileID)
+        public static int TextFontID(EConstInteger constInt)
         {
-            return -1;
+            return constInt switch
+            {
+                EConstInteger.TextFont_Damage => 109,
+                EConstInteger.TextFont_Text => 110,
+                _ => throw new ArgumentOutOfRangeException(nameof(TextFontID), $"\nInvalid value: {constInt}")
+            };
+        }
+
+        public static int HeroDataID(EConstInteger constInt)
+        {
+            return constInt switch
+            {
+                EConstInteger.Hero_Paladin => 101000,
+                EConstInteger.Hero_Archer => 102000,
+                EConstInteger.Hero_Lancer => 103000,
+                EConstInteger.Hero_Wizard => 104000,
+                EConstInteger.Hero_Assassin => 105000,
+                EConstInteger.Hero_Gunner => 106000,
+                EConstInteger.Hero_Trickster => 107000,
+                EConstInteger.Hero_Druid => 108000,
+                EConstInteger.Hero_Barbarian => 109000,
+                EConstInteger.Hero_Ninja => 110000,
+                EConstInteger.Hero_PhantomKnight => 111000,
+                EConstInteger.Hero_FrostWeaver => 112000,
+                EConstInteger.Hero_Queen => 113000,
+                EConstInteger.Hero_Hunter => 114000,
+                EConstInteger.Hero_Gladiator => 115000,
+                EConstInteger.Hero_Priest => 116000,
+                EConstInteger.Hero_Berserker => 117000,
+                EConstInteger.Hero_Witch => 118000,
+                EConstInteger.Hero_DragonKnight => 119000,
+                EConstInteger.Hero_Alchemist => 120000,
+                _ => throw new ArgumentOutOfRangeException(nameof(HeroDataID), $"\nInvalid value: {constInt}")
+            };
+        }
+
+        public static int MonsterDataID(EConstInteger constInt)
+        {
+            return constInt switch
+            {
+                EConstInteger.Monster_Chicken => 101000,
+                EConstInteger.Monster_Turkey => 101001,
+                EConstInteger.Monster_Bunny => 101002,
+                EConstInteger.Monster_Pug => 101003,
+                _ => throw new ArgumentOutOfRangeException(nameof(MonsterDataID), $"\nInvalid value: {constInt}")
+            };
+        }
+
+        /*
+            // public static readonly int DNPID_Env_AshTree = 101000;
+                // public static readonly int DNPID_Env_BlackOakTree = 101001;
+                // public static readonly int DNPID_Env_GreenAppleTree = 101002;
+                // public static readonly int DNPID_Env_IvyTree = 101003;
+                // public static readonly int DNPID_Env_ManticoreTree = 101004;
+                // public static readonly int DNPID_Env_MapleTree = 101005;
+                // public static readonly int DNPID_Env_OakTree = 101006;
+                // public static readonly int DNPID_Env_RedAppleTree = 101007;
+                // public static readonly int DNPID_Env_RedSandalTree = 101008;
+                // public static readonly int DNPID_Env_WillowTree = 101009;
+                // public static readonly int DNPID_Env_YewTree = 101010;
+                // public static readonly int DNPID_Env_CopperRock = 101011;
+                // public static readonly int DNPID_Env_GoldRock = 101012;
+                // public static readonly int DNPID_Env_IronRock = 101013;
+                // public static readonly int DNPID_Env_LimestoneRock = 101014;
+                // public static readonly int DNPID_Env_SilverRock = 101015;
+                // public static readonly int DNPID_Env_StoneRock = 101016;
+                // public static readonly int DNPID_Env_TinRock = 101017;
+                // public static readonly int DNPID_Env_WhetstoneRock = 101018;
+                // public static readonly int DNPID_Env_ZincRock = 101019;
+        */
+
+        public static int EnvDataID(EConstInteger constInt)
+        {
+            return constInt switch
+            {
+                EConstInteger.Env_AshTree => 101000,
+                EConstInteger.Env_BlackOakTree => 101001,
+                EConstInteger.Env_GreenAppleTree => 101002,
+                EConstInteger.Env_IvyTree => 101003,
+                EConstInteger.Env_ManticoreTree => 101004,
+                EConstInteger.Env_MapleTree => 101005,
+                EConstInteger.Env_OakTree => 101006,
+                EConstInteger.Env_RedAppleTree => 101007,
+                EConstInteger.Env_RedSandalTree => 101008,
+                EConstInteger.Env_WillowTree => 101009,
+                EConstInteger.Env_YewTree => 101010,
+                EConstInteger.Env_CopperRock => 101011,
+                EConstInteger.Env_GoldRock => 101012,
+                EConstInteger.Env_IronRock => 101013,
+                EConstInteger.Env_LimestoneRock => 101014,
+                EConstInteger.Env_SilverRock => 101015,
+                EConstInteger.Env_StoneRock => 101016,
+                EConstInteger.Env_TinRock => 101017,
+                EConstInteger.Env_WhetstoneRock => 101018,
+                EConstInteger.Env_ZincRock => 101019,
+                _ => throw new ArgumentOutOfRangeException(nameof(EnvDataID), $"\nInvalid value: {constInt}")
+            };
+        }
+
+        public static float MinFloat(EConstFloat constFloat)
+        {
+            return constFloat switch
+            {
+                EConstFloat.AttackRate => 1.0F,
+                EConstFloat.AttackAnimRate => 0.85F,
+                EConstFloat.Armor => 0.0F,
+                EConstFloat.MovementSpeed => 1.0F,
+                EConstFloat.MovementAnimSpeed => 1.0F,
+                _ => throw new ArgumentOutOfRangeException(nameof(MinFloat), $"\nInvalid value: {constFloat}")
+            };
+        }
+
+        public static float MaxFloat(EConstFloat constFloat)
+        {
+            return constFloat switch
+            {
+                EConstFloat.AttackRate => 2.0F,
+                EConstFloat.AttackAnimRate => 1.25F,
+                EConstFloat.Armor => 0.85F,
+                EConstFloat.Luck => 0.6F,
+                EConstFloat.MovementSpeed => 12.0F,
+                EConstFloat.MovementAnimSpeed => 2.0F,
+                 _ => throw new ArgumentOutOfRangeException(nameof(MaxFloat), $"\nInvalid value: {constFloat}")
+            };
         }
 
         public static bool IsCreatureType(BaseCellObject obj)
@@ -362,23 +473,23 @@ namespace STELLAREST_F1
             return null;
         }
 
-        public static T GetEffectComponent<T>(EEffectType effectType) where T : EffectBase
-        {
-            return effectType switch
-            {
-                EEffectType.VFX_Base or EEffectType.VFX_BonusHealth or EEffectType.VFX_ShieldBlue or
-                EEffectType.VFX_WindBlade
-                    => typeof(VFXBase) as T,
+        // public static T GetEffectComponent<T>(EEffectType effectType) where T : EffectBase
+        // {
+        //     return effectType switch
+        //     {
+        //         EEffectType.VFX_Base or EEffectType.VFX_BonusHealth or EEffectType.VFX_ShieldBlue or
+        //         EEffectType.VFX_WindBlade
+        //             => typeof(VFXBase) as T,
 
-                EEffectType.BuffStat_MaxHealth or EEffectType.BuffStat_Damage or EEffectType.BuffStat_AttackRate or
-                EEffectType.BuffStat_MovementSpeed or EEffectType.BuffStat_Shield or EEffectType.BuffStat_BonusHealth or
-                EEffectType.BuffStat_Armor or EEffectType.BuffStat_Critical or EEffectType.BuffStat_Dodge or
-                EEffectType.BuffStat_Luck or EEffectType.BuffStat_InvincibleBlockCountPerWave
-                    => typeof(BuffBase) as T,
+        //         EEffectType.BuffStat_MaxHealth or EEffectType.BuffStat_Damage or EEffectType.BuffStat_AttackRate or
+        //         EEffectType.BuffStat_MovementSpeed or EEffectType.BuffStat_Shield or EEffectType.BuffStat_BonusHealth or
+        //         EEffectType.BuffStat_Armor or EEffectType.BuffStat_Critical or EEffectType.BuffStat_Dodge or
+        //         EEffectType.BuffStat_Luck or EEffectType.BuffStat_InvincibleBlockCountPerWave
+        //             => typeof(BuffBase) as T,
                     
-                _ => throw new ArgumentOutOfRangeException(nameof(effectType), $"Invalid value: {effectType}")
-            };
-        }
+        //         _ => throw new ArgumentOutOfRangeException(nameof(effectType), $"Invalid value: {effectType}")
+        //     };
+        // }
 
         public static SkillData GetSkillData(int dataID, Creature owner)
         {

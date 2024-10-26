@@ -237,7 +237,7 @@ namespace STELLAREST_F1
             // --- 순서는 Shield부터
             if (Shield > 0.0f)
             {
-                remainedDamage = OnDamagedBonusHealth(finalDamage, EEffectType.BuffStat_Shield);
+                remainedDamage = OnDamagedBonusHealth(finalDamage, EEffectType.SubStat_Shield);
                 if (BaseEffect.IsAppliedEffect(EEffectType.VFX_ShieldBlue))
                 {
                     BaseEffect.OnShowEffect(EEffectType.VFX_ShieldBlue);
@@ -250,13 +250,13 @@ namespace STELLAREST_F1
                                                                EFontAnimationType.EndBouncingRightUp :
                                                                EFontAnimationType.EndBouncingLeftUp;
 
-                        // --- Duration 추가해야 할 것 같은데.. BREAK !! 부분은 yellow로 하고 싶기도 하고
+                        // --- Duration 추가해야 할 것 같은데.. BREAK !! 부분은 yellow로 하고 싶기도 하고 
                         ShowTextFont(text: "SHIELD\n  BREAK !!", fontSize: 5.5f, textColor: Managers.MonoContents.BrightBlue, fontAnimType: shieldBreakAnimType);
 
                         // --- VFX 제거
                         BaseEffect.RemoveEffect(EEffectType.VFX_ShieldBlue);
                         // --- 버프 제거
-                        BaseEffect.RemoveEffect(EEffectType.BuffStat_Shield);
+                        BaseEffect.RemoveEffect(EEffectType.SubStat_Shield);
                         // --- 쉴드의 경우, 잔여 데미지량과 관계 없이 쉴드가 깨질때 무조건 데미지 무효화
                         return;
                     }
@@ -276,7 +276,7 @@ namespace STELLAREST_F1
             else if (BonusHealth > 0.0f)
             {
                 float prevBonusHealth = finalDamage > BonusHealth ? BonusHealth : 0.0f;
-                remainedDamage = OnDamagedBonusHealth(finalDamage, EEffectType.BuffStat_BonusHealth);
+                remainedDamage = OnDamagedBonusHealth(finalDamage, EEffectType.SubStat_BonusHealth);
                 if (BaseEffect.IsAppliedEffect(EEffectType.VFX_BonusHealth))
                 {
                     BaseEffect.OnShowEffect(EEffectType.VFX_BonusHealth);
@@ -304,7 +304,7 @@ namespace STELLAREST_F1
                         // --- VFX 제거
                         BaseEffect.RemoveEffect(EEffectType.VFX_BonusHealth);
                         // --- 버프 제거
-                        BaseEffect.RemoveEffect(EEffectType.BuffStat_BonusHealth);
+                        BaseEffect.RemoveEffect(EEffectType.SubStat_BonusHealth);
                         // --- 잔여 데미지 처리
                         Health = Mathf.Clamp(Health - remainedDamage, 0.0f, MaxHealth);
                         if (Health <= 0.0f)
@@ -472,7 +472,7 @@ namespace STELLAREST_F1
         private float OnDamagedBonusHealth(float finalDamage, EEffectType effectBuffType)
         {
             float remainedDamage = 0.0f;
-            if (effectBuffType == EEffectType.BuffStat_BonusHealth)
+            if (effectBuffType == EEffectType.SubStat_BonusHealth)
             {
                 if (finalDamage > BonusHealth)
                 {
@@ -482,7 +482,7 @@ namespace STELLAREST_F1
                 else
                     BonusHealth = Mathf.Clamp(BonusHealth - finalDamage, 0.0f, BonusHealth);
             }
-            else if (effectBuffType == EEffectType.BuffStat_Shield)
+            else if (effectBuffType == EEffectType.SubStat_Shield)
             {
                 if (finalDamage > Shield)
                 {
@@ -507,12 +507,13 @@ namespace STELLAREST_F1
             CreatureBody.StartCoFadeOutEffect(
                 startCallback: () =>
                 {
-                    GenerateGlobalEffect(EGlobalEffectID.OnDeadSkull, CenterPosition);
                     // BaseEffect.GenerateEffect(
                     //         //effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_Global_OnDeadSkull,
                     //         effectID: Util.GlobalDataID(EGlobalEffectID.OnDeadSkull),
                     //         spawnPos: CenterPosition
                     //         );
+                    //GenerateGlobalEffect(EGlobalEffectID.OnDeadSkull, CenterPosition);
+                    GenerateGlobalEffect(EConstInteger.VFX_OnDeadSkull, CenterPosition);
                 },
                 endCallback: () => OnDeadFadeOutCompleted()
             );
@@ -656,9 +657,15 @@ namespace STELLAREST_F1
         {
             Vector3 impactVFXSpawnPos = Util.GetRandomQuadPosition(CenterPosition);
             if (isCritical)
-                GenerateGlobalEffect(EGlobalEffectID.ImpactCriticalHit, impactVFXSpawnPos);
+            {
+                //GenerateGlobalEffect(EGlobalEffectID.ImpactCriticalHit, impactVFXSpawnPos);
+                GenerateGlobalEffect(EConstInteger.VFX_ImpactCriticalHit, impactVFXSpawnPos);
+            }
             else
-                GenerateGlobalEffect(EGlobalEffectID.ImpactHit, impactVFXSpawnPos);
+            {
+                //GenerateGlobalEffect(EGlobalEffectID.ImpactHit, impactVFXSpawnPos);
+                GenerateGlobalEffect(EConstInteger.VFX_ImpactHit, impactVFXSpawnPos);
+            }
 
             // DO SOMETHING(FIRE, ICE AND ETC...)
             if (skillByAttacker.SkillElementType != ESkillElementType.Fire)

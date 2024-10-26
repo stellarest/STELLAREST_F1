@@ -61,7 +61,8 @@ namespace STELLAREST_F1
                 return;
 
             Vector3 spawnPos = _heroOwner.HeroBody.GetContainer(EHeroBody_Lower.LegR).TR.position;
-            EffectBase dustVFXEffect = _heroOwner.GenerateGlobalEffect(EGlobalEffectID.Dust, spawnPos);
+            //EffectBase dustVFXEffect = _heroOwner.GenerateGlobalEffect(EGlobalEffectID.Dust, spawnPos);
+            EffectBase dustVFXEffect = _heroOwner.GenerateGlobalEffect(EConstInteger.VFX_Dust, spawnPos);
             dustVFXEffect.SortingGroup.sortingOrder = ReadOnly.SortingLayers.SLOrder_BaseObject;
         }
         #endregion

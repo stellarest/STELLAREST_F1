@@ -43,7 +43,7 @@ namespace STELLAREST_F1
         {
             switch (effectBuffType)
             {
-                case EEffectType.BuffStat_MaxHealth:
+                case EEffectType.MainStat_MaxHealth:
                     {
                         float baseValue = MaxHealth;
                         baseValue += _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddAmount);
@@ -53,74 +53,77 @@ namespace STELLAREST_F1
                     }
                     break;
 
-                case EEffectType.BuffStat_Damage:
+                case EEffectType.MainStat_Damage:
                     {
                         float baseValue = _baseStat.MinDamage;
                         baseValue += _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddAmount);
                         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddPercent);
                         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddPercentMulti);
-                        _baseStat.MinDamage = baseValue;
+                        MinDamage = baseValue;
 
                         baseValue = _baseStat.MaxDamage;
                         baseValue += _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddAmount);
                         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddPercent);
                         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddPercentMulti);
-                        _baseStat.MaxDamage = baseValue;
+                        MaxDamage = baseValue;
                     }
                     break;
 
-                case EEffectType.BuffStat_AttackRate:
+                case EEffectType.MainStat_AttackRate:
                     {
                         float baseValue = _baseStat.AttackRate;
                         baseValue += _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddAmount);
                         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddPercent);
                         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddPercentMulti);
-                        _baseStat.AttackRate = Mathf.Clamp(baseValue, 0.1f, ReadOnly.Util.MaxAttackRate);
+                        //_baseStat.AttackRate = Mathf.Clamp(baseValue, 0.1f, ReadOnly.Util.MaxAttackRate);
+                        AttackRate = baseValue;
                     }
                     break;
 
-                case EEffectType.BuffStat_MovementSpeed:
+                case EEffectType.MainStat_MovementSpeed:
                     {
                         float baseValue = _baseStat.MovementSpeed;
                         baseValue += _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddAmount);
                         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddPercent);
                         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddPercentMulti);
-                        _baseStat.MovementSpeed = Mathf.Clamp(baseValue, ReadOnly.Util.MinMovementSpeed, ReadOnly.Util.MaxMovementSpeed);
+                        //_baseStat.MovementSpeed = Mathf.Clamp(baseValue, ReadOnly.Util.MinMovementSpeed, ReadOnly.Util.MaxMovementSpeed);
+                        MovementSpeed = baseValue;
                     }
                     break;
 
-                case EEffectType.BuffStat_Shield:
+                case EEffectType.SubStat_Shield:
                     {
                         float baseValue = _baseStat.MaxHealth;
                         baseValue += _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddAmount);
                         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddPercent);
                         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddPercentMulti);
-                        Shield = Mathf.Clamp(baseValue - _baseStat.MaxHealth, 0.0f, _baseStat.MaxHealth);
+                        Shield = Mathf.Clamp(baseValue - MaxHealth, 0.0f, MaxHealth);
                     }
                     break;
 
-                case EEffectType.BuffStat_BonusHealth:
+                case EEffectType.SubStat_BonusHealth:
                     {
                         float baseValue = _baseStat.MaxHealth;
                         baseValue += _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddAmount);
                         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddPercent);
                         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddPercentMulti);
-                        BonusHealth = Mathf.Clamp(baseValue - _baseStat.MaxHealth, 0.0f, _baseStat.MaxHealth);
+                        BonusHealth = Mathf.Clamp(baseValue - MaxHealth, 0.0f, MaxHealth);
                     }
                     break;
 
-                case EEffectType.BuffStat_Armor:
+                case EEffectType.SubStat_Armor:
                     {
                         float baseValue = Armor;
                         baseValue += _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddAmount);
                         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddPercent);
                         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddPercentMulti);
-                        Armor = Mathf.Clamp(baseValue, 0.0f, ReadOnly.Util.MaxArmor);
+                        //Armor = Mathf.Clamp(baseValue, 0.0f, ReadOnly.Util.MaxArmor);
+                        Armor = Mathf.Clamp(baseValue, 0.0f, Util.MaxFloat(EConstFloat.Armor));
                     }
                     break;
 
 
-                case EEffectType.BuffStat_Critical:
+                case EEffectType.SubStat_Critical:
                     {
                         float baseValue = Critical;
                         baseValue += _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddAmount);
@@ -130,7 +133,7 @@ namespace STELLAREST_F1
                     }
                     break;
 
-                case EEffectType.BuffStat_Dodge:
+                case EEffectType.SubStat_Dodge:
                     {
                         float baseValue = Dodge;
                         baseValue += _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddAmount);
@@ -140,17 +143,18 @@ namespace STELLAREST_F1
                     }
                     break;
 
-                case EEffectType.BuffStat_Luck:
+                case EEffectType.SubStat_Luck:
                     {
                         float baseValue = Luck;
                         baseValue += _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddAmount);
                         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddPercent);
                         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddPercentMulti);
-                        Luck = Mathf.Clamp(baseValue, 0.0f, ReadOnly.Util.MaxLuck);
+                        //Luck = Mathf.Clamp(baseValue, 0.0f, ReadOnly.Util.MaxLuck);
+                        Luck = Mathf.Clamp(baseValue, 0.0f, Util.MaxFloat(EConstFloat.Luck));
                     }
                     break;
 
-                case EEffectType.BuffStat_InvincibleBlockCountPerWave:
+                case EEffectType.SubStat_InvincibleBlockCountPerWave:
                     {
                         int baseValue = InvincibleBlockCountPerWave;
                         baseValue += (int)_owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddAmount);

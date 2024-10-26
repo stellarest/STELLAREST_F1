@@ -31,7 +31,7 @@ namespace STELLAREST_F1
                 yield return new WaitForSeconds(waitTime);
                 Monster chicken = Managers.Object.SpawnBaseObject<Monster>
                     (objectType: EObjectType.Monster, spawnPos: Managers.Map.CellToCenterWorld(new Vector3Int(-9, 8, 0)),
-                     dataID: ReadOnly.DataAndPoolingID.DNPID_Monster_Chicken);
+                     dataID: Util.MonsterDataID(EConstInteger.Monster_Chicken));
             }
         }
 
@@ -42,32 +42,22 @@ namespace STELLAREST_F1
             {
                 yield return new WaitUntil(() => Managers.Object.Envs.Count == 0);
                 yield return new WaitForSeconds(waitTime);
-                // Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
-                //     spawnPos: Managers.Map.CellToCenteredWorld(new Vector3Int(-6, 11, 0)),
-                //     dataID: ReadOnly.DataAndPoolingID.DNPID_Env_AshTree);
                 
                 if (_spawnEnvTypeFlag == false)
                 {
                     Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
                        spawnPos: Managers.Map.CellToCenterWorld(new Vector3Int(-6, 11, 0)),
-                       dataID: ReadOnly.DataAndPoolingID.DNPID_Env_AshTree);
+                       dataID: Util.EnvDataID(EConstInteger.Env_AshTree));
                 }
                 else
                 {
                     Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
                        spawnPos: Managers.Map.CellToCenterWorld(new Vector3Int(-3, 11, 0)),
-                       dataID: ReadOnly.DataAndPoolingID.DNPID_Env_GoldRock);
+                       dataID: Util.EnvDataID(EConstInteger.Env_GoldRock));
                 }
 
                 _spawnEnvTypeFlag = !_spawnEnvTypeFlag;
             }
-        }
-
-        private void SpawnChicken_Test(int cellPosX, int cellPosY)
-        {
-            Managers.Object.SpawnBaseObject<Monster>
-                (objectType: EObjectType.Monster, spawnPos: Managers.Map.CellToCenterWorld(new Vector3Int(cellPosX, cellPosY, 0)),
-                dataID: ReadOnly.DataAndPoolingID.DNPID_Monster_Chicken, owner: null);
         }
 
         private void Test()
@@ -85,13 +75,13 @@ namespace STELLAREST_F1
                 // --- First Hero
                 Hero firstHero = Managers.Object.SpawnBaseObject<Hero>(objectType: EObjectType.Hero,
                     spawnPos: Vector3.zero,
-                    dataID: ReadOnly.DataAndPoolingID.DNPID_Hero_Paladin,
+                    dataID: Util.HeroDataID(EConstInteger.Hero_Paladin),
                     owner: null);
                 leaderController.Leader = firstHero;
 
                 // SHADER,
-                // StartCoroutine(CoContinuousSpawnMonster_Test(5.0f));
-                // StartCoroutine(CoContinuousSpawnEnv_Test(1f));
+                StartCoroutine(CoContinuousSpawnMonster_Test(5.0f));
+                StartCoroutine(CoContinuousSpawnEnv_Test(1f));
 
                 // ddd
                 // SpawnChicken_Test(-8, 8);
@@ -455,10 +445,10 @@ namespace STELLAREST_F1
         }
 
         private int GetRandEnvTree
-            => UnityEngine.Random.Range(ReadOnly.DataAndPoolingID.DNPID_Env_AshTree, ReadOnly.DataAndPoolingID.DNPID_Env_YewTree + 1);
+            => UnityEngine.Random.Range(Util.EnvDataID(EConstInteger.Env_AshTree), Util.EnvDataID(EConstInteger.Env_YewTree ) + 1);
 
         private int GetRandEnvRock
-            => UnityEngine.Random.Range(ReadOnly.DataAndPoolingID.DNPID_Env_CopperRock, ReadOnly.DataAndPoolingID.DNPID_Env_ZincRock + 1);
+            => UnityEngine.Random.Range(Util.EnvDataID(EConstInteger.Env_CopperRock), Util.EnvDataID(EConstInteger.Env_ZincRock) + 1);
 
         private void LoadAsset()
         {

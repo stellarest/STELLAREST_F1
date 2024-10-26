@@ -438,8 +438,8 @@ namespace STELLAREST_F1
         #endregion
 
         #region Util: Effect
-        public EffectBase GenerateGlobalEffect(EGlobalEffectID globalEffectID, Vector3 spawnPos)
-            => BaseEffect.GenerateGlobalEffect(globalEffectID, spawnPos);
+        public EffectBase GenerateGlobalEffect(EConstInteger constInt, Vector3 spawnPos)
+            => BaseEffect.GenerateGlobalEffect(constInt, spawnPos);
 
         public EffectBase GenerateSkillEffect(int effectID, SkillBase skill)
             => BaseEffect.GenerateSkillEffect(effectID, skill);

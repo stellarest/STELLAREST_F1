@@ -61,10 +61,15 @@ namespace STELLAREST_F1
             base.EnterInGame(spawnPos);
             EnvBody.StartCoFadeInEffect(startCallback: () =>
                         {
+                            // GenerateGlobalEffect(
+                            //         globalEffectID: EnvType == EEnvType.Tree ?
+                            //                             EGlobalEffectID.TeleportGreen :
+                            //                             EGlobalEffectID.TeleportRed,
+                            //         spawnPos: Managers.Map.CellToCenterWorld(Vector3Int.up + SpawnedCellPos)
+                            // );
                             GenerateGlobalEffect(
-                                    globalEffectID: EnvType == EEnvType.Tree ?
-                                                        EGlobalEffectID.TeleportGreen :
-                                                        EGlobalEffectID.TeleportRed,
+                                    constInt: EnvType == EEnvType.Tree ? EConstInteger.VFX_TeleportGreen :
+                                                                         EConstInteger.VFX_TeleportRed,
                                     spawnPos: Managers.Map.CellToCenterWorld(Vector3Int.up + SpawnedCellPos)
                             );
                         }, endCallback: null);

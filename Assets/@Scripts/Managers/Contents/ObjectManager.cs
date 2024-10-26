@@ -202,7 +202,9 @@ namespace STELLAREST_F1
         public void ShowTextFont(Vector3 position, string text, float textSize, Color textColor, 
                         EFontAssetType fontAssetType, EFontAnimationType fontAnimType)
         {
-            int poolingID = ReadOnly.DataAndPoolingID.DNPID_TextFont;
+            //int poolingID = ReadOnly.DataAndPoolingID.DNPID_TextFont;
+            int poolingID = Util.TextFontID(EConstInteger.TextFont_Text);
+
             string prefabName = ReadOnly.Prefabs.PFName_TextFontBase;
             GameObject go = Managers.Resource.Instantiate(prefabName, parent: TextFontRoot, poolingID: poolingID);
             TextFont textFont = go.GetComponent<TextFont>();
@@ -212,7 +214,9 @@ namespace STELLAREST_F1
         public void ShowTextFont(Vector3 position, string text, float textSize, string textColorCode,
                         EFontAssetType fontAssetType, EFontAnimationType fontAnimType)
         {
-            int poolingID = ReadOnly.DataAndPoolingID.DNPID_TextFont;
+            // int poolingID = ReadOnly.DataAndPoolingID.DNPID_TextFont;
+            int poolingID = Util.TextFontID(EConstInteger.TextFont_Text);
+
             string prefabName = ReadOnly.Prefabs.PFName_TextFontBase;
             GameObject go = Managers.Resource.Instantiate(prefabName, parent: TextFontRoot, poolingID: poolingID);
             TextFont textFont = go.GetComponent<TextFont>();
@@ -223,7 +227,9 @@ namespace STELLAREST_F1
                                 EFontSignType fontSignType = EFontSignType.None,
                                 EFontAnimationType fontAnimType = EFontAnimationType.EndGoingUp)
         {
-            int poolingID = ReadOnly.DataAndPoolingID.DNPID_DamageFont;
+            // int poolingID = ReadOnly.DataAndPoolingID.DNPID_DamageFont;
+            int poolingID = Util.TextFontID(EConstInteger.TextFont_Damage);
+
             string prefabName = ReadOnly.Prefabs.PFName_TextFontBase;
             GameObject go = Managers.Resource.Instantiate(prefabName, parent: TextFontRoot, poolingID: poolingID);
             TextFont dmgFont = go.GetComponent<TextFont>();
@@ -234,7 +240,9 @@ namespace STELLAREST_F1
                         EFontSignType fontSignType = EFontSignType.None,
                         EFontAnimationType fontAnimType = EFontAnimationType.EndGoingUp)
         {
-            int poolingID = ReadOnly.DataAndPoolingID.DNPID_TextFont;
+            // int poolingID = ReadOnly.DataAndPoolingID.DNPID_TextFont;
+            int poolingID = Util.TextFontID(EConstInteger.TextFont_Text);
+
             string prefabName = ReadOnly.Prefabs.PFName_TextFontBase;
             GameObject go = Managers.Resource.Instantiate(prefabName, parent: TextFontRoot, poolingID: poolingID);
             TextFont dmgFont = go.GetComponent<TextFont>();
@@ -245,7 +253,9 @@ namespace STELLAREST_F1
                          EFontSignType fontSignType,
                          Func<EFontAnimationType> fontAnimFunc)
         {
-            int poolingID = ReadOnly.DataAndPoolingID.DNPID_DamageFont;
+            // int poolingID = ReadOnly.DataAndPoolingID.DNPID_DamageFont;
+            int poolingID = Util.TextFontID(EConstInteger.TextFont_Damage);
+
             string prefabName = ReadOnly.Prefabs.PFName_TextFontBase;
             GameObject go = Managers.Resource.Instantiate(prefabName, parent: TextFontRoot, poolingID: poolingID);
             TextFont dmgFont = go.GetComponent<TextFont>();
@@ -256,7 +266,9 @@ namespace STELLAREST_F1
                          EFontSignType fontSignType,
                          Func<EFontAnimationType> fontAnimFunc)
         {
-            int poolingID = ReadOnly.DataAndPoolingID.DNPID_DamageFont;
+            // int poolingID = ReadOnly.DataAndPoolingID.DNPID_DamageFont;
+            int poolingID = Util.TextFontID(EConstInteger.TextFont_Damage);
+
             string prefabName = ReadOnly.Prefabs.PFName_TextFontBase;
             GameObject go = Managers.Resource.Instantiate(prefabName, parent: TextFontRoot, poolingID: poolingID);
             TextFont dmgFont = go.GetComponent<TextFont>();

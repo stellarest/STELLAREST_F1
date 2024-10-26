@@ -137,15 +137,27 @@ namespace STELLAREST_F1
         }
 
         public void SetAttackRate(float attackRate)
-            => Animator.SetFloat(AttackRate, _creatureOwner.AttackRate);
+        {
+            float minAttackRate = Util.MinFloat(EConstFloat.AttackRate);
+            float maxAttackRate = Util.MaxFloat(EConstFloat.AttackRate);
+
+            float minAttackAnimRate = Util.MinFloat(EConstFloat.AttackAnimRate);
+            float maxAttackAnimRate = Util.MaxFloat(EConstFloat.AttackAnimRate);
+
+            float normalize = Mathf.InverseLerp(minAttackRate, maxAttackRate, attackRate);
+            float result = Mathf.Lerp(minAttackAnimRate, maxAttackAnimRate, normalize);
+            Animator.SetFloat(AttackRate, result);
+        }
+
+        // => Animator.SetFloat(AttackRate, _creatureOwner.AttackRate);
 
         public void SetMovementSpeed(float movementSpeed)
         {
-            float minMovementSpeed = ReadOnly.Util.MinMovementSpeed;
-            float maxMovementSpeed = ReadOnly.Util.MaxMovementSpeed;
+            float minMovementSpeed = Util.MinFloat(EConstFloat.MovementSpeed);
+            float maxMovementSpeed = Util.MaxFloat(EConstFloat.MovementSpeed);
 
-            float minMovementAnimSpeed = ReadOnly.Util.MinMovementAnimSpeed;
-            float maxMovementAnimSpeed = ReadOnly.Util.MaxMovementAnimSpeed;
+            float minMovementAnimSpeed = Util.MinFloat(EConstFloat.MovementAnimSpeed);
+            float maxMovementAnimSpeed = Util.MaxFloat(EConstFloat.MovementAnimSpeed);
 
             float normalize = Mathf.InverseLerp(minMovementSpeed, maxMovementSpeed, movementSpeed);
             float result = Mathf.Lerp(minMovementAnimSpeed, maxMovementAnimSpeed, normalize);

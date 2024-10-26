@@ -38,12 +38,12 @@ namespace STELLAREST_F1
             // + Apply Base Effect
         }
 
-        public EffectBase GenerateGlobalEffect(EGlobalEffectID globalEffectID, Vector3 spawnPos)
+        public EffectBase GenerateGlobalEffect(EConstInteger constInt, Vector3 spawnPos)
         {
             EffectBase effect = Managers.Object.SpawnBaseObject<EffectBase>(
                         objectType: EObjectType.Effect,
                         spawnPos: spawnPos,
-                        dataID: Util.GlobalDataID(globalEffectID),
+                        dataID: Util.GlobalEffectID(constInt),
                         owner: _owner
                     );
 
@@ -101,7 +101,7 @@ namespace STELLAREST_F1
                 if (ActiveEffects[i].EffectType != effectType)
                     continue;
 
-                if (Util.IsEffectBuffType(effectType) == false)
+                if (Util.IsEffectStatType(effectType) == false)
                     continue;
 
                 switch (statModType)
@@ -179,7 +179,7 @@ namespace STELLAREST_F1
             Dev_ActiveEffects.Remove(effect.Dev_NameTextID);
 #endif
 
-            if (Util.IsEffectBuffType(effect.EffectType))
+            if (Util.IsEffectStatType(effect.EffectType))
                 _owner.RefreshAllStats();
 
             // -------------------- CUT --------------------

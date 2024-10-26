@@ -54,7 +54,9 @@ namespace STELLAREST_F1
             transform.position = position;
             PlayFontAnimation(fontAnimType: fontAnimType, endCallback: () =>
             {
-                Managers.Resource.Destroy(gameObject, poolingID: ReadOnly.DataAndPoolingID.DNPID_TextFont);
+                //Managers.Resource.Destroy(gameObject, poolingID: ReadOnly.DataAndPoolingID.DNPID_TextFont);
+                Managers.Resource.Destroy(gameObject, poolingID: Util.TextFontID(EConstInteger.TextFont_Text));
+
             });
         }
 
@@ -82,7 +84,8 @@ namespace STELLAREST_F1
             transform.position = position;
             PlayFontAnimation(fontAnimType: fontAnimType, endCallback: () =>
             {
-                Managers.Resource.Destroy(gameObject, poolingID: ReadOnly.DataAndPoolingID.DNPID_TextFont);
+                // Managers.Resource.Destroy(gameObject, poolingID: ReadOnly.DataAndPoolingID.DNPID_TextFont);
+                Managers.Resource.Destroy(gameObject, poolingID: Util.TextFontID(EConstInteger.TextFont_Text));
             });
         }
         #endregion
@@ -125,7 +128,8 @@ namespace STELLAREST_F1
             }
 
             PlayFontAnimation(fontAnimType: fontAnimType, endCallback: () => {
-                Managers.Resource.Destroy(gameObject, poolingID: ReadOnly.DataAndPoolingID.DNPID_DamageFont);
+                // Managers.Resource.Destroy(gameObject, poolingID: ReadOnly.DataAndPoolingID.DNPID_DamageFont);
+                Managers.Resource.Destroy(gameObject, poolingID: Util.TextFontID(EConstInteger.TextFont_Damage));
             });
         }
 
@@ -168,7 +172,8 @@ namespace STELLAREST_F1
             }
 
             PlayFontAnimation(fontAnimType: fontAnimType, endCallback: () => {
-                Managers.Resource.Destroy(gameObject, poolingID: ReadOnly.DataAndPoolingID.DNPID_DamageFont);
+                // Managers.Resource.Destroy(gameObject, poolingID: ReadOnly.DataAndPoolingID.DNPID_DamageFont);
+                Managers.Resource.Destroy(gameObject, poolingID: Util.TextFontID(EConstInteger.TextFont_Damage));
             });
         }
         #endregion

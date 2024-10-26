@@ -12,6 +12,8 @@ namespace STELLAREST_F1
 {
     public class Hero : Creature
     {
+        public float Test_AttackRate = 0.0f;
+
         #if UNITY_EDITOR
         private void Update()
         {
@@ -19,6 +21,12 @@ namespace STELLAREST_F1
             {
                 if (LevelUp() == false)
                     Debug.LogWarning($"Faield to LvUp, IsMaxLv: {IsMaxLevel}");
+            }
+
+            if (Input.GetKeyDown(KeyCode.L))
+            {
+                // Util.GlobalEffectID(EConstInteger.Hero_Alchemist);
+                AttackRate = Test_AttackRate;
             }
         }
         #endif
@@ -171,10 +179,14 @@ namespace STELLAREST_F1
             base.EnterInGame(spawnPos);
             HeroBody.StartCoFadeInEffect(startCallback: () =>
             {
+                // GenerateGlobalEffect(
+                //         globalEffectID: EGlobalEffectID.TeleportBlue,
+                //         spawnPos: Managers.Map.CellToCenterWorld(Vector3Int.up + SpawnedCellPos)
+                //     );
                 GenerateGlobalEffect(
-                        globalEffectID: EGlobalEffectID.TeleportBlue,
-                        spawnPos: Managers.Map.CellToCenterWorld(Vector3Int.up + SpawnedCellPos)
-                    );
+                    constInt: EConstInteger.VFX_TeleportBlue,
+                    spawnPos: Managers.Map.CellToCenterWorld(Vector3Int.up + SpawnedCellPos)
+                );
             });
             
             StartCoroutine(CoInitialReleaseLeaderHeroAI());

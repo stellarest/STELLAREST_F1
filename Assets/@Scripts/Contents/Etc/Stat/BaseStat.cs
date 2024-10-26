@@ -53,8 +53,11 @@ namespace STELLAREST_F1
 
                 if (_attackRate != value)
                 {
-                    _attackRate = value;
-                    (Owner as Creature).CreatureAnim.SetAttackRate(value);
+                    _attackRate = Mathf.Clamp(value, 
+                            min: Util.MinFloat(EConstFloat.AttackRate),
+                            max: Util.MaxFloat(EConstFloat.AttackRate));
+
+                    (Owner as Creature).CreatureAnim.SetAttackRate(_attackRate);
                 }
             }
         }
@@ -71,7 +74,10 @@ namespace STELLAREST_F1
 
                 if (_movementSpeed != value)
                 {
-                    _movementSpeed = Mathf.Clamp(value, ReadOnly.Util.MinMovementSpeed, ReadOnly.Util.MaxMovementSpeed);
+                    _movementSpeed = Mathf.Clamp(value, 
+                            min: Util.MinFloat(EConstFloat.MovementSpeed), 
+                            max: Util.MaxFloat(EConstFloat.MovementSpeed));
+
                     (Owner as Creature).CreatureAnim.SetMovementSpeed(_movementSpeed);
                 }
             }
@@ -195,6 +201,12 @@ namespace STELLAREST_F1
 
         public void RefreshAllStats(bool currentHealthToMax = false)
         {
+            if (Owner.ObjectType == EObjectType.Env)
+            {
+                Health = MaxHealth;
+                return;
+            }
+
             SubStatsToZero();
             MaxHealth = MaxHealthBase;
             MinDamage = MinDamageBase;
@@ -204,7 +216,7 @@ namespace STELLAREST_F1
             for (int i = 0; i < (int)EEffectType.Max; ++i)
             {
                 EEffectType effectType = (EEffectType)i;
-                if (Util.IsEffectBuffType(effectType))
+                if (Util.IsEffectStatType(effectType))
                     ApplyStat(effectType);
             }
 
@@ -214,7 +226,7 @@ namespace STELLAREST_F1
 
         public void ApplyStat(EEffectType effectBuffType)
         {
-            if (Util.IsEffectBuffType(effectBuffType) == false)
+            if (Util.IsEffectStatType(effectBuffType) == false)
                 return;
 
             float prevMaxHealth = MaxHealth;
