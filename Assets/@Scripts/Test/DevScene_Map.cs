@@ -85,11 +85,12 @@ namespace STELLAREST_F1
                 // --- First Hero
                 Hero firstHero = Managers.Object.SpawnBaseObject<Hero>(objectType: EObjectType.Hero,
                     spawnPos: Vector3.zero,
-                    dataID: ReadOnly.DataAndPoolingID.DNPID_Hero_Paladin);
+                    dataID: ReadOnly.DataAndPoolingID.DNPID_Hero_Paladin,
+                    owner: null);
                 leaderController.Leader = firstHero;
 
                 // SHADER,
-                StartCoroutine(CoContinuousSpawnMonster_Test(5.0f));
+                // StartCoroutine(CoContinuousSpawnMonster_Test(5.0f));
                 // StartCoroutine(CoContinuousSpawnEnv_Test(1f));
 
                 // ddd

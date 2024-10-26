@@ -248,63 +248,24 @@ namespace STELLAREST_F1
             return dataID;
         }
 
-        private static HashSet<EEffectType> EffectBuffStats = new HashSet<EEffectType>
+        private static HashSet<EEffectType> EffectBuffTypes = new HashSet<EEffectType>
         {
             EEffectType.BuffStat_MaxHealth,
-            EEffectType.BuffStat_BonusHealth,
-            EEffectType.BuffStat_Shield,
             EEffectType.BuffStat_Damage,
+            EEffectType.BuffStat_AttackRate,
+            EEffectType.BuffStat_MovementSpeed,
+
+            EEffectType.BuffStat_Shield,
+            EEffectType.BuffStat_BonusHealth,
             EEffectType.BuffStat_Armor,
             EEffectType.BuffStat_Critical,
             EEffectType.BuffStat_Dodge,
             EEffectType.BuffStat_Luck,
             EEffectType.BuffStat_InvincibleBlockCountPerWave
-
         };
 
-        public static bool IsEffectBuffStat(EEffectType effectType)
-            => EffectBuffStats.Contains(effectType);
-       
-        public static CreatureData GetCreatureData(int dataID, Creature owner)
-        {
-            switch (owner?.ObjectType)
-            {
-                case EObjectType.Hero:
-                    {
-                        if (Managers.Data.HeroDataDict.TryGetValue(dataID, out HeroData heroData))
-                            return heroData;
-                    }
-                    break;
-
-                case EObjectType.Monster:
-                    {
-                        if (Managers.Data.MonsterDataDict.TryGetValue(dataID, out MonsterData monsterData))
-                            return monsterData;
-                    }
-                    break;
-            }
-
-            return null;
-        }
-
-        /*
-            public enum EGlobalEffectID
-        {
-            ImpactHit = 900000,
-            ImpactCriticalHit = 900001,
-            ImpactFire = 900002,
-            ImpactShockwave = 900003,
-
-            TeleportRed = 900020,
-            TeleportGreen = 900021,
-            TeleportBlue = 900022,
-            TeleportPurple = 900023,
-            
-            Dust = 990000,
-            OnDeadSkull = 990001,
-            EvolutionGlow = 990002
-        }
-        */
+        public static bool IsEffectBuffType(EEffectType effectType)
+            => EffectBuffTypes.Contains(effectType);
 
         private static readonly int GlobalEffect_VFX_ImpactHit = (int)EGlobalEffectID.ImpactHit;
         private static readonly int GlobalEffect_VFX_ImpactCriticalHit = (int)EGlobalEffectID.ImpactCriticalHit;
@@ -334,7 +295,7 @@ namespace STELLAREST_F1
                 EGlobalEffectID.Dust => GlobalEffect_VFX_Dust,
                 EGlobalEffectID.OnDeadSkull => GlobalEffect_VFX_OnDeadSkull,
                 EGlobalEffectID.EvolutionGlow => GlobalEffect_VFX_EvolutionGlow,
-                _ => throw new ArgumentOutOfRangeException(nameof(effectID), $"Invalid value type: {effectID}")
+                _ => throw new ArgumentOutOfRangeException(nameof(effectID), $"Invalid value: {effectID}")
             };
         }
 
@@ -345,6 +306,28 @@ namespace STELLAREST_F1
 
         public static bool IsCreatureType(BaseCellObject obj)
             => obj != null && obj.ObjectType == EObjectType.Hero || obj.ObjectType == EObjectType.Monster ? true : false;
+
+        public static CreatureData GetCreatureData(int dataID, Creature owner)
+        {
+            switch (owner?.ObjectType)
+            {
+                case EObjectType.Hero:
+                    {
+                        if (Managers.Data.HeroDataDict.TryGetValue(dataID, out HeroData heroData))
+                            return heroData;
+                    }
+                    break;
+
+                case EObjectType.Monster:
+                    {
+                        if (Managers.Data.MonsterDataDict.TryGetValue(dataID, out MonsterData monsterData))
+                            return monsterData;
+                    }
+                    break;
+            }
+
+            return null;
+        }
 
         public static EffectData GetEffectData(int dataID, BaseCellObject owner)
         {
@@ -377,6 +360,24 @@ namespace STELLAREST_F1
             }
 
             return null;
+        }
+
+        public static T GetEffectComponent<T>(EEffectType effectType) where T : EffectBase
+        {
+            return effectType switch
+            {
+                EEffectType.VFX_Base or EEffectType.VFX_BonusHealth or EEffectType.VFX_ShieldBlue or
+                EEffectType.VFX_WindBlade
+                    => typeof(VFXBase) as T,
+
+                EEffectType.BuffStat_MaxHealth or EEffectType.BuffStat_Damage or EEffectType.BuffStat_AttackRate or
+                EEffectType.BuffStat_MovementSpeed or EEffectType.BuffStat_Shield or EEffectType.BuffStat_BonusHealth or
+                EEffectType.BuffStat_Armor or EEffectType.BuffStat_Critical or EEffectType.BuffStat_Dodge or
+                EEffectType.BuffStat_Luck or EEffectType.BuffStat_InvincibleBlockCountPerWave
+                    => typeof(BuffBase) as T,
+                    
+                _ => throw new ArgumentOutOfRangeException(nameof(effectType), $"Invalid value: {effectType}")
+            };
         }
 
         public static SkillData GetSkillData(int dataID, Creature owner)

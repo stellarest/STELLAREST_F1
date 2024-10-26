@@ -506,7 +506,7 @@ namespace STELLAREST_F1.Data
     public class EffectData : BaseData
     {
         public bool IsLoop;
-        public float Amount;
+        public float AddAmount;
         public float AddPercent;
         public float AddPercentMulti;
         public float Period;

@@ -93,7 +93,7 @@ namespace STELLAREST_F1
             };
         }
 
-        public float GetStatModifier(EEffectType effectType, EStatModType statModType) // NEW
+        public float GetStatModifier(EEffectType effectType, EStatModType statModType)
         {
             float value = 0.0f;
             for (int i = 0; i < ActiveEffects.Count; ++i)
@@ -101,13 +101,13 @@ namespace STELLAREST_F1
                 if (ActiveEffects[i].EffectType != effectType)
                     continue;
 
-                if (Util.IsEffectBuffStat(effectType) == false)
+                if (Util.IsEffectBuffType(effectType) == false)
                     continue;
 
                 switch (statModType)
                 {
-                    case EStatModType.Amount:
-                        return value += ActiveEffects[i].EffectData.Amount;
+                    case EStatModType.AddAmount:
+                        return value += ActiveEffects[i].EffectData.AddAmount;
 
                     case EStatModType.AddPercent:
                         return value += ActiveEffects[i].EffectData.AddPercent;
@@ -119,6 +119,9 @@ namespace STELLAREST_F1
 
             return value;
         }
+
+        public EffectBase FindEffect(EEffectType effectType, int dataID)
+            => ActiveEffects.Find(e => e.EffectType == effectType && e.DataTemplateID == dataID);
 
         public bool IsAppliedEffect(EEffectType effectType)
         {
@@ -169,45 +172,85 @@ namespace STELLAREST_F1
             if (effect.IsValid() == false)
                 return;
 
+            ActiveEffects.Remove(effect);
             effect.ExitEffect();
-            if (effect.EffectClearType != EEffectClearType.ByCondition)
-            {
-                ActiveEffects.Remove(effect);
+
 #if UNITY_EDITOR
-                Dev_ActiveEffects.Remove(effect.Dev_NameTextID);
+            Dev_ActiveEffects.Remove(effect.Dev_NameTextID);
 #endif
 
-                if (effect.EffectData.PrefabLabel != null)
-                {
-                    effect.transform.SetParent(Managers.Object.EffectRoot); //--- FORCE
-                    Managers.Object.Despawn(effect, effect.DataTemplateID);
-                }
-                else if (effect.Owner != null)
-                {
-                    // --- Component만 제거
-                    UnityEngine.Object.Destroy(effect, Time.deltaTime);
-                }
-            }
-            else
-                effect.OnRemoveSelfByConditionHandler?.Invoke(() =>
-                {
-                    ActiveEffects.Remove(effect);
-#if UNITY_EDITOR
-                    Dev_ActiveEffects.Remove(effect.Dev_NameTextID);
-#endif
+            if (Util.IsEffectBuffType(effect.EffectType))
+                _owner.RefreshAllStats();
 
-                    if (effect.EffectData.PrefabLabel != null)
-                    {
-                        effect.transform.SetParent(Managers.Object.EffectRoot); //--- FORCE
-                        Managers.Object.Despawn(effect, effect.DataTemplateID);
-                    }
-                    else if (effect.Owner != null)
-                    {
-                        Debug.Log($"<color=red>REMOVE: {effect.Dev_NameTextID}</color>");
-                        // --- Component만 제거(아래 처럼 제거 or 단순 데이터 교체 방식으로)
-                        UnityEngine.Object.Destroy(effect, Time.deltaTime);
-                    }
-                });
+            // -------------------- CUT --------------------
+            // if (effect.EffectClearType == EEffectClearType.ByCondition)
+            // {
+            //     effect.OnRemoveSelfByConditionHandler?.Invoke(() =>
+            //     {
+            //         if (effect.EffectData.PrefabLabel != null)
+            //         {
+            //             effect.transform.SetParent(Managers.Object.EffectRoot); //--- FORCE
+            //             Managers.Object.Despawn(effect, effect.DataTemplateID);
+            //         }
+            //         else 
+            //         {
+            //             // --- Component만 제거 (DEPRECIATE)
+            //             //UnityEngine.Object.Destroy(effect, Time.deltaTime);
+            //         }
+            //     });
+            // }
+            // else if (effect.EffectData.PrefabLabel != null)
+            // {
+            //     effect.transform.SetParent(Managers.Object.EffectRoot); //--- FORCE
+            //     Managers.Object.Despawn(effect, effect.DataTemplateID);
+            // }
+            // else 
+            // {
+            //     // --- Component만 제거
+            //     //UnityEngine.Object.Destroy(effect, Time.deltaTime);
+            // }
+
+            // -------------------- CUT --------------------
+            // PREV
+            //             if (effect.EffectClearType != EEffectClearType.ByCondition)
+            //             {
+            //                 ActiveEffects.Remove(effect);
+            // #if UNITY_EDITOR
+            //                 Dev_ActiveEffects.Remove(effect.Dev_NameTextID);
+            // #endif
+
+            //                 if (effect.EffectData.PrefabLabel != null)
+            //                 {
+            //                     effect.transform.SetParent(Managers.Object.EffectRoot); //--- FORCE
+            //                     Managers.Object.Despawn(effect, effect.DataTemplateID);
+            //                 }
+            //                 else if (effect.Owner != null)
+            //                 {
+            //                     Debug.Log($"<color=red>REMOVE: {effect.Dev_NameTextID}</color>");
+            //                     // --- Component만 제거
+            //                     UnityEngine.Object.Destroy(effect, Time.deltaTime);
+            //                 }
+            //             }
+            //             else
+            //                 effect.OnRemoveSelfByConditionHandler?.Invoke(() =>
+            //                 {
+            //                     ActiveEffects.Remove(effect);
+            // #if UNITY_EDITOR
+            //                     Dev_ActiveEffects.Remove(effect.Dev_NameTextID);
+            // #endif
+
+            //                     if (effect.EffectData.PrefabLabel != null)
+            //                     {
+            //                         effect.transform.SetParent(Managers.Object.EffectRoot); //--- FORCE
+            //                         Managers.Object.Despawn(effect, effect.DataTemplateID);
+            //                     }
+            //                     else if (effect.Owner != null)
+            //                     {
+            //                         Debug.Log($"<color=red>REMOVE: {effect.Dev_NameTextID}</color>");
+            //                         // --- Component만 제거(아래 처럼 제거 or 단순 데이터 교체 방식으로)
+            //                         UnityEngine.Object.Destroy(effect, Time.deltaTime);
+            //                     }
+            //                 });
         }
     }
 }

@@ -76,7 +76,21 @@ public class VFXShieldBlue : VFXBase
 
     public override void ExitEffect()
     {
-        base.ExitEffect();
+        // for (int i = 0; i < _onShields.Length; ++i)
+        //     _onShields[i].gameObject.SetActive(false);
+
+        // transform.localScale = _offShieldsLocalScale;
+        // for (int i = 0; i < _offShields.Length; ++i)
+        // {
+        //     _offShields[i].gameObject.SetActive(true);
+        //     _offShields[i].Play();
+        // }
+
+        StartCoroutine(CoRemoveShield(() => base.ExitEffect()));
+    }
+
+    private IEnumerator CoRemoveShield(Action endCallback)
+    {
         for (int i = 0; i < _onShields.Length; ++i)
             _onShields[i].gameObject.SetActive(false);
 
@@ -86,16 +100,22 @@ public class VFXShieldBlue : VFXBase
             _offShields[i].gameObject.SetActive(true);
             _offShields[i].Play();
         }
-    }
 
-    protected override void OnRemoveSelfByCondition(Action endCallback = null)
-    {
-        StartCoroutine(CoRemoveShield(endCallback));
-    }
+        yield return new WaitUntil(() => 
+        {
+            for (int i = 0; i < _offShields.Length; ++i)
+            {
+                if (_offShields[i].isPlaying)
+                    return false;
+            }
 
-    private IEnumerator CoRemoveShield(Action endCallback)
-    {
-        yield return new WaitForSeconds(2.0F);
+            return true;
+        });
+
+        Debug.Log("<color=white>END OFF SHIELD</color>");
+        yield return new WaitForSeconds(Time.deltaTime);
+        
+        //yield return new WaitForSeconds(2.0F);
         for (int i = 0; i < _offShields.Length; ++i)
             _offShields[i].gameObject.SetActive(false);
 

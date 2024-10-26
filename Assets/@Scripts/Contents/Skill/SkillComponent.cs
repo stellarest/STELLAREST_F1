@@ -161,7 +161,7 @@ namespace STELLAREST_F1
             if (IsSpecialSkill(skill) == false)
                 return;
 
-            Debug.Log($"<color=cyan>Ready(Add): {skill.Dev_NameTextID}</color>");
+            Debug.Log($"<color=yellow>ADD: {skill.Dev_NameTextID}</color>");
 #if UNITY_EDITOR
             if (skill.SkillType == ESkillType.Skill_B)
                 Skill_B = skill.Dev_NameTextID;
@@ -176,7 +176,7 @@ namespace STELLAREST_F1
             if (IsSpecialSkill(skill) == false)
                 return;
 
-            Debug.Log($"<color=cyan>End(Remove): {skill.Dev_NameTextID}</color>");
+            Debug.Log($"<color=red>REMOVE: {skill.Dev_NameTextID}</color>");
             SpecialSkills.Remove(skill);
         }
 

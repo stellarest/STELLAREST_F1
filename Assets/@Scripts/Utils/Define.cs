@@ -476,12 +476,12 @@ namespace STELLAREST_F1
         public enum EEffectClearType
         {
             TimeOut,
-            ByCondition,
+            Manually,
         }
 
         public enum EStatModType
         {
-            Amount,
+            AddAmount,
             AddPercent,
             AddPercentMulti
         }
@@ -738,6 +738,7 @@ namespace STELLAREST_F1
                 public static readonly string OnCollectEnv = "OnCollectEnv";
                 public static readonly string OnDead = "OnDead";
                 public static readonly string AttackRate = "AttackRate";
+                public static readonly string MovementSpeed = "MovementSpeed";
             }
 
             public static class SortingLayers
@@ -811,7 +812,7 @@ namespace STELLAREST_F1
                 // Map
                 public static readonly string Tilemap_Collision = "Tilemap_Collision";
 
-                // [ INTEGER ]
+                // --- C_INTEGER
                 public static readonly int HeroMaxLevel = 8;
                 public static readonly int CanTryMaxSpawnCount = 999;
 
@@ -828,7 +829,12 @@ namespace STELLAREST_F1
                 public static readonly int ScanEnemyRange = 6;
                 public static readonly int ScanAllyRange = ScanEnemyRange / 2;
 
-                // --- [ FLOATING ]
+                // --- C_FLOATING
+                public static readonly float MinMovementAnimSpeed = 1.0F;
+                public static readonly float MaxMovementAnimSpeed = 2.0F;
+                public static readonly float MinMovementSpeed = 1.0F;
+                public static readonly float MaxMovementSpeed = 12.0F;
+
                 public static readonly float MaxLuck = 0.6F;
                 public static readonly float MaxAttackRate = 4.0F;
                 public static readonly float CriticalDamageUpRate = 0.5F;

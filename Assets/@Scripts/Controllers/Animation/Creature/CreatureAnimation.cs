@@ -63,6 +63,7 @@ namespace STELLAREST_F1
         protected readonly int OnSkillC = Animator.StringToHash(ReadOnly.AnimationParams.OnSkillC);
         protected readonly int OnCollectEnv = Animator.StringToHash(ReadOnly.AnimationParams.OnCollectEnv);
         protected readonly int AttackRate = Animator.StringToHash(ReadOnly.AnimationParams.AttackRate);
+        protected readonly int MovementSpeed = Animator.StringToHash(ReadOnly.AnimationParams.MovementSpeed);
 
         public bool Moving
         {
@@ -137,6 +138,19 @@ namespace STELLAREST_F1
 
         public void SetAttackRate(float attackRate)
             => Animator.SetFloat(AttackRate, _creatureOwner.AttackRate);
+
+        public void SetMovementSpeed(float movementSpeed)
+        {
+            float minMovementSpeed = ReadOnly.Util.MinMovementSpeed;
+            float maxMovementSpeed = ReadOnly.Util.MaxMovementSpeed;
+
+            float minMovementAnimSpeed = ReadOnly.Util.MinMovementAnimSpeed;
+            float maxMovementAnimSpeed = ReadOnly.Util.MaxMovementAnimSpeed;
+
+            float normalize = Mathf.InverseLerp(minMovementSpeed, maxMovementSpeed, movementSpeed);
+            float result = Mathf.Lerp(minMovementAnimSpeed, maxMovementAnimSpeed, normalize);
+            Animator.SetFloat(MovementSpeed, result);
+        }
 
         #region Init Core
         public override bool Init()

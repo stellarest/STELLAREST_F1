@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
 using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices.WindowsRuntime;
@@ -76,8 +77,10 @@ namespace STELLAREST_F1
             {
                 case EObjectType.Hero:
                     {
-                        HeroData data = Managers.Data.HeroDataDict[dataID];
-                        go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: HeroRoot, poolingID: Util.GetPoolingID(EObjectType.Hero, dataID));
+                        if (Managers.Data.HeroDataDict.TryGetValue(dataID, out HeroData heroData) == false)
+                            return null;
+
+                        go = Managers.Resource.Instantiate(key: heroData.PrefabLabel, parent: HeroRoot, poolingID: Util.GetPoolingID(EObjectType.Hero, dataID));
                         if (go == null)
                         {
                             Debug.LogError($"{nameof(SpawnBaseObject)}, {nameof(EObjectType.Hero)}, Input: \"{dataID}\"");
@@ -89,20 +92,17 @@ namespace STELLAREST_F1
                         Heroes.Add(hero);
 
 #if UNITY_EDITOR
-                        CellObject cellObj = new CellObject
-                        {
-                            CellPos = cellSpawnPos,
-                            CellObj = hero
-                        };
-                        DevManager.Instance.CellObjs.Add(cellObj);
+                        DevManager.Instance.CellObjs.Add(new CellObject { CellPos = cellSpawnPos, CellObj = hero });
 #endif
                         return hero as T;
                     }
 
                 case EObjectType.Monster:
                     {
-                        MonsterData data = Managers.Data.MonsterDataDict[dataID];
-                        go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: MonsterRoot, poolingID: Util.GetPoolingID(EObjectType.Monster, dataID));
+                        if (Managers.Data.MonsterDataDict.TryGetValue(dataID, out MonsterData monsterData) == false)
+                            return null;
+
+                        go = Managers.Resource.Instantiate(key: monsterData.PrefabLabel, parent: MonsterRoot, poolingID: Util.GetPoolingID(EObjectType.Monster, dataID));
                         if (go == null)
                         {
                             Debug.LogError($"{nameof(SpawnBaseObject)}, {nameof(EObjectType.Monster)}, Input: \"{dataID}\"");
@@ -114,20 +114,17 @@ namespace STELLAREST_F1
                         Monsters.Add(monster);
 
 #if UNITY_EDITOR
-                        CellObject cellObj = new CellObject
-                        {
-                            CellPos = cellSpawnPos,
-                            CellObj = monster
-                        };
-                        DevManager.Instance.CellObjs.Add(cellObj);
+                        DevManager.Instance.CellObjs.Add(new CellObject { CellPos = cellSpawnPos, CellObj = monster });
 #endif
                         return monster as T;
                     }
 
                 case EObjectType.Env:
                     {
-                        EnvData data = Managers.Data.EnvDataDict[dataID];
-                        go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: EnvRoot, poolingID:  Util.GetPoolingID(EObjectType.Env, dataID));
+                        if (Managers.Data.EnvDataDict.TryGetValue(dataID, out EnvData envData) == false)
+                            return null;
+
+                        go = Managers.Resource.Instantiate(key: envData.PrefabLabel, parent: EnvRoot, poolingID:  Util.GetPoolingID(EObjectType.Env, dataID));
                         if (go == null)
                         {
                             Debug.LogError($"{nameof(SpawnBaseObject)}, {nameof(EObjectType.Env)}, Input: \"{dataID}\"");
@@ -139,17 +136,12 @@ namespace STELLAREST_F1
                         Envs.Add(env);
 
 #if UNITY_EDITOR
-                        CellObject cellObj = new CellObject
-                        {
-                            CellPos = cellSpawnPos,
-                            CellObj = env
-                        };
-                        DevManager.Instance.CellObjs.Add(cellObj);
+                        DevManager.Instance.CellObjs.Add(new CellObject { CellPos = cellSpawnPos, CellObj = env });
 #endif
                         return env as T;
                     }
 
-                // --- TODO,,,Projectile, Effect
+                // --- TODO NEXT
                 case EObjectType.Projectile:
                     {
                         ProjectileData data = Managers.Data.ProjectileDataDict[dataID];
@@ -168,40 +160,26 @@ namespace STELLAREST_F1
 
                 case EObjectType.Effect:
                     {
+                        if (owner == null)
+                        {
+                            Debug.LogWarning($"None of owner for spawning effect.");
+                            return null;
+                        }   
+
                         EffectData data = Util.GetEffectData(dataID, owner as BaseCellObject);
                         if (data == null)
                             return null;
 
-                        //go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: EffectRoot, poolingID: Util.GetPoolingID(EObjectType.Effect, dataID));
-                        int poolingID = Util.GetPoolingID(EObjectType.Effect, dataID);
-                        go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: EffectRoot, poolingID: poolingID);
-                        EffectBase effect = null;
-                        if (go != null)
+                        go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: EffectRoot, poolingID:  Util.GetPoolingID(EObjectType.Effect, dataID));
+                        if (go == null)
                         {
-                            effect = go.GetComponent<EffectBase>();
-                            // effect.DataPoolingID = poolingID;
-                            effect.Owner = owner.GetComponent<BaseCellObject>();
-                            effect.SetInfo(dataID, spawnPos);
-                            //return effect as T;
-                        }
-                        // --- 별도의 프리팹이 존재하지 않을 경우
-                        else if (owner != null)
-                        {
-                            if (Util.IsEffectBuffStat(effectType: Util.GetEnumFromString<EEffectType>(data.EffectType)))
-                            {
-                                effect = owner.gameObject.AddComponent<BuffBase>();
-                                if (effect == null)
-                                {
-                                    Debug.LogError("Faield: Add BuffBase Comp.");
-                                    Debug.Break();
-                                    return null;
-                                }
-
-                                effect.Owner = owner.GetComponent<BaseCellObject>();
-                                effect.SetInfo(dataID, owner.transform.position);
-                            }
+                            Debug.LogError($"{nameof(SpawnBaseObject)}, {nameof(EObjectType.Projectile)}, Input: \"{dataID}\"");
+                            return null;
                         }
 
+                        EffectBase effect = go.GetComponent<EffectBase>();
+                        effect.Owner = owner.GetComponent<BaseCellObject>();
+                        effect.SetInfo(dataID, spawnPos);
                         return effect as T;
                     }
             }

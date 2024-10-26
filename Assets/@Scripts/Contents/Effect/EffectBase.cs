@@ -44,8 +44,9 @@ namespace STELLAREST_F1
         public EEffectClearType EffectClearType { get; protected set; } = EEffectClearType.TimeOut;
 
         // --- 지금 당장 우아한 방법은 아니긴 하지만, ByCondition에 의한 이펙트는 OnRemoveSelfByCondition에서 재정의만 하면 됨
-        public Action<Action> OnRemoveSelfByConditionHandler = null;
-        protected virtual void OnRemoveSelfByCondition(Action endCallback = null) { }
+        // --- 고쳐야할듯.
+        // public Action<Action> OnRemoveSelfByConditionHandler = null; // 고치기
+        // protected virtual void OnRemoveSelfByCondition(Action endCallback = null) { }
 
         public bool IsLoop { get; private set; } = false;
         public float Period { get; private set; } = 0.0f;
@@ -86,16 +87,10 @@ namespace STELLAREST_F1
         protected override void EnterInGame(Vector3 spawnPos)
         {
             base.EnterInGame(spawnPos);
-            Remains = (EffectData.Duration < 0.0f && EffectData.Period < 0.0f) ? 
-                      float.MaxValue : EffectData.Duration * EffectData.Period;
-
             if (EffectData.Duration < 0.0f)
             {
                 Remains = float.MaxValue;
-                EffectClearType = EEffectClearType.ByCondition;
-
-                OnRemoveSelfByConditionHandler -= OnRemoveSelfByCondition;
-                OnRemoveSelfByConditionHandler += OnRemoveSelfByCondition;
+                EffectClearType = EEffectClearType.Manually;
             }
             else
             {
@@ -103,7 +98,6 @@ namespace STELLAREST_F1
                 EffectClearType = EEffectClearType.TimeOut;
             }
 
-            //transform.position = EffectSpawnInfo(EffectData.EffectSpawnType);
             transform.position = spawnPos;
         }
 
@@ -114,7 +108,8 @@ namespace STELLAREST_F1
         }
 
         public virtual void OnShowEffect() { }
-        public virtual void ExitEffect() { }
+        public virtual void ExitEffect()
+            => Managers.Object.Despawn(this, DataTemplateID);
 
         private void InitialSetSize(EObjectSize objSize)
         {

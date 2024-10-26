@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
@@ -16,7 +17,7 @@ namespace STELLAREST_F1
         public override void ApplyEffect()
         {
             base.ApplyEffect();
-            Owner.ApplyBuffStat();
+            Owner.ApplyBuffStat(EffectType);
         }
 
         public override void OnShowEffect()
@@ -24,10 +25,5 @@ namespace STELLAREST_F1
 
         public override void ExitEffect()
             => base.ExitEffect();
-
-        protected override void OnRemoveSelfByCondition(Action endCallback = null)
-        {
-            endCallback?.Invoke();
-        }
     }
 }

@@ -219,12 +219,10 @@ namespace STELLAREST_F1
             if (attacker.IsValid() == false)
                 return;
 
-            float damage = Damage;
+            float damage = attacker.Damage;
             bool isCritical = attacker.IsCritical;
             if (isCritical)
                 damage *= 1 + ReadOnly.Util.CriticalDamageUpRate;
-
-            // Get DamageUp BuffStat
 
             float remainedDamage = 0.0f;
             float finalDamage = 0.0f;
@@ -236,7 +234,6 @@ namespace STELLAREST_F1
             else
                 finalDamage = Mathf.Round(damage);
 
-            float prevBonusHealth = finalDamage > BonusHealth ? BonusHealth : 0.0f;
             // --- 순서는 Shield부터
             if (Shield > 0.0f)
             {
@@ -256,7 +253,7 @@ namespace STELLAREST_F1
                         // --- Duration 추가해야 할 것 같은데.. BREAK !! 부분은 yellow로 하고 싶기도 하고
                         ShowTextFont(text: "SHIELD\n  BREAK !!", fontSize: 5.5f, textColor: Managers.MonoContents.BrightBlue, fontAnimType: shieldBreakAnimType);
 
-                        // --- VFX 제거 (********** 여기서 튕김 **********)
+                        // --- VFX 제거
                         BaseEffect.RemoveEffect(EEffectType.VFX_ShieldBlue);
                         // --- 버프 제거
                         BaseEffect.RemoveEffect(EEffectType.BuffStat_Shield);
@@ -278,6 +275,7 @@ namespace STELLAREST_F1
             }
             else if (BonusHealth > 0.0f)
             {
+                float prevBonusHealth = finalDamage > BonusHealth ? BonusHealth : 0.0f;
                 remainedDamage = OnDamagedBonusHealth(finalDamage, EEffectType.BuffStat_BonusHealth);
                 if (BaseEffect.IsAppliedEffect(EEffectType.VFX_BonusHealth))
                 {

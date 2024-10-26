@@ -96,7 +96,7 @@ namespace STELLAREST_F1
         {
             base.EnterInGame(spawnPos);
             Targets.Clear();
-            BaseStat.SetBaseStat();
+            BaseStat.RefreshAllStats(currentHealthToMax: true);
             BaseBody.ResetMaterialsAndColors();
             BaseBody.StartCoFadeInEffect();
             Managers.Map.ForceMove(cellObj: this, cellPos: SpawnedCellPos, ignoreCellObjType: EObjectType.None);
@@ -110,15 +110,21 @@ namespace STELLAREST_F1
             // BaseBody.StartCoFadeOutEffect(() => OnDeadFadeOutCompleted());
         }
         #endregion
-        
+
         #region Background
-        public void ApplyBuffStat() 
-            => BaseStat.ApplyBuffStat();
-        
+        // public void ApplyBuffStat() 
+        //     => BaseStat.ApplyBuffStat();
+
+        public void ApplyBuffStat(EEffectType effectBuffType)
+            => BaseStat.ApplyBuffStat(effectBuffType);
+
+        public void RefreshAllStats()
+            => BaseStat.RefreshAllStats();
+
         public EFindPathResult FindPathAndMoveToCellPos(Vector3 destPos, int maxDepth, EObjectType ignoreCellObjType = EObjectType.None)
             => FindPathAndMoveToCellPos(Managers.Map.WorldToCell(destPos), maxDepth, ignoreCellObjType);
 
-        public EFindPathResult FindPathAndMoveToCellPos(Vector3Int destPos, int maxDepth, EObjectType ignoreCellObjType = EObjectType.None)
+    public EFindPathResult FindPathAndMoveToCellPos(Vector3Int destPos, int maxDepth, EObjectType ignoreCellObjType = EObjectType.None)
         {
             if (IsForceMovingPingPongObject)
                 return EFindPathResult.Fail_ForceMove;
@@ -408,6 +414,12 @@ namespace STELLAREST_F1
         public float AttackRate { get => BaseStat.AttackRate; set => BaseStat.AttackRate = value; }
         public float MovementSpeed { get => BaseStat.MovementSpeed; set => BaseStat.MovementSpeed = value; }
 
+        // --- Level
+        public int LevelID => BaseStat.LevelID;
+        public int Level => BaseStat.Level;
+        public int MaxLevel => BaseStat.MaxLevel;
+        public bool IsMaxLevel => BaseStat.IsMaxLevel;
+
         // --- Sub Stat
         public float BonusHealth { get => BaseStat.BonusHealth; set => BaseStat.BonusHealth = value; }
         public float Shield { get => BaseStat.Shield; set => BaseStat.Shield = value; }
@@ -423,12 +435,6 @@ namespace STELLAREST_F1
             get => BaseStat.InvincibleBlockCountPerWave;
             set => BaseStat.InvincibleBlockCountPerWave = value;
         }
-
-        // --- Level
-        public int LevelID => BaseStat.LevelID;
-        public int Level => BaseStat.Level;
-        public int MaxLevel => BaseStat.MaxLevel;
-        public bool IsMaxLevel => BaseStat.IsMaxLevel;
         #endregion
 
         #region Util: Effect
