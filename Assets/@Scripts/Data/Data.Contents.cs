@@ -29,6 +29,7 @@ namespace STELLAREST_F1.Data
         public float MinDamage;
         public float MaxDamage;
         public float AttackRate;
+        public float CollectRate;
         public float MovementSpeed;
         public int Skill_A_TemplateID;
         public int Skill_B_TemplateID;

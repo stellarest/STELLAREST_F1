@@ -12,7 +12,7 @@ namespace STELLAREST_F1
 {
     public class Hero : Creature
     {
-        public float Test_AttackRate = 0.0f;
+        public float Test_CollectkRate = 0.0f;
 
         #if UNITY_EDITOR
         private void Update()
@@ -26,7 +26,7 @@ namespace STELLAREST_F1
             if (Input.GetKeyDown(KeyCode.L))
             {
                 // Util.GlobalEffectID(EConstInteger.Hero_Alchemist);
-                AttackRate = Test_AttackRate;
+                 CollectRate = Test_CollectkRate;
             }
         }
         #endif

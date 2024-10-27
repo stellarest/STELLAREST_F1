@@ -63,6 +63,25 @@ namespace STELLAREST_F1
         }
         public float AttackRateBase { get; private set; } = 0.0f;
 
+        [SerializeField] private float _collectRate = 0.0f;
+        public float CollectRate
+        {
+            get => _collectRate;
+            set
+            {
+                if (Owner == null)
+                    return;
+
+                _collectRate = Mathf.Clamp(value,
+                        min: Util.MinFloat(EConstFloat.CollectRate),
+                        max: Util.MaxFloat(EConstFloat.CollectRate));
+
+                (Owner as Creature).CreatureAnim.SetCollectRate(_collectRate);
+            }
+        }
+        public float CollectRateBase { get; private set; } = 0.0f;
+
+
         [SerializeField] private float _movementSpeed = 0.0f;
         public float MovementSpeed
         {
@@ -154,6 +173,7 @@ namespace STELLAREST_F1
                 MinDamage = MinDamageBase = creatureData.MinDamage;
                 MaxDamage = MaxDamageBase = creatureData.MaxDamage;
                 AttackRate = AttackRateBase = creatureData.AttackRate;
+                CollectRate = CollectRateBase = creatureData.CollectRate;
                 MovementSpeed = MovementSpeedBase = creatureData.MovementSpeed;
             }
             else

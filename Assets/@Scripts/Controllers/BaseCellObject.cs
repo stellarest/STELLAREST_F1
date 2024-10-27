@@ -404,15 +404,16 @@ namespace STELLAREST_F1
 
         #region Util: Stat
         // --- Main Stat
-        public float Health { get => BaseStat.Health; set => BaseStat.Health = value; }
-        public float MaxHealth { get => BaseStat.MaxHealth; set => BaseStat.MaxHealth = value; }
+        public float Health { get => BaseStat.Health; protected set => BaseStat.Health = value; }
+        public float MaxHealth { get => BaseStat.MaxHealth; protected set => BaseStat.MaxHealth = value; }
 
-        public float MinDamage { get => BaseStat.MinDamage; set => BaseStat.MinDamage = value; }
-        public float MaxDamage { get => BaseStat.MaxDamage; set => BaseStat.MaxDamage = value; }
+        public float MinDamage { get => BaseStat.MinDamage; protected set => BaseStat.MinDamage = value; }
+        public float MaxDamage { get => BaseStat.MaxDamage; protected set => BaseStat.MaxDamage = value; }
         public float Damage => BaseStat.Damage;
 
-        public float AttackRate { get => BaseStat.AttackRate; set => BaseStat.AttackRate = value; }
-        public float MovementSpeed { get => BaseStat.MovementSpeed; set => BaseStat.MovementSpeed = value; }
+        public float AttackRate { get => BaseStat.AttackRate; protected set => BaseStat.AttackRate = value; }
+        public float CollectRate { get => BaseStat.CollectRate; protected set => BaseStat.CollectRate = value; }
+        public float MovementSpeed { get => BaseStat.MovementSpeed; protected set => BaseStat.MovementSpeed = value; }
 
         // --- Level
         public int LevelID => BaseStat.LevelID;

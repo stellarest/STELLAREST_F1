@@ -63,6 +63,7 @@ namespace STELLAREST_F1
         protected readonly int OnSkillC = Animator.StringToHash(ReadOnly.AnimationParams.OnSkillC);
         protected readonly int OnCollectEnv = Animator.StringToHash(ReadOnly.AnimationParams.OnCollectEnv);
         protected readonly int AttackRate = Animator.StringToHash(ReadOnly.AnimationParams.AttackRate);
+        protected readonly int CollectRate = Animator.StringToHash(ReadOnly.AnimationParams.CollectRate);
         protected readonly int MovementSpeed = Animator.StringToHash(ReadOnly.AnimationParams.MovementSpeed);
 
         public bool Moving
@@ -149,7 +150,18 @@ namespace STELLAREST_F1
             Animator.SetFloat(AttackRate, result);
         }
 
-        // => Animator.SetFloat(AttackRate, _creatureOwner.AttackRate);
+        public void SetCollectRate(float collectRate)
+        {
+            float minCollectRate = Util.MinFloat(EConstFloat.CollectRate);
+            float maxCollectRate = Util.MaxFloat(EConstFloat.CollectRate);
+
+            float minCollectAnimRate = Util.MinFloat(EConstFloat.CollectAnimRate);
+            float maxCollectAnimRate = Util.MaxFloat(EConstFloat.CollectAnimRate);
+
+            float normalize = Mathf.InverseLerp(minCollectRate, maxCollectRate, collectRate);
+            float result = Mathf.Lerp(minCollectAnimRate, maxCollectAnimRate, normalize);
+            Animator.SetFloat(CollectRate, result);
+        }
 
         public void SetMovementSpeed(float movementSpeed)
         {

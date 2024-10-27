@@ -607,6 +607,9 @@ namespace STELLAREST_F1
             AttackRate,         // 1.0F ~ 2.0F
             AttackAnimRate,     // 0.85F ~ 1.25F(TEMP) *TEMP: Paladin(0.85F -> 1.0F)
 
+            CollectRate,        // 1.0F ~ 2.0F
+            CollectAnimRate,    // 1.0F ~ 1.5F
+
             // + CollectRate,
             // + CollectAnimRate, 추가해도 될 듯
 
@@ -791,6 +794,7 @@ namespace STELLAREST_F1
                 public static readonly string OnCollectEnv = "OnCollectEnv";
                 public static readonly string OnDead = "OnDead";
                 public static readonly string AttackRate = "AttackRate";
+                public static readonly string CollectRate = "CollectRate";
                 public static readonly string MovementSpeed = "MovementSpeed";
             }
 

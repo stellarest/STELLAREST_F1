@@ -394,6 +394,8 @@ namespace STELLAREST_F1
             {
                 EConstFloat.AttackRate => 1.0F,
                 EConstFloat.AttackAnimRate => 0.85F,
+                EConstFloat.CollectRate => 1.0F,
+                EConstFloat.CollectAnimRate => 1.0F,
                 EConstFloat.Armor => 0.0F,
                 EConstFloat.MovementSpeed => 1.0F,
                 EConstFloat.MovementAnimSpeed => 1.0F,
@@ -407,6 +409,8 @@ namespace STELLAREST_F1
             {
                 EConstFloat.AttackRate => 2.0F,
                 EConstFloat.AttackAnimRate => 1.25F,
+                EConstFloat.CollectRate => 2.0F,
+                EConstFloat.CollectAnimRate => 1.5F,
                 EConstFloat.Armor => 0.85F,
                 EConstFloat.Luck => 0.6F,
                 EConstFloat.MovementSpeed => 12.0F,
