@@ -28,7 +28,8 @@ namespace STELLAREST_F1
             _tmpText = GetComponent<TMP_Text>();
             _initialFontSize = _text.fontSize;
             _sortingGroup = GetComponent<SortingGroup>();
-            _sortingGroup.sortingOrder = ReadOnly.SortingLayers.SLOrder_DamageFont;
+            //_sortingGroup.sortingOrder = ReadOnly.SortingLayers.SLOrder_DamageFont;
+            _sortingGroup.sortingOrder = Util.Sorting(EConstInt.Sorting_DamageFont);
             return true;
         }
 
@@ -55,7 +56,7 @@ namespace STELLAREST_F1
             PlayFontAnimation(fontAnimType: fontAnimType, endCallback: () =>
             {
                 //Managers.Resource.Destroy(gameObject, poolingID: ReadOnly.DataAndPoolingID.DNPID_TextFont);
-                Managers.Resource.Destroy(gameObject, poolingID: Util.TextFontID(EConstInteger.TextFont_Text));
+                Managers.Resource.Destroy(gameObject, poolingID: Util.TextFontID(EConstInt.TextFont_Text));
 
             });
         }
@@ -85,7 +86,7 @@ namespace STELLAREST_F1
             PlayFontAnimation(fontAnimType: fontAnimType, endCallback: () =>
             {
                 // Managers.Resource.Destroy(gameObject, poolingID: ReadOnly.DataAndPoolingID.DNPID_TextFont);
-                Managers.Resource.Destroy(gameObject, poolingID: Util.TextFontID(EConstInteger.TextFont_Text));
+                Managers.Resource.Destroy(gameObject, poolingID: Util.TextFontID(EConstInt.TextFont_Text));
             });
         }
         #endregion
@@ -129,7 +130,7 @@ namespace STELLAREST_F1
 
             PlayFontAnimation(fontAnimType: fontAnimType, endCallback: () => {
                 // Managers.Resource.Destroy(gameObject, poolingID: ReadOnly.DataAndPoolingID.DNPID_DamageFont);
-                Managers.Resource.Destroy(gameObject, poolingID: Util.TextFontID(EConstInteger.TextFont_Damage));
+                Managers.Resource.Destroy(gameObject, poolingID: Util.TextFontID(EConstInt.TextFont_Damage));
             });
         }
 
@@ -173,7 +174,7 @@ namespace STELLAREST_F1
 
             PlayFontAnimation(fontAnimType: fontAnimType, endCallback: () => {
                 // Managers.Resource.Destroy(gameObject, poolingID: ReadOnly.DataAndPoolingID.DNPID_DamageFont);
-                Managers.Resource.Destroy(gameObject, poolingID: Util.TextFontID(EConstInteger.TextFont_Damage));
+                Managers.Resource.Destroy(gameObject, poolingID: Util.TextFontID(EConstInt.TextFont_Damage));
             });
         }
         #endregion

@@ -46,10 +46,9 @@ namespace STELLAREST_F1
             if (base.Init() == false)
                 return false;
 
-            _matDefault = Managers.Resource.Load<Material>(ReadOnly.Materials.Mat_Default);
-            _matStrongTint =  Managers.Resource.Load<Material>(ReadOnly.Materials.Mat_StrongTint);
+            _matDefault = Managers.Resource.Load<Material>(Util.Material(EConstString.Mat_Default));
+            _matStrongTint =  Managers.Resource.Load<Material>(Util.Material(EConstString.Mat_StrongTint));
             _matPropertyBlock = new MaterialPropertyBlock();
-
             return true;
         }
 

@@ -184,7 +184,7 @@ namespace STELLAREST_F1
                 //         spawnPos: Managers.Map.CellToCenterWorld(Vector3Int.up + SpawnedCellPos)
                 //     );
                 GenerateGlobalEffect(
-                    constInt: EConstInteger.VFX_TeleportBlue,
+                    constInt: EConstInt.VFX_TeleportBlue,
                     spawnPos: Managers.Map.CellToCenterWorld(Vector3Int.up + SpawnedCellPos)
                 );
             });

@@ -38,7 +38,7 @@ namespace STELLAREST_F1
             // + Apply Base Effect
         }
 
-        public EffectBase GenerateGlobalEffect(EConstInteger constInt, Vector3 spawnPos)
+        public EffectBase GenerateGlobalEffect(EConstInt constInt, Vector3 spawnPos)
         {
             EffectBase effect = Managers.Object.SpawnBaseObject<EffectBase>(
                         objectType: EObjectType.Effect,

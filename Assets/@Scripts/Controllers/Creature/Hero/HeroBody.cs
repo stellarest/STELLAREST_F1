@@ -1078,7 +1078,7 @@ namespace STELLAREST_F1
         public override void InitialSetInfo(int dataID, BaseObject owner)
         {
             Owner = owner as Hero;
-            _matDefaultEyes = Managers.Resource.Load<Material>(ReadOnly.Materials.Mat_EyesPaint);
+            _matDefaultEyes = Managers.Resource.Load<Material>(Util.Material(EConstString.Mat_EyesPaint));
             InitBody(Managers.Data.HeroSpriteDataDict[dataID]);
             InitEnvWeapon();
         }
@@ -2337,13 +2337,13 @@ namespace STELLAREST_F1
         private void InitEnvWeapon()
         {
             Sprite[] envWeapons = new Sprite[(int)EEnvType.Max];
-            envWeapons[(int)EHeroGrade.Default] = Managers.Resource.Load<Sprite>(ReadOnly.Util.WoodcutterAxe_Default_SP);
-            envWeapons[(int)EHeroGrade.Max] = Managers.Resource.Load<Sprite>(ReadOnly.Util.WoodcutterAxe_Max_SP);
+            envWeapons[(int)EHeroGrade.Default] = Managers.Resource.Load<Sprite>(Util.Sprite(EConstString.Sprite_DefaultWoodcutterAxe));
+            envWeapons[(int)EHeroGrade.Max] = Managers.Resource.Load<Sprite>(Util.Sprite(EConstString.Sprite_MaxWoodcutterAxe));
             _envHeroWeaponDict.Add(EEnvType.Tree, envWeapons);
 
             envWeapons = new Sprite[(int)EEnvType.Max];
-            envWeapons[(int)EHeroGrade.Default] = Managers.Resource.Load<Sprite>(ReadOnly.Util.Pickaxe_Default_SP);
-            envWeapons[(int)EHeroGrade.Max] = Managers.Resource.Load<Sprite>(ReadOnly.Util.Pickaxe_Max_SP);
+            envWeapons[(int)EHeroGrade.Default] = Managers.Resource.Load<Sprite>(Util.Sprite(EConstString.Sprite_DefaultPickaxe));
+            envWeapons[(int)EHeroGrade.Max] = Managers.Resource.Load<Sprite>(Util.Sprite(EConstString.Sprite_MaxPickaxe));
             _envHeroWeaponDict.Add(EEnvType.Rock, envWeapons);
         }
         #endregion

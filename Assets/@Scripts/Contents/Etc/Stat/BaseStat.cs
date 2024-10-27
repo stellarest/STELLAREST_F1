@@ -109,7 +109,9 @@ namespace STELLAREST_F1
         {
             get
             {
-                int level = (_levelID % _dataTemplateID) + 1;
+                //int level = (_levelID % _dataTemplateID) + 1;
+                int level = Mathf.Clamp((_levelID % _dataTemplateID) + 1, Util.MinInt(EConstInt.HeroLevel), Util.MaxInt(EConstInt.HeroLevel));
+
 #if UNITY_EDITOR
                 Dev_NameTextID = $"Lv: {level.ToString()} / {MaxLevel.ToString()}";
 #endif
@@ -148,7 +150,7 @@ namespace STELLAREST_F1
             _modifier.InitialSetInfo(baseStat: this);
             if (Owner.ObjectType == EObjectType.Hero)
             {
-                for (int i = dataID; i < dataID + ReadOnly.Util.HeroMaxLevel;)
+                for (int i = dataID; i < dataID + Util.MaxInt(EConstInt.HeroLevel);)
                     _maxLevelID = i++;
             }
             else

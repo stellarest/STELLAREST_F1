@@ -8,6 +8,7 @@ using static STELLAREST_F1.Define;
 using UnityEditor.Timeline;
 using STELLAREST_F1.Data;
 using Codice.CM.Common.Tree;
+using JetBrains.Annotations;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -83,10 +84,10 @@ namespace STELLAREST_F1
 
             foreach (GameObject go in gameObjects)
             {
-                Tilemap tm = Util.FindChild<Tilemap>(go, ReadOnly.Util.Tilemap_Collision, true);
+                Tilemap tm = Util.FindChild<Tilemap>(go, Util.TileMap.Tilemap_Collision, true);
                 if (tm == null)
                 {
-                    Debug.LogWarning($"Failed to get Tilemap component on \"{ReadOnly.Util.Tilemap_Collision}\" object.");
+                    Debug.LogWarning($"Failed to get Tilemap component on \"{Util.TileMap.Tilemap_Collision}\" object.");
                     return;
                 }
                 tm.RefreshAllTiles();
@@ -111,14 +112,15 @@ namespace STELLAREST_F1
                             TileBase tile = tm.GetTile(new Vector3Int(x, y, 0));
                             if (tile != null)
                             {
-                                if (tile.name.Contains(ReadOnly.Util.Tile_CanMove))
-                                    writer.Write(ReadOnly.Util.Map_Tool_CanMove_1);  // CanGo -> CanMove로 이름 변경할 것
-                                else if (tile.name.Contains(ReadOnly.Util.Tile_SemiBlock))
-                                    writer.Write(ReadOnly.Util.Map_Tool_SemiBlock_2);
-                                else if (tile.name.Contains(ReadOnly.Util.Tile_Block))
-                                    writer.Write(ReadOnly.Util.Map_Tool_Block_0);
+                                if (tile.name.Contains(Util.TileMap.CanMove))
+                                    writer.Write(Util.TileMap.CanMoveFlag);
+                                else if (tile.name.Contains(Util.TileMap.SemiBlock))
+                                    writer.Write(Util.TileMap.SemiBlockFlag);
+                                else if (tile.name.Contains(Util.TileMap.Block))
+                                    writer.Write(Util.TileMap.BlockFlag);
                             }
                         }
+
                         writer.WriteLine();
                     }
                 }
@@ -131,7 +133,7 @@ namespace STELLAREST_F1
         public static void CreateObjectTile()
         {
             #region Monster Tile
-            Dictionary<int, MonsterData> monsterDataDict = LoadJson<MonsterDataLoader, int, MonsterData>(ReadOnly.DataSet.MonsterData).MakeDict();
+            Dictionary<int, MonsterData> monsterDataDict = LoadJson<MonsterDataLoader, int, MonsterData>(Util.Data(EConstString.MonsterData)).MakeDict();
             foreach (var data in monsterDataDict.Values)
             {
                 string name = $"{data.DataID}_{data.Dev_NameTextID}";;

@@ -42,8 +42,9 @@ namespace STELLAREST_F1
             RigidBody.simulated = false;
 
             SortingGroup = gameObject.GetOrAddComponent<SortingGroup>();
-            SortingGroup.sortingLayerName = ReadOnly.SortingLayers.SLName_BaseObject;
-            SortingGroup.sortingOrder = ReadOnly.SortingLayers.SLOrder_BaseObject;
+            SortingGroup.sortingLayerName = "BaseObject";
+            SortingGroup.sortingOrder = Util.Sorting(EConstInt.Sorting_BaseObject);
+
             return true;
         }
 

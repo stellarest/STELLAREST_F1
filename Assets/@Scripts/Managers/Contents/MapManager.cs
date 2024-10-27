@@ -11,6 +11,8 @@ namespace STELLAREST_F1
 {
     public class MapManager
     {
+        public static char BlockTileStatic = '0';
+
         public GameObject Map { get; private set; } = null;
         public string MapName { get; private set; } = null;
         public Grid CellGrid { get; private set; } = null;
@@ -73,15 +75,15 @@ namespace STELLAREST_F1
                 {
                     switch (line[x])
                     {
-                        case ReadOnly.Util.Map_Tool_Block_0:
+                        case Util.TileMap.BlockFlag: // --- Block Tile
                             _cellCollisionType[y, x] = ECellCollisionType.Block;
                             break;
 
-                        case ReadOnly.Util.Map_Tool_CanMove_1:
+                        case Util.TileMap.CanMoveFlag: // --- Can Move Tile
                             _cellCollisionType[y, x] = ECellCollisionType.CanMove;
                             break;
 
-                        case ReadOnly.Util.Map_Tool_SemiBlock_2:
+                        case Util.TileMap.SemiBlockFlag: // --- Semi Block Tile
                             _cellCollisionType[y, x] = ECellCollisionType.SemiBlock;
                             break;
                     }

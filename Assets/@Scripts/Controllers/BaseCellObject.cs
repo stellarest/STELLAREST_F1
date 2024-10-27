@@ -76,7 +76,7 @@ namespace STELLAREST_F1
                 return false;
 
             BaseBody = gameObject.GetOrAddComponent<BaseBody>();
-            BaseAnim = Util.FindChild<BaseAnimation>(gameObject, name: ReadOnly.Util.AnimationBody, recursive: false);
+            BaseAnim = Util.FindChild<BaseAnimation>(gameObject, name: "AnimationBody", recursive: false);
             BaseStat = gameObject.GetOrAddComponent<BaseStat>();
             return true;
         }
@@ -439,7 +439,7 @@ namespace STELLAREST_F1
         #endregion
 
         #region Util: Effect
-        public EffectBase GenerateGlobalEffect(EConstInteger constInt, Vector3 spawnPos)
+        public EffectBase GenerateGlobalEffect(EConstInt constInt, Vector3 spawnPos)
             => BaseEffect.GenerateGlobalEffect(constInt, spawnPos);
 
         public EffectBase GenerateSkillEffect(int effectID, SkillBase skill)

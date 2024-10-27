@@ -41,30 +41,46 @@ namespace STELLAREST_F1
             Animator.Play(Upper_Idle);
         }
 
-        // --- Upper Layer (New)
-        public readonly int Upper_Idle = Animator.StringToHash(ReadOnly.AnimationParams.Upper_Idle);
-        public readonly int Upper_Move = Animator.StringToHash(ReadOnly.AnimationParams.Upper_Move);
-        public readonly int Upper_SkillA = Animator.StringToHash(ReadOnly.AnimationParams.Upper_SkillA);
-        public readonly int Upper_SkillB = Animator.StringToHash(ReadOnly.AnimationParams.Upper_SkillB);
-        public readonly int Upper_SkillC = Animator.StringToHash(ReadOnly.AnimationParams.Upper_SkillC);
-        public readonly int Upper_CollectEnv = Animator.StringToHash(ReadOnly.AnimationParams.Upper_CollectEnv);
-        public readonly int Upper_Dead = Animator.StringToHash(ReadOnly.AnimationParams.Upper_Dead);
+        // --- Upper Layer (Prev)
+        // public readonly int Upper_Idle = Animator.StringToHash(ReadOnly.AnimationParams.Upper_Idle);
+        // public readonly int Upper_Move = Animator.StringToHash(ReadOnly.AnimationParams.Upper_Move);
+        // public readonly int Upper_SkillA = Animator.StringToHash(ReadOnly.AnimationParams.Upper_SkillA);
+        // public readonly int Upper_SkillB = Animator.StringToHash(ReadOnly.AnimationParams.Upper_SkillB);
+        // public readonly int Upper_SkillC = Animator.StringToHash(ReadOnly.AnimationParams.Upper_SkillC);
+        // public readonly int Upper_CollectEnv = Animator.StringToHash(ReadOnly.AnimationParams.Upper_CollectEnv);
+        // public readonly int Upper_Dead = Animator.StringToHash(ReadOnly.AnimationParams.Upper_Dead);
+        public readonly int Upper_Idle = Animator.StringToHash(Util.AnimState(EConstString.Upper_Idle));
+        public readonly int Upper_Move = Animator.StringToHash(Util.AnimState(EConstString.Upper_Move));
+        public readonly int Upper_SkillA = Animator.StringToHash(Util.AnimState(EConstString.Upper_SkillA));
+        public readonly int Upper_SkillB = Animator.StringToHash(Util.AnimState(EConstString.Upper_SkillB));
+        public readonly int Upper_SkillC = Animator.StringToHash(Util.AnimState(EConstString.Upper_SkillC));
+        public readonly int Upper_CollectEnv = Animator.StringToHash(Util.AnimState(EConstString.Upper_CollectEnv));
+        public readonly int Upper_Dead = Animator.StringToHash(Util.AnimState(EConstString.Upper_Dead));
 
         // --- Lower Layer (New), 이건 해쉬값만 있지. 이벤트는 없지 않나 ??
-        // --- ELoweR_Idle, ELower_Move는 지워도 될듯,,,
-        public readonly int Lower_Idle = Animator.StringToHash(ReadOnly.AnimationParams.Lower_Idle);
-        public readonly int Lower_Move = Animator.StringToHash(ReadOnly.AnimationParams.Lower_Move);
+        // --- ELoweR_Idle, ELower_Move는 지워도 될듯,,, (DELETE)
+        // public readonly int Lower_Idle = Animator.StringToHash(ReadOnly.AnimationParams.Lower_Idle);
+        // public readonly int Lower_Move = Animator.StringToHash(ReadOnly.AnimationParams.Lower_Move);
 
-        // --- Parameters
-        protected readonly int IsMoving = Animator.StringToHash(ReadOnly.AnimationParams.IsMoving);
-        protected readonly int CanSkill = Animator.StringToHash(ReadOnly.AnimationParams.CanSkill);
-        protected readonly int OnSkillA = Animator.StringToHash(ReadOnly.AnimationParams.OnSkillA);
-        protected readonly int OnSkillB = Animator.StringToHash(ReadOnly.AnimationParams.OnSkillB);
-        protected readonly int OnSkillC = Animator.StringToHash(ReadOnly.AnimationParams.OnSkillC);
-        protected readonly int OnCollectEnv = Animator.StringToHash(ReadOnly.AnimationParams.OnCollectEnv);
-        protected readonly int AttackRate = Animator.StringToHash(ReadOnly.AnimationParams.AttackRate);
-        protected readonly int CollectRate = Animator.StringToHash(ReadOnly.AnimationParams.CollectRate);
-        protected readonly int MovementSpeed = Animator.StringToHash(ReadOnly.AnimationParams.MovementSpeed);
+        // --- Parameters (Prev)
+        // protected readonly int IsMoving = Animator.StringToHash(ReadOnly.AnimationParams.IsMoving);
+        // protected readonly int CanSkill = Animator.StringToHash(ReadOnly.AnimationParams.CanSkill);
+        // protected readonly int OnSkillA = Animator.StringToHash(ReadOnly.AnimationParams.OnSkillA);
+        // protected readonly int OnSkillB = Animator.StringToHash(ReadOnly.AnimationParams.OnSkillB);
+        // protected readonly int OnSkillC = Animator.StringToHash(ReadOnly.AnimationParams.OnSkillC);
+        // protected readonly int OnCollectEnv = Animator.StringToHash(ReadOnly.AnimationParams.OnCollectEnv);
+        // protected readonly int AttackRate = Animator.StringToHash(ReadOnly.AnimationParams.AttackRate);
+        // protected readonly int CollectRate = Animator.StringToHash(ReadOnly.AnimationParams.CollectRate);
+        // protected readonly int MovementSpeed = Animator.StringToHash(ReadOnly.AnimationParams.MovementSpeed);
+        protected readonly int IsMoving = Animator.StringToHash(Util.AnimParam(EConstString.IsMoving));
+        protected readonly int CanSkill = Animator.StringToHash(Util.AnimParam(EConstString.CanSkill));
+        protected readonly int OnSkillA = Animator.StringToHash(Util.AnimParam(EConstString.OnSkillA));
+        protected readonly int OnSkillB = Animator.StringToHash(Util.AnimParam(EConstString.OnSkillB));
+        protected readonly int OnSkillC = Animator.StringToHash(Util.AnimParam(EConstString.OnSkillC));
+        protected readonly int OnCollectEnv = Animator.StringToHash(Util.AnimParam(EConstString.OnCollectEnv));
+        protected readonly int AttackRate = Animator.StringToHash(Util.AnimParam(EConstString.AttackRate));
+        protected readonly int CollectRate = Animator.StringToHash(Util.AnimParam(EConstString.CollectRate));
+        protected readonly int MovementSpeed = Animator.StringToHash(Util.AnimParam(EConstString.MovementSpeed));
 
         public bool Moving
         {

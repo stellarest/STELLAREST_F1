@@ -513,7 +513,7 @@ namespace STELLAREST_F1
                     //         spawnPos: CenterPosition
                     //         );
                     //GenerateGlobalEffect(EGlobalEffectID.OnDeadSkull, CenterPosition);
-                    GenerateGlobalEffect(EConstInteger.VFX_OnDeadSkull, CenterPosition);
+                    GenerateGlobalEffect(EConstInt.VFX_OnDeadSkull, CenterPosition);
                 },
                 endCallback: () => OnDeadFadeOutCompleted()
             );
@@ -659,12 +659,12 @@ namespace STELLAREST_F1
             if (isCritical)
             {
                 //GenerateGlobalEffect(EGlobalEffectID.ImpactCriticalHit, impactVFXSpawnPos);
-                GenerateGlobalEffect(EConstInteger.VFX_ImpactCriticalHit, impactVFXSpawnPos);
+                GenerateGlobalEffect(EConstInt.VFX_ImpactCriticalHit, impactVFXSpawnPos);
             }
             else
             {
                 //GenerateGlobalEffect(EGlobalEffectID.ImpactHit, impactVFXSpawnPos);
-                GenerateGlobalEffect(EConstInteger.VFX_ImpactHit, impactVFXSpawnPos);
+                GenerateGlobalEffect(EConstInt.VFX_ImpactHit, impactVFXSpawnPos);
             }
 
             // DO SOMETHING(FIRE, ICE AND ETC...)

@@ -141,7 +141,7 @@ namespace STELLAREST_F1
             Vector3Int cellSpawnPos = Managers.Map.WorldToCell(spawnPos);
             while (Managers.Map.CanMove(cellSpawnPos) == false)
             {
-                if (_trySpawnCount++ >= ReadOnly.Util.CanTryMaxSpawnCount)
+                if (_trySpawnCount++ >= 999)
                     return Vector3Int.zero;
 
                 // float angle = UnityEngine.Random.Range(0f, 360f) * Mathf.Rad2Deg;
@@ -268,123 +268,133 @@ namespace STELLAREST_F1
         public static bool IsEffectStatType(EEffectType effectType)
             => s_effectStatTypes.Contains(effectType);
 
-        public static int GlobalEffectID(EConstInteger constInt)
+        public static int GlobalEffectID(EConstInt constInt)
         {
             return constInt switch
             {
-                EConstInteger.VFX_ImpactHit => 900000,
-                EConstInteger.VFX_ImpactCriticalHit => 900001,
-                EConstInteger.VFX_ImpactFire => 900002,
-                EConstInteger.VFX_ImpactShockwave => 900003,
-                EConstInteger.VFX_TeleportRed => 900020,
-                EConstInteger.VFX_TeleportGreen => 900021,
-                EConstInteger.VFX_TeleportBlue => 900022,
-                EConstInteger.VFX_TeleportPurple => 900023,
-                EConstInteger.VFX_Dust => 990000,
-                EConstInteger.VFX_OnDeadSkull => 990001,
-                EConstInteger.VFX_EvolutionGlow => 990002,
+                EConstInt.VFX_ImpactHit => 900000,
+                EConstInt.VFX_ImpactCriticalHit => 900001,
+                EConstInt.VFX_ImpactFire => 900002,
+                EConstInt.VFX_ImpactShockwave => 900003,
+                EConstInt.VFX_TeleportRed => 900020,
+                EConstInt.VFX_TeleportGreen => 900021,
+                EConstInt.VFX_TeleportBlue => 900022,
+                EConstInt.VFX_TeleportPurple => 900023,
+                EConstInt.VFX_Dust => 990000,
+                EConstInt.VFX_OnDeadSkull => 990001,
+                EConstInt.VFX_EvolutionGlow => 990002,
                 _ => throw new ArgumentOutOfRangeException(nameof(GlobalEffectID), $"\nInvalid value: {constInt}")
             };
         }
 
-        public static int TextFontID(EConstInteger constInt)
+        public static int TextFontID(EConstInt constInt)
         {
             return constInt switch
             {
-                EConstInteger.TextFont_Damage => 109,
-                EConstInteger.TextFont_Text => 110,
+                EConstInt.TextFont_Damage => 109,
+                EConstInt.TextFont_Text => 110,
                 _ => throw new ArgumentOutOfRangeException(nameof(TextFontID), $"\nInvalid value: {constInt}")
             };
         }
 
-        public static int HeroDataID(EConstInteger constInt)
+        public static int HeroDataID(EConstInt constInt)
         {
             return constInt switch
             {
-                EConstInteger.Hero_Paladin => 101000,
-                EConstInteger.Hero_Archer => 102000,
-                EConstInteger.Hero_Lancer => 103000,
-                EConstInteger.Hero_Wizard => 104000,
-                EConstInteger.Hero_Assassin => 105000,
-                EConstInteger.Hero_Gunner => 106000,
-                EConstInteger.Hero_Trickster => 107000,
-                EConstInteger.Hero_Druid => 108000,
-                EConstInteger.Hero_Barbarian => 109000,
-                EConstInteger.Hero_Ninja => 110000,
-                EConstInteger.Hero_PhantomKnight => 111000,
-                EConstInteger.Hero_FrostWeaver => 112000,
-                EConstInteger.Hero_Queen => 113000,
-                EConstInteger.Hero_Hunter => 114000,
-                EConstInteger.Hero_Gladiator => 115000,
-                EConstInteger.Hero_Priest => 116000,
-                EConstInteger.Hero_Berserker => 117000,
-                EConstInteger.Hero_Witch => 118000,
-                EConstInteger.Hero_DragonKnight => 119000,
-                EConstInteger.Hero_Alchemist => 120000,
+                EConstInt.Hero_Paladin => 101000,
+                EConstInt.Hero_Archer => 102000,
+                EConstInt.Hero_Lancer => 103000,
+                EConstInt.Hero_Wizard => 104000,
+                EConstInt.Hero_Assassin => 105000,
+                EConstInt.Hero_Gunner => 106000,
+                EConstInt.Hero_Trickster => 107000,
+                EConstInt.Hero_Druid => 108000,
+                EConstInt.Hero_Barbarian => 109000,
+                EConstInt.Hero_Ninja => 110000,
+                EConstInt.Hero_PhantomKnight => 111000,
+                EConstInt.Hero_FrostWeaver => 112000,
+                EConstInt.Hero_Queen => 113000,
+                EConstInt.Hero_Hunter => 114000,
+                EConstInt.Hero_Gladiator => 115000,
+                EConstInt.Hero_Priest => 116000,
+                EConstInt.Hero_Berserker => 117000,
+                EConstInt.Hero_Witch => 118000,
+                EConstInt.Hero_DragonKnight => 119000,
+                EConstInt.Hero_Alchemist => 120000,
                 _ => throw new ArgumentOutOfRangeException(nameof(HeroDataID), $"\nInvalid value: {constInt}")
             };
         }
 
-        public static int MonsterDataID(EConstInteger constInt)
+        public static int MonsterDataID(EConstInt constInt)
         {
             return constInt switch
             {
-                EConstInteger.Monster_Chicken => 101000,
-                EConstInteger.Monster_Turkey => 101001,
-                EConstInteger.Monster_Bunny => 101002,
-                EConstInteger.Monster_Pug => 101003,
+                EConstInt.Monster_Chicken => 101000,
+                EConstInt.Monster_Turkey => 101001,
+                EConstInt.Monster_Bunny => 101002,
+                EConstInt.Monster_Pug => 101003,
                 _ => throw new ArgumentOutOfRangeException(nameof(MonsterDataID), $"\nInvalid value: {constInt}")
             };
         }
 
-        /*
-            // public static readonly int DNPID_Env_AshTree = 101000;
-                // public static readonly int DNPID_Env_BlackOakTree = 101001;
-                // public static readonly int DNPID_Env_GreenAppleTree = 101002;
-                // public static readonly int DNPID_Env_IvyTree = 101003;
-                // public static readonly int DNPID_Env_ManticoreTree = 101004;
-                // public static readonly int DNPID_Env_MapleTree = 101005;
-                // public static readonly int DNPID_Env_OakTree = 101006;
-                // public static readonly int DNPID_Env_RedAppleTree = 101007;
-                // public static readonly int DNPID_Env_RedSandalTree = 101008;
-                // public static readonly int DNPID_Env_WillowTree = 101009;
-                // public static readonly int DNPID_Env_YewTree = 101010;
-                // public static readonly int DNPID_Env_CopperRock = 101011;
-                // public static readonly int DNPID_Env_GoldRock = 101012;
-                // public static readonly int DNPID_Env_IronRock = 101013;
-                // public static readonly int DNPID_Env_LimestoneRock = 101014;
-                // public static readonly int DNPID_Env_SilverRock = 101015;
-                // public static readonly int DNPID_Env_StoneRock = 101016;
-                // public static readonly int DNPID_Env_TinRock = 101017;
-                // public static readonly int DNPID_Env_WhetstoneRock = 101018;
-                // public static readonly int DNPID_Env_ZincRock = 101019;
-        */
-
-        public static int EnvDataID(EConstInteger constInt)
+        public static int EnvDataID(EConstInt constInt)
         {
             return constInt switch
             {
-                EConstInteger.Env_AshTree => 101000,
-                EConstInteger.Env_BlackOakTree => 101001,
-                EConstInteger.Env_GreenAppleTree => 101002,
-                EConstInteger.Env_IvyTree => 101003,
-                EConstInteger.Env_ManticoreTree => 101004,
-                EConstInteger.Env_MapleTree => 101005,
-                EConstInteger.Env_OakTree => 101006,
-                EConstInteger.Env_RedAppleTree => 101007,
-                EConstInteger.Env_RedSandalTree => 101008,
-                EConstInteger.Env_WillowTree => 101009,
-                EConstInteger.Env_YewTree => 101010,
-                EConstInteger.Env_CopperRock => 101011,
-                EConstInteger.Env_GoldRock => 101012,
-                EConstInteger.Env_IronRock => 101013,
-                EConstInteger.Env_LimestoneRock => 101014,
-                EConstInteger.Env_SilverRock => 101015,
-                EConstInteger.Env_StoneRock => 101016,
-                EConstInteger.Env_TinRock => 101017,
-                EConstInteger.Env_WhetstoneRock => 101018,
-                EConstInteger.Env_ZincRock => 101019,
+                EConstInt.Env_AshTree => 101000,
+                EConstInt.Env_BlackOakTree => 101001,
+                EConstInt.Env_GreenAppleTree => 101002,
+                EConstInt.Env_IvyTree => 101003,
+                EConstInt.Env_ManticoreTree => 101004,
+                EConstInt.Env_MapleTree => 101005,
+                EConstInt.Env_OakTree => 101006,
+                EConstInt.Env_RedAppleTree => 101007,
+                EConstInt.Env_RedSandalTree => 101008,
+                EConstInt.Env_WillowTree => 101009,
+                EConstInt.Env_YewTree => 101010,
+                EConstInt.Env_CopperRock => 101011,
+                EConstInt.Env_GoldRock => 101012,
+                EConstInt.Env_IronRock => 101013,
+                EConstInt.Env_LimestoneRock => 101014,
+                EConstInt.Env_SilverRock => 101015,
+                EConstInt.Env_StoneRock => 101016,
+                EConstInt.Env_TinRock => 101017,
+                EConstInt.Env_WhetstoneRock => 101018,
+                EConstInt.Env_ZincRock => 101019,
                 _ => throw new ArgumentOutOfRangeException(nameof(EnvDataID), $"\nInvalid value: {constInt}")
+            };
+        }
+
+        public static int Sorting(EConstInt constInt)
+        {
+            return constInt switch
+            {
+                EConstInt.Sorting_Terrain => 0,
+                EConstInt.Sorting_Deco => 10,
+                EConstInt.Sorting_BaseObject => 20,
+                EConstInt.Sorting_Projectile => 30,
+                EConstInt.Sorting_UI => 90,
+                EConstInt.Sorting_Effect => 100,
+                EConstInt.Sorting_DamageFont => 200,
+                _ => throw new ArgumentOutOfRangeException(nameof(EnvDataID), $"\nInvalid value: {constInt}")
+            };
+        }
+
+        public static int MinInt(EConstInt constInt)
+        {
+            return constInt switch
+            {
+                EConstInt.HeroLevel => 1,
+                _ => throw new ArgumentOutOfRangeException(nameof(MinInt), $"\nInvalid value: {constInt}")
+            };
+        }
+
+        public static int MaxInt(EConstInt constInt)
+        {
+            return constInt switch
+            {
+                EConstInt.HeroLevel => 8,
+                _ => throw new ArgumentOutOfRangeException(nameof(MaxInt), $"\nInvalid value: {constInt}")
             };
         }
 
@@ -415,8 +425,117 @@ namespace STELLAREST_F1
                 EConstFloat.Luck => 0.6F,
                 EConstFloat.MovementSpeed => 12.0F,
                 EConstFloat.MovementAnimSpeed => 2.0F,
-                 _ => throw new ArgumentOutOfRangeException(nameof(MaxFloat), $"\nInvalid value: {constFloat}")
+                _ => throw new ArgumentOutOfRangeException(nameof(MaxFloat), $"\nInvalid value: {constFloat}")
             };
+        }
+
+        public static string Prefab(EConstString constString)
+        {
+            return constString switch
+            {
+                EConstString.LeaderController => "LeaderController",
+                EConstString.TextFontBase => "TextFontBase",
+                _ => throw new ArgumentOutOfRangeException(nameof(Prefab), $"\nInvalid value: {constString}")
+            };
+        }
+
+        public static string Data(EConstString constString)
+        {
+            return constString switch
+            {
+                EConstString.HeroData => "HeroData",
+                EConstString.HeroSpriteData => "HeroSpriteData",
+                EConstString.HeroSkillData => "HeroSkillData",
+                EConstString.HeroEffectData => "HeroEffectData",
+                EConstString.MonsterData => "MonsterData",
+                EConstString.MonsterBirdSpriteData => "MonsterBirdSpriteData",
+                EConstString.MonsterQuadrupedSpriteData => "MonsterQuadrupedSpriteData",
+                EConstString.MonsterSkillData => "MonsterSkillData",
+                EConstString.MonsterEffectData => "MonsterEffectData",
+                EConstString.EnvData => "EnvData",
+                EConstString.EnvTreeSpriteData => "EnvTreeSpriteData",
+                EConstString.EnvRockSpriteData => "EnvRockSpriteData",
+                EConstString.EnvEffectData => "EnvEffectData",
+                EConstString.EffectData => "EffectData",
+                EConstString.ProjectileData => "ProjectileData",
+                _ => throw new ArgumentOutOfRangeException(nameof(Data), $"\nInvalid value: {constString}")
+            };
+        }
+
+        public static string AnimState(EConstString constString)
+        {
+            return constString switch
+            {
+                EConstString.Upper_Idle => "Upper_Idle",
+                EConstString.Upper_Move => "Upper_Move",
+                EConstString.Upper_SkillA => "Upper_SkillA",
+                EConstString.Upper_SkillB => "Upper_SkillB",
+                EConstString.Upper_SkillC => "Upper_SkillC",
+                EConstString.Upper_CollectEnv => "Upper_CollectEnv",
+                EConstString.Upper_Dead => "Upper_Dead",
+                _ => throw new ArgumentOutOfRangeException(nameof(AnimState), $"\nInvalid value: {constString}")
+            };
+        }
+
+        public static string AnimParam(EConstString constString)
+        {
+            return constString switch
+            {
+                EConstString.IsMoving => "IsMoving",
+                EConstString.CanSkill => "CanSkill",
+                EConstString.OnSkillA => "OnSkillA",
+                EConstString.OnSkillB => "OnSkillB",
+                EConstString.OnSkillC => "OnSkillC",
+                EConstString.OnCollectEnv => "OnCollectEnv",
+                EConstString.OnDead => "OnDead",
+                EConstString.AttackRate => "AttackRate",
+                EConstString.CollectRate => "CollectRate",
+                EConstString.MovementSpeed => "MovementSpeed",
+                _ => throw new ArgumentOutOfRangeException(nameof(AnimParam), $"\nInvalid value: {constString}")
+            };
+        }
+
+        public static string Material(EConstString constString)
+        {
+            return constString switch
+            {
+                EConstString.Mat_Default => "Default.mat",
+                EConstString.Mat_EyesPaint => "EyesPaint.mat",
+                EConstString.Mat_StrongTint => "StrongTint.mat",
+                EConstString.Mat_RockFragments => "RockFragments.mat",
+                EConstString.Mat_Glow => "Glow.mat",
+                _ => throw new ArgumentOutOfRangeException(nameof(Material), $"\nInvalid value: {constString}")
+            };
+        }
+
+        public static string Sprite(EConstString constString)
+        {
+            return constString switch
+            {
+                EConstString.Sprite_DefaultWoodcutterAxe => "DefaultWoodcutterAxe.sprite",
+                EConstString.Sprite_MaxWoodcutterAxe => "MaxWoodcutterAxe.sprite",
+                EConstString.Sprite_DefaultPickaxe => "DefaultPickaxe.sprite",
+                EConstString.Sprite_MaxPickaxe => "MaxPickaxe.sprite",
+                EConstString.Sprite_RockBodyFrame => "RockBodyFrame.sprite",
+                EConstString.Sprite_RockEmptyFrame => "RockEmptyFrame.sprite",
+                EConstString.Sprite_Shadow => "Shadow.sprite",
+                EConstString.Sprite_CircleLight => "CircleLight.sprite",
+                _ => throw new ArgumentOutOfRangeException(nameof(Sprite), $"\nInvalid value: {constString}")
+            };
+        }
+
+        public static class TileMap
+        {
+            public const string Tilemap_Collision = "Tilemap_Collision";
+
+            public const string Block = "_Block";
+            public const char BlockFlag = '0';
+
+            public const string CanMove = "_CanMove";
+            public const char CanMoveFlag = '1';
+
+            public const string SemiBlock = "_SemiBlock";
+            public const char SemiBlockFlag = '2';
         }
 
         public static bool IsCreatureType(BaseCellObject obj)

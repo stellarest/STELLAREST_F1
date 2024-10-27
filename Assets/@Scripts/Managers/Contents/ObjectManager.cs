@@ -191,7 +191,7 @@ namespace STELLAREST_F1
         {
             if (HeroLeaderController == null)
             {
-                GameObject go = Managers.Resource.Instantiate(ReadOnly.Prefabs.PFName_LeaderController);
+                GameObject go = Managers.Resource.Instantiate(Util.Prefab(EConstString.LeaderController));
                 go.name = $"@{go.name}";
                 HeroLeaderController = go.GetComponent<HeroLeaderController>();
             }
@@ -202,10 +202,8 @@ namespace STELLAREST_F1
         public void ShowTextFont(Vector3 position, string text, float textSize, Color textColor, 
                         EFontAssetType fontAssetType, EFontAnimationType fontAnimType)
         {
-            //int poolingID = ReadOnly.DataAndPoolingID.DNPID_TextFont;
-            int poolingID = Util.TextFontID(EConstInteger.TextFont_Text);
-
-            string prefabName = ReadOnly.Prefabs.PFName_TextFontBase;
+            int poolingID = Util.TextFontID(EConstInt.TextFont_Text);
+            string prefabName = Util.Prefab(EConstString.TextFontBase);
             GameObject go = Managers.Resource.Instantiate(prefabName, parent: TextFontRoot, poolingID: poolingID);
             TextFont textFont = go.GetComponent<TextFont>();
             textFont.ShowTextFont(position, text, textSize, textColor, fontAssetType, fontAnimType);
@@ -214,10 +212,8 @@ namespace STELLAREST_F1
         public void ShowTextFont(Vector3 position, string text, float textSize, string textColorCode,
                         EFontAssetType fontAssetType, EFontAnimationType fontAnimType)
         {
-            // int poolingID = ReadOnly.DataAndPoolingID.DNPID_TextFont;
-            int poolingID = Util.TextFontID(EConstInteger.TextFont_Text);
-
-            string prefabName = ReadOnly.Prefabs.PFName_TextFontBase;
+            int poolingID = Util.TextFontID(EConstInt.TextFont_Text);
+            string prefabName = Util.Prefab(EConstString.TextFontBase);
             GameObject go = Managers.Resource.Instantiate(prefabName, parent: TextFontRoot, poolingID: poolingID);
             TextFont textFont = go.GetComponent<TextFont>();
             textFont.ShowTextFont(position, text, textSize, textColorCode, fontAssetType, fontAnimType);
@@ -227,10 +223,8 @@ namespace STELLAREST_F1
                                 EFontSignType fontSignType = EFontSignType.None,
                                 EFontAnimationType fontAnimType = EFontAnimationType.EndGoingUp)
         {
-            // int poolingID = ReadOnly.DataAndPoolingID.DNPID_DamageFont;
-            int poolingID = Util.TextFontID(EConstInteger.TextFont_Damage);
-
-            string prefabName = ReadOnly.Prefabs.PFName_TextFontBase;
+            int poolingID = Util.TextFontID(EConstInt.TextFont_Damage);
+            string prefabName = Util.Prefab(EConstString.TextFontBase);
             GameObject go = Managers.Resource.Instantiate(prefabName, parent: TextFontRoot, poolingID: poolingID);
             TextFont dmgFont = go.GetComponent<TextFont>();
             dmgFont.ShowDamageFont(position, damage, textColor, isCritical, fontSignType, fontAnimType);
@@ -240,10 +234,8 @@ namespace STELLAREST_F1
                         EFontSignType fontSignType = EFontSignType.None,
                         EFontAnimationType fontAnimType = EFontAnimationType.EndGoingUp)
         {
-            // int poolingID = ReadOnly.DataAndPoolingID.DNPID_TextFont;
-            int poolingID = Util.TextFontID(EConstInteger.TextFont_Text);
-
-            string prefabName = ReadOnly.Prefabs.PFName_TextFontBase;
+            int poolingID = Util.TextFontID(EConstInt.TextFont_Text);
+            string prefabName = Util.Prefab(EConstString.TextFontBase);
             GameObject go = Managers.Resource.Instantiate(prefabName, parent: TextFontRoot, poolingID: poolingID);
             TextFont dmgFont = go.GetComponent<TextFont>();
             dmgFont.ShowDamageFont(position, damage, textColorCode, isCritical, fontSignType, fontAnimType);
@@ -253,10 +245,8 @@ namespace STELLAREST_F1
                          EFontSignType fontSignType,
                          Func<EFontAnimationType> fontAnimFunc)
         {
-            // int poolingID = ReadOnly.DataAndPoolingID.DNPID_DamageFont;
-            int poolingID = Util.TextFontID(EConstInteger.TextFont_Damage);
-
-            string prefabName = ReadOnly.Prefabs.PFName_TextFontBase;
+            int poolingID = Util.TextFontID(EConstInt.TextFont_Damage);
+            string prefabName = Util.Prefab(EConstString.TextFontBase);
             GameObject go = Managers.Resource.Instantiate(prefabName, parent: TextFontRoot, poolingID: poolingID);
             TextFont dmgFont = go.GetComponent<TextFont>();
             dmgFont.ShowDamageFont(position, damage, textColor, isCritical: isCritical, fontSignType: fontSignType, fontAnimFunc.Invoke());
@@ -266,10 +256,8 @@ namespace STELLAREST_F1
                          EFontSignType fontSignType,
                          Func<EFontAnimationType> fontAnimFunc)
         {
-            // int poolingID = ReadOnly.DataAndPoolingID.DNPID_DamageFont;
-            int poolingID = Util.TextFontID(EConstInteger.TextFont_Damage);
-
-            string prefabName = ReadOnly.Prefabs.PFName_TextFontBase;
+            int poolingID = Util.TextFontID(EConstInt.TextFont_Damage);
+            string prefabName = Util.Prefab(EConstString.TextFontBase);
             GameObject go = Managers.Resource.Instantiate(prefabName, parent: TextFontRoot, poolingID: poolingID);
             TextFont dmgFont = go.GetComponent<TextFont>();
             dmgFont.ShowDamageFont(position, damage, textColorCode, isCritical: isCritical, fontSignType: fontSignType, fontAnimFunc.Invoke());

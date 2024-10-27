@@ -31,7 +31,7 @@ namespace STELLAREST_F1
                 yield return new WaitForSeconds(waitTime);
                 Monster chicken = Managers.Object.SpawnBaseObject<Monster>
                     (objectType: EObjectType.Monster, spawnPos: Managers.Map.CellToCenterWorld(new Vector3Int(-9, 8, 0)),
-                     dataID: Util.MonsterDataID(EConstInteger.Monster_Chicken));
+                     dataID: Util.MonsterDataID(EConstInt.Monster_Chicken));
             }
         }
 
@@ -47,13 +47,17 @@ namespace STELLAREST_F1
                 {
                     Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
                        spawnPos: Managers.Map.CellToCenterWorld(new Vector3Int(-6, 11, 0)),
-                       dataID: Util.EnvDataID(EConstInteger.Env_AshTree));
+                       dataID: Util.EnvDataID(EConstInt.Env_AshTree));
                 }
                 else
                 {
                     Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
                        spawnPos: Managers.Map.CellToCenterWorld(new Vector3Int(-3, 11, 0)),
-                       dataID: Util.EnvDataID(EConstInteger.Env_GoldRock));
+                       dataID: Util.EnvDataID(EConstInt.Env_GoldRock));
+
+                    env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
+spawnPos: Managers.Map.CellToCenterWorld(new Vector3Int(-3, 11, 0)),
+dataID: Util.EnvDataID(EConstInt.Env_SilverRock));
                 }
 
                 _spawnEnvTypeFlag = !_spawnEnvTypeFlag;
@@ -75,7 +79,7 @@ namespace STELLAREST_F1
                 // --- First Hero
                 Hero firstHero = Managers.Object.SpawnBaseObject<Hero>(objectType: EObjectType.Hero,
                     spawnPos: Vector3.zero,
-                    dataID: Util.HeroDataID(EConstInteger.Hero_Paladin),
+                    dataID: Util.HeroDataID(EConstInt.Hero_Paladin),
                     owner: null);
                 leaderController.Leader = firstHero;
 
@@ -444,14 +448,14 @@ namespace STELLAREST_F1
         }
 
         private int GetRandEnvTree
-            => UnityEngine.Random.Range(Util.EnvDataID(EConstInteger.Env_AshTree), Util.EnvDataID(EConstInteger.Env_YewTree ) + 1);
+            => UnityEngine.Random.Range(Util.EnvDataID(EConstInt.Env_AshTree), Util.EnvDataID(EConstInt.Env_YewTree ) + 1);
 
         private int GetRandEnvRock
-            => UnityEngine.Random.Range(Util.EnvDataID(EConstInteger.Env_CopperRock), Util.EnvDataID(EConstInteger.Env_ZincRock) + 1);
+            => UnityEngine.Random.Range(Util.EnvDataID(EConstInt.Env_CopperRock), Util.EnvDataID(EConstInt.Env_ZincRock) + 1);
 
         private void LoadAsset()
         {
-            Managers.Resource.LoadAllAsync<Object>(label: ReadOnly.Util.PreLoad, callback: delegate (string key, int count, int totalCount)
+            Managers.Resource.LoadAllAsync<Object>(label: "PreLoad", callback: delegate (string key, int count, int totalCount)
             {
                 Debug.Log($"Key Loaded : {key}, Current : {count} / Total : {totalCount}");
                 if (count == totalCount)
