@@ -118,7 +118,7 @@ namespace STELLAREST_F1
                         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddPercent);
                         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddPercentMulti);
                         //Armor = Mathf.Clamp(baseValue, 0.0f, ReadOnly.Util.MaxArmor);
-                        Armor = Mathf.Clamp(baseValue, 0.0f, Util.MaxFloat(EConstFloat.Armor));
+                        Armor = Mathf.Clamp(baseValue, 0.0f, Util.MaxFloat(EFloat.Armor));
                     }
                     break;
 
@@ -150,7 +150,7 @@ namespace STELLAREST_F1
                         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddPercent);
                         baseValue *= 1 + _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddPercentMulti);
                         //Luck = Mathf.Clamp(baseValue, 0.0f, ReadOnly.Util.MaxLuck);
-                        Luck = Mathf.Clamp(baseValue, 0.0f, Util.MaxFloat(EConstFloat.Luck));
+                        Luck = Mathf.Clamp(baseValue, 0.0f, Util.MaxFloat(EFloat.Luck));
                     }
                     break;
 

@@ -349,7 +349,7 @@ namespace STELLAREST_F1
                         tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
                         spr.material = _matDefault;
-                        sprite = Managers.Resource.Load<Sprite>(Util.Sprite(EConstString.Sprite_Shadow));
+                        sprite = Managers.Resource.Load<Sprite>(Util.Sprite(EString.Sprite_Shadow));
                         if (sprite != null)
                         {
                             tr.localPosition = tree.StumpPosition;
@@ -382,7 +382,7 @@ namespace STELLAREST_F1
                         Transform tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
                         SpriteRenderer spr = tr.GetComponent<SpriteRenderer>();
                         spr.material = _matDefault;
-                        Sprite sprite = Managers.Resource.Load<Sprite>(Util.Sprite(EConstString.Sprite_RockBodyFrame));
+                        Sprite sprite = Managers.Resource.Load<Sprite>(Util.Sprite(EString.Sprite_RockBodyFrame));
 
                         if (sprite != null)
                             spr.sprite = sprite;
@@ -401,7 +401,7 @@ namespace STELLAREST_F1
                         tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
                         spr.material = _matDefault;
-                        sprite = Managers.Resource.Load<Sprite>(Util.Sprite(EConstString.Sprite_RockEmptyFrame));
+                        sprite = Managers.Resource.Load<Sprite>(Util.Sprite(EString.Sprite_RockEmptyFrame));
                         if (sprite != null)
                             spr.sprite = sprite;
 
@@ -461,7 +461,7 @@ namespace STELLAREST_F1
                             if (ColorUtility.TryParseHtmlString(rock.OreLightColor, out Color oreLightColor))
                             {
                                 spr.color = new Color(oreLightColor.r, oreLightColor.g, oreLightColor.b, spr.color.a);
-                                sprite = Managers.Resource.Load<Sprite>(Util.Sprite(EConstString.Sprite_CircleLight));
+                                sprite = Managers.Resource.Load<Sprite>(Util.Sprite(EString.Sprite_CircleLight));
                                 if (sprite != null)
                                     spr.sprite = sprite;
                             }
@@ -495,7 +495,7 @@ namespace STELLAREST_F1
                             }
 
                             ParticleSystemRenderer pr = tr.GetComponent<ParticleSystemRenderer>();
-                            pr.material = Managers.Resource.Load<Material>(Util.Material(EConstString.Mat_Glow));
+                            pr.material = Managers.Resource.Load<Material>(Util.Material(EString.Mat_Glow));
                         }
                         else
                             isEmptyOreParticleColor = true;
@@ -511,7 +511,7 @@ namespace STELLAREST_F1
                         tag = Util.GetStringFromEnum(ERockBody.EndParticle);
                         tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
                         ParticleSystemRenderer endPr = tr.GetComponent<ParticleSystemRenderer>();
-                        endPr.material = Managers.Resource.Load<Material>(Util.Material(EConstString.Mat_RockFragments));
+                        endPr.material = Managers.Resource.Load<Material>(Util.Material(EString.Mat_RockFragments));
 
                         _rockBodyDict[ERockBody.EndParticle] = new BodyContainer(tag: tag, tr: tr, spr: null,
                                                 defaultSPRMat: null, defaultSPRColor: Color.white,
@@ -648,7 +648,7 @@ namespace STELLAREST_F1
                         tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
                         spr = tr.GetComponent<SpriteRenderer>();
                         spr.material = _matDefault;
-                        sprite = Managers.Resource.Load<Sprite>(Util.Sprite(EConstString.Sprite_Shadow));
+                        sprite = Managers.Resource.Load<Sprite>(Util.Sprite(EString.Sprite_Shadow));
                         if (sprite != null)
                             spr.sprite = sprite;
 

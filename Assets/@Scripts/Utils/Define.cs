@@ -535,23 +535,32 @@ namespace STELLAREST_F1
         {
         }
 
-        public enum EConstInt
+        public enum EInt
         {
-            VFX_ImpactHit,
-            VFX_ImpactCriticalHit,
-            VFX_ImpactFire,
-            VFX_ImpactShockwave,
-            VFX_TeleportRed,
-            VFX_TeleportGreen,
-            VFX_TeleportBlue,
-            VFX_TeleportPurple,
-            VFX_Dust,
-            VFX_OnDeadSkull,
-            VFX_EvolutionGlow,
+            // --- Int
+            TargetScanRange,
 
-            TextFont_Damage,
-            TextFont_Text,
+            // --- GlobalEffectID
+            ID_ImpactHit,
+            ID_ImpactCriticalHit,
+            ID_ImpactFire,
+            ID_ImpactShockwave,
+            ID_TeleportRed,
+            ID_TeleportGreen,
+            ID_TeleportBlue,
+            ID_TeleportPurple,
+            ID_Dust,
+            ID_OnDeadSkull,
+            ID_EvolutionGlow,
 
+            ID_DamageFont,
+            ID_TextFont,
+
+            // --- TextFontID
+            // TextFont_Damage,
+            // TextFont_Text,
+
+            // --- HeroDataID
             Hero_Paladin,
             Hero_Archer,
             Hero_Lancer,
@@ -573,11 +582,13 @@ namespace STELLAREST_F1
             Hero_DragonKnight,
             Hero_Alchemist,
 
+            // --- MonsterDataID
             Monster_Chicken,
             Monster_Turkey,
             Monster_Bunny,
             Monster_Pug,
 
+            // --- EnvDataID
             Env_AshTree,
             Env_BlackOakTree,
             Env_GreenAppleTree,
@@ -599,6 +610,7 @@ namespace STELLAREST_F1
             Env_WhetstoneRock,
             Env_ZincRock,
 
+            // --- Sorting
             Sorting_Terrain,
             Sorting_Deco,
             Sorting_BaseObject,
@@ -607,12 +619,13 @@ namespace STELLAREST_F1
             Sorting_Effect,
             Sorting_DamageFont,
 
+            // --- Min/Max
             HeroLevel,
             HeroMoveDepth,
             MonsterMoveDepth,
         }
 
-        public enum EConstFloat
+        public enum EFloat
         {            
             AttackRate,         // 1.0F ~ 2.0F
             AttackAnimRate,     // 0.85F ~ 1.25F(TEMP) *TEMP: Paladin(0.85F -> 1.0F)
@@ -627,7 +640,7 @@ namespace STELLAREST_F1
             MovementAnimSpeed,
         }
 
-        public enum EConstString
+        public enum EString
         {
             // --- Prefabs
             LeaderController,
@@ -687,6 +700,17 @@ namespace STELLAREST_F1
             Sprite_RockEmptyFrame,
             Sprite_Shadow,
             Sprite_CircleLight,
+
+            // --- Objects
+            Obj_Managers,
+            Obj_UIRoot,
+            Obj_EventSystem,
+            Obj_HeroesRoot,
+            Obj_MonstersRoot,
+            Obj_EnvsRoot,
+            Obj_ProjectilesRoot,
+            Obj_TextFontsRoot,
+            Obj_EffectsRoot
         }
 
         // ####################################################
@@ -694,21 +718,6 @@ namespace STELLAREST_F1
         {
             public static class Util
             {
-                public static readonly string Managers = "@Managers";
-                public static readonly string UI_Root = "@UI_Root";
-                public static readonly string EventSystem = "@EventSystem";
-                public static readonly string HeroPoolingRootName = "@Pool_Heroes";
-                public static readonly string MonsterPoolingRootName = "@Pool_Monsters";
-                public static readonly string EnvPoolingRootName = "@Pool_Envs";
-                public static readonly string ProjectilePoolingRootName = "@Pool_Projectiles";
-                public static readonly string TextFontPoolingRootName = "@Pool_TextFonts";
-                public static readonly string EffectPoolingRootName = "@Pool_Effects";
-
-                // --- C_INTEGER
-                // public static readonly int HeroMaxLevel = 8;
-
-                //public static readonly int RockElementsCount = 3;
-                //public static readonly int MaxActiveSkillsCount = 2;
                 public static readonly int HeroDefaultMoveDepth = 20; // default: 5 -> 10 -> 20
                 public static readonly int HeroMaxMoveDepth = 100;
                 public static readonly int MonsterDefaultMoveDepth = 20; // default: 3 -> 5 -> 20       
@@ -719,13 +728,9 @@ namespace STELLAREST_F1
                 public static readonly int ScanEnemyRange = 6;
                 public static readonly int ScanAllyRange = ScanEnemyRange / 2;
 
-                //public static readonly float MaxLuck = 0.6F;
                 public static readonly float CriticalDamageUpRate = 0.5F;
                 public static readonly float CoForceWaitTime = 2.5F;
                 public static readonly float CheckFarFromHeroesLeaderTick = 1.0F;
-                
-                //public static readonly float WaitMovementDistanceSQRFromLeader = 2.4F;
-                // public static readonly float MaxArmor = 0.8F;
 
                 public static readonly float MinSecPatrolPingPong = 1.0F;
                 public static readonly float MaxSecPatrolPingPong = 2.0F;
@@ -741,9 +746,6 @@ namespace STELLAREST_F1
 
                 // -- [ MISC ]
                 public static readonly float ObjectScanTick = 0.1F;
-                //public static readonly float FindTargetTick = 0.5F;
-                //public static readonly float SearchFindTargetTick = 0.5F;
-
                 public static readonly float CamOrthoSize = 12.0F;
                 public static readonly float JoystickFocusMinDist = -0.18F;
                 public static readonly float JoystickFocusMaxDist = 0.18F;
@@ -751,27 +753,14 @@ namespace STELLAREST_F1
                 public static readonly float HeroDefaultScanRange = 8.0F; // 오리지날 6F, 일단 6칸
                 public static readonly float MonsterDefaultScanRange = 6.0F; // 상하좌우 한칸 기준, 대각선X
 
-                public static readonly float Temp_StopDistance = 1.25F;
-
-                // Dead Fade Out Time
-                public static readonly float StartDeadFadeOutTime = 0.85F; // --- PREV
-                public static readonly float DesiredDeadFadeOutEndTime = 1.0F; // --- PREV
-
                 public static readonly float DesiredEndFadeInTime = 0.5F;
                 public static readonly float DesiredStartFadeOutTime = 2.0F;
                 public static readonly float DesiredEndFadeOutTime = 1.0F;
 
-                public static readonly float MaxMovementSpeedMultiplier = 2.0F;
                 public static readonly float MaxDistanceForMovementSpeed = 8.0F;
 
                 // CameraController
                 public static readonly float CamDesiredMoveToTargetTime = 0.75f;
-
-                // STILL NOT TESTED ##########
-                public static readonly float CalcValueMaxDistanceMultiplier = 2.0F;
-
-                // ##############################
-                public static readonly float ProjectileLifeTime = 10.0F;
             }
         }
     }

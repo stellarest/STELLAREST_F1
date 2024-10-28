@@ -133,7 +133,7 @@ namespace STELLAREST_F1
         public static void CreateObjectTile()
         {
             #region Monster Tile
-            Dictionary<int, MonsterData> monsterDataDict = LoadJson<MonsterDataLoader, int, MonsterData>(Util.Data(EConstString.MonsterData)).MakeDict();
+            Dictionary<int, MonsterData> monsterDataDict = LoadJson<MonsterDataLoader, int, MonsterData>(Util.Data(EString.MonsterData)).MakeDict();
             foreach (var data in monsterDataDict.Values)
             {
                 string name = $"{data.DataID}_{data.Dev_NameTextID}";;

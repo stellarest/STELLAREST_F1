@@ -25,7 +25,6 @@ namespace STELLAREST_F1
 
             if (Input.GetKeyDown(KeyCode.L))
             {
-                // Util.GlobalEffectID(EConstInteger.Hero_Alchemist);
                  CollectRate = Test_CollectkRate;
             }
         }
@@ -184,7 +183,7 @@ namespace STELLAREST_F1
                 //         spawnPos: Managers.Map.CellToCenterWorld(Vector3Int.up + SpawnedCellPos)
                 //     );
                 GenerateGlobalEffect(
-                    constInt: EConstInt.VFX_TeleportBlue,
+                    eInt: EInt.ID_TeleportBlue,
                     spawnPos: Managers.Map.CellToCenterWorld(Vector3Int.up + SpawnedCellPos)
                 );
             });

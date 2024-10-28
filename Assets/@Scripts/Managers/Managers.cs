@@ -18,10 +18,10 @@ namespace STELLAREST_F1
             {
                 if (s_isApplicationQuitting == false && s_instance == null)
                 {
-                    GameObject go = GameObject.Find(ReadOnly.Util.Managers);
+                    GameObject go = GameObject.Find(Util.Object(EString.Obj_Managers));
                     if (go == null)
                     {
-                        go = new GameObject { name = ReadOnly.Util.Managers };
+                        go = new GameObject { name = Util.Object(EString.Obj_Managers) };
                         DontDestroyOnLoad(go);
                     }
 

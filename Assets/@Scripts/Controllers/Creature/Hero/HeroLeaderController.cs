@@ -298,7 +298,7 @@ namespace STELLAREST_F1
                 return false;
 
             //GetComponent<SortingGroup>().sortingOrder = ReadOnly.SortingLayers.SLOrder_UI;
-            GetComponent<SortingGroup>().sortingOrder = Util.Sorting(EConstInt.Sorting_UI);
+            GetComponent<SortingGroup>().sortingOrder = Util.Sorting(EInt.Sorting_UI);
 
             _pointerPivot = Util.FindChild<Transform>(gameObject, "PointerPivot");
             _pointer = Util.FindChild<Transform>(_pointerPivot.gameObject, "Pointer");

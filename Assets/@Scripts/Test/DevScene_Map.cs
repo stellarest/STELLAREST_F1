@@ -31,7 +31,7 @@ namespace STELLAREST_F1
                 yield return new WaitForSeconds(waitTime);
                 Monster chicken = Managers.Object.SpawnBaseObject<Monster>
                     (objectType: EObjectType.Monster, spawnPos: Managers.Map.CellToCenterWorld(new Vector3Int(-9, 8, 0)),
-                     dataID: Util.MonsterDataID(EConstInt.Monster_Chicken));
+                     dataID: Util.MonsterDataID(EInt.Monster_Chicken));
             }
         }
 
@@ -45,19 +45,17 @@ namespace STELLAREST_F1
                 
                 if (_spawnEnvTypeFlag == false)
                 {
+                    int treeID = GetRandEnvTree;
                     Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
                        spawnPos: Managers.Map.CellToCenterWorld(new Vector3Int(-6, 11, 0)),
-                       dataID: Util.EnvDataID(EConstInt.Env_AshTree));
+                       dataID: treeID);
                 }
                 else
                 {
+                    int rockID = GetRandEnvRock;
                     Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
                        spawnPos: Managers.Map.CellToCenterWorld(new Vector3Int(-3, 11, 0)),
-                       dataID: Util.EnvDataID(EConstInt.Env_GoldRock));
-
-                    env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
-spawnPos: Managers.Map.CellToCenterWorld(new Vector3Int(-3, 11, 0)),
-dataID: Util.EnvDataID(EConstInt.Env_SilverRock));
+                       dataID: rockID);
                 }
 
                 _spawnEnvTypeFlag = !_spawnEnvTypeFlag;
@@ -79,7 +77,7 @@ dataID: Util.EnvDataID(EConstInt.Env_SilverRock));
                 // --- First Hero
                 Hero firstHero = Managers.Object.SpawnBaseObject<Hero>(objectType: EObjectType.Hero,
                     spawnPos: Vector3.zero,
-                    dataID: Util.HeroDataID(EConstInt.Hero_Paladin),
+                    dataID: Util.HeroDataID(EInt.Hero_Paladin),
                     owner: null);
                 leaderController.Leader = firstHero;
 
@@ -448,10 +446,10 @@ dataID: Util.EnvDataID(EConstInt.Env_SilverRock));
         }
 
         private int GetRandEnvTree
-            => UnityEngine.Random.Range(Util.EnvDataID(EConstInt.Env_AshTree), Util.EnvDataID(EConstInt.Env_YewTree ) + 1);
+            => UnityEngine.Random.Range(Util.EnvDataID(EInt.Env_AshTree), Util.EnvDataID(EInt.Env_YewTree ) + 1);
 
         private int GetRandEnvRock
-            => UnityEngine.Random.Range(Util.EnvDataID(EConstInt.Env_CopperRock), Util.EnvDataID(EConstInt.Env_ZincRock) + 1);
+            => UnityEngine.Random.Range(Util.EnvDataID(EInt.Env_CopperRock), Util.EnvDataID(EInt.Env_ZincRock) + 1);
 
         private void LoadAsset()
         {
