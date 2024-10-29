@@ -43,7 +43,7 @@ namespace STELLAREST_F1
             EffectBase effect = Managers.Object.SpawnBaseObject<EffectBase>(
                         objectType: EObjectType.Effect,
                         spawnPos: spawnPos,
-                        dataID: Util.CInt.ID(eInt),
+                        dataID: CInt.ID(eInt),
                         owner: _owner
                     );
 

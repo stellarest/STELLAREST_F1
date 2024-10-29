@@ -46,8 +46,8 @@ namespace STELLAREST_F1
             if (base.Init() == false)
                 return false;
 
-            _matDefault = Managers.Resource.Load<Material>(Util.Material(EString.Mat_Default));
-            _matStrongTint =  Managers.Resource.Load<Material>(Util.Material(EString.Mat_StrongTint));
+            _matDefault = Managers.Resource.Load<Material>(CString.Material(EString.Mat_Default));
+            _matStrongTint =  Managers.Resource.Load<Material>(CString.Material(EString.Mat_StrongTint));
             _matPropertyBlock = new MaterialPropertyBlock();
             return true;
         }
@@ -89,7 +89,7 @@ namespace STELLAREST_F1
             while (percent < 1f)
             {
                 delta += Time.deltaTime;
-                percent = delta / ReadOnly.Util.DesiredEndFadeInTime;
+                percent = delta / CFloat.CValue(EFloat.CValue_FadeInTime);
                 ApplyDefaultMat_Alpha(percent);
                 yield return null;
             }
@@ -107,14 +107,14 @@ namespace STELLAREST_F1
         }
         private IEnumerator CoFadeOutEffect(System.Action endCallback = null)
         {
-            yield return new WaitForSeconds(ReadOnly.Util.DesiredStartFadeOutTime);
+            yield return new WaitForSeconds(CFloat.CValue(EFloat.CValue_StartFadeOutWaitTime));
 
             float delta = 0f;
             float percent = 1f;
             while (percent >= 0f)
             {
                 delta += Time.deltaTime;
-                percent = 1f - (delta / ReadOnly.Util.DesiredEndFadeOutTime);
+                percent = 1f - (delta / CFloat.CValue(EFloat.CValue_FadeOutTime));
                 ApplyDefaultMat_Alpha(percent);
                 yield return null;
             }

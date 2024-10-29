@@ -249,7 +249,7 @@ namespace STELLAREST_F1
             return dataID;
         }
 
-    private static HashSet<EEffectType> s_effectStatTypes = new HashSet<EEffectType>
+        private static HashSet<EEffectType> s_effectStatTypes = new HashSet<EEffectType>
         {
             EEffectType.MainStat_MaxHealth,
             EEffectType.MainStat_Damage,
@@ -267,339 +267,6 @@ namespace STELLAREST_F1
 
         public static bool IsEffectStatType(EEffectType effectType)
             => s_effectStatTypes.Contains(effectType);
-
-        public static class TileMap
-        {
-            public const string Tilemap_Collision = "Tilemap_Collision";
-
-            public const string Block = "_Block";
-            public const char BlockFlag = '0';
-
-            public const string CanMove = "_CanMove";
-            public const char CanMoveFlag = '1';
-
-            public const string SemiBlock = "_SemiBlock";
-            public const char SemiBlockFlag = '2';
-        }
-
-        // Util.GlobalEffectID(eInt)
-        public static class CInt
-        {
-            public static int ID(EInt eInt)
-            {
-                return eInt switch
-                {
-                    EInt.ID_ImpactHit => 900000,
-                    EInt.ID_ImpactCriticalHit => 900001,
-                    EInt.ID_ImpactFire => 900002,
-                    EInt.ID_ImpactShockwave => 900003,
-                    EInt.ID_TeleportRed => 900020,
-                    EInt.ID_TeleportGreen => 900021,
-                    EInt.ID_TeleportBlue => 900022,
-                    EInt.ID_TeleportPurple => 900023,
-                    EInt.ID_Dust => 990000,
-                    EInt.ID_OnDeadSkull => 990001,
-                    EInt.ID_EvolutionGlow => 990002,
-
-                    EInt.ID_DamageFont => 109,
-                    EInt.ID_TextFont => 110,
-                    _ => throw new ArgumentOutOfRangeException($"{nameof(CInt)}::{nameof(ID)}", $"\nInvalid: {eInt}")
-                };
-            }
-        }
-
-        // public static int GlobalEffectID(EInt eInt)
-        // {
-        //     return eInt switch
-        //     {
-        //         EInt.VFX_ImpactHit => 900000,
-        //         EInt.VFX_ImpactCriticalHit => 900001,
-        //         EInt.VFX_ImpactFire => 900002,
-        //         EInt.VFX_ImpactShockwave => 900003,
-        //         EInt.VFX_TeleportRed => 900020,
-        //         EInt.VFX_TeleportGreen => 900021,
-        //         EInt.VFX_TeleportBlue => 900022,
-        //         EInt.VFX_TeleportPurple => 900023,
-        //         EInt.VFX_Dust => 990000,
-        //         EInt.VFX_OnDeadSkull => 990001,
-        //         EInt.VFX_EvolutionGlow => 990002,
-        //         _ => throw new ArgumentOutOfRangeException(nameof(GlobalEffectID), $"\nInvalid value: {eInt}")
-        //     };
-        // }
-
-        // public static int TextFontID(EInt eInt)
-        // {
-        //     return eInt switch
-        //     {
-        //         EInt.TextFont_Damage => 109,
-        //         EInt.TextFont_Text => 110,
-        //         _ => throw new ArgumentOutOfRangeException(nameof(TextFontID), $"\nInvalid value: {eInt}")
-        //     };
-        // }
-
-        public static int HeroDataID(EInt eInt)
-        {
-            return eInt switch
-            {
-                EInt.Hero_Paladin => 101000,
-                EInt.Hero_Archer => 102000,
-                EInt.Hero_Lancer => 103000,
-                EInt.Hero_Wizard => 104000,
-                EInt.Hero_Assassin => 105000,
-                EInt.Hero_Gunner => 106000,
-                EInt.Hero_Trickster => 107000,
-                EInt.Hero_Druid => 108000,
-                EInt.Hero_Barbarian => 109000,
-                EInt.Hero_Ninja => 110000,
-                EInt.Hero_PhantomKnight => 111000,
-                EInt.Hero_FrostWeaver => 112000,
-                EInt.Hero_Queen => 113000,
-                EInt.Hero_Hunter => 114000,
-                EInt.Hero_Gladiator => 115000,
-                EInt.Hero_Priest => 116000,
-                EInt.Hero_Berserker => 117000,
-                EInt.Hero_Witch => 118000,
-                EInt.Hero_DragonKnight => 119000,
-                EInt.Hero_Alchemist => 120000,
-                _ => throw new ArgumentOutOfRangeException(nameof(HeroDataID), $"\nInvalid value: {eInt}")
-            };
-        }
-
-        public static int MonsterDataID(EInt eInt)
-        {
-            return eInt switch
-            {
-                EInt.Monster_Chicken => 101000,
-                EInt.Monster_Turkey => 101001,
-                EInt.Monster_Bunny => 101002,
-                EInt.Monster_Pug => 101003,
-                _ => throw new ArgumentOutOfRangeException(nameof(MonsterDataID), $"\nInvalid value: {eInt}")
-            };
-        }
-
-        public static int EnvDataID(EInt eInt)
-        {
-            return eInt switch
-            {
-                EInt.Env_AshTree => 101000,
-                EInt.Env_BlackOakTree => 101001,
-                EInt.Env_GreenAppleTree => 101002,
-                EInt.Env_IvyTree => 101003,
-                EInt.Env_ManticoreTree => 101004,
-                EInt.Env_MapleTree => 101005,
-                EInt.Env_OakTree => 101006,
-                EInt.Env_RedAppleTree => 101007,
-                EInt.Env_RedSandalTree => 101008,
-                EInt.Env_WillowTree => 101009,
-                EInt.Env_YewTree => 101010,
-                EInt.Env_CopperRock => 101011,
-                EInt.Env_GoldRock => 101012,
-                EInt.Env_IronRock => 101013,
-                EInt.Env_LimestoneRock => 101014,
-                EInt.Env_SilverRock => 101015,
-                EInt.Env_StoneRock => 101016,
-                EInt.Env_TinRock => 101017,
-                EInt.Env_WhetstoneRock => 101018,
-                EInt.Env_ZincRock => 101019,
-                _ => throw new ArgumentOutOfRangeException(nameof(EnvDataID), $"\nInvalid value: {eInt}")
-            };
-        }
-
-        public static int Sorting(EInt eInt)
-        {
-            return eInt switch
-            {
-                EInt.Sorting_Terrain => 0,
-                EInt.Sorting_Deco => 10,
-                EInt.Sorting_BaseObject => 20,
-                EInt.Sorting_Projectile => 30,
-                EInt.Sorting_UI => 90,
-                EInt.Sorting_Effect => 100,
-                EInt.Sorting_DamageFont => 200,
-                _ => throw new ArgumentOutOfRangeException(nameof(EnvDataID), $"\nInvalid value: {eInt}")
-            };
-        }
-
-        public static int MinInt(EInt eInt)
-        {
-            return eInt switch
-            {
-                EInt.HeroLevel => 1,
-                _ => throw new ArgumentOutOfRangeException(nameof(MinInt), $"\nInvalid value: {eInt}")
-            };
-        }
-
-        public static int MaxInt(EInt eInt)
-        {
-            return eInt switch
-            {
-                EInt.HeroLevel => 8,
-                _ => throw new ArgumentOutOfRangeException(nameof(MaxInt), $"\nInvalid value: {eInt}")
-            };
-        }
-
-        public static float Float(EFloat eFloat)
-        {
-            return eFloat switch
-            {
-                _ => throw new ArgumentOutOfRangeException(nameof(Float), $"\nInvalid value: {eFloat}")
-            };
-        }
-
-        public static float MinFloat(EFloat eFloat)
-        {
-            return eFloat switch
-            {
-                EFloat.AttackRate => 1.0F,
-                EFloat.AttackAnimRate => 0.85F,
-                EFloat.CollectRate => 1.0F,
-                EFloat.CollectAnimRate => 1.0F,
-                EFloat.Armor => 0.0F,
-                EFloat.MovementSpeed => 1.0F,
-                EFloat.MovementAnimSpeed => 1.0F,
-                _ => throw new ArgumentOutOfRangeException(nameof(MinFloat), $"\nInvalid value: {eFloat}")
-            };
-        }
-
-        public static float MaxFloat(EFloat eFloat)
-        {
-            return eFloat switch
-            {
-                EFloat.AttackRate => 2.0F,
-                EFloat.AttackAnimRate => 1.25F,
-                EFloat.CollectRate => 2.0F,
-                EFloat.CollectAnimRate => 1.5F,
-                EFloat.Armor => 0.85F,
-                EFloat.Luck => 0.6F,
-                EFloat.MovementSpeed => 12.0F,
-                EFloat.MovementAnimSpeed => 2.0F,
-                _ => throw new ArgumentOutOfRangeException(nameof(MaxFloat), $"\nInvalid value: {eFloat}")
-            };
-        }
-
-        public static string Prefab(EString eString)
-        {
-            return eString switch
-            {
-                EString.LeaderController => "LeaderController",
-                EString.TextFontBase => "TextFontBase",
-                _ => throw new ArgumentOutOfRangeException(nameof(Prefab), $"\nInvalid value: {eString}")
-            };
-        }
-
-        public static string Data(EString eString)
-        {
-            return eString switch
-            {
-                EString.HeroData => "HeroData",
-                EString.HeroSpriteData => "HeroSpriteData",
-                EString.HeroSkillData => "HeroSkillData",
-                EString.HeroEffectData => "HeroEffectData",
-                EString.MonsterData => "MonsterData",
-                EString.MonsterBirdSpriteData => "MonsterBirdSpriteData",
-                EString.MonsterQuadrupedSpriteData => "MonsterQuadrupedSpriteData",
-                EString.MonsterSkillData => "MonsterSkillData",
-                EString.MonsterEffectData => "MonsterEffectData",
-                EString.EnvData => "EnvData",
-                EString.EnvTreeSpriteData => "EnvTreeSpriteData",
-                EString.EnvRockSpriteData => "EnvRockSpriteData",
-                EString.EnvEffectData => "EnvEffectData",
-                EString.EffectData => "EffectData",
-                EString.ProjectileData => "ProjectileData",
-                _ => throw new ArgumentOutOfRangeException(nameof(Data), $"\nInvalid value: {eString}")
-            };
-        }
-
-        public static string AnimState(EString eString)
-        {
-            return eString switch
-            {
-                EString.Upper_Idle => "Upper_Idle",
-                EString.Upper_Move => "Upper_Move",
-                EString.Upper_SkillA => "Upper_SkillA",
-                EString.Upper_SkillB => "Upper_SkillB",
-                EString.Upper_SkillC => "Upper_SkillC",
-                EString.Upper_CollectEnv => "Upper_CollectEnv",
-                EString.Upper_Dead => "Upper_Dead",
-                _ => throw new ArgumentOutOfRangeException(nameof(AnimState), $"\nInvalid value: {eString}")
-            };
-        }
-
-        public static string AnimParam(EString eString)
-        {
-            return eString switch
-            {
-                EString.IsMoving => "IsMoving",
-                EString.CanSkill => "CanSkill",
-                EString.OnSkillA => "OnSkillA",
-                EString.OnSkillB => "OnSkillB",
-                EString.OnSkillC => "OnSkillC",
-                EString.OnCollectEnv => "OnCollectEnv",
-                EString.OnDead => "OnDead",
-                EString.AttackRate => "AttackRate",
-                EString.CollectRate => "CollectRate",
-                EString.MovementSpeed => "MovementSpeed",
-                _ => throw new ArgumentOutOfRangeException(nameof(AnimParam), $"\nInvalid value: {eString}")
-            };
-        }
-
-        public static string Material(EString eString)
-        {
-            return eString switch
-            {
-                EString.Mat_Default => "Default.mat",
-                EString.Mat_EyesPaint => "EyesPaint.mat",
-                EString.Mat_StrongTint => "StrongTint.mat",
-                EString.Mat_RockFragments => "RockFragments.mat",
-                EString.Mat_Glow => "Glow.mat",
-                _ => throw new ArgumentOutOfRangeException(nameof(Material), $"\nInvalid value: {eString}")
-            };
-        }
-
-        public static string Sprite(EString eString)
-        {
-            return eString switch
-            {
-                EString.Sprite_DefaultWoodcutterAxe => "DefaultWoodcutterAxe.sprite",
-                EString.Sprite_MaxWoodcutterAxe => "MaxWoodcutterAxe.sprite",
-                EString.Sprite_DefaultPickaxe => "DefaultPickaxe.sprite",
-                EString.Sprite_MaxPickaxe => "MaxPickaxe.sprite",
-                EString.Sprite_RockBodyFrame => "RockBodyFrame.sprite",
-                EString.Sprite_RockEmptyFrame => "RockEmptyFrame.sprite",
-                EString.Sprite_Shadow => "Shadow.sprite",
-                EString.Sprite_CircleLight => "CircleLight.sprite",
-                _ => throw new ArgumentOutOfRangeException(nameof(Sprite), $"\nInvalid value: {eString}")
-            };
-        }
-
-        /*
-            Obj_Managers,
-            Obj_UIRoot,
-            Obj_EventSystem,
-            Obj_HeroesPool,
-            Obj_MonstersPool,
-            Obj_EnvsPool,
-            Obj_ProjectilesPool,
-            Obj_TextFontsPool,
-            Obj_EffectsPool
-        */
-
-        public static string Object(EString eString)
-        {
-            return eString switch
-            {
-                EString.Obj_Managers => "@Managers",
-                EString.Obj_UIRoot => "@UI_Root",
-                EString.Obj_EventSystem => "@EventSystem",
-                EString.Obj_HeroesRoot => "@Pool_Heroes",
-                EString.Obj_MonstersRoot => "@Pool_Monsters",
-                EString.Obj_EnvsRoot => "@Pool_Envs",
-                EString.Obj_ProjectilesRoot => "@Pool_Projectiles",
-                EString.Obj_TextFontsRoot => "@Pool_TextFonts",
-                EString.Obj_EffectsRoot => "@Pool_Effects",
-                _ => throw new ArgumentOutOfRangeException(nameof(Object), $"\nInvalid value: {eString}")
-            };
-        }
 
         public static bool IsCreatureType(BaseCellObject obj)
             => obj != null && obj.ObjectType == EObjectType.Hero || obj.ObjectType == EObjectType.Monster ? true : false;
@@ -659,24 +326,6 @@ namespace STELLAREST_F1
             return null;
         }
 
-        // public static T GetEffectComponent<T>(EEffectType effectType) where T : EffectBase
-        // {
-        //     return effectType switch
-        //     {
-        //         EEffectType.VFX_Base or EEffectType.VFX_BonusHealth or EEffectType.VFX_ShieldBlue or
-        //         EEffectType.VFX_WindBlade
-        //             => typeof(VFXBase) as T,
-
-        //         EEffectType.BuffStat_MaxHealth or EEffectType.BuffStat_Damage or EEffectType.BuffStat_AttackRate or
-        //         EEffectType.BuffStat_MovementSpeed or EEffectType.BuffStat_Shield or EEffectType.BuffStat_BonusHealth or
-        //         EEffectType.BuffStat_Armor or EEffectType.BuffStat_Critical or EEffectType.BuffStat_Dodge or
-        //         EEffectType.BuffStat_Luck or EEffectType.BuffStat_InvincibleBlockCountPerWave
-        //             => typeof(BuffBase) as T,
-                    
-        //         _ => throw new ArgumentOutOfRangeException(nameof(effectType), $"Invalid value: {effectType}")
-        //     };
-        // }
-
         public static SkillData GetSkillData(int dataID, Creature owner)
         {
             switch (owner?.ObjectType)
@@ -718,4 +367,318 @@ namespace STELLAREST_F1
         }
 #endif
     }
+
+    public static class TileMap
+    {
+        public const string Tilemap_Collision = "Tilemap_Collision";
+
+        public const string Block = "_Block";
+        public const char BlockFlag = '0';
+
+        public const string CanMove = "_CanMove";
+        public const char CanMoveFlag = '1';
+
+        public const string SemiBlock = "_SemiBlock";
+        public const char SemiBlockFlag = '2';
+    }
+
+    // --- Const Int
+    public static class CInt
+    {
+        public static int ID(EInt eInt)
+        {
+            return eInt switch
+            {
+                EInt.ID_ImpactHit => 900000,
+                EInt.ID_ImpactCriticalHit => 900001,
+                EInt.ID_ImpactFire => 900002,
+                EInt.ID_ImpactShockwave => 900003,
+                EInt.ID_TeleportRed => 900020,
+                EInt.ID_TeleportGreen => 900021,
+                EInt.ID_TeleportBlue => 900022,
+                EInt.ID_TeleportPurple => 900023,
+                EInt.ID_Dust => 990000,
+                EInt.ID_OnDeadSkull => 990001,
+                EInt.ID_EvolutionGlow => 990002,
+
+                EInt.ID_DamageFont => 109,
+                EInt.ID_TextFont => 110,
+
+                EInt.ID_Paladin => 101000,
+                EInt.ID_Archer => 102000,
+                EInt.ID_Lancer => 103000,
+                EInt.ID_Wizard => 104000,
+                EInt.ID_Assassin => 105000,
+                EInt.ID_Gunner => 106000,
+                EInt.ID_Trickster => 107000,
+                EInt.ID_Druid => 108000,
+                EInt.ID_Barbarian => 109000,
+                EInt.ID_Ninja => 110000,
+                EInt.ID_PhantomKnight => 111000,
+                EInt.ID_FrostWeaver => 112000,
+                EInt.ID_Queen => 113000,
+                EInt.ID_Hunter => 114000,
+                EInt.ID_Gladiator => 115000,
+                EInt.ID_Priest => 116000,
+                EInt.ID_Berserker => 117000,
+                EInt.ID_Witch => 118000,
+                EInt.ID_DragonKnight => 119000,
+                EInt.ID_Alchemist => 120000,
+
+                EInt.ID_Chicken => 101000,
+                EInt.ID_Turkey => 101001,
+                EInt.ID_Bunny => 101002,
+                EInt.ID_Pug => 101003,
+
+                EInt.ID_AshTree => 101000,
+                EInt.ID_BlackOakTree => 101001,
+                EInt.ID_GreenAppleTree => 101002,
+                EInt.ID_IvyTree => 101003,
+                EInt.ID_ManticoreTree => 101004,
+                EInt.ID_MapleTree => 101005,
+                EInt.ID_OakTree => 101006,
+                EInt.ID_RedAppleTree => 101007,
+                EInt.ID_RedSandalTree => 101008,
+                EInt.ID_WillowTree => 101009,
+                EInt.ID_YewTree => 101010,
+                EInt.ID_CopperRock => 101011,
+                EInt.ID_GoldRock => 101012,
+                EInt.ID_IronRock => 101013,
+                EInt.ID_LimestoneRock => 101014,
+                EInt.ID_SilverRock => 101015,
+                EInt.ID_StoneRock => 101016,
+                EInt.ID_TinRock => 101017,
+                EInt.ID_WhetstoneRock => 101018,
+                EInt.ID_ZincRock => 101019,
+                _ => throw new ArgumentOutOfRangeException($"{nameof(CInt)}::{nameof(ID)}", $"\nInvalid: {eInt}")
+            };
+        }
+
+        public static int Sorting(EInt eInt)
+        {
+            return eInt switch
+            {
+                EInt.Sorting_Terrain => 0,
+                EInt.Sorting_Deco => 10,
+                EInt.Sorting_BaseObject => 20,
+                EInt.Sorting_Projectile => 30,
+                EInt.Sorting_UI => 90,
+                EInt.Sorting_Effect => 100,
+                EInt.Sorting_DamageFont => 200,
+                _ => throw new ArgumentOutOfRangeException($"{nameof(CInt)}::{nameof(Sorting)}", $"\nInvalid: {eInt}")
+            };
+        }
+
+        public static int CValue(EInt eInt)
+        {
+            return eInt switch
+            {
+                EInt.CValue_ScanRange => 6,
+                EInt.CValue_HeroMaxLevel => 8,
+                EInt.CValue_CreatureMoveDepth => 20,
+                EInt.CValue_TryFindingPathMaxCount => 12,
+                _ => throw new ArgumentOutOfRangeException($"{nameof(CInt)}::{nameof(CValue)}", $"\nInvalid: {eInt}")
+            };
+        }
+    }
+
+    // --- Const Float
+    public static class CFloat
+    {
+        public static float Min(EFloat eFloat)
+        {
+            return eFloat switch
+            {
+                EFloat.Range_AttackRate => 1.0F,
+                EFloat.Range_AttackAnimRate => 0.85F,
+                EFloat.Range_CollectRate => 1.0F,
+                EFloat.Range_CollectAnimRate => 1.0F,
+                EFloat.Range_MovementSpeed => 1.0F,
+                EFloat.Range_MovementAnimSpeed => 1.0F,
+                EFloat.Range_Armor => 0.0F,
+                EFloat.Range_Critical => 0.0F,
+                EFloat.Range_Dodge => 0.0F,
+                EFloat.Range_Luck => 0.0F,
+                EFloat.Range_HeroesRandFormationDist => 1.0F,
+                EFloat.Range_JoystickFocusDist => -0.18F,
+                _ => throw new ArgumentOutOfRangeException($"{nameof(CFloat)}::{nameof(Min)}", $"\nInvalid: {eFloat}")
+            };
+        }
+
+        public static float Max(EFloat eFloat)
+        {
+            return eFloat switch
+            {
+                EFloat.Range_AttackRate => 2.0F,
+                EFloat.Range_AttackAnimRate => 1.25F,
+                EFloat.Range_CollectRate => 2.0F,
+                EFloat.Range_CollectAnimRate => 1.5F,
+                EFloat.Range_MovementSpeed => 12.0F,
+                EFloat.Range_MovementAnimSpeed => 2.0F,
+                EFloat.Range_Armor => 0.85F,
+                EFloat.Range_Critical => 1.0F,
+                EFloat.Range_Dodge => 0.8F,
+                EFloat.Range_Luck => 0.65F,
+                EFloat.Range_HeroesRandFormationDist => 2.0F,
+                EFloat.Range_JoystickFocusDist => 0.18F,
+                _ => throw new ArgumentOutOfRangeException($"{nameof(CFloat)}::{nameof(Max)}", $"\nInvalid: {eFloat}")
+            };
+        }
+
+        public static float CValue(EFloat eFloat)
+        {
+            return eFloat switch
+            {
+                EFloat.CValue_CriticalDamageRate => 0.5F,
+                EFloat.CValue_ForceWaitTime => 2.5F,
+                EFloat.CValue_FarFromLeaderHeroTick => 1.0F,
+                EFloat.CValue_ForceWaitTimeForStopWarp => 30.0F,
+                EFloat.CValue_ChangeLeaderCoolTime => 5.0F,
+                EFloat.CValue_FindTargetsTick => 0.1F,
+                EFloat.CValue_CameraOrthoSize => 15.0F,
+                EFloat.CValue_MaxMovementSpeedByDist => 8.0F,
+                EFloat.CValue_FadeInTime => 0.5F,
+                EFloat.CValue_StartFadeOutWaitTime => 2.0F,
+                EFloat.CValue_FadeOutTime => 1.0F,
+                EFloat.CValue_CameraMoveToTargetTime => 0.75F,
+                _ => throw new ArgumentOutOfRangeException($"{nameof(CFloat)}::{nameof(CValue)}", $"\nInvalid: {eFloat}")
+            };
+        }
+    }
+
+    // --- Const String
+    public static class CString
+    {
+        public static string Prefab(EString eString)
+        {
+            return eString switch
+            {
+                EString.Prefab_LeaderController => "LeaderController",
+                EString.Prefab_TextFontBase => "TextFontBase",
+                _ => throw new ArgumentOutOfRangeException($"{nameof(CString)}::{nameof(Prefab)}", $"\nInvalid: {eString}")
+            };
+        }
+
+        public static string Data(EString eString)
+        {
+            return eString switch
+            {
+                EString.Data_Hero => "HeroData",
+                EString.Data_HeroSprite => "HeroSpriteData",
+                EString.Data_HeroSkill => "HeroSkillData",
+                EString.Data_HeroEffect => "HeroEffectData",
+                EString.Data_Monster => "MonsterData",
+                EString.Data_MonsterBirdSprite => "MonsterBirdSpriteData",
+                EString.Data_MonsterQuadrupedSprite => "MonsterQuadrupedSpriteData",
+                EString.Data_MonsterSkill => "MonsterSkillData",
+                EString.Data_MonsterEffect => "MonsterEffectData",
+                EString.Data_Env => "EnvData",
+                EString.Data_EnvTreeSprite => "EnvTreeSpriteData",
+                EString.Data_EnvRockSprite => "EnvRockSpriteData",
+                EString.Data_EnvEffect => "EnvEffectData",
+                EString.Data_Effect => "EffectData",
+                EString.Data_Projectile => "ProjectileData",
+                _ => throw new ArgumentOutOfRangeException($"{nameof(CString)}::{nameof(Data)}", $"\nInvalid: {eString}")
+            };
+        }
+
+        public static string AnimState(EString eString)
+        {
+            return eString switch
+            {
+                EString.AnimState_Upper_Idle => "Upper_Idle",
+                EString.AnimState_Upper_Move => "Upper_Move",
+                EString.AnimState_Upper_SkillA => "Upper_SkillA",
+                EString.AnimState_Upper_SkillB => "Upper_SkillB",
+                EString.AnimState_Upper_SkillC => "Upper_SkillC",
+                EString.AnimState_Upper_CollectEnv => "Upper_CollectEnv",
+                EString.AnimState_Upper_Dead => "Upper_Dead",
+                _ => throw new ArgumentOutOfRangeException($"{nameof(CString)}::{nameof(AnimState)}", $"\nInvalid: {eString}")
+            };
+        }
+
+        public static string AnimParam(EString eString)
+        {
+            return eString switch
+            {
+                EString.AnimParam_IsMoving => "IsMoving",
+                EString.AnimParam_CanSkill => "CanSkill",
+                EString.AnimParam_OnSkillA => "OnSkillA",
+                EString.AnimParam_OnSkillB => "OnSkillB",
+                EString.AnimParam_OnSkillC => "OnSkillC",
+                EString.AnimParam_OnCollectEnv => "OnCollectEnv",
+                EString.AnimParam_OnDead => "OnDead",
+                EString.AnimParam_AttackRate => "AttackRate",
+                EString.AnimParam_CollectRate => "CollectRate",
+                EString.AnimParam_MovementSpeed => "MovementSpeed",
+                _ => throw new ArgumentOutOfRangeException($"{nameof(CString)}::{nameof(AnimParam)}", $"\nInvalid: {eString}")
+            };
+        }
+
+        public static string Material(EString eString)
+        {
+            return eString switch
+            {
+                EString.Mat_Default => "Default.mat",
+                EString.Mat_EyesPaint => "EyesPaint.mat",
+                EString.Mat_StrongTint => "StrongTint.mat",
+                EString.Mat_RockFragments => "RockFragments.mat",
+                EString.Mat_Glow => "Glow.mat",
+                _ => throw new ArgumentOutOfRangeException($"{nameof(CString)}::{nameof(Material)}", $"\nInvalid: {eString}")
+            };
+        }
+
+        public static string Sprite(EString eString)
+        {
+            return eString switch
+            {
+                EString.Sprite_DefaultWoodcutterAxe => "DefaultWoodcutterAxe.sprite",
+                EString.Sprite_MaxWoodcutterAxe => "MaxWoodcutterAxe.sprite",
+                EString.Sprite_DefaultPickaxe => "DefaultPickaxe.sprite",
+                EString.Sprite_MaxPickaxe => "MaxPickaxe.sprite",
+                EString.Sprite_RockBodyFrame => "RockBodyFrame.sprite",
+                EString.Sprite_RockEmptyFrame => "RockEmptyFrame.sprite",
+                EString.Sprite_Shadow => "Shadow.sprite",
+                EString.Sprite_CircleLight => "CircleLight.sprite",
+                _ => throw new ArgumentOutOfRangeException($"{nameof(CString)}::{nameof(Sprite)}", $"\nInvalid: {eString}")
+            };
+        }
+
+        public static string Object(EString eString)
+        {
+            return eString switch
+            {
+                EString.Obj_Managers => "@Managers",
+                EString.Obj_UIRoot => "@UI_Root",
+                EString.Obj_EventSystem => "@EventSystem",
+                EString.Obj_HeroesRoot => "@Pool_Heroes",
+                EString.Obj_MonstersRoot => "@Pool_Monsters",
+                EString.Obj_EnvsRoot => "@Pool_Envs",
+                EString.Obj_ProjectilesRoot => "@Pool_Projectiles",
+                EString.Obj_TextFontsRoot => "@Pool_TextFonts",
+                EString.Obj_EffectsRoot => "@Pool_Effects",
+                _ => throw new ArgumentOutOfRangeException($"{nameof(CString)}::{nameof(Object)}", $"\nInvalid: {eString}")
+            };
+        }
+    }
 }
+
+/*
+        // public static T GetEffectComponent<T>(EEffectType effectType) where T : EffectBase
+        // {
+        //     return effectType switch
+        //     {
+        //         EEffectType.VFX_Base or EEffectType.VFX_BonusHealth or EEffectType.VFX_ShieldBlue or
+        //         EEffectType.VFX_WindBlade
+        //             => typeof(VFXBase) as T,
+
+        //         EEffectType.BuffStat_MaxHealth or EEffectType.BuffStat_Damage or EEffectType.BuffStat_AttackRate or
+        //         EEffectType.BuffStat_MovementSpeed or EEffectType.BuffStat_Shield or EEffectType.BuffStat_BonusHealth or
+        //         EEffectType.BuffStat_Armor or EEffectType.BuffStat_Critical or EEffectType.BuffStat_Dodge or
+        //         EEffectType.BuffStat_Luck or EEffectType.BuffStat_InvincibleBlockCountPerWave
+        //             => typeof(BuffBase) as T,
+                    
+        //         _ => throw new ArgumentOutOfRangeException(nameof(effectType), $"Invalid value: {effectType}")
+        //     };
+        // }
+*/

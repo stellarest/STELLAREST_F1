@@ -31,7 +31,7 @@ namespace STELLAREST_F1
                 yield return new WaitForSeconds(waitTime);
                 Monster chicken = Managers.Object.SpawnBaseObject<Monster>
                     (objectType: EObjectType.Monster, spawnPos: Managers.Map.CellToCenterWorld(new Vector3Int(-9, 8, 0)),
-                     dataID: Util.MonsterDataID(EInt.Monster_Chicken));
+                     dataID: CInt.ID(EInt.ID_Chicken));
             }
         }
 
@@ -77,7 +77,7 @@ namespace STELLAREST_F1
                 // --- First Hero
                 Hero firstHero = Managers.Object.SpawnBaseObject<Hero>(objectType: EObjectType.Hero,
                     spawnPos: Vector3.zero,
-                    dataID: Util.HeroDataID(EInt.Hero_Paladin),
+                    dataID: CInt.ID(EInt.ID_Paladin),
                     owner: null);
                 leaderController.Leader = firstHero;
 
@@ -446,10 +446,10 @@ namespace STELLAREST_F1
         }
 
         private int GetRandEnvTree
-            => UnityEngine.Random.Range(Util.EnvDataID(EInt.Env_AshTree), Util.EnvDataID(EInt.Env_YewTree ) + 1);
+            => UnityEngine.Random.Range(CInt.ID(EInt.ID_AshTree), CInt.ID(EInt.ID_YewTree) + 1);
 
         private int GetRandEnvRock
-            => UnityEngine.Random.Range(Util.EnvDataID(EInt.Env_CopperRock), Util.EnvDataID(EInt.Env_ZincRock) + 1);
+            => UnityEngine.Random.Range(CInt.ID(EInt.ID_CopperRock), CInt.ID(EInt.ID_ZincRock) + 1);
 
         private void LoadAsset()
         {

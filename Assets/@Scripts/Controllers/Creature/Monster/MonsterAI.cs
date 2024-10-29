@@ -25,8 +25,8 @@ namespace STELLAREST_F1
 
         protected override IEnumerator CoFindTargets()
         {
-            int scanRange = ReadOnly.Util.ObjectScanRange; // --- 6칸
-            float scanTick = ReadOnly.Util.ObjectScanTick;
+            int scanRange = CInt.CValue(EInt.CValue_ScanRange);
+            float scanTick = CFloat.CValue(EFloat.CValue_FindTargetsTick);
             while (true)
             {
                 Owner.Targets.Clear();
@@ -99,7 +99,7 @@ namespace STELLAREST_F1
             if (_monsterOwner.IsValid() == false)
                 return;
 
-            EFindPathResult result = _monsterOwner.FindPathAndMoveToCellPos(destPos: CellChasePos, maxDepth: ReadOnly.Util.MonsterDefaultMoveDepth);
+            EFindPathResult result = _monsterOwner.FindPathAndMoveToCellPos(destPos: CellChasePos, maxDepth: _moveDepth);
             if (result == EFindPathResult.Fail_LerpCell)
             {
                 _monsterOwner.CreatureAIState = ECreatureAIState.Idle;

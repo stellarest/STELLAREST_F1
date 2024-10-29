@@ -24,8 +24,11 @@ namespace STELLAREST_F1
         private GameObject _cursor = null;
         private float _radius = 0f;
         private Vector2 _touchPos = Vector2.zero;
-
         private Vector2 _basePos = Vector2.zero;
+
+        private float _focusMinDist = 0.0f;
+        private float _focusMaxDist = 0.0f;
+
         public override bool Init()
         {
             if (base.Init() == false)
@@ -42,6 +45,9 @@ namespace STELLAREST_F1
             _bgFocuses[GetFocusIndex(GameObjects.BG_FocusRB)] = GetObject((int)GameObjects.BG_FocusRB);
             _cursor = GetObject((int)GameObjects.JoystickCursor);
             _radius = _bg.GetComponent<RectTransform>().sizeDelta.x / 2;
+
+            _focusMinDist = CFloat.Min(EFloat.Range_JoystickFocusDist);
+            _focusMaxDist = CFloat.Max(EFloat.Range_JoystickFocusDist);
 
             gameObject.BindEvent(action: OnJoystickPointerDown, evtType: EUIEvent.PointerDown);
             gameObject.BindEvent(action: OnJoystickPointerUp, evtType: EUIEvent.PointerUp);
@@ -117,7 +123,7 @@ namespace STELLAREST_F1
                         ShowFocus(false, GetFocusIndex(GameObjects.BG_FocusRB));
                     }
                     // 좌중앙
-                    else if (dir.y >= ReadOnly.Util.JoystickFocusMinDist && dir.y <= ReadOnly.Util.JoystickFocusMaxDist)
+                    else if (dir.y >= _focusMinDist && dir.y <= _focusMaxDist)
                     {
                         ShowFocus(true, GetFocusIndex(GameObjects.BG_FocusLT));
                         ShowFocus(false, GetFocusIndex(GameObjects.BG_FocusRT));
@@ -134,7 +140,7 @@ namespace STELLAREST_F1
                     }
                 }
                 // 중앙
-                else if (dir.x >= ReadOnly.Util.JoystickFocusMinDist && dir.x <= ReadOnly.Util.JoystickFocusMaxDist)
+                else if (dir.x >= _focusMinDist && dir.x <= _focusMaxDist)
                 {
                     // 중앙 상단
                     if (y == 1)
@@ -165,7 +171,7 @@ namespace STELLAREST_F1
                         ShowFocus(false, GetFocusIndex(GameObjects.BG_FocusRB));
                     }
                     // 우측 중앙
-                    else if (dir.y >= ReadOnly.Util.JoystickFocusMinDist && dir.y <= ReadOnly.Util.JoystickFocusMaxDist)
+                    else if (dir.y >= _focusMinDist && dir.y <= _focusMaxDist)
                     {
                         ShowFocus(false, GetFocusIndex(GameObjects.BG_FocusLT));
                         ShowFocus(true, GetFocusIndex(GameObjects.BG_FocusRT));

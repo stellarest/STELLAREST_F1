@@ -15,6 +15,9 @@ namespace STELLAREST_F1
         protected bool IsValidOwner => Owner.IsValid();
         protected bool IsValidTarget => Owner.Target.IsValid();
 
+        protected int _moveDepth = 0;
+        protected int _tryFindingPathMaxCount = 0;
+
         public virtual Vector3Int CellChasePos { get; } = Vector3Int.zero;
         private Queue<Vector3Int> _cantMoveCheckQueue = new Queue<Vector3Int>();
         /*
@@ -81,7 +84,7 @@ namespace STELLAREST_F1
                     {
                         if (IsPingPongAndCantMoveToDest(Owner.CellPos))
                         {
-                            if (_currentPingPongCantMoveCount >= ReadOnly.Util.MaxCanPingPongConditionCount && IsForceMovingPingPongObject == false)
+                            if (_currentPingPongCantMoveCount >= _tryFindingPathMaxCount && IsForceMovingPingPongObject == false)
                             {
                                 Debug.Log($"<color=magenta>[!]{Owner.gameObject.name}, Start force moving for PingPong Object.</color>");
                                 Owner.StopCoLerpToCellPos();
@@ -108,12 +111,15 @@ namespace STELLAREST_F1
             if (base.Init() == false)
                 return false;
 
+            _moveDepth = CInt.CValue(EInt.CValue_CreatureMoveDepth);
+            _tryFindingPathMaxCount = CInt.CValue(EInt.CValue_TryFindingPathMaxCount);
+
             return true;
         }
 
-        public virtual void InitialSetInfo(Creature owner) 
+        public virtual void InitialSetInfo(Creature owner)
             => Owner = owner;
-            
+
         public virtual void EnterInGame()
             => StartCoFindTargets();
         #endregion Init Core
@@ -133,13 +139,12 @@ namespace STELLAREST_F1
             }
         }
 
-
         public bool PauseFindTargets { get; protected set; } = false;
         private Coroutine _coFindTargets = null;
         protected virtual IEnumerator CoFindTargets() // --- Virtual로 바꿔도 될 것 같은데...
         {
-            int scanRange = ReadOnly.Util.ObjectScanRange; // --- 6칸
-            float scanTick = ReadOnly.Util.ObjectScanTick;
+            int scanRange = CInt.CValue(EInt.CValue_ScanRange);
+            float scanTick = CFloat.CValue(EFloat.CValue_FindTargetsTick);
             while (true)
             {
                 Owner.Targets.Clear();
@@ -293,7 +298,7 @@ namespace STELLAREST_F1
             StopCoFindTargets();
             Owner.CreatureAIState = ECreatureAIState.Idle;
             yield return new WaitUntil(() => IsValidOwner && Owner.IsRunningAITick);
-            yield return new WaitForSeconds(ReadOnly.Util.CoForceWaitTime);
+            yield return new WaitForSeconds(CFloat.CValue(EFloat.CValue_ForceWaitTime));
             if (IsValidOwner == false)
                 yield break;
 

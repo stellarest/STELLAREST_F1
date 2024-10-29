@@ -64,7 +64,7 @@ namespace STELLAREST_F1
                 return false;
 
             ObjectType = EObjectType.Effect;
-            SortingGroup.sortingOrder = Util.Sorting(EInt.Sorting_Effect);
+            SortingGroup.sortingOrder = CInt.Sorting(EInt.Sorting_Effect);
             return true;
         }
 

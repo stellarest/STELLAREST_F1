@@ -12,6 +12,8 @@ namespace STELLAREST_F1
         private Transform _pointerPivot = null;
         private Transform _pointer = null;
         private Transform _leaderMark = null;
+        private int _moveDepth = 0;
+
         // --- Member들이 전투중에 Leader가 ForceMove를 시도하면 Env처럼 무조건 MoveState로 전환
         [field: SerializeField] public bool ForceFollowToLeader { get; set; } = false;
 
@@ -39,7 +41,7 @@ namespace STELLAREST_F1
                                 continue;
 
                             // --- ForceStop이후 Leader에게 Warp하지 않고, 달려가서 쫓아가도록한다.
-                            heroes[i].HeroAI.StartCoWaitForceStopWarp(ReadOnly.Util.WaitHeroesForceStopWarpSeconds);
+                            heroes[i].HeroAI.StartCoWaitForceStopWarp(CFloat.CValue(EFloat.CValue_ForceWaitTimeForStopWarp));
                             //heroes[i].CreatureAIState = ECreatureAIState.Idle; // --- DEFENSE
                         }
                     }
@@ -298,11 +300,12 @@ namespace STELLAREST_F1
                 return false;
 
             //GetComponent<SortingGroup>().sortingOrder = ReadOnly.SortingLayers.SLOrder_UI;
-            GetComponent<SortingGroup>().sortingOrder = Util.Sorting(EInt.Sorting_UI);
+            GetComponent<SortingGroup>().sortingOrder = CInt.Sorting(EInt.Sorting_UI);
 
             _pointerPivot = Util.FindChild<Transform>(gameObject, "PointerPivot");
             _pointer = Util.FindChild<Transform>(_pointerPivot.gameObject, "Pointer");
             _leaderMark = Util.FindChild<Transform>(gameObject, "LeaderMark");
+            _moveDepth = CInt.CValue(EInt.CValue_CreatureMoveDepth);
 
             _pointer.localPosition = Vector3.up * 3f;
             _leaderMark.localPosition = Vector2.up * 2f;
@@ -441,10 +444,10 @@ namespace STELLAREST_F1
             // int depth = 2;
             // if (_leader.Target.IsValid())
             //     depth = ReadOnly.Util.HeroDefaultMoveDepth;
-            int depth = ReadOnly.Util.HeroDefaultMoveDepth;
+            //int depth = ReadOnly.Util.HeroDefaultMoveDepth;
             List<Vector3Int> path = Managers.Map.FindPath(startCellPos: startCellPos,
                                                         destCellPos: targetCellPos,
-                                                        maxDepth: depth,
+                                                        maxDepth: _moveDepth,
                                                         ignoreCellObjType: EObjectType.Hero);
             _leaderPath.Clear();
             for (int i = 0; i < path.Count; ++i)
@@ -647,12 +650,12 @@ namespace STELLAREST_F1
         private float _randomPingPongDistance = 0f;
         private IEnumerator CoRandomFormation()
         {
-            float min = ReadOnly.Util.MinSecPatrolPingPong;
-            float max = ReadOnly.Util.MaxSecPatrolPingPong;
+            float min = CFloat.Min(EFloat.Range_HeroesRandFormationDist);
+            float max = CFloat.Max(EFloat.Range_HeroesRandFormationDist);
             List<Hero> members = GetHeroMembers();
             while (true)
             {
-                yield return new WaitForSeconds(Random.Range(min, max));
+                yield return new WaitForSeconds(Random.Range(1.0F, 2.0F));
                 _randomPingPongFlag = !_randomPingPongFlag;
                 if (_randomPingPongFlag) // Wide Formation
                     _randomPingPongDistance = Random.Range(min, max);
@@ -706,7 +709,7 @@ namespace STELLAREST_F1
             while (true)
             {
                 delta += Time.deltaTime;
-                CanChangeLeaderCurrentPercentage = delta / ReadOnly.Util.DesiredCanChangeLeaderTime;
+                CanChangeLeaderCurrentPercentage = delta / CFloat.CValue(EFloat.CValue_ChangeLeaderCoolTime);
                 if (CanChangeLeaderCurrentPercentage >= 1f)
                     break;
 

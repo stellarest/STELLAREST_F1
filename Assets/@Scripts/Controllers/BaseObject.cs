@@ -43,7 +43,7 @@ namespace STELLAREST_F1
 
             SortingGroup = gameObject.GetOrAddComponent<SortingGroup>();
             SortingGroup.sortingLayerName = "BaseObject";
-            SortingGroup.sortingOrder = Util.Sorting(EInt.Sorting_BaseObject);
+            SortingGroup.sortingOrder = CInt.Sorting(EInt.Sorting_BaseObject);
 
             return true;
         }

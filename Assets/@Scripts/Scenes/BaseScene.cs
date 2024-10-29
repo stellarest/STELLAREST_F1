@@ -19,12 +19,12 @@ namespace STELLAREST_F1
             Object obj = GameObject.FindObjectOfType(typeof(EventSystem));
             if (obj == null)
             {
-                GameObject go = new GameObject { name = Util.Object(EString.Obj_EventSystem) };
+                GameObject go = new GameObject { name = CString.Object(EString.Obj_EventSystem) };
                 go.AddComponent<EventSystem>();
                 go.AddComponent<StandaloneInputModule>();
             }
             else
-                obj.name = Util.Object(EString.Obj_EventSystem);
+                obj.name = CString.Object(EString.Obj_EventSystem);
 
             return true;
         }

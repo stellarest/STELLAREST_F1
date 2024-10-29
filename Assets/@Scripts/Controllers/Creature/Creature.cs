@@ -222,7 +222,7 @@ namespace STELLAREST_F1
             float damage = attacker.Damage;
             bool isCritical = attacker.IsCritical;
             if (isCritical)
-                damage *= 1 + ReadOnly.Util.CriticalDamageUpRate;
+                damage *= 1 + CFloat.CValue(EFloat.CValue_CriticalDamageRate);
 
             float remainedDamage = 0.0f;
             float finalDamage = 0.0f;

@@ -84,10 +84,10 @@ namespace STELLAREST_F1
 
             foreach (GameObject go in gameObjects)
             {
-                Tilemap tm = Util.FindChild<Tilemap>(go, Util.TileMap.Tilemap_Collision, true);
+                Tilemap tm = Util.FindChild<Tilemap>(go, TileMap.Tilemap_Collision, true);
                 if (tm == null)
                 {
-                    Debug.LogWarning($"Failed to get Tilemap component on \"{Util.TileMap.Tilemap_Collision}\" object.");
+                    Debug.LogWarning($"Failed to get Tilemap component on \"{TileMap.Tilemap_Collision}\" object.");
                     return;
                 }
                 tm.RefreshAllTiles();
@@ -112,12 +112,12 @@ namespace STELLAREST_F1
                             TileBase tile = tm.GetTile(new Vector3Int(x, y, 0));
                             if (tile != null)
                             {
-                                if (tile.name.Contains(Util.TileMap.CanMove))
-                                    writer.Write(Util.TileMap.CanMoveFlag);
-                                else if (tile.name.Contains(Util.TileMap.SemiBlock))
-                                    writer.Write(Util.TileMap.SemiBlockFlag);
-                                else if (tile.name.Contains(Util.TileMap.Block))
-                                    writer.Write(Util.TileMap.BlockFlag);
+                                if (tile.name.Contains(TileMap.CanMove))
+                                    writer.Write(TileMap.CanMoveFlag);
+                                else if (tile.name.Contains(TileMap.SemiBlock))
+                                    writer.Write(TileMap.SemiBlockFlag);
+                                else if (tile.name.Contains(TileMap.Block))
+                                    writer.Write(TileMap.BlockFlag);
                             }
                         }
 
@@ -133,7 +133,7 @@ namespace STELLAREST_F1
         public static void CreateObjectTile()
         {
             #region Monster Tile
-            Dictionary<int, MonsterData> monsterDataDict = LoadJson<MonsterDataLoader, int, MonsterData>(Util.Data(EString.MonsterData)).MakeDict();
+            Dictionary<int, MonsterData> monsterDataDict = LoadJson<MonsterDataLoader, int, MonsterData>(CString.Data(EString.Data_Monster)).MakeDict();
             foreach (var data in monsterDataDict.Values)
             {
                 string name = $"{data.DataID}_{data.Dev_NameTextID}";;

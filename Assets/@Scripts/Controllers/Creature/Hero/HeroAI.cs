@@ -105,8 +105,8 @@ namespace STELLAREST_F1
 
         protected override IEnumerator CoFindTargets()
         {
-            int scanRange = ReadOnly.Util.ObjectScanRange; // --- 6칸
-            float scanTick = ReadOnly.Util.ObjectScanTick;
+            int scanRange = CInt.CValue(EInt.CValue_ScanRange);
+            float scanTick = CFloat.CValue(EFloat.CValue_FindTargetsTick);
             while (true)
             {
                 Owner.Targets.Clear();
@@ -223,7 +223,8 @@ namespace STELLAREST_F1
             //     yield return new WaitForSeconds(ReadOnly.Util.CheckFarFromHeroesLeaderTick);
             // }
 
-            yield return new WaitForSeconds(ReadOnly.Util.CheckFarFromHeroesLeaderTick);
+            // yield return new WaitForSeconds(ReadOnly.Util.CheckFarFromHeroesLeaderTick);
+            yield return new WaitForSeconds(CFloat.CValue(EFloat.CValue_FarFromLeaderHeroTick));
 
         }
 
@@ -241,7 +242,7 @@ namespace STELLAREST_F1
             _coIsFarFromLeaderTick = null;
         }
 
-         private Coroutine _coWaitForceStopWarp = null;
+        private Coroutine _coWaitForceStopWarp = null;
         private IEnumerator CoWaitForceStopWarp(float seconds)
         {
             yield return new WaitForSeconds(seconds);

@@ -531,15 +531,8 @@ namespace STELLAREST_F1
             Max,
         }
 
-        public enum EGlobalProjectileID
-        {
-        }
-
         public enum EInt
         {
-            // --- Int
-            TargetScanRange,
-
             // --- GlobalEffectID
             ID_ImpactHit,
             ID_ImpactCriticalHit,
@@ -553,62 +546,59 @@ namespace STELLAREST_F1
             ID_OnDeadSkull,
             ID_EvolutionGlow,
 
+            // --- TextFontID
             ID_DamageFont,
             ID_TextFont,
 
-            // --- TextFontID
-            // TextFont_Damage,
-            // TextFont_Text,
-
             // --- HeroDataID
-            Hero_Paladin,
-            Hero_Archer,
-            Hero_Lancer,
-            Hero_Wizard,
-            Hero_Assassin,
-            Hero_Gunner,
-            Hero_Trickster,
-            Hero_Druid,
-            Hero_Barbarian,
-            Hero_Ninja,
-            Hero_PhantomKnight,
-            Hero_FrostWeaver,
-            Hero_Queen,
-            Hero_Hunter,
-            Hero_Gladiator,
-            Hero_Priest,
-            Hero_Berserker,
-            Hero_Witch,
-            Hero_DragonKnight,
-            Hero_Alchemist,
+            ID_Paladin,
+            ID_Archer,
+            ID_Lancer,
+            ID_Wizard,
+            ID_Assassin,
+            ID_Gunner,
+            ID_Trickster,
+            ID_Druid,
+            ID_Barbarian,
+            ID_Ninja,
+            ID_PhantomKnight,
+            ID_FrostWeaver,
+            ID_Queen,
+            ID_Hunter,
+            ID_Gladiator,
+            ID_Priest,
+            ID_Berserker,
+            ID_Witch,
+            ID_DragonKnight,
+            ID_Alchemist,
 
             // --- MonsterDataID
-            Monster_Chicken,
-            Monster_Turkey,
-            Monster_Bunny,
-            Monster_Pug,
+            ID_Chicken,
+            ID_Turkey,
+            ID_Bunny,
+            ID_Pug,
 
             // --- EnvDataID
-            Env_AshTree,
-            Env_BlackOakTree,
-            Env_GreenAppleTree,
-            Env_IvyTree,
-            Env_ManticoreTree,
-            Env_MapleTree,
-            Env_OakTree,
-            Env_RedAppleTree,
-            Env_RedSandalTree,
-            Env_WillowTree,
-            Env_YewTree,
-            Env_CopperRock,
-            Env_GoldRock,
-            Env_IronRock,
-            Env_LimestoneRock,
-            Env_SilverRock,
-            Env_StoneRock,
-            Env_TinRock,
-            Env_WhetstoneRock,
-            Env_ZincRock,
+            ID_AshTree,
+            ID_BlackOakTree,
+            ID_GreenAppleTree,
+            ID_IvyTree,
+            ID_ManticoreTree,
+            ID_MapleTree,
+            ID_OakTree,
+            ID_RedAppleTree,
+            ID_RedSandalTree,
+            ID_WillowTree,
+            ID_YewTree,
+            ID_CopperRock,
+            ID_GoldRock,
+            ID_IronRock,
+            ID_LimestoneRock,
+            ID_SilverRock,
+            ID_StoneRock,
+            ID_TinRock,
+            ID_WhetstoneRock,
+            ID_ZincRock,
 
             // --- Sorting
             Sorting_Terrain,
@@ -619,70 +609,94 @@ namespace STELLAREST_F1
             Sorting_Effect,
             Sorting_DamageFont,
 
-            // --- Min/Max
-            HeroLevel,
-            HeroMoveDepth,
-            MonsterMoveDepth,
+            // --- Constant Value
+            CValue_ScanRange,
+            CValue_HeroMaxLevel,
+            CValue_CreatureMoveDepth,
+            CValue_TryFindingPathMaxCount,
         }
 
         public enum EFloat
         {            
-            AttackRate,         // 1.0F ~ 2.0F
-            AttackAnimRate,     // 0.85F ~ 1.25F(TEMP) *TEMP: Paladin(0.85F -> 1.0F)
+            // --- MinMax Range
+            Range_AttackRate,
+            Range_AttackAnimRate,
 
-            CollectRate,        // 1.0F ~ 2.0F
-            CollectAnimRate,    // 1.0F ~ 1.5F
+            Range_CollectRate,
+            Range_CollectAnimRate,
 
-            Armor,
-            Luck,
+            Range_MovementSpeed,
+            Range_MovementAnimSpeed,
 
-            MovementSpeed,
-            MovementAnimSpeed,
+            Range_Armor,
+            Range_Critical,
+            Range_Dodge,
+            Range_Luck,
+
+            Range_HeroesRandFormationDist,
+            Range_JoystickFocusDist,
+
+            // --- Constant Value
+            CValue_CriticalDamageRate,
+            CValue_ForceWaitTime,
+            CValue_FarFromLeaderHeroTick,
+            CValue_ForceWaitTimeForStopWarp,
+            CValue_ChangeLeaderCoolTime,
+            CValue_FindTargetsTick,
+            CValue_CameraOrthoSize,
+            CValue_MaxMovementSpeedByDist,
+            CValue_FadeInTime,
+            CValue_StartFadeOutWaitTime,
+            CValue_FadeOutTime,
+            CValue_CameraMoveToTargetTime,
         }
 
         public enum EString
         {
-            // --- Prefabs
-            LeaderController,
-            TextFontBase,
+            // --- Labels
+            Prefab_LeaderController,
+            Prefab_TextFontBase,
 
             // --- Datas
-            HeroData,
-            HeroSpriteData,
-            HeroSkillData,
-            HeroEffectData,
-            MonsterData,
-            MonsterBirdSpriteData,
-            MonsterQuadrupedSpriteData,
-            MonsterSkillData,
-            MonsterEffectData,
-            EnvData,
-            EnvTreeSpriteData,
-            EnvRockSpriteData,
-            EnvEffectData,
-            EffectData,
-            ProjectileData,
+            Data_Hero,
+            Data_HeroSprite,
+            Data_HeroSkill,
+            Data_HeroEffect,
+
+            Data_Monster,
+            Data_MonsterBirdSprite,
+            Data_MonsterQuadrupedSprite,
+            Data_MonsterSkill,
+            Data_MonsterEffect,
+
+            Data_Env,
+            Data_EnvTreeSprite,
+            Data_EnvRockSprite,
+            Data_EnvEffect,
+
+            Data_Effect,
+            Data_Projectile,
 
             // --- Anim States
-            Upper_Idle,
-            Upper_Move,
-            Upper_SkillA,
-            Upper_SkillB,
-            Upper_SkillC,
-            Upper_CollectEnv,
-            Upper_Dead,
+            AnimState_Upper_Idle,
+            AnimState_Upper_Move,
+            AnimState_Upper_SkillA,
+            AnimState_Upper_SkillB,
+            AnimState_Upper_SkillC,
+            AnimState_Upper_CollectEnv,
+            AnimState_Upper_Dead,
 
             // --- Anim Params
-            IsMoving,
-            CanSkill,
-            OnSkillA,
-            OnSkillB,
-            OnSkillC,
-            OnCollectEnv,
-            OnDead,
-            AttackRate,
-            CollectRate,
-            MovementSpeed,
+            AnimParam_IsMoving,
+            AnimParam_CanSkill,
+            AnimParam_OnSkillA,
+            AnimParam_OnSkillB,
+            AnimParam_OnSkillC,
+            AnimParam_OnCollectEnv,
+            AnimParam_OnDead,
+            AnimParam_AttackRate,
+            AnimParam_CollectRate,
+            AnimParam_MovementSpeed,
 
             // --- Materials
             Mat_Default,
@@ -711,57 +725,6 @@ namespace STELLAREST_F1
             Obj_ProjectilesRoot,
             Obj_TextFontsRoot,
             Obj_EffectsRoot
-        }
-
-        // ####################################################
-        public static class ReadOnly
-        {
-            public static class Util
-            {
-                public static readonly int HeroDefaultMoveDepth = 20; // default: 5 -> 10 -> 20
-                public static readonly int HeroMaxMoveDepth = 100;
-                public static readonly int MonsterDefaultMoveDepth = 20; // default: 3 -> 5 -> 20       
-                public static readonly int MaxCanPingPongConditionCount = 20;
-
-                public static readonly int ObjectScanRange = 6; // --- 대각선 상관없이 6칸
-
-                public static readonly int ScanEnemyRange = 6;
-                public static readonly int ScanAllyRange = ScanEnemyRange / 2;
-
-                public static readonly float CriticalDamageUpRate = 0.5F;
-                public static readonly float CoForceWaitTime = 2.5F;
-                public static readonly float CheckFarFromHeroesLeaderTick = 1.0F;
-
-                public static readonly float MinSecPatrolPingPong = 1.0F;
-                public static readonly float MaxSecPatrolPingPong = 2.0F;
-
-                public static readonly float WaitHeroesForceStopWarpSeconds = 30.0F;
-
-                // -- [ HERO LEADER CONTROLLER ]
-                public static readonly float DesiredCanChangeLeaderTime = 3F;
-
-                // -- [ MONSTER ]
-                public static readonly float MinSecWaitSearchTargetForSettingAggroFromRange = 1.0F;
-                public static readonly float MaxSecWaitSearchTargetForSettingAggroFromRange = 2.0F;
-
-                // -- [ MISC ]
-                public static readonly float ObjectScanTick = 0.1F;
-                public static readonly float CamOrthoSize = 12.0F;
-                public static readonly float JoystickFocusMinDist = -0.18F;
-                public static readonly float JoystickFocusMaxDist = 0.18F;
-
-                public static readonly float HeroDefaultScanRange = 8.0F; // 오리지날 6F, 일단 6칸
-                public static readonly float MonsterDefaultScanRange = 6.0F; // 상하좌우 한칸 기준, 대각선X
-
-                public static readonly float DesiredEndFadeInTime = 0.5F;
-                public static readonly float DesiredStartFadeOutTime = 2.0F;
-                public static readonly float DesiredEndFadeOutTime = 1.0F;
-
-                public static readonly float MaxDistanceForMovementSpeed = 8.0F;
-
-                // CameraController
-                public static readonly float CamDesiredMoveToTargetTime = 0.75f;
-            }
         }
     }
 }

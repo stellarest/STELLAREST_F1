@@ -29,7 +29,7 @@ namespace STELLAREST_F1
             _initialFontSize = _text.fontSize;
             _sortingGroup = GetComponent<SortingGroup>();
             //_sortingGroup.sortingOrder = ReadOnly.SortingLayers.SLOrder_DamageFont;
-            _sortingGroup.sortingOrder = Util.Sorting(EInt.Sorting_DamageFont);
+            _sortingGroup.sortingOrder = CInt.Sorting(EInt.Sorting_DamageFont);
             return true;
         }
 
@@ -53,7 +53,7 @@ namespace STELLAREST_F1
 
             _text.text = text;
             transform.position = position;
-            int poolingID = Util.CInt.ID(EInt.ID_TextFont);
+            int poolingID = CInt.ID(EInt.ID_TextFont);
             poolingID = Util.GetPoolingID(objType: EObjectType.Effect, poolingID);
             PlayFontAnimation(fontAnimType: fontAnimType, endCallback: () =>
             {
@@ -86,7 +86,7 @@ namespace STELLAREST_F1
 
             _text.text = text;
             transform.position = position;
-            int poolingID = Util.CInt.ID(EInt.ID_TextFont);
+            int poolingID = CInt.ID(EInt.ID_TextFont);
             poolingID = Util.GetPoolingID(objType: EObjectType.Effect, poolingID);
             PlayFontAnimation(fontAnimType: fontAnimType, endCallback: () =>
             {
@@ -135,7 +135,7 @@ namespace STELLAREST_F1
                     break;
             }
 
-            int poolingID = Util.CInt.ID(EInt.ID_DamageFont);
+            int poolingID = CInt.ID(EInt.ID_DamageFont);
             poolingID = Util.GetPoolingID(objType: EObjectType.Effect, poolingID);
             PlayFontAnimation(fontAnimType: fontAnimType, endCallback: () => {
                 // Managers.Resource.Destroy(gameObject, poolingID: ReadOnly.DataAndPoolingID.DNPID_DamageFont);
@@ -183,7 +183,7 @@ namespace STELLAREST_F1
                     break;
             }
 
-            int poolingID = Util.CInt.ID(EInt.ID_DamageFont);
+            int poolingID = CInt.ID(EInt.ID_DamageFont);
             poolingID = Util.GetPoolingID(objType: EObjectType.Effect, poolingID);
             PlayFontAnimation(fontAnimType: fontAnimType, endCallback: () => {
                 // Managers.Resource.Destroy(gameObject, poolingID: ReadOnly.DataAndPoolingID.DNPID_DamageFont);

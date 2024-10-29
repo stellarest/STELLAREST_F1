@@ -17,6 +17,7 @@ namespace STELLAREST_F1
         public BaseAnimation BaseAnim { get; private set; } = null;
         public BaseStat BaseStat { get; private set; } = null; // 일단은 Env도 들고 있게. 헷갈림.
         public EffectComponent BaseEffect { get; private set; } = null;
+        private float _maxMovementSpeedByDist = 0.0f;
 
         [SerializeField] private ELookAtDirection _lookAtDir = ELookAtDirection.Right;
         public virtual ELookAtDirection LookAtDir
@@ -78,6 +79,7 @@ namespace STELLAREST_F1
             BaseBody = gameObject.GetOrAddComponent<BaseBody>();
             BaseAnim = Util.FindChild<BaseAnimation>(gameObject, name: "AnimationBody", recursive: false);
             BaseStat = gameObject.GetOrAddComponent<BaseStat>();
+            _maxMovementSpeedByDist = CFloat.CValue(EFloat.CValue_MaxMovementSpeedByDist);
             return true;
         }
 
@@ -264,7 +266,7 @@ namespace STELLAREST_F1
                         value: Managers.Object.HeroLeaderController.Leader.MovementSpeed,
                         maxValue: Managers.Object.HeroLeaderController.Leader.MovementSpeed * 2f,
                         distanceToTargetSQR: (CellPos - Managers.Object.HeroLeaderController.Leader.CellPos).sqrMagnitude,
-                        maxDistanceSQR: ReadOnly.Util.HeroDefaultScanRange * ReadOnly.Util.HeroDefaultScanRange
+                        maxDistanceSQR: _maxMovementSpeedByDist * _maxMovementSpeedByDist
                     );
 
                     LerpToCellPos(movementSpeed);

@@ -54,8 +54,8 @@ namespace STELLAREST_F1
                 if (_attackRate != value)
                 {
                     _attackRate = Mathf.Clamp(value, 
-                            min: Util.MinFloat(EFloat.AttackRate),
-                            max: Util.MaxFloat(EFloat.AttackRate));
+                            min: CFloat.Min(EFloat.Range_AttackRate),
+                            max: CFloat.Max(EFloat.Range_AttackRate));
 
                     (Owner as Creature).CreatureAnim.SetAttackRate(_attackRate);
                 }
@@ -73,8 +73,8 @@ namespace STELLAREST_F1
                     return;
 
                 _collectRate = Mathf.Clamp(value,
-                        min: Util.MinFloat(EFloat.CollectRate),
-                        max: Util.MaxFloat(EFloat.CollectRate));
+                        min: CFloat.Min(EFloat.Range_CollectRate),
+                        max: CFloat.Max(EFloat.Range_CollectRate));
 
                 (Owner as Creature).CreatureAnim.SetCollectRate(_collectRate);
             }
@@ -94,8 +94,8 @@ namespace STELLAREST_F1
                 if (_movementSpeed != value)
                 {
                     _movementSpeed = Mathf.Clamp(value, 
-                            min: Util.MinFloat(EFloat.MovementSpeed), 
-                            max: Util.MaxFloat(EFloat.MovementSpeed));
+                            min: CFloat.Min(EFloat.Range_MovementSpeed), 
+                            max: CFloat.Max(EFloat.Range_MovementSpeed));
 
                     (Owner as Creature).CreatureAnim.SetMovementSpeed(_movementSpeed);
                 }
@@ -110,8 +110,7 @@ namespace STELLAREST_F1
             get
             {
                 //int level = (_levelID % _dataTemplateID) + 1;
-                int level = Mathf.Clamp((_levelID % _dataTemplateID) + 1, Util.MinInt(EInt.HeroLevel), Util.MaxInt(EInt.HeroLevel));
-
+                int level = Mathf.Min((_levelID % _dataTemplateID) + 1, CInt.CValue(EInt.CValue_HeroMaxLevel));
 #if UNITY_EDITOR
                 Dev_NameTextID = $"Lv: {level.ToString()} / {MaxLevel.ToString()}";
 #endif
@@ -150,7 +149,7 @@ namespace STELLAREST_F1
             _modifier.InitialSetInfo(baseStat: this);
             if (Owner.ObjectType == EObjectType.Hero)
             {
-                for (int i = dataID; i < dataID + Util.MaxInt(EInt.HeroLevel);)
+                for (int i = dataID; i < dataID + CInt.CValue(EInt.CValue_HeroMaxLevel);)
                     _maxLevelID = i++;
             }
             else

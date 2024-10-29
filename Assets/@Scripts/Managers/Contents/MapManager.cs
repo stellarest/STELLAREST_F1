@@ -47,7 +47,7 @@ namespace STELLAREST_F1
             CellGrid = map.GetComponent<Grid>();
 
             ParseCollisionData(map, mapName);
-            // SpawnCellObjectsByData(map, mapName);
+            SpawnCellObjectsByData(map, mapName);
         }
 
         private void ParseCollisionData(GameObject map, string mapName, string tileMap = "Tilemap_Collision")
@@ -75,15 +75,15 @@ namespace STELLAREST_F1
                 {
                     switch (line[x])
                     {
-                        case Util.TileMap.BlockFlag: // --- Block Tile
+                        case TileMap.BlockFlag: // --- Block Tile
                             _cellCollisionType[y, x] = ECellCollisionType.Block;
                             break;
 
-                        case Util.TileMap.CanMoveFlag: // --- Can Move Tile
+                        case TileMap.CanMoveFlag: // --- Can Move Tile
                             _cellCollisionType[y, x] = ECellCollisionType.CanMove;
                             break;
 
-                        case Util.TileMap.SemiBlockFlag: // --- Semi Block Tile
+                        case TileMap.SemiBlockFlag: // --- Semi Block Tile
                             _cellCollisionType[y, x] = ECellCollisionType.SemiBlock;
                             break;
                     }

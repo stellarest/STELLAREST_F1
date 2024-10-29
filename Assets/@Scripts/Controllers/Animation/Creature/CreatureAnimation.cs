@@ -41,46 +41,25 @@ namespace STELLAREST_F1
             Animator.Play(Upper_Idle);
         }
 
-        // --- Upper Layer (Prev)
-        // public readonly int Upper_Idle = Animator.StringToHash(ReadOnly.AnimationParams.Upper_Idle);
-        // public readonly int Upper_Move = Animator.StringToHash(ReadOnly.AnimationParams.Upper_Move);
-        // public readonly int Upper_SkillA = Animator.StringToHash(ReadOnly.AnimationParams.Upper_SkillA);
-        // public readonly int Upper_SkillB = Animator.StringToHash(ReadOnly.AnimationParams.Upper_SkillB);
-        // public readonly int Upper_SkillC = Animator.StringToHash(ReadOnly.AnimationParams.Upper_SkillC);
-        // public readonly int Upper_CollectEnv = Animator.StringToHash(ReadOnly.AnimationParams.Upper_CollectEnv);
-        // public readonly int Upper_Dead = Animator.StringToHash(ReadOnly.AnimationParams.Upper_Dead);
-        public readonly int Upper_Idle = Animator.StringToHash(Util.AnimState(EString.Upper_Idle));
-        public readonly int Upper_Move = Animator.StringToHash(Util.AnimState(EString.Upper_Move));
-        public readonly int Upper_SkillA = Animator.StringToHash(Util.AnimState(EString.Upper_SkillA));
-        public readonly int Upper_SkillB = Animator.StringToHash(Util.AnimState(EString.Upper_SkillB));
-        public readonly int Upper_SkillC = Animator.StringToHash(Util.AnimState(EString.Upper_SkillC));
-        public readonly int Upper_CollectEnv = Animator.StringToHash(Util.AnimState(EString.Upper_CollectEnv));
-        public readonly int Upper_Dead = Animator.StringToHash(Util.AnimState(EString.Upper_Dead));
+        // --- Anim States
+        public readonly int Upper_Idle = Animator.StringToHash(CString.AnimState(EString.AnimState_Upper_Idle));
+        public readonly int Upper_Move = Animator.StringToHash(CString.AnimState(EString.AnimState_Upper_Move));
+        public readonly int Upper_SkillA = Animator.StringToHash(CString.AnimState(EString.AnimState_Upper_SkillA));
+        public readonly int Upper_SkillB = Animator.StringToHash(CString.AnimState(EString.AnimState_Upper_SkillB));
+        public readonly int Upper_SkillC = Animator.StringToHash(CString.AnimState(EString.AnimState_Upper_SkillC));
+        public readonly int Upper_CollectEnv = Animator.StringToHash(CString.AnimState(EString.AnimState_Upper_CollectEnv));
+        public readonly int Upper_Dead = Animator.StringToHash(CString.AnimState(EString.AnimState_Upper_Dead));
 
-        // --- Lower Layer (New), 이건 해쉬값만 있지. 이벤트는 없지 않나 ??
-        // --- ELoweR_Idle, ELower_Move는 지워도 될듯,,, (DELETE)
-        // public readonly int Lower_Idle = Animator.StringToHash(ReadOnly.AnimationParams.Lower_Idle);
-        // public readonly int Lower_Move = Animator.StringToHash(ReadOnly.AnimationParams.Lower_Move);
-
-        // --- Parameters (Prev)
-        // protected readonly int IsMoving = Animator.StringToHash(ReadOnly.AnimationParams.IsMoving);
-        // protected readonly int CanSkill = Animator.StringToHash(ReadOnly.AnimationParams.CanSkill);
-        // protected readonly int OnSkillA = Animator.StringToHash(ReadOnly.AnimationParams.OnSkillA);
-        // protected readonly int OnSkillB = Animator.StringToHash(ReadOnly.AnimationParams.OnSkillB);
-        // protected readonly int OnSkillC = Animator.StringToHash(ReadOnly.AnimationParams.OnSkillC);
-        // protected readonly int OnCollectEnv = Animator.StringToHash(ReadOnly.AnimationParams.OnCollectEnv);
-        // protected readonly int AttackRate = Animator.StringToHash(ReadOnly.AnimationParams.AttackRate);
-        // protected readonly int CollectRate = Animator.StringToHash(ReadOnly.AnimationParams.CollectRate);
-        // protected readonly int MovementSpeed = Animator.StringToHash(ReadOnly.AnimationParams.MovementSpeed);
-        protected readonly int IsMoving = Animator.StringToHash(Util.AnimParam(EString.IsMoving));
-        protected readonly int CanSkill = Animator.StringToHash(Util.AnimParam(EString.CanSkill));
-        protected readonly int OnSkillA = Animator.StringToHash(Util.AnimParam(EString.OnSkillA));
-        protected readonly int OnSkillB = Animator.StringToHash(Util.AnimParam(EString.OnSkillB));
-        protected readonly int OnSkillC = Animator.StringToHash(Util.AnimParam(EString.OnSkillC));
-        protected readonly int OnCollectEnv = Animator.StringToHash(Util.AnimParam(EString.OnCollectEnv));
-        protected readonly int AttackRate = Animator.StringToHash(Util.AnimParam(EString.AttackRate));
-        protected readonly int CollectRate = Animator.StringToHash(Util.AnimParam(EString.CollectRate));
-        protected readonly int MovementSpeed = Animator.StringToHash(Util.AnimParam(EString.MovementSpeed));
+        // --- Anim Params
+        protected readonly int IsMoving = Animator.StringToHash(CString.AnimParam(EString.AnimParam_IsMoving));
+        protected readonly int CanSkill = Animator.StringToHash(CString.AnimParam(EString.AnimParam_CanSkill));
+        protected readonly int OnSkillA = Animator.StringToHash(CString.AnimParam(EString.AnimParam_OnSkillA));
+        protected readonly int OnSkillB = Animator.StringToHash(CString.AnimParam(EString.AnimParam_OnSkillB));
+        protected readonly int OnSkillC = Animator.StringToHash(CString.AnimParam(EString.AnimParam_OnSkillC));
+        protected readonly int OnCollectEnv = Animator.StringToHash(CString.AnimParam(EString.AnimParam_OnCollectEnv));
+        protected readonly int AttackRate = Animator.StringToHash(CString.AnimParam(EString.AnimParam_AttackRate));
+        protected readonly int CollectRate = Animator.StringToHash(CString.AnimParam(EString.AnimParam_CollectRate));
+        protected readonly int MovementSpeed = Animator.StringToHash(CString.AnimParam(EString.AnimParam_MovementSpeed));
 
         public bool Moving
         {
@@ -155,11 +134,11 @@ namespace STELLAREST_F1
 
         public void SetAttackRate(float attackRate)
         {
-            float minAttackRate = Util.MinFloat(EFloat.AttackRate);
-            float maxAttackRate = Util.MaxFloat(EFloat.AttackRate);
+            float minAttackRate = CFloat.Min(EFloat.Range_AttackRate);
+            float maxAttackRate = CFloat.Max(EFloat.Range_AttackRate);
 
-            float minAttackAnimRate = Util.MinFloat(EFloat.AttackAnimRate);
-            float maxAttackAnimRate = Util.MaxFloat(EFloat.AttackAnimRate);
+            float minAttackAnimRate = CFloat.Min(EFloat.Range_AttackAnimRate);
+            float maxAttackAnimRate = CFloat.Max(EFloat.Range_AttackAnimRate);
 
             float normalize = Mathf.InverseLerp(minAttackRate, maxAttackRate, attackRate);
             float result = Mathf.Lerp(minAttackAnimRate, maxAttackAnimRate, normalize);
@@ -168,11 +147,11 @@ namespace STELLAREST_F1
 
         public void SetCollectRate(float collectRate)
         {
-            float minCollectRate = Util.MinFloat(EFloat.CollectRate);
-            float maxCollectRate = Util.MaxFloat(EFloat.CollectRate);
+            float minCollectRate = CFloat.Min(EFloat.Range_CollectRate);
+            float maxCollectRate = CFloat.Max(EFloat.Range_CollectRate);
 
-            float minCollectAnimRate = Util.MinFloat(EFloat.CollectAnimRate);
-            float maxCollectAnimRate = Util.MaxFloat(EFloat.CollectAnimRate);
+            float minCollectAnimRate = CFloat.Min(EFloat.Range_CollectAnimRate);
+            float maxCollectAnimRate = CFloat.Max(EFloat.Range_CollectAnimRate);
 
             float normalize = Mathf.InverseLerp(minCollectRate, maxCollectRate, collectRate);
             float result = Mathf.Lerp(minCollectAnimRate, maxCollectAnimRate, normalize);
@@ -181,11 +160,11 @@ namespace STELLAREST_F1
 
         public void SetMovementSpeed(float movementSpeed)
         {
-            float minMovementSpeed = Util.MinFloat(EFloat.MovementSpeed);
-            float maxMovementSpeed = Util.MaxFloat(EFloat.MovementSpeed);
+            float minMovementSpeed = CFloat.Min(EFloat.Range_MovementSpeed);
+            float maxMovementSpeed = CFloat.Max(EFloat.Range_MovementSpeed);
 
-            float minMovementAnimSpeed = Util.MinFloat(EFloat.MovementAnimSpeed);
-            float maxMovementAnimSpeed = Util.MaxFloat(EFloat.MovementAnimSpeed);
+            float minMovementAnimSpeed = CFloat.Min(EFloat.Range_MovementAnimSpeed);
+            float maxMovementAnimSpeed = CFloat.Max(EFloat.Range_MovementAnimSpeed);
 
             float normalize = Mathf.InverseLerp(minMovementSpeed, maxMovementSpeed, movementSpeed);
             float result = Mathf.Lerp(minMovementAnimSpeed, maxMovementAnimSpeed, normalize);

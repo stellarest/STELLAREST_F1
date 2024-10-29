@@ -40,7 +40,7 @@ namespace STELLAREST_F1
         }
 
         // --- Parameters
-        protected readonly int OnDead = Animator.StringToHash(Util.AnimParam(EString.OnDead));
+        protected readonly int OnDead = Animator.StringToHash(CString.AnimParam(EString.AnimParam_OnDead));
         
         public void Dead() => Animator.SetTrigger(OnDead);
 

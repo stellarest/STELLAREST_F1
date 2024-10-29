@@ -64,7 +64,7 @@ namespace STELLAREST_F1
             //EffectBase dustVFXEffect = _heroOwner.GenerateGlobalEffect(EGlobalEffectID.Dust, spawnPos);
             EffectBase dustVFXEffect = _heroOwner.GenerateGlobalEffect(EInt.ID_Dust, spawnPos);
             //dustVFXEffect.SortingGroup.sortingOrder = ReadOnly.SortingLayers.SLOrder_BaseObject;
-            dustVFXEffect.SortingGroup.sortingOrder = Util.Sorting(EInt.Sorting_BaseObject);
+            dustVFXEffect.SortingGroup.sortingOrder = CInt.Sorting(EInt.Sorting_BaseObject);
         }
         #endregion
 
