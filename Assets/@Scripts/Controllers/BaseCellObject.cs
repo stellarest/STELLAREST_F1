@@ -399,8 +399,8 @@ namespace STELLAREST_F1
         #endregion
 
         #region Util: Stat
-        public void ApplyStat(int effectID, EEffectType effectStatType, bool removeAppliedStat = false)
-            => BaseStat.ApplyStat(effectID, effectStatType, removeAppliedStat);
+        public void ApplyStat(int effectID, EEffectType effectStatType, bool addStat = true)
+            => BaseStat.ApplyStat(effectID, effectStatType, addStat);
 
         // --- Main Stat
         public float Health { get => BaseStat.Health; protected set => BaseStat.Health = value; }

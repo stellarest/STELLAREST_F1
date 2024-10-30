@@ -240,13 +240,13 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public void ApplyStat(int effectID, EEffectType effectType, bool removeAppliedStat = false)
+        public void ApplyStat(int effectID, EEffectType effectType, bool addStat = true)
         {
             if (Util.IsEffectStatType(effectType) == false)
                 return;
 
             float prevMaxHealth = MaxHealth;
-            _modifier.ApplyStat(effectID, effectType, removeAppliedStat);
+            _modifier.ApplyStat(effectID, effectType, addStat);
             if (prevMaxHealth != MaxHealth)
             {
                 float currentRatio = Health / prevMaxHealth;

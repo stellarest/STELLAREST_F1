@@ -39,7 +39,7 @@ namespace STELLAREST_F1
             _owner = _baseStat.Owner;
         }
 
-        public void ApplyStat(int effectID, EEffectType effectStatType, bool removeAppliedStat = false)
+        public void ApplyStat(int effectID, EEffectType effectStatType, bool addStat = true)
         {
             float addAmount = _owner.BaseEffect.GetEffectStatModifier(effectID, EStatModType.AddAmount);
             float addPercent = _owner.BaseEffect.GetEffectStatModifier(effectID, EStatModType.AddPercent);
@@ -50,7 +50,7 @@ namespace STELLAREST_F1
                 // --- Main Stats
                 case EEffectType.MainStat_MaxHealth:
                     {
-                        if (removeAppliedStat == false)
+                        if (addStat)
                             MaxHealth = (MaxHealth + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti);
                         else
                             MaxHealth = (MaxHealth - addAmount) / (1.0f + addPercent) / (1.0f + addPercentMulti);
@@ -58,7 +58,7 @@ namespace STELLAREST_F1
                     break;
                 case EEffectType.MainStat_Damage:
                     {
-                        if (removeAppliedStat == false)
+                        if (addStat)
                         {
                             MinDamage = (MinDamage + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti);
                             MaxDamage = (MaxDamage + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti);
@@ -72,7 +72,7 @@ namespace STELLAREST_F1
                     break;
                 case EEffectType.MainStat_AttackRate:
                     {
-                        if (removeAppliedStat == false)
+                        if (addStat)
                             AttackRate = (AttackRate + addAmount) * (1.0f + addAmount) * (1.0f + addPercentMulti);
                         else
                             AttackRate = (AttackRate - addAmount) / (1.0f + addAmount) / (1.0f + addPercentMulti);
@@ -80,7 +80,7 @@ namespace STELLAREST_F1
                     break;
                 case EEffectType.MainStat_MovementSpeed:
                     {
-                        if (removeAppliedStat == false)
+                        if (addStat)
                             MovementSpeed = (MovementSpeed + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti);
                         else
                             MovementSpeed = (MovementSpeed - addAmount) / (1.0f + addPercent) / (1.0f + addPercentMulti);
@@ -91,7 +91,7 @@ namespace STELLAREST_F1
                 case EEffectType.SubStat_Shield:
                     {
                         float shieldBase = MaxHealth;
-                        if (removeAppliedStat == false)
+                        if (addStat)
                         {
                             shieldBase += addAmount;
                             shieldBase *= (1.0f + addPercent) * (1.0f + addPercentMulti);
@@ -109,7 +109,7 @@ namespace STELLAREST_F1
                 case EEffectType.SubStat_BonusHealth:
                     {
                         float bonusHealthBase = MaxHealth;
-                        if (removeAppliedStat == false)
+                        if (addStat)
                         {
                             bonusHealthBase += addAmount;
                             bonusHealthBase *= (1.0f + addPercent) * (1.0f + addPercentMulti);
@@ -126,7 +126,7 @@ namespace STELLAREST_F1
                     break;
                 case EEffectType.SubStat_Armor:
                     {
-                        if (removeAppliedStat == false)
+                        if (addStat)
                         {
                             float armorBase = (Armor + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti);
                             Armor = Mathf.Clamp(armorBase, CFloat.Min(EFloat.Range_Armor), CFloat.Max(EFloat.Range_Armor));
@@ -140,7 +140,7 @@ namespace STELLAREST_F1
                     break;
                 case EEffectType.SubStat_Critical:
                     {
-                        if (removeAppliedStat == false)
+                        if (addStat)
                         {
                             float criticalBase = (Critical + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti);
                             Critical = Mathf.Clamp(criticalBase, CFloat.Min(EFloat.Range_Critical), CFloat.Max(EFloat.Range_Critical));
@@ -154,7 +154,7 @@ namespace STELLAREST_F1
                     break;
                 case EEffectType.SubStat_Dodge:
                     {
-                        if (removeAppliedStat == false)
+                        if (addStat)
                         {
                             float dodgeBase = (Dodge + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti);
                             Dodge = Mathf.Clamp(dodgeBase, CFloat.Min(EFloat.Range_Dodge), CFloat.Max(EFloat.Range_Dodge));
@@ -168,7 +168,7 @@ namespace STELLAREST_F1
                     break;
                 case EEffectType.SubStat_Luck:
                     {
-                        if (removeAppliedStat == false)
+                        if (addStat)
                         {
                             float luckBase = (Luck + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti);
                             Luck = Mathf.Clamp(luckBase, CFloat.Min(EFloat.Range_Luck), CFloat.Max(EFloat.Range_Luck));
@@ -182,7 +182,7 @@ namespace STELLAREST_F1
                     break;
                 case EEffectType.SubStat_InvincibleBlockCountPerWave:
                     {
-                        if (removeAppliedStat == false)
+                        if (addStat)
                             InvincibleBlockCountPerWave += Mathf.RoundToInt(addAmount);
                         else
                             InvincibleBlockCountPerWave -= Mathf.RoundToInt(addAmount);
