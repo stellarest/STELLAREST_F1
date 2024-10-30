@@ -426,16 +426,17 @@ namespace STELLAREST_F1.Data
         public ESkillType SkillType;
         public ESkillElementType SkillElementType;
 		public string ClassName;
-        public int InvokeRange;                     // --- 시전 조건
-        public ESkillTargetRange TargetRange;       // --- 시전 범위
+        public int InvokeRange;                         // --- 시전 조건
+        public ESkillTargetRange TargetRange;           // --- 시전 범위
         public int TargetDistance;
         public int ProjectileID;
 		public float CoolTime;
         public bool ManualCoolTime;
-        public int[] OnCreateEffectIDs;            // UnlockSkill로 AddComponent로 새롭게 생성 되었을 때, 최초 한 번
-        public int[] OnSkillEnterEffectIDs;        // OnSkillEnterState
-        public int[] OnSkillCallbackEffectIDs;     // OnSkillCallback 
-        public int[] OnSkillExitEffectIDs;         // OnSkillExitState
+        public int[] OnCreate_GenEffectIDs;             // UnlockSkill로 AddComponent로 새롭게 생성 되었을 때, 최초 한 번
+        public int[] OnSkillEnter_GenEffectIDs;         // OnSkillEnterState
+        public int[] OnSkillCallback_GenEffectIDs;      // OnSkillCallback 
+        public int[] OnSkillExit_GenEffectIDs;          // OnSkillExitState
+        public int[] OnSkillExit_RemoveEffectIDs;       // OnSkillExitState
     }
 
     [Serializable]
@@ -507,12 +508,12 @@ namespace STELLAREST_F1.Data
     public class EffectData : BaseData
     {
         public bool IsLoop;
-        public float AddAmount;
+        public float AddAmount;         // --- 항상 초기값으로 되는것이 아닌 누적값
         public float AddPercent;
         public float AddPercentMulti;
         public float Period;
         public float Duration;
-        public string EffectType; // --- 완성후 다시 enum 타입으로 변경 필요
+        public string EffectType;       // --- (TEMP)완성후 다시 enum 타입으로 변경 필요
         public EObjectSize EffectSize;
         public EEffectSpawnType EffectSpawnType;
     }

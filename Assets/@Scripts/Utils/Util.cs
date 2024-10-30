@@ -529,7 +529,7 @@ namespace STELLAREST_F1
         {
             return eFloat switch
             {
-                EFloat.CValue_CriticalDamageRate => 0.5F,
+                EFloat.CValue_CriticalDamageUpRate => 0.5F,
                 EFloat.CValue_ForceWaitTime => 2.5F,
                 EFloat.CValue_FarFromLeaderHeroTick => 1.0F,
                 EFloat.CValue_ForceWaitTimeForStopWarp => 30.0F,

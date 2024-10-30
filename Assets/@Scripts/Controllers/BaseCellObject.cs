@@ -35,6 +35,7 @@ namespace STELLAREST_F1
 
         [field: SerializeField] public Vector3Int SpawnedCellPos { get; protected set; } = Vector3Int.zero;
         [field: SerializeField] public Vector3Int CellPos { get; protected set; } = Vector3Int.zero;
+        public Vector3 CellCenterPosition => Managers.Map.CellToCenterWorld(CellPos) + Vector3.up * ColliderRadius;
         public bool IsOnTheCellCenter
         {
             get
@@ -98,7 +99,9 @@ namespace STELLAREST_F1
         {
             base.EnterInGame(spawnPos);
             Targets.Clear();
-            BaseStat.RefreshAllStats(currentHealthToMax: true);
+            // BaseStat.RefreshAllStats(currentHealthToMax: true);
+            // BaseStat.RefreshMainStats(currentHealthToMax: true);
+            BaseStat.FullHealth();
             BaseBody.ResetMaterialsAndColors();
             BaseBody.StartCoFadeInEffect();
             Managers.Map.ForceMove(cellObj: this, cellPos: SpawnedCellPos, ignoreCellObjType: EObjectType.None);
@@ -114,15 +117,6 @@ namespace STELLAREST_F1
         #endregion
 
         #region Background
-        // public void ApplyBuffStat() 
-        //     => BaseStat.ApplyBuffStat();
-
-        public void ApplyStat(EEffectType effectBuffType)
-            => BaseStat.ApplyStat(effectBuffType);
-
-        public void RefreshAllStats()
-            => BaseStat.RefreshAllStats();
-
         public EFindPathResult FindPathAndMoveToCellPos(Vector3 destPos, int maxDepth, EObjectType ignoreCellObjType = EObjectType.None)
             => FindPathAndMoveToCellPos(Managers.Map.WorldToCell(destPos), maxDepth, ignoreCellObjType);
 
@@ -405,6 +399,9 @@ namespace STELLAREST_F1
         #endregion
 
         #region Util: Stat
+        public void ApplyStat(int effectID, EEffectType effectStatType, bool removeAppliedStat = false)
+            => BaseStat.ApplyStat(effectID, effectStatType, removeAppliedStat);
+
         // --- Main Stat
         public float Health { get => BaseStat.Health; protected set => BaseStat.Health = value; }
         public float MaxHealth { get => BaseStat.MaxHealth; protected set => BaseStat.MaxHealth = value; }
@@ -429,7 +426,7 @@ namespace STELLAREST_F1
         public float Armor { get => BaseStat.Armor; set => BaseStat.Armor = value; }
 
         public float CriticalRate { get => BaseStat.Critical; set => CriticalRate = value; }
-        public bool IsCritical => UnityEngine.Random.Range(0.0f, 1.0f) <= CriticalRate;
+        public bool IsCritical => CriticalRate > 0.0f && UnityEngine.Random.Range(0.0f, 1.0f) <= CriticalRate;
 
         public float DodgeRate { get => BaseStat.Dodge; set => BaseStat.Dodge = value; }
         public float Luck { get => BaseStat.Luck; set => BaseStat.Luck = value; }

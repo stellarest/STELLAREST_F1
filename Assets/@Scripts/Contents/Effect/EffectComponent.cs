@@ -93,32 +93,61 @@ namespace STELLAREST_F1
             };
         }
 
-        public float GetStatModifier(EEffectType effectType, EStatModType statModType)
+        public float GetEffectStatModifier(int effectID, EStatModType statModType)
         {
             float value = 0.0f;
             for (int i = 0; i < ActiveEffects.Count; ++i)
             {
-                if (ActiveEffects[i].EffectType != effectType)
+                EffectBase effect = ActiveEffects[i];
+                if (effect.DataTemplateID != effectID)
                     continue;
 
-                if (Util.IsEffectStatType(effectType) == false)
+                if (Util.IsEffectStatType(effect.EffectType) == false)
                     continue;
 
                 switch (statModType)
                 {
                     case EStatModType.AddAmount:
-                        return value += ActiveEffects[i].EffectData.AddAmount;
+                        return value += effect.EffectData.AddAmount;
 
                     case EStatModType.AddPercent:
-                        return value += ActiveEffects[i].EffectData.AddPercent;
+                        return value += effect.EffectData.AddPercent;
 
                     case EStatModType.AddPercentMulti:
-                        return value += ActiveEffects[i].EffectData.AddPercentMulti;
+                        return value += effect.EffectData.AddPercentMulti;
                 }
             }
 
             return value;
         }
+
+        // 애초에 이거 자체가 잘못된 것 같은데
+        // public float GetStatModifier(EEffectType effectType, EStatModType statModType)
+        // {
+        //     float value = 0.0f;
+        //     for (int i = 0; i < ActiveEffects.Count; ++i)
+        //     {
+        //         if (ActiveEffects[i].EffectType != effectType)
+        //             continue;
+
+        //         if (Util.IsEffectStatType(effectType) == false)
+        //             continue;
+
+        //         switch (statModType)
+        //         {
+        //             case EStatModType.AddAmount:
+        //                 return value += ActiveEffects[i].EffectData.AddAmount;
+
+        //             case EStatModType.AddPercent:
+        //                 return value += ActiveEffects[i].EffectData.AddPercent;
+
+        //             case EStatModType.AddPercentMulti:
+        //                 return value += ActiveEffects[i].EffectData.AddPercentMulti;
+        //         }
+        //     }
+
+        //     return value;
+        // }
 
         public EffectBase FindEffect(EEffectType effectType, int dataID)
             => ActiveEffects.Find(e => e.EffectType == effectType && e.DataTemplateID == dataID);
@@ -178,9 +207,8 @@ namespace STELLAREST_F1
 #if UNITY_EDITOR
             Dev_ActiveEffects.Remove(effect.Dev_NameTextID);
 #endif
-
-            if (Util.IsEffectStatType(effect.EffectType))
-                _owner.RefreshAllStats();
+            // if (Util.IsEffectStatType(effect.EffectType))
+            //     _owner.RefreshAllStats();
 
             // -------------------- CUT --------------------
             // if (effect.EffectClearType == EEffectClearType.ByCondition)

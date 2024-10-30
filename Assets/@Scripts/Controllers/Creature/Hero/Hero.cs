@@ -278,7 +278,15 @@ namespace STELLAREST_F1
                 CreatureSkill.TryLevelUpSkill(CreatureSkill.SkillArray[(int)ESkillType.Skill_C]);
 
             // --- Leader Skill (TODO, TEMP)
-            // ApplyNewPassive();
+            // ... Todo Leader SKill
+
+            // --- Check Item Effects (TODO, TEMP)
+            // ... Todo Check Item Effect
+
+            // --- 이펙트는 스킬, 아이템에서만 관리(독립적으로 관리, 레벨업과 관련이 없도록)
+            // --- 그래서 아마 제거 조건이 중요해질듯 ***
+
+            BaseStat.FullHealth();
             CreatureAnim.RefreshAnimEventHandlers();
             if (IsMaxLevel)
             {

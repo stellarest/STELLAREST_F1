@@ -222,17 +222,17 @@ namespace STELLAREST_F1
             float damage = attacker.Damage;
             bool isCritical = attacker.IsCritical;
             if (isCritical)
-                damage *= 1 + CFloat.CValue(EFloat.CValue_CriticalDamageRate);
+                damage *= 1 + CFloat.CValue(EFloat.CValue_CriticalDamageUpRate);
 
             float remainedDamage = 0.0f;
             float finalDamage = 0.0f;
             if (Armor > 0.0f)
             {
                 finalDamage = Mathf.Max(damage * (1 - Armor), 1.0f);
-                finalDamage = Mathf.Floor(finalDamage);
+                finalDamage = Mathf.Floor(finalDamage); // --- 내림
             }
             else
-                finalDamage = Mathf.Round(damage);
+                finalDamage = Mathf.Round(damage);      // --- 반올림
 
             // --- 순서는 Shield부터
             if (Shield > 0.0f)
@@ -650,8 +650,13 @@ namespace STELLAREST_F1
 
         #region Util - OnDamaged
         protected void ShowDamageFont(float damage, Color fontColor, bool isCritical, EFontSignType fontSignType, EFontAnimationType fontAnimType)
-            => Managers.Object.ShowDamageFont(position: CenterPosition, damage: damage, textColor: fontColor, isCritical: isCritical,
-                                                fontSignType: fontSignType, fontAnimType: fontAnimType);
+        {
+            // Managers.Object.ShowDamageFont(position: CenterPosition, damage: damage, textColor: fontColor, isCritical: isCritical,
+            //     fontSignType: fontSignType, fontAnimType: fontAnimType);
+
+            Managers.Object.ShowDamageFont(position: CellCenterPosition, damage: damage, textColor: fontColor, isCritical: isCritical,
+                fontSignType: fontSignType, fontAnimType: fontAnimType);
+        }
 
         protected void ShowImpactHit(SkillBase skillByAttacker, bool isCritical)
         {
@@ -675,8 +680,14 @@ namespace STELLAREST_F1
 
         // TextFont의 FontAssetType은 일단 Comic으로 고정
         protected void ShowTextFont(string text, float fontSize, Color textColor, EFontAnimationType fontAnimType)
-            => Managers.Object.ShowTextFont(position: CenterPosition + Vector3.up * 0.65f, text: text, textSize: fontSize, textColor: textColor,
-                                                fontAssetType: EFontAssetType.Comic, fontAnimType: fontAnimType);
+        {
+            // Managers.Object.ShowTextFont(position: CenterPosition + Vector3.up * 0.65f, text: text, textSize: fontSize, textColor: textColor,
+            //                     fontAssetType: EFontAssetType.Comic, fontAnimType: fontAnimType);
+
+            // Shield...
+            Managers.Object.ShowTextFont(position: CellCenterPosition, text: text, textSize: fontSize, textColor: textColor,
+                                fontAssetType: EFontAssetType.Comic, fontAnimType: fontAnimType);
+        }
         #endregion
 
         #region Passive

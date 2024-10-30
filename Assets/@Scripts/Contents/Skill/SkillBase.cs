@@ -56,27 +56,8 @@ namespace STELLAREST_F1
                 return;
             }
 
-            StartCoroutine(CoSkillCoolTimeManually());
+            StartCoroutine(CoManualCoolTime());
         }
-
-        // public bool LockCoolTimeSkill
-        // {
-        //     get => _manualCoolTime;
-        //     set
-        //     {
-        //         _manualCoolTime = value;
-        //         if (value == false)
-        //         {
-        //             if (Owner.IsValid() == false)
-        //             {
-        //                 RemainCoolTime = 0.0f;
-        //                 return;
-        //             }
-
-        //             StartCoroutine(CoActivateManualCoolTime());
-        //         }
-        //     }
-        // }
 
         [SerializeField] private float _remainCoolTime = 0f;
         public virtual float RemainCoolTime
@@ -136,7 +117,7 @@ namespace STELLAREST_F1
             RemainCoolTime = SkillData.CoolTime;
             if (_manualCoolTime)
             {
-                Debug.Log($"<color=magenta>{nameof(_manualCoolTime)}, {SkillData.Dev_NameTextID}</color>");
+                Debug.Log($"<color=magenta>Manual CoolTime: {SkillData.Dev_NameTextID}</color>");
                 yield break;
             }
 
@@ -145,7 +126,7 @@ namespace STELLAREST_F1
             Owner.CreatureSkill.AddSpecialSkill(this);
         }
 
-        private IEnumerator CoSkillCoolTimeManually()
+        private IEnumerator CoManualCoolTime()
         {
             Debug.Log($"<color=brown>{this.SkillType} activates manual CoolTime..</color>");
             yield return new WaitForSeconds(RemainCoolTime);
@@ -216,7 +197,9 @@ namespace STELLAREST_F1
             SkillType = SkillData.SkillType;
             SkillElementType = SkillData.SkillElementType;
             _manualCoolTime = SkillData.ManualCoolTime;
-            GenerateSkillEffects(SkillData.OnCreateEffectIDs);
+
+            if (SkillData.OnCreate_GenEffectIDs.Length > 0)
+                GenerateSkillEffects(SkillData.OnCreate_GenEffectIDs);
         }
         #endregion
 
@@ -235,9 +218,10 @@ namespace STELLAREST_F1
             EnteredTargetDir = Owner.Target.CellPos - Owner.CellPos;
             EnteredSignX = (Owner.LookAtDir == ELookAtDirection.Left) ? 1 : 0;
             Owner.Moving = false; // --- Blending Anim(Move to Idle)
-            if (SkillData.OnSkillEnterEffectIDs.Length != 0)
-                GenerateSkillEffects(SkillData.OnSkillEnterEffectIDs);
-            
+
+            if (SkillData.OnSkillEnter_GenEffectIDs.Length != 0)
+                GenerateSkillEffects(SkillData.OnSkillEnter_GenEffectIDs);
+
             return true;
         }
 
@@ -248,8 +232,8 @@ namespace STELLAREST_F1
         {
             if (IsCorrectSkillType)
             {
-                if (SkillData.OnSkillCallbackEffectIDs.Length != 0)
-                    GenerateSkillEffects(SkillData.OnSkillCallbackEffectIDs);
+                if (SkillData.OnSkillCallback_GenEffectIDs.Length != 0)
+                    GenerateSkillEffects(SkillData.OnSkillCallback_GenEffectIDs);
     
                 return true;
             }
@@ -260,7 +244,12 @@ namespace STELLAREST_F1
         public virtual void OnSkillExit()
         {
             _skillTargets.Clear();
-            GenerateSkillEffects(SkillData.OnSkillExitEffectIDs);
+
+            if (SkillData.OnSkillExit_GenEffectIDs.Length > 0)
+                GenerateSkillEffects(SkillData.OnSkillExit_GenEffectIDs);
+
+            if (SkillData.OnSkillExit_RemoveEffectIDs.Length > 0)
+                RemoveSkillEffects(SkillData.OnSkillExit_RemoveEffectIDs);
         }
         #endregion Events
 
@@ -271,6 +260,26 @@ namespace STELLAREST_F1
 
             foreach (var effectID in effectIDs)
                 Owner.GenerateSkillEffect(effectID, this);
+        }
+
+        private void RemoveSkillEffects(IEnumerable<int> effectIDs)
+        {
+            if (Owner.IsValid() == false)
+                return;
+
+            // 
+
+            // --- TEST
+            foreach (var effectID in effectIDs)
+            {
+                // EffectBase findEffect = Owner.BaseEffect.ActiveEffects.Find(e => e.EffectData.DataID == effectID);
+                // if (findEffect != null)
+                // {
+                //     Owner.BaseStat.RemoveBuffStat(findEffect.EffectType);
+                // }
+            }
+
+            // Owner.RemoveEffect(effectIDs);
         }
 
         protected void GatherMeleeTargets()

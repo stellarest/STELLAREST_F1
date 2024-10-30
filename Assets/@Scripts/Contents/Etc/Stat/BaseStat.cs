@@ -53,7 +53,7 @@ namespace STELLAREST_F1
 
                 if (_attackRate != value)
                 {
-                    _attackRate = Mathf.Clamp(value, 
+                    _attackRate = Mathf.Clamp(value,
                             min: CFloat.Min(EFloat.Range_AttackRate),
                             max: CFloat.Max(EFloat.Range_AttackRate));
 
@@ -93,8 +93,8 @@ namespace STELLAREST_F1
 
                 if (_movementSpeed != value)
                 {
-                    _movementSpeed = Mathf.Clamp(value, 
-                            min: CFloat.Min(EFloat.Range_MovementSpeed), 
+                    _movementSpeed = Mathf.Clamp(value,
+                            min: CFloat.Min(EFloat.Range_MovementSpeed),
                             max: CFloat.Max(EFloat.Range_MovementSpeed));
 
                     (Owner as Creature).CreatureAnim.SetMovementSpeed(_movementSpeed);
@@ -187,6 +187,28 @@ namespace STELLAREST_F1
             }
         }
 
+        //public void TEMP_MAX_HEALTH() => Health = MaxHealth;
+        public void FullHealth()
+            => Health = MaxHealth;
+
+        public void SetBaseStats(bool currentHealthToMax = false)
+        {
+            if (Owner.ObjectType == EObjectType.Env)
+            {
+                Health = MaxHealth;
+                return;
+            }
+
+            MaxHealth = MaxHealthBase;
+            if (currentHealthToMax)
+                Health = MaxHealth;
+
+            MinDamage = MinDamageBase;
+            MaxDamage = MaxDamageBase;
+            AttackRate = AttackRateBase;
+            MovementSpeed = MovementSpeedBase;
+        }
+
         private void SubStatsToZero()
         {
             Shield = 0.0f;
@@ -203,63 +225,69 @@ namespace STELLAREST_F1
             if (Owner.IsValid() == false)
                 return false;
 
+            EObjectType objType = Owner.ObjectType;
+            if (objType == EObjectType.Env)
+                return false;
+
             if (IsMaxLevel)
             {
                 Debug.Log($"<color=magenta>{Owner.Dev_NameTextID} is already MaxLv !!</color>");
                 return false;
             }
-
-            EObjectType objType = Owner.ObjectType;
-            if (objType == EObjectType.Env)
-                return false;
-
             _levelID = Mathf.Clamp(_levelID + 1, _dataTemplateID, _maxLevelID);
-
-            RefreshAllStats(currentHealthToMax: true);
+            // RefreshAllStats(currentHealthToMax: true);
             Debug.Log($"<color=white>Success to LvUp - Lv: {Level} / {MaxLevel}</color>");
             return true;
         }
 
-        public void RefreshAllStats(bool currentHealthToMax = false)
+        public void ApplyStat(int effectID, EEffectType effectType, bool removeAppliedStat = false)
         {
-            if (Owner.ObjectType == EObjectType.Env)
-            {
-                Health = MaxHealth;
-                return;
-            }
-
-            SubStatsToZero();
-            MaxHealth = MaxHealthBase;
-            MinDamage = MinDamageBase;
-            MaxDamage = MaxDamageBase;
-            AttackRate = AttackRateBase;
-            MovementSpeed = MovementSpeedBase;
-            for (int i = 0; i < (int)EEffectType.Max; ++i)
-            {
-                EEffectType effectType = (EEffectType)i;
-                if (Util.IsEffectStatType(effectType))
-                    ApplyStat(effectType);
-            }
-
-            if (currentHealthToMax)
-                Health = MaxHealth;
-        }
-
-        public void ApplyStat(EEffectType effectBuffType)
-        {
-            if (Util.IsEffectStatType(effectBuffType) == false)
+            if (Util.IsEffectStatType(effectType) == false)
                 return;
 
             float prevMaxHealth = MaxHealth;
-            _modifier.ApplyBuffStat(effectBuffType);
+            _modifier.ApplyStat(effectID, effectType, removeAppliedStat);
             if (prevMaxHealth != MaxHealth)
             {
-                float prevRatio = Health / prevMaxHealth;
-                Health = Mathf.Clamp(MaxHealth * prevRatio, 0.0f, MaxHealth);
+                float currentRatio = Health / prevMaxHealth;
+                Health = Mathf.Clamp(MaxHealth * currentRatio, 0.0f, MaxHealth);
             }
 
-            // --- + Refresh HP Bar
+            // --- + TODO: Refresh HP Bar UI
         }
+
+        // public void ApplyBuffStat(EEffectType effectBuffType)
+        // {
+        //     if (Util.IsEffectStatType(effectBuffType) == false)
+        //         return;
+
+        //     // --- InGameMode(Not UIMode) 도중 버프등을 받았을 때, 비율대로 적용해야함.
+        //     float prevMaxHealth = MaxHealth;
+        //     _modifier.ApplyBuffStat(effectBuffType);
+        //     if (prevMaxHealth != MaxHealth)
+        //     {
+        //         float prevRatio = Health / prevMaxHealth;
+        //         Health = Mathf.Clamp(MaxHealth * prevRatio, 0.0f, MaxHealth);
+        //     }
+
+        //     // --- +++ Refresh HP Bar
+        // }
+
+        // public void RemoveBuffStat(EEffectType effectBuffType)
+        // {
+        //     if (Util.IsEffectStatType(effectBuffType) == false)
+        //         return;
+
+        //     float prevMaxHealth = MaxHealth;
+        //     _modifier.RemoveBuffStat(effectBuffType);
+        //     if (prevMaxHealth != MaxHealth)
+        //     {
+        //         float prevRatio = Health / prevMaxHealth;
+        //         Health = Mathf.Clamp(MaxHealth * prevRatio, 0.0f, MaxHealth);
+        //     }
+
+        //     // --- +++ Refresh HP Bar
+        // }
 
         // #region Util: Stats
         // public float BonusHealth { get => _modifier.BonusHealth; set => _modifier.BonusHealth = value; }
@@ -308,5 +336,45 @@ namespace STELLAREST_F1
         //     }
         //     else
         //         MaxHealth = MaxHealthBase;
+        // }
+
+         // public void RefreshAllStats(bool currentHealthToMax = false)
+        // {
+        //     if (Owner.ObjectType == EObjectType.Env)
+        //     {
+        //         Health = MaxHealth;
+        //         return;
+        //     }
+
+        //     SubStatsToZero();
+        //     MaxHealth = MaxHealthBase;
+        //     MinDamage = MinDamageBase;
+        //     MaxDamage = MaxDamageBase;
+        //     AttackRate = AttackRateBase;
+        //     MovementSpeed = MovementSpeedBase;
+        //     for (int i = 0; i < (int)EEffectType.Max; ++i)
+        //     {
+        //         EEffectType effectType = (EEffectType)i;
+        //         if (Util.IsEffectStatType(effectType))
+        //             ApplyStat(effectType);
+        //     }
+
+        //     if (currentHealthToMax)
+        //         Health = MaxHealth;
+        // }
+
+        // public void RefreshAllStats()
+        // {
+        //     SetBaseStats();
+        //     // SubStatsToZero(); // --- 근데 이렇게하면 지워지는데...
+        //     // --- + TODO: ClearAllDebuffs
+        //     for (int i = 0; i < (int)EEffectType.Max; ++i)
+        //     {
+        //         EEffectType effectType = (EEffectType)i;
+        //         if (Util.IsEffectStatType(effectType))
+        //             _modifier.ApplyBuffStat(effectType);
+        //     }
+
+        //     Health = MaxHealth;
         // }
 */

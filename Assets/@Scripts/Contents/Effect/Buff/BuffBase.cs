@@ -17,7 +17,8 @@ namespace STELLAREST_F1
         public override void ApplyEffect()
         {
             base.ApplyEffect();
-            Owner.ApplyStat(EffectType);
+            //Owner.ApplyBuffStat(EffectType);
+            Owner.ApplyStat(effectID: DataTemplateID, effectStatType: EffectType, removeAppliedStat: false);
         }
 
         public override void OnShowEffect()

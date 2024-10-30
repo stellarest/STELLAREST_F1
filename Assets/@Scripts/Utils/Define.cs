@@ -637,7 +637,7 @@ namespace STELLAREST_F1
             Range_JoystickFocusDist,
 
             // --- Constant Value
-            CValue_CriticalDamageRate,
+            CValue_CriticalDamageUpRate,
             CValue_ForceWaitTime,
             CValue_FarFromLeaderHeroTick,
             CValue_ForceWaitTimeForStopWarp,

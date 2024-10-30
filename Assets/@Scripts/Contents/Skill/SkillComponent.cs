@@ -129,6 +129,7 @@ namespace STELLAREST_F1
             if (lvUpSkill == null)
             {
                 Debug.LogError($"{nameof(TryLevelUpSkill)}");
+                Debug.Break();
                 return null;
             }
 
@@ -149,10 +150,10 @@ namespace STELLAREST_F1
             skill.StopAllCoroutines();
             RemoveActiveSkill(skill);
             SkillData skillData = skill.SkillData;
-            _owner.RemoveEffect(skillData.OnCreateEffectIDs);
-            _owner.RemoveEffect(skillData.OnSkillEnterEffectIDs);
-            _owner.RemoveEffect(skillData.OnSkillCallbackEffectIDs);
-            _owner.RemoveEffect(skillData.OnSkillExitEffectIDs);
+            _owner.RemoveEffect(skillData.OnCreate_GenEffectIDs);
+            _owner.RemoveEffect(skillData.OnSkillEnter_GenEffectIDs);
+            _owner.RemoveEffect(skillData.OnSkillCallback_GenEffectIDs);
+            _owner.RemoveEffect(skillData.OnSkillExit_GenEffectIDs);
             UnityEngine.Object.Destroy(skill, Time.deltaTime);
         }
 
