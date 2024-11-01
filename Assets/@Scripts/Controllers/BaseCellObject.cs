@@ -399,20 +399,23 @@ namespace STELLAREST_F1
         #endregion
 
         #region Util: Stat
-        public void ApplyStat(int effectID, EEffectType effectStatType, bool addStat = true)
-            => BaseStat.ApplyStat(effectID, effectStatType, addStat);
+        public void ApplyStat(int effectID, EEffectType effectType, bool addStat = true)
+            => BaseStat.ApplyStat(effectID, effectType, addStat);
+
+        public void ApplyStatToTarget(int effectID, EEffectType effectType, BaseCellObject target, bool addStat = true)
+            => BaseStat.ApplyStatToTarget(effectID, effectType, target, addStat);
 
         // --- Main Stat
-        public float Health { get => BaseStat.Health; protected set => BaseStat.Health = value; }
-        public float MaxHealth { get => BaseStat.MaxHealth; protected set => BaseStat.MaxHealth = value; }
+        public float Health { get => BaseStat.Health; set => BaseStat.Health = value; }
+        public float MaxHealth { get => BaseStat.MaxHealth; set => BaseStat.MaxHealth = value; }
 
-        public float MinDamage { get => BaseStat.MinDamage; protected set => BaseStat.MinDamage = value; }
-        public float MaxDamage { get => BaseStat.MaxDamage; protected set => BaseStat.MaxDamage = value; }
+        public float MinDamage { get => BaseStat.MinDamage; set => BaseStat.MinDamage = value; }
+        public float MaxDamage { get => BaseStat.MaxDamage; set => BaseStat.MaxDamage = value; }
         public float Damage => BaseStat.Damage;
 
-        public float AttackRate { get => BaseStat.AttackRate; protected set => BaseStat.AttackRate = value; }
-        public float CollectRate { get => BaseStat.CollectRate; protected set => BaseStat.CollectRate = value; }
-        public float MovementSpeed { get => BaseStat.MovementSpeed; protected set => BaseStat.MovementSpeed = value; }
+        public float AttackRate { get => BaseStat.AttackRate; set => BaseStat.AttackRate = value; }
+        public float CollectRate { get => BaseStat.CollectRate; set => BaseStat.CollectRate = value; }
+        public float MovementSpeed { get => BaseStat.MovementSpeed; set => BaseStat.MovementSpeed = value; }
 
         // --- Level
         public int LevelID => BaseStat.LevelID;
@@ -425,10 +428,10 @@ namespace STELLAREST_F1
         public float Shield { get => BaseStat.Shield; set => BaseStat.Shield = value; }
         public float Armor { get => BaseStat.Armor; set => BaseStat.Armor = value; }
 
-        public float CriticalRate { get => BaseStat.Critical; set => CriticalRate = value; }
-        public bool IsCritical => CriticalRate > 0.0f && UnityEngine.Random.Range(0.0f, 1.0f) <= CriticalRate;
+        public float Critical { get => BaseStat.Critical; set => Critical = value; }
+        public bool IsCritical => Critical > 0.0f && UnityEngine.Random.Range(0.0f, 1.0f) <= Critical;
 
-        public float DodgeRate { get => BaseStat.Dodge; set => BaseStat.Dodge = value; }
+        public float Dodge { get => BaseStat.Dodge; set => BaseStat.Dodge = value; }
         public float Luck { get => BaseStat.Luck; set => BaseStat.Luck = value; }
         public int InvincibleBlockCountPerWave
         {

@@ -13,14 +13,26 @@ namespace STELLAREST_F1
 
         public override void ApplyEffect()
         {
-            base.ApplyEffect();
-            Owner.ApplyStat(effectID: DataTemplateID, effectStatType: EffectType, addStat: false);
+            if (Owner.IsValid() == false)
+                return;
+
+            if (Owner.Target.IsValid() == false)
+                return;
+
+            // --- DEBUFF
+            // Owner.ApplyStatToTarget(effectID: DataTemplateID, effectType: EffectType, target: Owner.Target, addStat: false);   
         }
 
         public override void OnShowEffect()
             => base.OnShowEffect();
 
         public override void ExitEffect()
-            => base.ExitEffect();
+        {
+            // if (KeepEffectOnExit == false)
+            // {
+            //     Owner.Target.ApplyStat(effectID: DataTemplateID, effectType: EffectType, addStat: true);
+            //     Debug.Log($"OUT: {Dev_NameTextID}");
+            // }
+        }
     }
 }

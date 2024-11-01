@@ -67,7 +67,6 @@ namespace STELLAREST_F1
             UI_Joystick joystick = Managers.UI.ShowBaseUI<UI_Joystick>();
             Managers.Map.LoadMap("SummerForestField_Test2");
             Managers.Map.Map.transform.position = Vector3.zero;
-
             {
                 // --- Lead er Controlelr, Cam
                 HeroLeaderController leaderController = Managers.Object.SpawnHeroLeaderController();

@@ -256,6 +256,32 @@ namespace STELLAREST_F1
             // --- + TODO: Refresh HP Bar UI
         }
 
+        public void ApplyStatToTarget(int effectID, EEffectType effectType, BaseCellObject target, bool addStat = true)
+        {
+            if (target.IsValid() == false)
+            {
+                // TODO: 이미 타겟이 죽어있다면 ActiveEffects에서 가지고 있는 것을 제거(이펙트 제거)
+                return;
+            }
+
+            if (Util.IsEffectStatType(effectType) == false)
+                return;
+
+            float prevTargetMaxHealth = target.MaxHealth;
+
+            // --- 내가 가지고 있는 이펙트로 타겟에게 적용
+            this._modifier.ApplyStatToTarget(effectID, effectType, target, addStat);
+            
+            if (prevTargetMaxHealth != target.MaxHealth)
+            {
+                float currentRatio = target.Health / prevTargetMaxHealth;
+                target.Health = Mathf.Clamp(target.MaxHealth * currentRatio, 0.0f, target.MaxHealth);
+            }
+        }
+    }
+}
+/*
+        // PREV
         // public void ApplyBuffStat(EEffectType effectBuffType)
         // {
         //     if (Util.IsEffectStatType(effectBuffType) == false)
@@ -289,20 +315,6 @@ namespace STELLAREST_F1
         //     // --- +++ Refresh HP Bar
         // }
 
-        // #region Util: Stats
-        // public float BonusHealth { get => _modifier.BonusHealth; set => _modifier.BonusHealth = value; }
-        // public float Shield { get => _modifier.Shield; set => _modifier.Shield = value; }
-        // public float Armor { get => _modifier.Armor; set => _modifier.Armor = value; }
-        // public float Critical { get => _modifier.Critical; set => _modifier.Critical = value; }
-        // public float Dodge { get => _modifier.Dodge; set => _modifier.Dodge = value; }
-        // public float Luck { get => _modifier.Luck; set => _modifier.Luck = value; }
-        // public int InvincibleBlockCountPerWave { get => _modifier.InvincibleBlockCountPerWave; set => _modifier.InvincibleBlockCountPerWave = value; }
-        // #endregion
-    }
-}
-
-/*
-        // PREV
         // public void ApplyBuffStat()
         // {
         //     float prevMaxHealth = MaxHealth;

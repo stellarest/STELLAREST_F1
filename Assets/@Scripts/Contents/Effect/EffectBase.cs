@@ -78,7 +78,7 @@ namespace STELLAREST_F1
 #if UNITY_EDITOR
             Dev_NameTextID = EffectData.Dev_NameTextID;
             Dev_DescriptionTextID = EffectData.Dev_DescriptionTextID;
-            gameObject.name = $"{gameObject.name}_{_owner.Dev_NameTextID}_{Dev_NameTextID}";
+            gameObject.name = $"{gameObject.name}_{Dev_NameTextID}";
 #endif
             KeepEffectOnExit = EffectData.KeepEffectOnExit;
             InitialSetSize(EffectData.EffectSize);

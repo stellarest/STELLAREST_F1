@@ -18,7 +18,7 @@ namespace STELLAREST_F1
         {
             base.ApplyEffect();
             //Owner.ApplyBuffStat(EffectType);
-            Owner.ApplyStat(effectID: DataTemplateID, effectStatType: EffectType, addStat: true);
+            Owner.ApplyStat(effectID: DataTemplateID, effectType: EffectType, addStat: true);
         }
 
         public override void OnShowEffect()
@@ -27,7 +27,7 @@ namespace STELLAREST_F1
         public override void ExitEffect()
         {
             if (KeepEffectOnExit == false)
-                Owner.ApplyStat(effectID: DataTemplateID, effectStatType: EffectType, addStat: false);
+                Owner.ApplyStat(effectID: DataTemplateID, effectType: EffectType, addStat: false);
 
             base.ExitEffect();
         }

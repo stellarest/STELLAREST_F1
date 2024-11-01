@@ -52,22 +52,22 @@ namespace STELLAREST_F1
                 case EEffectType.MainStat_MaxHealth:
                     {
                         if (addStat)
-                            MaxHealth = (MaxHealth + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti);
+                            MaxHealth = Mathf.Ceil((MaxHealth + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti));
                         else
-                            MaxHealth = (MaxHealth - addAmount) / (1.0f + addPercent) / (1.0f + addPercentMulti);
+                            MaxHealth = Mathf.Floor((MaxHealth - addAmount) / (1.0f + addPercent) / (1.0f + addPercentMulti));
                     }
                     break;
                 case EEffectType.MainStat_Damage:
                     {
                         if (addStat)
                         {
-                            MinDamage = (MinDamage + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti);
-                            MaxDamage = (MaxDamage + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti);
+                            MinDamage = Mathf.Ceil((MinDamage + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti));
+                            MaxDamage = Mathf.Ceil((MaxDamage + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti));
                         }
                         else
                         {
-                            MinDamage = (MinDamage - addAmount) / (1.0f + addPercent) / (1.0f + addPercentMulti);
-                            MaxDamage = (MaxDamage - addAmount) / (1.0f + addPercent) / (1.0f + addPercentMulti);
+                            MinDamage = Mathf.Floor((MinDamage - addAmount) / (1.0f + addPercent) / (1.0f + addPercentMulti));
+                            MaxDamage = Mathf.Floor((MaxDamage - addAmount) / (1.0f + addPercent) / (1.0f + addPercentMulti));
                         }
                     }
                     break;
@@ -96,14 +96,14 @@ namespace STELLAREST_F1
                         {
                             shieldBase += addAmount;
                             shieldBase *= (1.0f + addPercent) * (1.0f + addPercentMulti);
-                            Shield = Mathf.Clamp(shieldBase - MaxHealth, 0.0f, MaxHealth);
+                            Shield = Mathf.Ceil(Mathf.Clamp(shieldBase - MaxHealth, 0.0f, MaxHealth));
                         }
                         else
                         {
                             shieldBase -= addAmount;
                             shieldBase /= 1.0f + addPercent;
                             shieldBase /= 1.0f + addPercentMulti;
-                            Shield = Mathf.Clamp(shieldBase - MaxHealth, 0.0f, MaxHealth);
+                            Shield = Mathf.Floor(Mathf.Clamp(shieldBase - MaxHealth, 0.0f, MaxHealth));
                         }
                     }
                     break;
@@ -114,14 +114,14 @@ namespace STELLAREST_F1
                         {
                             bonusHealthBase += addAmount;
                             bonusHealthBase *= (1.0f + addPercent) * (1.0f + addPercentMulti);
-                            BonusHealth = Mathf.Clamp(bonusHealthBase - MaxHealth, 0.0f, MaxHealth);
+                            BonusHealth = Mathf.Ceil(Mathf.Clamp(bonusHealthBase - MaxHealth, 0.0f, MaxHealth));
                         }
                         else
                         {
                             bonusHealthBase -= addAmount;
                             bonusHealthBase /= 1.0f + addPercent;
                             bonusHealthBase /= 1.0f + addPercentMulti;
-                            BonusHealth = Mathf.Clamp(bonusHealthBase - MaxHealth, 0.0f, MaxHealth);
+                            BonusHealth = Mathf.Floor(Mathf.Clamp(bonusHealthBase - MaxHealth, 0.0f, MaxHealth));
                         }
                     }
                     break;
@@ -188,6 +188,169 @@ namespace STELLAREST_F1
                             InvincibleBlockCountPerWave += Mathf.RoundToInt(addAmount);
                         else
                             InvincibleBlockCountPerWave -= Mathf.RoundToInt(addAmount);
+                    }
+                    break;
+            }
+        }
+
+        public void ApplyStatToTarget(int effectID, EEffectType effectStatType, BaseCellObject target, bool addStat = true)
+        {
+#if UNITY_EDITOR
+            if (target.IsValid() == false)
+            {
+                Debug.LogWarning($"{nameof(StatModifier)}, {nameof(ApplyStatToTarget)}, !!");
+                Debug.Break();
+                return;
+            }
+#endif
+            // 내가 가지고 있는 이펙트로
+            float addAmount = _owner.BaseEffect.GetEffectStatModifier(effectID, EStatModType.AddAmount);
+            float addPercent = _owner.BaseEffect.GetEffectStatModifier(effectID, EStatModType.AddPercent);
+            float addPercentMulti = _owner.BaseEffect.GetEffectStatModifier(effectID, EStatModType.AddPercentMulti);
+
+            // 타겟의 스탯에 적용한다
+            switch (effectStatType)
+            {
+                // --- Main Stats
+                case EEffectType.MainStat_MaxHealth:
+                    {
+                        if (addStat)
+                            target.MaxHealth = Mathf.Ceil((target.MaxHealth + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti));
+                        else
+                            target.MaxHealth = Mathf.Floor((target.MaxHealth - addAmount) / (1.0f + addPercent) / (1.0f + addPercentMulti));
+                    }
+                    break;
+                case EEffectType.MainStat_Damage:
+                    {
+                        if (addStat)
+                        {
+                            target.MinDamage = Mathf.Ceil((target.MinDamage + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti));
+                            target.MaxDamage = Mathf.Ceil((target.MaxDamage + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti));
+                        }
+                        else
+                        {
+                            target.MinDamage = Mathf.Floor((target.MinDamage - addAmount) / (1.0f + addPercent) / (1.0f + addPercentMulti));
+                            target.MaxDamage = Mathf.Floor((target.MaxDamage - addAmount) / (1.0f + addPercent) / (1.0f + addPercentMulti));
+                        }
+                    }
+                    break;
+                case EEffectType.MainStat_AttackRate:
+                    {
+                        if (addStat)
+                            target.AttackRate = (target.AttackRate + addAmount) * (1.0f + addAmount) * (1.0f + addPercentMulti);
+                        else
+                            target.AttackRate = (target.AttackRate - addAmount) / (1.0f + addAmount) / (1.0f + addPercentMulti);
+                    }
+                    break;
+                case EEffectType.MainStat_MovementSpeed:
+                    {
+                        if (addStat)
+                            target.MovementSpeed = (target.MovementSpeed + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti);
+                        else
+                            target.MovementSpeed = (target.MovementSpeed - addAmount) / (1.0f + addPercent) / (1.0f + addPercentMulti);
+                    }
+                    break;
+
+                // --- Sub Stats
+                case EEffectType.SubStat_Shield:
+                    {
+                        float shieldBase = target.MaxHealth;
+                        if (addStat)
+                        {
+                            shieldBase += addAmount;
+                            shieldBase *= (1.0f + addPercent) * (1.0f + addPercentMulti);
+                            target.Shield = Mathf.Ceil(Mathf.Clamp(shieldBase - target.MaxHealth, 0.0f, target.MaxHealth));
+                        }
+                        else
+                        {
+                            shieldBase -= addAmount;
+                            shieldBase /= 1.0f + addPercent;
+                            shieldBase /= 1.0f + addPercentMulti;
+                            target.Shield = Mathf.Floor(Mathf.Clamp(shieldBase - target.MaxHealth, 0.0f, target.MaxHealth));
+                        }
+                    }
+                    break;
+                case EEffectType.SubStat_BonusHealth:
+                    {
+                        float bonusHealthBase = target.MaxHealth;
+                        if (addStat)
+                        {
+                            bonusHealthBase += addAmount;
+                            bonusHealthBase *= (1.0f + addPercent) * (1.0f + addPercentMulti);
+                            target.BonusHealth = Mathf.Ceil(Mathf.Clamp(bonusHealthBase - target.MaxHealth, 0.0f, target.MaxHealth));
+                        }
+                        else
+                        {
+                            bonusHealthBase -= addAmount;
+                            bonusHealthBase /= 1.0f + addPercent;
+                            bonusHealthBase /= 1.0f + addPercentMulti;
+                            target.BonusHealth = Mathf.Floor(Mathf.Clamp(bonusHealthBase - target.MaxHealth, 0.0f, target.MaxHealth));
+                        }
+                    }
+                    break;
+                case EEffectType.SubStat_Armor:
+                    {
+                        if (addStat)
+                        {
+                            float armorBase = (target.Armor + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti);
+                            target.Armor = Mathf.Clamp(armorBase, CFloat.Min(EFloat.Range_Armor), CFloat.Max(EFloat.Range_Armor));
+                            //Debug.Log($"<color=yellow>### ARMOR: {target.Armor} ##</color>");
+                        }
+                        else
+                        {
+                            float armorBase = (target.Armor - addAmount) / (1.0f + addPercent) / (1.0f + addPercentMulti);
+                            target.Armor = Mathf.Clamp(armorBase, CFloat.Min(EFloat.Range_Armor), CFloat.Max(EFloat.Range_Armor));
+                        }
+                    }
+                    break;
+                case EEffectType.SubStat_Critical:
+                    {
+                        if (addStat)
+                        {
+                            float criticalBase = (target.Critical + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti);
+                            target.Critical = Mathf.Clamp(criticalBase, CFloat.Min(EFloat.Range_Critical), CFloat.Max(EFloat.Range_Critical));
+                        }
+                        else
+                        {
+                            float criticalBase = (target.Critical - addAmount) / (1.0f + addPercent) / (1.0f + addPercentMulti);
+                            target.Critical = Mathf.Clamp(criticalBase, CFloat.Min(EFloat.Range_Critical), CFloat.Max(EFloat.Range_Critical));
+                        }
+                    }
+                    break;
+                case EEffectType.SubStat_Dodge:
+                    {
+                        if (addStat)
+                        {
+                            float dodgeBase = (target.Dodge + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti);
+                            target.Dodge = Mathf.Clamp(dodgeBase, CFloat.Min(EFloat.Range_Dodge), CFloat.Max(EFloat.Range_Dodge));
+                        }
+                        else
+                        {
+                            float dodgeBase = (target.Dodge - addAmount) / (1.0f + addPercent) / (1.0f + addPercentMulti);
+                            target.Dodge = Mathf.Clamp(dodgeBase, CFloat.Min(EFloat.Range_Dodge), CFloat.Max(EFloat.Range_Dodge));
+                        }
+                    }
+                    break;
+                case EEffectType.SubStat_Luck:
+                    {
+                        if (addStat)
+                        {
+                            float luckBase = (target.Luck + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti);
+                            target.Luck = Mathf.Clamp(luckBase, CFloat.Min(EFloat.Range_Luck), CFloat.Max(EFloat.Range_Luck));
+                        }
+                        else
+                        {
+                            float luckBase = (target.Luck - addAmount) / (1.0f + addPercent) / (1.0f + addPercentMulti);
+                            target.Luck = Mathf.Clamp(luckBase, CFloat.Min(EFloat.Range_Luck), CFloat.Max(EFloat.Range_Luck));
+                        }
+                    }
+                    break;
+                case EEffectType.SubStat_InvincibleBlockCountPerWave:
+                    {
+                        if (addStat)
+                            target.InvincibleBlockCountPerWave += Mathf.RoundToInt(addAmount);
+                        else
+                            target.InvincibleBlockCountPerWave -= Mathf.RoundToInt(addAmount);
                     }
                     break;
             }
