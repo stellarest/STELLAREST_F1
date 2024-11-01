@@ -39,6 +39,7 @@ namespace STELLAREST_F1
             _owner = _baseStat.Owner;
         }
 
+        // --- 버프, 디버프 모두 가능
         public void ApplyStat(int effectID, EEffectType effectStatType, bool addStat = true)
         {
             float addAmount = _owner.BaseEffect.GetEffectStatModifier(effectID, EStatModType.AddAmount);
@@ -130,6 +131,7 @@ namespace STELLAREST_F1
                         {
                             float armorBase = (Armor + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti);
                             Armor = Mathf.Clamp(armorBase, CFloat.Min(EFloat.Range_Armor), CFloat.Max(EFloat.Range_Armor));
+                            Debug.Log($"<color=yellow>### ARMOR: {Armor} ##</color>");
                         }
                         else
                         {
@@ -190,7 +192,11 @@ namespace STELLAREST_F1
                     break;
             }
         }
+    }
+}
 
+/*
+        // --- DEPRECIATED
         // public void ApplyBuffStat(EEffectType effectBuffType)
         // {
         //     float addAmount = _owner.BaseEffect.GetStatModifier(effectBuffType, EStatModType.AddAmount);
@@ -309,11 +315,7 @@ namespace STELLAREST_F1
         //             break;
         //     }
         // }
-    }
-}
 
-/*
-// --- DEPRECIATED
         // public void ApplyBuffStat(EEffectType effectBuffType, int prev = -1)
         // {
         //     switch (effectBuffType)

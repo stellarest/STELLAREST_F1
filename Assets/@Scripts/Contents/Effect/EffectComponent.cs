@@ -32,11 +32,7 @@ namespace STELLAREST_F1
             Dev_ActiveEffects = new List<string>();
         }
 
-        public void EnterInGame()
-        {
-            // RemoveAllActiveEffects(); 
-            // + Apply Base Effect
-        }
+        public void EnterInGame() { } // RemoveAllActiveEffects(); + Apply Base Effect
 
         public EffectBase GenerateGlobalEffect(EInt eInt, Vector3 spawnPos)
         {
@@ -70,6 +66,9 @@ namespace STELLAREST_F1
                         dataID: effectID,
                         owner: _owner
                     );
+
+            if (effectID == 101201)
+                Debug.Log("aaa");
 
             ActiveEffects.Add(effect);
 #if UNITY_EDITOR
@@ -177,6 +176,9 @@ namespace STELLAREST_F1
         {
             foreach (var effectID in effectIDs)
             {
+                if (effectID == 101201)
+                    Debug.Log("asdasd");
+
                 EffectBase effect = ActiveEffects.Find(e => e.DataTemplateID == effectID);
                 if (effect != null)
                     RemoveEffect(effect);
@@ -201,12 +203,12 @@ namespace STELLAREST_F1
             if (effect.IsValid() == false)
                 return;
 
-            ActiveEffects.Remove(effect);
+            //ActiveEffects.Remove(effect);
             effect.ExitEffect();
 
-#if UNITY_EDITOR
-            Dev_ActiveEffects.Remove(effect.Dev_NameTextID);
-#endif
+// #if UNITY_EDITOR
+//             Dev_ActiveEffects.Remove(effect.Dev_NameTextID);
+// #endif
             // if (Util.IsEffectStatType(effect.EffectType))
             //     _owner.RefreshAllStats();
 

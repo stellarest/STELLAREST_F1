@@ -577,8 +577,8 @@ namespace STELLAREST_F1
         protected Coroutine _coUpdateAI = null;
         protected IEnumerator CoUpdateAI()
         {
-            // if (ObjectType == EObjectType.Monster)
-            //     yield break;
+            if (ObjectType == EObjectType.Monster)
+                yield break;
 
             while (true)
             {
@@ -662,15 +662,9 @@ namespace STELLAREST_F1
         {
             Vector3 impactVFXSpawnPos = Util.GetRandomQuadPosition(CenterPosition);
             if (isCritical)
-            {
-                //GenerateGlobalEffect(EGlobalEffectID.ImpactCriticalHit, impactVFXSpawnPos);
                 GenerateGlobalEffect(EInt.ID_ImpactCriticalHit, impactVFXSpawnPos);
-            }
             else
-            {
-                //GenerateGlobalEffect(EGlobalEffectID.ImpactHit, impactVFXSpawnPos);
                 GenerateGlobalEffect(EInt.ID_ImpactHit, impactVFXSpawnPos);
-            }
 
             // DO SOMETHING(FIRE, ICE AND ETC...)
             if (skillByAttacker.SkillElementType != ESkillElementType.Fire)
@@ -691,22 +685,6 @@ namespace STELLAREST_F1
         #endregion
 
         #region Passive
-        protected void ApplyNewPassive()
-        {
-            if (Util.GetEffectData(dataID: LevelID, owner: this) == null)
-            {
-                Debug.LogWarning($"Invalid Effect Data - {ObjectType}: {LevelID}");
-                return;
-            }
-
-            // EffectBase prevPassive = BaseEffect.FindPrevEffect(dataID: LevelID);
-            // if (prevPassive != null)
-            // {
-            //     Debug.Log($"Remove Passive: {prevPassive.Dev_NameTextID}");
-            //     BaseEffect.RemoveEffect(prevPassive);
-            //     BaseEffect.GenerateEffect(effectID: LevelID); // 알아서 ApplyStat이 될 테므로,,,
-            // }
-        }
         #endregion
 
         // protected Coroutine _coLerpToCellPos = null;

@@ -50,7 +50,6 @@ namespace STELLAREST_F1
     {
         //private Dictionary<string, Pool> _pools = new Dictionary<string, Pool>();
         private Dictionary<int, Pool> _pools = new Dictionary<int, Pool>();
-
         public bool Push(GameObject go, int poolingID)
         {
             // if (_pools.ContainsKey(go.name) == false)
@@ -70,6 +69,9 @@ namespace STELLAREST_F1
             //return _pools[prefab.name].Pop();
             return _pools[poolingID].Pop();
         }
+
+        public void ClearPools()
+            => _pools.Clear();
 
         // public void Remove(int poolingID)
         // {

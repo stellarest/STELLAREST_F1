@@ -10,6 +10,7 @@ using STELLAREST_F1.Data;
 using Unity.Profiling;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.AI;
 using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
@@ -192,6 +193,7 @@ namespace STELLAREST_F1
             if (HeroLeaderController == null)
             {
                 GameObject go = Managers.Resource.Instantiate(CString.Prefab(EString.Prefab_LeaderController));
+
                 go.name = $"@{go.name}";
                 HeroLeaderController = go.GetComponent<HeroLeaderController>();
             }
@@ -293,6 +295,48 @@ namespace STELLAREST_F1
             return targets;
         }
 
+        public void Despawn<T>(T obj, int dataID) where T : BaseObject
+        {
+            switch (obj.ObjectType)
+            {
+                case EObjectType.Hero:
+                    Heroes.Remove(obj as Hero);
+                    Managers.Map.RemoveCellObject(obj as Hero);
+                    Managers.Resource.Destroy(go: obj.gameObject, poolingID: Util.GetPoolingID(EObjectType.Hero, dataID));
+                    break;
+
+                case EObjectType.Monster:
+                    Monsters.Remove(obj as Monster);
+                    Managers.Map.RemoveCellObject(obj as Monster);
+                    Managers.Resource.Destroy(go: obj.gameObject, poolingID: Util.GetPoolingID(EObjectType.Monster, dataID));
+                    break;
+
+                case EObjectType.Env:
+                    Envs.Remove(obj as Env);
+                    Managers.Map.RemoveCellObject(obj as Env);
+                    Managers.Resource.Destroy(go: obj.gameObject, poolingID: Util.GetPoolingID(EObjectType.Env, dataID));
+                    break;
+
+                case EObjectType.Projectile:
+                    Managers.Resource.Destroy(go: obj.gameObject, poolingID: Util.GetPoolingID(EObjectType.Projectile, dataID));
+                    break;
+
+                case EObjectType.Effect:
+                    Managers.Resource.Destroy(go: obj.gameObject, Util.GetPoolingID(EObjectType.Effect, dataID));
+                    break;
+            }
+
+
+#if UNITY_EDITOR
+            CellObject cellObj = DevManager.Instance.CellObjs.Find(n => n.CellObj == obj);
+            DevManager.Instance.CellObjs.Remove(cellObj);
+#endif
+        }
+    }
+}
+
+/*
+    // ----- CUT -----
         // public T Spawn<T>(EObjectType objectType, int dataID = -1) where T : BaseObject
         // {
         //     GameObject go = null;
@@ -388,92 +432,53 @@ namespace STELLAREST_F1
         //     }
         // }
 
-        public void Despawn<T>(T obj, int dataID) where T : BaseObject
-        {
-            switch (obj.ObjectType)
-            {
-                case EObjectType.Hero:
-                    Heroes.Remove(obj as Hero);
-                    Managers.Map.RemoveCellObject(obj as Hero);
-                    Managers.Resource.Destroy(go: obj.gameObject, poolingID: Util.GetPoolingID(EObjectType.Hero, dataID));
-                    break;
+        // public List<T> FindCircleRangeTargets<T>(Vector3 from, float range, EObjectType ownerType, bool isAlly = false) where T : BaseObject
+        // {
+        //     List<T> targets = new List<T>();
+        //     List<T> rets = new List<T>();
 
-                case EObjectType.Monster:
-                    Monsters.Remove(obj as Monster);
-                    Managers.Map.RemoveCellObject(obj as Monster);
-                    Managers.Resource.Destroy(go: obj.gameObject, poolingID: Util.GetPoolingID(EObjectType.Monster, dataID));
-                    break;
+        //     EObjectType targetType = Util.GetTargetType(ownerType, isAlly);
+        //     if (targetType == EObjectType.Monster)
+        //     {
+        //         List<Monster> monsters = Managers.Map.GatherObjects<Monster>(from, range, range);
+        //         for (int i = 0; i < monsters.Count; ++i)
+        //             targets.Add(monsters[i] as T); 
+        //     }
+        //     else if (targetType == EObjectType.Hero)
+        //     {
+        //         List<Hero> heroes = Managers.Map.GatherObjects<Hero>(from, range, range);
+        //         for (int i = 0; i < heroes.Count; ++i)
+        //             targets.Add(heroes[i] as T);
+        //     }
 
-                case EObjectType.Env:
-                    Envs.Remove(obj as Env);
-                    Managers.Map.RemoveCellObject(obj as Env);
-                    Managers.Resource.Destroy(go: obj.gameObject, poolingID: Util.GetPoolingID(EObjectType.Env, dataID));
-                    break;
+        //     for (int i = 0; i < targets.Count; ++i)
+        //     {
+        //         Vector3 targetPos = targets[i].transform.position;
+        //         float distSQR = (targetPos - from).sqrMagnitude;
+        //         if (distSQR < range * range)
+        //             rets.Add(targets[i]);
+        //     }
 
-                case EObjectType.Projectile:
-                    Managers.Resource.Destroy(go: obj.gameObject, poolingID: Util.GetPoolingID(EObjectType.Projectile, dataID));
-                    break;
+        //     return rets;
+        // }
 
-                case EObjectType.Effect:
-                    Managers.Resource.Destroy(go: obj.gameObject, Util.GetPoolingID(EObjectType.Effect, dataID));
-                    break;
-            }
+        // --- 프로젝타일 컨테이너 제거 예정
+        // public HashSet<Projectile> Projectiles { get; } = new HashSet<Projectile>(); // 이것도 안들고있어도 될 것같긴한데
 
+        // --- 임시
+        // public HashSet<EffectBase> Effects { get; } = new HashSet<EffectBase>();
+        // private Transform _leaderMark = null;
+        // public Transform LeaderMark
+        // {
+        //     get
+        //     {
+        //         if (_leaderMark == null)
+        //         {
+        //             _leaderMark = Managers.Resource.Instantiate(ReadOnly.Prefabs.PFName_LeaderController).transform;
+        //             _leaderMark.GetComponent<SpriteRenderer>().sortingOrder = 101;
+        //         }
 
-#if UNITY_EDITOR
-            CellObject cellObj = DevManager.Instance.CellObjs.Find(n => n.CellObj == obj);
-            DevManager.Instance.CellObjs.Remove(cellObj);
-#endif
-        }
-    }
-}
-
-// public List<T> FindCircleRangeTargets<T>(Vector3 from, float range, EObjectType ownerType, bool isAlly = false) where T : BaseObject
-// {
-//     List<T> targets = new List<T>();
-//     List<T> rets = new List<T>();
-
-//     EObjectType targetType = Util.GetTargetType(ownerType, isAlly);
-//     if (targetType == EObjectType.Monster)
-//     {
-//         List<Monster> monsters = Managers.Map.GatherObjects<Monster>(from, range, range);
-//         for (int i = 0; i < monsters.Count; ++i)
-//             targets.Add(monsters[i] as T); 
-//     }
-//     else if (targetType == EObjectType.Hero)
-//     {
-//         List<Hero> heroes = Managers.Map.GatherObjects<Hero>(from, range, range);
-//         for (int i = 0; i < heroes.Count; ++i)
-//             targets.Add(heroes[i] as T);
-//     }
-
-//     for (int i = 0; i < targets.Count; ++i)
-//     {
-//         Vector3 targetPos = targets[i].transform.position;
-//         float distSQR = (targetPos - from).sqrMagnitude;
-//         if (distSQR < range * range)
-//             rets.Add(targets[i]);
-//     }
-
-//     return rets;
-// }
-
-// --- 프로젝타일 컨테이너 제거 예정
-// public HashSet<Projectile> Projectiles { get; } = new HashSet<Projectile>(); // 이것도 안들고있어도 될 것같긴한데
-
-// --- 임시
-// public HashSet<EffectBase> Effects { get; } = new HashSet<EffectBase>();
-// private Transform _leaderMark = null;
-// public Transform LeaderMark
-// {
-//     get
-//     {
-//         if (_leaderMark == null)
-//         {
-//             _leaderMark = Managers.Resource.Instantiate(ReadOnly.Prefabs.PFName_LeaderController).transform;
-//             _leaderMark.GetComponent<SpriteRenderer>().sortingOrder = 101;
-//         }
-
-//         return _leaderMark;
-//     }
-// }
+        //         return _leaderMark;
+        //     }
+        // }
+*/

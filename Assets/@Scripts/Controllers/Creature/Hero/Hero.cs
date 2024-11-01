@@ -22,11 +22,6 @@ namespace STELLAREST_F1
                 if (LevelUp() == false)
                     Debug.LogWarning($"Faield to LvUp, IsMaxLv: {IsMaxLevel}");
             }
-
-            if (Input.GetKeyDown(KeyCode.L))
-            {
-                 CollectRate = Test_CollectkRate;
-            }
         }
         #endif
 

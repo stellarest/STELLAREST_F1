@@ -25,6 +25,11 @@ namespace STELLAREST_F1
             => base.OnShowEffect();
 
         public override void ExitEffect()
-            => base.ExitEffect();
+        {
+            if (KeepEffectOnExit == false)
+                Owner.ApplyStat(effectID: DataTemplateID, effectStatType: EffectType, addStat: false);
+
+            base.ExitEffect();
+        }
     }
 }

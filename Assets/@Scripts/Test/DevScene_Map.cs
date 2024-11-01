@@ -42,17 +42,17 @@ namespace STELLAREST_F1
             {
                 yield return new WaitUntil(() => Managers.Object.Envs.Count == 0);
                 yield return new WaitForSeconds(waitTime);
-                
+
                 if (_spawnEnvTypeFlag == false)
                 {
-                    int treeID = GetRandEnvTree;
+                    int treeID = Managers.Game.GetRandEnvTree;
                     Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
                        spawnPos: Managers.Map.CellToCenterWorld(new Vector3Int(-6, 11, 0)),
                        dataID: treeID);
                 }
                 else
                 {
-                    int rockID = GetRandEnvRock;
+                    int rockID = Managers.Game.GetRandEnvRock;
                     Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
                        spawnPos: Managers.Map.CellToCenterWorld(new Vector3Int(-3, 11, 0)),
                        dataID: rockID);
@@ -81,8 +81,8 @@ namespace STELLAREST_F1
                     owner: null);
                 leaderController.Leader = firstHero;
 
-                // StartCoroutine(CoContinuousSpawnMonster_Test(5.0f));
-                StartCoroutine(CoContinuousSpawnEnv_Test(1f));
+                //StartCoroutine(CoContinuousSpawnMonster_Test(5.0f));
+                //StartCoroutine(CoContinuousSpawnEnv_Test(1f));
 
                 // ddd
                 // SpawnChicken_Test(-8, 8);
@@ -444,12 +444,6 @@ namespace STELLAREST_F1
                 Application.Quit();
             }
         }
-
-        private int GetRandEnvTree
-            => UnityEngine.Random.Range(CInt.ID(EInt.ID_AshTree), CInt.ID(EInt.ID_YewTree) + 1);
-
-        private int GetRandEnvRock
-            => UnityEngine.Random.Range(CInt.ID(EInt.ID_CopperRock), CInt.ID(EInt.ID_ZincRock) + 1);
 
         private void LoadAsset()
         {

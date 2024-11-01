@@ -267,19 +267,7 @@ namespace STELLAREST_F1
             if (Owner.IsValid() == false)
                 return;
 
-            // 
-
-            // --- TEST
-            foreach (var effectID in effectIDs)
-            {
-                // EffectBase findEffect = Owner.BaseEffect.ActiveEffects.Find(e => e.EffectData.DataID == effectID);
-                // if (findEffect != null)
-                // {
-                //     Owner.BaseStat.RemoveBuffStat(findEffect.EffectType);
-                // }
-            }
-
-            // Owner.RemoveEffect(effectIDs);
+            Owner.BaseEffect.RemoveEffect(effectIDs);
         }
 
         protected void GatherMeleeTargets()

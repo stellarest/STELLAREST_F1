@@ -48,7 +48,7 @@ namespace STELLAREST_F1
         // public Action<Action> OnRemoveSelfByConditionHandler = null; // 고치기
         // protected virtual void OnRemoveSelfByCondition(Action endCallback = null) { }
 
-        public bool IsLoop { get; private set; } = false;
+        public bool KeepEffectOnExit { get; private set; } = false;
         public float Period { get; private set; } = 0.0f;
         public float Remains { get; private set; } = 0.0f;
 
@@ -80,8 +80,7 @@ namespace STELLAREST_F1
             Dev_DescriptionTextID = EffectData.Dev_DescriptionTextID;
             gameObject.name = $"{gameObject.name}_{_owner.Dev_NameTextID}_{Dev_NameTextID}";
 #endif
-            IsLoop = EffectData.IsLoop;
-            Period = EffectData.Period;
+            KeepEffectOnExit = EffectData.KeepEffectOnExit;
             InitialSetSize(EffectData.EffectSize);
         }
 
@@ -99,6 +98,7 @@ namespace STELLAREST_F1
                 EffectClearType = EEffectClearType.TimeOut;
             }
 
+            Period = EffectData.Period;
             transform.position = spawnPos;
         }
 
@@ -110,7 +110,14 @@ namespace STELLAREST_F1
 
         public virtual void OnShowEffect() { }
         public virtual void ExitEffect()
-            => Managers.Object.Despawn(this, DataTemplateID);
+        {
+            StopAllCoroutines();
+            Owner.BaseEffect.ActiveEffects.Remove(this);
+#if UNITY_EDITOR
+            Owner.BaseEffect.Dev_ActiveEffects.Remove(this.Dev_NameTextID);
+#endif
+            Managers.Object.Despawn(this, DataTemplateID);
+        }
 
         private void InitialSetSize(EObjectSize objSize)
         {
@@ -187,6 +194,11 @@ namespace STELLAREST_F1
                 }
 
                 yield return null;
+            }
+
+            if (DataTemplateID == 101201)
+            {
+                Debug.Log("aaaaa");
             }
 
             Remains = 0f;

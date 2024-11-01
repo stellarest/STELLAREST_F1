@@ -507,15 +507,15 @@ namespace STELLAREST_F1.Data
     [Serializable]
     public class EffectData : BaseData
     {
-        public bool IsLoop;
-        public float AddAmount;         // --- 항상 초기값으로 되는것이 아닌 누적값
+        public float AddAmount;                 // --- 항상 초기값으로 되는것이 아닌 누적값
         public float AddPercent;
         public float AddPercentMulti;
         public float Period;
         public float Duration;
-        public string EffectType;       // --- (TEMP)완성후 다시 enum 타입으로 변경 필요
+        public string EffectType;               // --- (TEMP)완성후 다시 enum 타입으로 변경 필요
         public EObjectSize EffectSize;
         public EEffectSpawnType EffectSpawnType;
+        public bool KeepEffectOnExit; 
     }
 
     public class EffectDataLoader : ILoader<int, EffectData>
