@@ -11,7 +11,7 @@ namespace STELLAREST_F1
     // 이펙트는 기본적으로 스킬에 붙어있다. 어떠한 스킬이 묻었을 때 일어나는 효과.
     // Ex. TickTime: 1, TickCount: 5 -> 1초 마다 5번 실행하겠다. 근데 난 그냥 Duration, Period로
     // Monster와 다르게 Effect 여러가지 상속 구조로 가기 위해 베이스 클래스가 이렇게 구성되어 있음. Effect의 핵심은 "상속"
-    // --- 단순 VFX, Buff/DeBuff, Dot, CC
+    // --- 단순 VFX, Buff/Debuff, Dot, CC
     // --- 무조건 스킬이 갖고 있게 해야겠는데...
     public class EffectBase : BaseObject
     {
@@ -42,12 +42,6 @@ namespace STELLAREST_F1
         public EffectData EffectData { get; private set; } = null;
         public EEffectType EffectType { get; protected set; } = EEffectType.None;
         public EEffectClearType EffectClearType { get; protected set; } = EEffectClearType.TimeOut;
-
-        // --- 지금 당장 우아한 방법은 아니긴 하지만, ByCondition에 의한 이펙트는 OnRemoveSelfByCondition에서 재정의만 하면 됨
-        // --- 고쳐야할듯.
-        // public Action<Action> OnRemoveSelfByConditionHandler = null; // 고치기
-        // protected virtual void OnRemoveSelfByCondition(Action endCallback = null) { }
-
         public bool KeepEffectOnExit { get; private set; } = false;
         public float Period { get; private set; } = 0.0f;
         public float Remains { get; private set; } = 0.0f;
@@ -68,6 +62,10 @@ namespace STELLAREST_F1
             return true;
         }
 
+#if UNITY_EDITOR
+        public string Dev_Owner = null;
+#endif
+
         protected override void InitialSetInfo(int dataID)
         {
             base.InitialSetInfo(dataID);
@@ -75,13 +73,13 @@ namespace STELLAREST_F1
             //EffectType = EffectData.EffectType;
             EffectType = Util.GetEnumFromString<EEffectType>(EffectData.EffectType);
 
+            KeepEffectOnExit = EffectData.KeepEffectOnExit;
+            InitialSetSize(EffectData.EffectSize);
+
 #if UNITY_EDITOR
             Dev_NameTextID = EffectData.Dev_NameTextID;
             Dev_DescriptionTextID = EffectData.Dev_DescriptionTextID;
-            gameObject.name = $"{gameObject.name}_{Dev_NameTextID}";
 #endif
-            KeepEffectOnExit = EffectData.KeepEffectOnExit;
-            InitialSetSize(EffectData.EffectSize);
         }
 
         protected override void EnterInGame(Vector3 spawnPos)
@@ -100,6 +98,10 @@ namespace STELLAREST_F1
 
             Period = EffectData.Period;
             transform.position = spawnPos;
+
+#if UNITY_EDITOR
+            Dev_Owner = _owner.Dev_NameTextID;
+#endif
         }
 
         public virtual void ApplyEffect()
@@ -144,34 +146,6 @@ namespace STELLAREST_F1
                     break;
             }
         }
-
-        // private Vector3 EffectSpawnInfo(EEffectSpawnType effectSpawnType)
-        // {
-        //     if (effectSpawnType == EEffectSpawnType.None)
-        //         return SpawnedPos;
-        //     else if (effectSpawnType == EEffectSpawnType.SetParentOwner)
-        //     {
-        //         transform.SetParent(Owner.transform);
-        //         return SpawnedPos;
-        //     }
-
-        //     SkillBase currentSkill = Owner.GetComponent<Creature>().CreatureSkill.CurrentSkill;
-        //     _enteredDir = currentSkill.EnteredTargetDir;
-        //     _enteredSignX = currentSkill.EnteredSignX;
-
-        //     if (effectSpawnType == EEffectSpawnType.SkillFromOwner)
-        //     {
-        //         SpawnedPos = currentSkill.EnteredOwnerPos;
-        //         return currentSkill.EnteredOwnerPos;
-        //     }
-        //     else if (effectSpawnType == EEffectSpawnType.SkillFromTarget)
-        //     {
-        //         SpawnedPos = currentSkill.EnteredTargetPos;
-        //         return currentSkill.EnteredTargetPos;
-        //     }
-
-        //     return SpawnedPos;
-        // }
         #endregion
 
         protected virtual void ProcessDot() { }
@@ -196,12 +170,11 @@ namespace STELLAREST_F1
                 yield return null;
             }
 
-            if (DataTemplateID == 101201)
-            {
-                Debug.Log("aaaaa");
-            }
-
             Remains = 0f;
+
+            if (DataTemplateID == 201100)
+                Debug.Log($"<color=red>###{nameof(CoStartLifeTimer)}, OUT: {Dev_NameTextID}###</color>");
+
             Owner.BaseEffect.RemoveEffect(this);
         }
     }

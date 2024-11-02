@@ -76,17 +76,10 @@ public class VFXShieldBlue : VFXBase
 
     public override void ExitEffect()
     {
-        // for (int i = 0; i < _onShields.Length; ++i)
-        //     _onShields[i].gameObject.SetActive(false);
-
-        // transform.localScale = _offShieldsLocalScale;
-        // for (int i = 0; i < _offShields.Length; ++i)
-        // {
-        //     _offShields[i].gameObject.SetActive(true);
-        //     _offShields[i].Play();
-        // }
-
-        StartCoroutine(CoRemoveShield(() => base.ExitEffect()));
+        StartCoroutine(CoRemoveShield(() => {
+            transform.SetParent(Managers.Object.EffectRoot);
+            base.ExitEffect();
+        }));
     }
 
     private IEnumerator CoRemoveShield(Action endCallback)

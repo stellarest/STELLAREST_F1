@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace STELLAREST_F1
 {
-    public class DeBuffBase : EffectBase // --- TEMP
+    public class DebuffBase : EffectBase
     {
         protected override void InitialSetInfo(int dataID)
         {
@@ -19,8 +19,8 @@ namespace STELLAREST_F1
             if (Owner.Target.IsValid() == false)
                 return;
 
-            // --- DEBUFF
-            // Owner.ApplyStatToTarget(effectID: DataTemplateID, effectType: EffectType, target: Owner.Target, addStat: false);   
+            base.ApplyEffect();
+            Owner.ApplyStatToTarget(effectID: DataTemplateID, effectType: EffectType, target: Owner.Target, addStat: false);
         }
 
         public override void OnShowEffect()
@@ -28,11 +28,10 @@ namespace STELLAREST_F1
 
         public override void ExitEffect()
         {
-            // if (KeepEffectOnExit == false)
-            // {
-            //     Owner.Target.ApplyStat(effectID: DataTemplateID, effectType: EffectType, addStat: true);
-            //     Debug.Log($"OUT: {Dev_NameTextID}");
-            // }
+            if (KeepEffectOnExit == false)
+                Owner.ApplyStatToTarget(effectID: DataTemplateID, effectType: EffectType, target: Owner.Target, addStat: true);
+
+            base.ExitEffect();
         }
     }
 }

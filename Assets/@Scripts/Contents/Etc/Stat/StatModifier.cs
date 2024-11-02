@@ -52,22 +52,22 @@ namespace STELLAREST_F1
                 case EEffectType.MainStat_MaxHealth:
                     {
                         if (addStat)
-                            MaxHealth = Mathf.Ceil((MaxHealth + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti));
+                            MaxHealth = (MaxHealth + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti);
                         else
-                            MaxHealth = Mathf.Floor((MaxHealth - addAmount) / (1.0f + addPercent) / (1.0f + addPercentMulti));
+                            MaxHealth = (MaxHealth - addAmount) / (1.0f + addPercent) / (1.0f + addPercentMulti);
                     }
                     break;
                 case EEffectType.MainStat_Damage:
                     {
                         if (addStat)
                         {
-                            MinDamage = Mathf.Ceil((MinDamage + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti));
-                            MaxDamage = Mathf.Ceil((MaxDamage + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti));
+                            MinDamage = (MinDamage + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti);
+                            MaxDamage = (MaxDamage + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti);
                         }
                         else
                         {
-                            MinDamage = Mathf.Floor((MinDamage - addAmount) / (1.0f + addPercent) / (1.0f + addPercentMulti));
-                            MaxDamage = Mathf.Floor((MaxDamage - addAmount) / (1.0f + addPercent) / (1.0f + addPercentMulti));
+                            MinDamage = (MinDamage - addAmount) / (1.0f + addPercent) / (1.0f + addPercentMulti);
+                            MaxDamage = (MaxDamage - addAmount) / (1.0f + addPercent) / (1.0f + addPercentMulti);
                         }
                     }
                     break;
@@ -96,14 +96,14 @@ namespace STELLAREST_F1
                         {
                             shieldBase += addAmount;
                             shieldBase *= (1.0f + addPercent) * (1.0f + addPercentMulti);
-                            Shield = Mathf.Ceil(Mathf.Clamp(shieldBase - MaxHealth, 0.0f, MaxHealth));
+                            Shield = Mathf.Clamp(shieldBase - MaxHealth, 0.0f, MaxHealth);
                         }
                         else
                         {
                             shieldBase -= addAmount;
                             shieldBase /= 1.0f + addPercent;
                             shieldBase /= 1.0f + addPercentMulti;
-                            Shield = Mathf.Floor(Mathf.Clamp(shieldBase - MaxHealth, 0.0f, MaxHealth));
+                            Shield = Mathf.Clamp(shieldBase - MaxHealth, 0.0f, MaxHealth);
                         }
                     }
                     break;
@@ -114,14 +114,14 @@ namespace STELLAREST_F1
                         {
                             bonusHealthBase += addAmount;
                             bonusHealthBase *= (1.0f + addPercent) * (1.0f + addPercentMulti);
-                            BonusHealth = Mathf.Ceil(Mathf.Clamp(bonusHealthBase - MaxHealth, 0.0f, MaxHealth));
+                            BonusHealth = Mathf.Clamp(bonusHealthBase - MaxHealth, 0.0f, MaxHealth);
                         }
                         else
                         {
                             bonusHealthBase -= addAmount;
                             bonusHealthBase /= 1.0f + addPercent;
                             bonusHealthBase /= 1.0f + addPercentMulti;
-                            BonusHealth = Mathf.Floor(Mathf.Clamp(bonusHealthBase - MaxHealth, 0.0f, MaxHealth));
+                            BonusHealth = Mathf.Clamp(bonusHealthBase - MaxHealth, 0.0f, MaxHealth);
                         }
                     }
                     break;
@@ -203,34 +203,34 @@ namespace STELLAREST_F1
                 return;
             }
 #endif
-            // 내가 가지고 있는 이펙트로
+            // --- From My ActiveEffects
             float addAmount = _owner.BaseEffect.GetEffectStatModifier(effectID, EStatModType.AddAmount);
             float addPercent = _owner.BaseEffect.GetEffectStatModifier(effectID, EStatModType.AddPercent);
             float addPercentMulti = _owner.BaseEffect.GetEffectStatModifier(effectID, EStatModType.AddPercentMulti);
 
-            // 타겟의 스탯에 적용한다
+            // --- Apply To Target
             switch (effectStatType)
             {
                 // --- Main Stats
                 case EEffectType.MainStat_MaxHealth:
                     {
                         if (addStat)
-                            target.MaxHealth = Mathf.Ceil((target.MaxHealth + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti));
+                            target.MaxHealth = (target.MaxHealth + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti);
                         else
-                            target.MaxHealth = Mathf.Floor((target.MaxHealth - addAmount) / (1.0f + addPercent) / (1.0f + addPercentMulti));
+                            target.MaxHealth = (target.MaxHealth - addAmount) / (1.0f + addPercent) / (1.0f + addPercentMulti);
                     }
                     break;
                 case EEffectType.MainStat_Damage:
                     {
                         if (addStat)
                         {
-                            target.MinDamage = Mathf.Ceil((target.MinDamage + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti));
-                            target.MaxDamage = Mathf.Ceil((target.MaxDamage + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti));
+                            target.MinDamage = (target.MinDamage + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti);
+                            target.MaxDamage = (target.MaxDamage + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti);
                         }
                         else
                         {
-                            target.MinDamage = Mathf.Floor((target.MinDamage - addAmount) / (1.0f + addPercent) / (1.0f + addPercentMulti));
-                            target.MaxDamage = Mathf.Floor((target.MaxDamage - addAmount) / (1.0f + addPercent) / (1.0f + addPercentMulti));
+                            target.MinDamage = (target.MinDamage - addAmount) / (1.0f + addPercent) / (1.0f + addPercentMulti);
+                            target.MaxDamage = (target.MaxDamage - addAmount) / (1.0f + addPercent) / (1.0f + addPercentMulti);
                         }
                     }
                     break;
@@ -259,14 +259,14 @@ namespace STELLAREST_F1
                         {
                             shieldBase += addAmount;
                             shieldBase *= (1.0f + addPercent) * (1.0f + addPercentMulti);
-                            target.Shield = Mathf.Ceil(Mathf.Clamp(shieldBase - target.MaxHealth, 0.0f, target.MaxHealth));
+                            target.Shield = Mathf.Clamp(shieldBase - target.MaxHealth, 0.0f, target.MaxHealth);
                         }
                         else
                         {
                             shieldBase -= addAmount;
                             shieldBase /= 1.0f + addPercent;
                             shieldBase /= 1.0f + addPercentMulti;
-                            target.Shield = Mathf.Floor(Mathf.Clamp(shieldBase - target.MaxHealth, 0.0f, target.MaxHealth));
+                            target.Shield = Mathf.Clamp(shieldBase - target.MaxHealth, 0.0f, target.MaxHealth);
                         }
                     }
                     break;
@@ -277,14 +277,14 @@ namespace STELLAREST_F1
                         {
                             bonusHealthBase += addAmount;
                             bonusHealthBase *= (1.0f + addPercent) * (1.0f + addPercentMulti);
-                            target.BonusHealth = Mathf.Ceil(Mathf.Clamp(bonusHealthBase - target.MaxHealth, 0.0f, target.MaxHealth));
+                            target.BonusHealth = Mathf.Clamp(bonusHealthBase - target.MaxHealth, 0.0f, target.MaxHealth);
                         }
                         else
                         {
                             bonusHealthBase -= addAmount;
                             bonusHealthBase /= 1.0f + addPercent;
                             bonusHealthBase /= 1.0f + addPercentMulti;
-                            target.BonusHealth = Mathf.Floor(Mathf.Clamp(bonusHealthBase - target.MaxHealth, 0.0f, target.MaxHealth));
+                            target.BonusHealth = Mathf.Clamp(bonusHealthBase - target.MaxHealth, 0.0f, target.MaxHealth);
                         }
                     }
                     break;

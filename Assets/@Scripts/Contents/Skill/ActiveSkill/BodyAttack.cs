@@ -38,7 +38,8 @@ namespace STELLAREST_F1
             return true;
         }
 
-        public override void OnSkillExit() { }
+        public override void OnSkillExit() 
+            => base.OnSkillExit();
         #endregion Events
 
         private Vector3 _startPoint = Vector3.zero;

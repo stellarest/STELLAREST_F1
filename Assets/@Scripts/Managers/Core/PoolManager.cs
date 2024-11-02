@@ -70,9 +70,6 @@ namespace STELLAREST_F1
             return _pools[poolingID].Pop();
         }
 
-        public void ClearPools()
-            => _pools.Clear();
-
         // public void Remove(int poolingID)
         // {
         //     if (_pools.TryGetValue(key: poolingID, out Pool pool) == false)

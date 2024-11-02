@@ -67,9 +67,6 @@ namespace STELLAREST_F1
                         owner: _owner
                     );
 
-            if (effectID == 101201)
-                Debug.Log("aaa");
-
             ActiveEffects.Add(effect);
 #if UNITY_EDITOR
             Dev_ActiveEffects.Add(effect.Dev_NameTextID);
@@ -84,8 +81,8 @@ namespace STELLAREST_F1
         {
             return effectSpawnType switch
             {
-                EEffectSpawnType.None => Vector3.zero,
-                EEffectSpawnType.SetParentOwner => _owner.CenterLocalPosition,  // ---> TEMP
+                //EEffectSpawnType.SetParentOwner => _owner.CenterLocalPosition,  // ---> TEMP
+                EEffectSpawnType.None or EEffectSpawnType.SetParentOwner => Vector3.zero,
                 EEffectSpawnType.SkillFromOwner => skill.EnteredOwnerPos,
                 EEffectSpawnType.SkillFromTarget => skill.EnteredTargetPos,
                 _ => throw new ArgumentOutOfRangeException(nameof(GetSkillEffectSpawnPos), $"Invalid value type: {effectSpawnType}")
@@ -176,9 +173,6 @@ namespace STELLAREST_F1
         {
             foreach (var effectID in effectIDs)
             {
-                if (effectID == 101201)
-                    Debug.Log("asdasd");
-
                 EffectBase effect = ActiveEffects.Find(e => e.DataTemplateID == effectID);
                 if (effect != null)
                     RemoveEffect(effect);
@@ -198,6 +192,20 @@ namespace STELLAREST_F1
             }
         }
 
+        public void RemoveEffect(EffectBase effect)
+        {
+            if (effect.IsValid() == false)
+                return;
+
+            effect.ExitEffect();
+        }
+    }
+}
+
+/*      TT
+        // ---------------------------------------------
+        // -------------------- CUT --------------------
+        // --------------------------------------------- 
         public void RemoveEffect(EffectBase effect)
         {
             if (effect.IsValid() == false)
@@ -282,13 +290,7 @@ namespace STELLAREST_F1
             //                     }
             //                 });
         }
-    }
-}
 
-/*      TT
-        // ---------------------------------------------
-        // -------------------- CUT --------------------
-        // --------------------------------------------- 
         // public EffectBase GenerateEffect(int effectID, SkillBase skill = null)
         // {
         //     EffectBase effect = Managers.Object.SpawnBaseObject<EffectBase>(

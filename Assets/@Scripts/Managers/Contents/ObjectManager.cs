@@ -18,8 +18,9 @@ namespace STELLAREST_F1
     public class ObjectManager
     {
         public List<Hero> Heroes { get; } = new List<Hero>();
-        public List<Monster> Monsters { get; } = new List<Monster>();
+        public HashSet<Monster> Monsters { get; } = new HashSet<Monster>();
         public HashSet<Env> Envs { get; } = new HashSet<Env>();
+        public HashSet<EffectBase> Effects { get; } = new HashSet<EffectBase>();
         public HeroLeaderController HeroLeaderController { get; private set; } = null;
         public CameraController CameraController { get; set; } = null;
 
@@ -37,6 +38,23 @@ namespace STELLAREST_F1
         public Transform ProjectileRoot => GetRoot(CString.Object(EString.Obj_ProjectilesRoot));
         public Transform TextFontRoot => GetRoot(CString.Object(EString.Obj_TextFontsRoot));
         public Transform EffectRoot => GetRoot(CString.Object(EString.Obj_EffectsRoot));
+
+        public void ClearForNextWave()
+        {
+            Managers.Pool.Clear();
+
+            foreach (var monster in Monsters)
+                UnityEngine.Object.Destroy(monster.gameObject, Time.deltaTime);
+            Monsters.Clear();
+
+            foreach (var env in Envs)
+                UnityEngine.Object.Destroy(env.gameObject, Time.deltaTime);
+            Envs.Clear();
+
+            foreach (var env in Envs)
+                UnityEngine.Object.Destroy(env.gameObject, Time.deltaTime);
+            Effects.Clear();
+        }
 
         private bool IsCellObject(EObjectType objectType)
             => objectType == EObjectType.Hero || objectType == EObjectType.Monster || objectType == EObjectType.Env;
@@ -181,6 +199,7 @@ namespace STELLAREST_F1
                         EffectBase effect = go.GetComponent<EffectBase>();
                         effect.Owner = owner.GetComponent<BaseCellObject>();
                         effect.SetInfo(dataID, spawnPos);
+                        Effects.Add(effect);
                         return effect as T;
                     }
             }
@@ -322,6 +341,7 @@ namespace STELLAREST_F1
                     break;
 
                 case EObjectType.Effect:
+                    Effects.Remove(obj as EffectBase);
                     Managers.Resource.Destroy(go: obj.gameObject, Util.GetPoolingID(EObjectType.Effect, dataID));
                     break;
             }

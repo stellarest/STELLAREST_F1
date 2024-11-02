@@ -224,20 +224,30 @@ namespace STELLAREST_F1
             if (isCritical)
                 damage *= 1 + CFloat.CValue(EFloat.CValue_CriticalDamageUpRate);
 
+            /*
+                // ARMOR: 20% (6 ~ 9)
+                // ARMOR: 30% (5 ~ 8)
+                // ARMOR: 40% (4 ~ 7)
+                // ARMOR: 65% (2 ~ 4)
+            */
+
             float remainedDamage = 0.0f;
             float finalDamage = 0.0f;
             if (Armor > 0.0f)
             {
                 finalDamage = Mathf.Max(damage * (1 - Armor), 1.0f);
-                finalDamage = Mathf.Floor(finalDamage); // --- 내림
+
+                // Armor: +30%
+                // Result Damage: 5 ~ 8
+                finalDamage = Mathf.Floor(finalDamage);
             }
             else
-                finalDamage = Mathf.Round(damage);      // --- 반올림
+                finalDamage = Mathf.Floor(damage);
 
             // --- 순서는 Shield부터
             if (Shield > 0.0f)
             {
-                remainedDamage = OnDamagedBonusHealth(finalDamage, EEffectType.SubStat_Shield);
+                remainedDamage = OnDamagedHealthBuff(finalDamage, EEffectType.SubStat_Shield);
                 if (BaseEffect.IsAppliedEffect(EEffectType.VFX_ShieldBlue))
                 {
                     BaseEffect.OnShowEffect(EEffectType.VFX_ShieldBlue);
@@ -276,7 +286,7 @@ namespace STELLAREST_F1
             else if (BonusHealth > 0.0f)
             {
                 float prevBonusHealth = finalDamage > BonusHealth ? BonusHealth : 0.0f;
-                remainedDamage = OnDamagedBonusHealth(finalDamage, EEffectType.SubStat_BonusHealth);
+                remainedDamage = OnDamagedHealthBuff(finalDamage, EEffectType.SubStat_BonusHealth);
                 if (BaseEffect.IsAppliedEffect(EEffectType.VFX_BonusHealth))
                 {
                     BaseEffect.OnShowEffect(EEffectType.VFX_BonusHealth);
@@ -469,7 +479,7 @@ namespace STELLAREST_F1
             // }
         }
 
-        private float OnDamagedBonusHealth(float finalDamage, EEffectType effectBuffType)
+        private float OnDamagedHealthBuff(float finalDamage, EEffectType effectBuffType)
         {
             float remainedDamage = 0.0f;
             if (effectBuffType == EEffectType.SubStat_BonusHealth)
