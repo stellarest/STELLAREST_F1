@@ -27,10 +27,11 @@ namespace STELLAREST_F1
             else if (stateInfo.shortNameHash == _creatureAnim.Upper_SkillA)
                 OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_SkillA);
 
-            else if (stateInfo.shortNameHash == _creatureAnim.Upper_SkillB)
+            else if (stateInfo.shortNameHash == _creatureAnim.Upper_SkillB ||
+                     stateInfo.shortNameHash == _creatureAnim.Upper_SkillB_Elite)
                 OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_SkillB);
 
-            if (stateInfo.shortNameHash == _creatureAnim.Upper_SkillC)
+            else if (stateInfo.shortNameHash == _creatureAnim.Upper_SkillC)
                 OnAnimStateEnterHandler?.Invoke(ECreatureAnimState.Upper_SkillC);
 
             else if (stateInfo.shortNameHash == _creatureAnim.Upper_CollectEnv)

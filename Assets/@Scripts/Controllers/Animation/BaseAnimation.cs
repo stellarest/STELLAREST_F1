@@ -11,9 +11,6 @@ namespace STELLAREST_F1
     public class BaseAnimation : InitBase
     {
         protected BaseCellObject _owner = null;
-        // protected bool IsValidOwner => _baseOwner.IsValid();
-        // protected bool IsValidTarget => _baseOwner.Target.IsValid();
-        
         public Animator Animator { get; private set; } = null;
    
         public override bool Init()

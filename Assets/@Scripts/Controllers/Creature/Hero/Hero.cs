@@ -286,6 +286,7 @@ namespace STELLAREST_F1
             if (IsMaxLevel)
             {
                 Debug.Log($"<color=yellow>MaxLv Hero</color>");
+                HeroAnim.SetEliteMax();
                 HeroBody.ChangeSpriteSet(Managers.Data.HeroSpriteDataDict[BaseStat.LevelID]);
             }
 

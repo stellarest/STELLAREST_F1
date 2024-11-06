@@ -45,13 +45,17 @@ namespace STELLAREST_F1
         public readonly int Upper_Idle = Animator.StringToHash(CString.AnimState(EString.AnimState_Upper_Idle));
         public readonly int Upper_Move = Animator.StringToHash(CString.AnimState(EString.AnimState_Upper_Move));
         public readonly int Upper_SkillA = Animator.StringToHash(CString.AnimState(EString.AnimState_Upper_SkillA));
+
         public readonly int Upper_SkillB = Animator.StringToHash(CString.AnimState(EString.AnimState_Upper_SkillB));
+        public readonly int Upper_SkillB_Elite = Animator.StringToHash(CString.AnimState(EString.AnimState_Upper_SkillB_Elite));
+        
         public readonly int Upper_SkillC = Animator.StringToHash(CString.AnimState(EString.AnimState_Upper_SkillC));
         public readonly int Upper_CollectEnv = Animator.StringToHash(CString.AnimState(EString.AnimState_Upper_CollectEnv));
         public readonly int Upper_Dead = Animator.StringToHash(CString.AnimState(EString.AnimState_Upper_Dead));
 
         // --- Anim Params
         protected readonly int IsMoving = Animator.StringToHash(CString.AnimParam(EString.AnimParam_IsMoving));
+        protected readonly int IsEliteMax = Animator.StringToHash(CString.AnimParam(EString.AnimParam_IsEliteMax));
         protected readonly int CanSkill = Animator.StringToHash(CString.AnimParam(EString.AnimParam_CanSkill));
         protected readonly int OnSkillA = Animator.StringToHash(CString.AnimParam(EString.AnimParam_OnSkillA));
         protected readonly int OnSkillB = Animator.StringToHash(CString.AnimParam(EString.AnimParam_OnSkillB));
@@ -171,6 +175,11 @@ namespace STELLAREST_F1
             Animator.SetFloat(MovementSpeed, result);
         }
 
+        public void SetEliteMax()
+        {
+            Animator.SetBool(IsEliteMax, true);
+        }
+
         #region Init Core
         public override bool Init()
         {
@@ -218,6 +227,9 @@ namespace STELLAREST_F1
             _creatureAnimCallback.OnDustEffectHandler -= OnDustEffectCallback;
             _creatureAnimCallback.OnDustEffectHandler += OnDustEffectCallback;
         }
+
+        public void RemoveOnSkillEventHandler(SkillBase skill)
+            => _creatureAnimCallback.OnSkillHandler -= skill.OnSkillCallback;
 
         public void RefreshAnimEventHandlers()
         {

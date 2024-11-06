@@ -1,9 +1,45 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using UnityEngine;
 
 namespace STELLAREST_F1
 {
+    public class VFXWindBlade : VFXBase
+    {
+        protected float _movementSpeed = 0.0f;
+        private ParticleSystem _ps = null;
+        private ParticleSystemRenderer _psRenderer = null;
+
+        protected override void InitialSetInfo(int dataID)
+        {
+            base.InitialSetInfo(dataID);
+            _movementSpeed = 5.0f;
+            _ps = GetComponent<ParticleSystem>();
+            _psRenderer = GetComponent<ParticleSystemRenderer>();
+        }
+
+        public override void ApplyEffect()
+        {
+            base.ApplyEffect();
+
+            var main = _ps.main;
+            float angle = Mathf.Atan2(-_enteredDir.normalized.x, _enteredDir.normalized.y) * Mathf.Rad2Deg;
+            if (angle < 0.0f)
+                angle += 360.0f;
+
+            main.startRotation = angle * Mathf.Deg2Rad * -1.0f;
+            _psRenderer.flip = new Vector3(_enteredSignX, 0, 0);
+        }
+
+        private void LateUpdate()
+        {
+            transform.position += _enteredDir.normalized * _movementSpeed * Time.deltaTime;
+        }
+    }
+}
+
+/*
     public class VFXWindBlade : VFXBase
     {
         protected float _movementSpeed = 0.0f;
@@ -41,4 +77,4 @@ namespace STELLAREST_F1
             transform.position += _enteredDir.normalized * _movementSpeed * Time.deltaTime;
         }
     }
-}
+*/

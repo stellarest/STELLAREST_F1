@@ -496,12 +496,6 @@ namespace STELLAREST_F1
             // --- 나중에 Sick, Healthy 추가
             Upper_Dead,
             Max = Upper_Dead + 1
-
-            // --- Prev
-            // Lower
-            // Lower_Idle,
-            // Lower_Move,
-            //Max = Lower_Move + 1
         }
 
         // --- Font: InGame Font
@@ -681,13 +675,17 @@ namespace STELLAREST_F1
             AnimState_Upper_Idle,
             AnimState_Upper_Move,
             AnimState_Upper_SkillA,
+            
             AnimState_Upper_SkillB,
+            AnimState_Upper_SkillB_Elite,
+
             AnimState_Upper_SkillC,
             AnimState_Upper_CollectEnv,
             AnimState_Upper_Dead,
 
             // --- Anim Params
             AnimParam_IsMoving,
+            AnimParam_IsEliteMax,
             AnimParam_CanSkill,
             AnimParam_OnSkillA,
             AnimParam_OnSkillB,

@@ -589,7 +589,10 @@ namespace STELLAREST_F1
                 EString.AnimState_Upper_Idle => "Upper_Idle",
                 EString.AnimState_Upper_Move => "Upper_Move",
                 EString.AnimState_Upper_SkillA => "Upper_SkillA",
+
                 EString.AnimState_Upper_SkillB => "Upper_SkillB",
+                EString.AnimState_Upper_SkillB_Elite => "Upper_SkillB_Elite",
+
                 EString.AnimState_Upper_SkillC => "Upper_SkillC",
                 EString.AnimState_Upper_CollectEnv => "Upper_CollectEnv",
                 EString.AnimState_Upper_Dead => "Upper_Dead",
@@ -602,6 +605,7 @@ namespace STELLAREST_F1
             return eString switch
             {
                 EString.AnimParam_IsMoving => "IsMoving",
+                EString.AnimParam_IsEliteMax => "IsEliteMax",
                 EString.AnimParam_CanSkill => "CanSkill",
                 EString.AnimParam_OnSkillA => "OnSkillA",
                 EString.AnimParam_OnSkillB => "OnSkillB",

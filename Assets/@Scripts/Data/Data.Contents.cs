@@ -434,7 +434,12 @@ namespace STELLAREST_F1.Data
         public bool ManualCoolTime;
         public int[] OnCreate_GenEffectIDs;             // UnlockSkill로 AddComponent로 새롭게 생성 되었을 때, 최초 한 번
         public int[] OnSkillEnter_GenEffectIDs;         // OnSkillEnterState
+
+        // Skill 마다 Callback Count를 넣는다.
+        // OnSkillCallback_GenEffectIDs 이거 자체가 하나의 콜백당 하나의 이펙트 구성으로 해야할듯
+        // public int OnSkillCallback_GenEffectCount
         public int[] OnSkillCallback_GenEffectIDs;      // OnSkillCallback 
+
         public int[] OnSkillExit_GenEffectIDs;          // OnSkillExitState
         public int[] OnSkillExit_RemoveEffectIDs;       // OnSkillExitState
     }
@@ -516,6 +521,7 @@ namespace STELLAREST_F1.Data
         public EObjectSize EffectSize;
         public EEffectSpawnType EffectSpawnType;
         public bool KeepEffectOnExit; 
+        public bool IsStaticEffect;
     }
 
     public class EffectDataLoader : ILoader<int, EffectData>

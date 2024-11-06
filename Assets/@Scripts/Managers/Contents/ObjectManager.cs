@@ -39,23 +39,6 @@ namespace STELLAREST_F1
         public Transform TextFontRoot => GetRoot(CString.Object(EString.Obj_TextFontsRoot));
         public Transform EffectRoot => GetRoot(CString.Object(EString.Obj_EffectsRoot));
 
-        public void ClearForNextWave()
-        {
-            Managers.Pool.Clear();
-
-            foreach (var monster in Monsters)
-                UnityEngine.Object.Destroy(monster.gameObject, Time.deltaTime);
-            Monsters.Clear();
-
-            foreach (var env in Envs)
-                UnityEngine.Object.Destroy(env.gameObject, Time.deltaTime);
-            Envs.Clear();
-
-            foreach (var env in Envs)
-                UnityEngine.Object.Destroy(env.gameObject, Time.deltaTime);
-            Effects.Clear();
-        }
-
         private bool IsCellObject(EObjectType objectType)
             => objectType == EObjectType.Hero || objectType == EObjectType.Monster || objectType == EObjectType.Env;
 

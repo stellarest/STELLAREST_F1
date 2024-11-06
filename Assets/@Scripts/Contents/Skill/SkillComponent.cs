@@ -148,6 +148,7 @@ namespace STELLAREST_F1
         private void DestroySkill(SkillBase skill)
         {
             skill.StopAllCoroutines();
+            _owner.CreatureAnim.RemoveOnSkillEventHandler(skill);
             RemoveActiveSkill(skill);
             SkillData skillData = skill.SkillData;
             _owner.RemoveEffect(skillData.OnCreate_GenEffectIDs);

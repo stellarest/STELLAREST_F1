@@ -222,27 +222,28 @@ namespace STELLAREST_F1
             if (SkillData.OnSkillEnter_GenEffectIDs.Length != 0)
                 GenerateSkillEffects(SkillData.OnSkillEnter_GenEffectIDs);
 
-            _genEffectsOnceOnSkillCallback = false;
             return true;
         }
 
         private bool IsCorrectSkillType
             => Owner.CreatureSkill.CurrentSkillType == SkillType;
-        
-        // --- OnSkillCallback 자체가 여러번 호출 될 수도 있음,,, 이펙트는 한 번만 호출할 수 있도록
-        // --- 그러나 아직은 TEMP. 플래그 많이 두는거 별로 안좋아해서.
-        private bool _genEffectsOnceOnSkillCallback = false;
+
+        private int _currentEffectIdx = 0;
         public virtual bool OnSkillCallback()
         {
             if (IsCorrectSkillType)
             {
-                if (_genEffectsOnceOnSkillCallback == false)
+                // if (SkillData.OnSkillCallback_GenEffectIDs.Length != 0)
+                // {
+                //     GenerateSkillEffects(SkillData.OnSkillCallback_GenEffectIDs);
+                // }
+                
+                int length = SkillData.OnSkillCallback_GenEffectIDs.Length;
+                if (length > 0 && _currentEffectIdx < length)
                 {
-                    if (SkillData.OnSkillCallback_GenEffectIDs.Length != 0)
-                    {
-                        GenerateSkillEffects(SkillData.OnSkillCallback_GenEffectIDs);
-                        _genEffectsOnceOnSkillCallback = true;
-                    }
+                    GenerateSkillEffect(SkillData.OnSkillCallback_GenEffectIDs[_currentEffectIdx++]);
+                    if (_currentEffectIdx == length)
+                        _currentEffectIdx = 0;
                 }
 
                 return true;
@@ -254,7 +255,6 @@ namespace STELLAREST_F1
         public virtual void OnSkillExit()
         {
             _skillTargets.Clear();
-            _genEffectsOnceOnSkillCallback = false;
 
             if (SkillData.OnSkillExit_GenEffectIDs.Length > 0)
                 GenerateSkillEffects(SkillData.OnSkillExit_GenEffectIDs);
@@ -271,6 +271,14 @@ namespace STELLAREST_F1
 
             foreach (var effectID in effectIDs)
                 Owner.GenerateSkillEffect(effectID, this);
+        }
+
+        private void GenerateSkillEffect(int effectID)
+        {
+            if (Owner == null)
+                return;
+
+            Owner.GenerateSkillEffect(effectID, this);
         }
 
         private void RemoveSkillEffects(IEnumerable<int> effectIDs)
