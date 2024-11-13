@@ -114,7 +114,8 @@ namespace STELLAREST_F1
 
             GameObject root = new GameObject { name = "@CellPos" };
             SortingGroup sg = root.AddComponent<SortingGroup>();
-            sg.sortingLayerName = "BaseObject";
+            //sg.sortingLayerName = "BaseObject";
+            sg.sortingLayerName = CString.CValue(EString.CValue_BaseObject);
             sg.sortingOrder = 999;
 
             for (int y = MaxY - 1; y >= MinY; --y)

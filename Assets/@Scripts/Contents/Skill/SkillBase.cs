@@ -239,14 +239,38 @@ namespace STELLAREST_F1
                 // }
                 
                 int length = SkillData.OnSkillCallback_GenEffectIDs.Length;
-                if (length > 0 && _currentEffectIdx < length)
+                if (length > 0)
                 {
-                    GenerateSkillEffect(SkillData.OnSkillCallback_GenEffectIDs[_currentEffectIdx++]);
+                    if (_currentEffectIdx < length)
+                        GenerateSkillEffect(SkillData.OnSkillCallback_GenEffectIDs[_currentEffectIdx++]);
+                    
                     if (_currentEffectIdx == length)
+                    {
                         _currentEffectIdx = 0;
+                        Debug.Log("END !!");
+                    }
                 }
 
                 return true;
+
+                // if (_currentEffectIdx++ == length)
+                // {
+                //     _currentEffectIdx = 0;
+                //     return true;
+                // }
+                // else
+                // {
+                //     GenerateSkillEffect(SkillData.OnSkillCallback_GenEffectIDs[_currentEffectIdx]);
+                // }
+
+                // if (length > 0 && _currentEffectIdx < length)
+                // {
+                //     GenerateSkillEffect(SkillData.OnSkillCallback_GenEffectIDs[_currentEffectIdx]);
+                //     // if (_currentEffectIdx == length)
+                //     //     _currentEffectIdx = 0;
+                // }
+
+                // return true;
             }
 
             return false;

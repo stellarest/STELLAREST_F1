@@ -8,7 +8,6 @@ namespace STELLAREST_F1
 {
     public class HeroBody : CreatureBody
     {
-        #region Background
         private Dictionary<EHeroBody, BodyContainer[]> _heroBodyDict = new Dictionary<EHeroBody, BodyContainer[]>();
         private Dictionary<EEnvType, Sprite[]> _envHeroWeaponDict = new Dictionary<EEnvType, Sprite[]>();
         private Sprite[] _defaultHeroWeapons = new Sprite[(int)EHeroWeapons.Max];
@@ -25,14 +24,8 @@ namespace STELLAREST_F1
         public Sprite[] Mouths { get; private set; } = null;
         public Color[] MouthsColors { get; private set; } = null;
 
-
         public Hero Owner { get; private set; } = null;
         private Material _matDefaultEyes = null;
-
-        // --- 제거 예정
-        // public List<SpriteRenderer> Skin { get; } = new List<SpriteRenderer>();
-        // public List<SpriteRenderer> Appearance { get; } = new List<SpriteRenderer>();
-        // --- 제거 얘정
 
         public BodyContainer GetContainer(EHeroBody_Head head) => _heroBodyDict[EHeroBody.Head][(int)head];
         public BodyContainer GetContainer(EHeroBody_Upper upperBody) => _heroBodyDict[EHeroBody.UpperBody][(int)upperBody];
@@ -1072,9 +1065,7 @@ namespace STELLAREST_F1
                 container.SPR.SetPropertyBlock(container.MatPropertyBlock);
             }
         }
-        #endregion
 
-        #region Core
         public override void InitialSetInfo(int dataID, BaseObject owner)
         {
             Owner = owner as Hero;
@@ -1101,7 +1092,7 @@ namespace STELLAREST_F1
 
             // --- Head(skin)
             string tag = Util.GetStringFromEnum(EHeroBody_Head.Head);
-            Transform tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
+            Transform tr = Util.FindChild<Transform>(Owner.gameObject, name: tag, true, true);
             SpriteRenderer spr = tr.GetComponent<SpriteRenderer>();
             spr.material = _matDefault;
             Sprite sprite = Managers.Resource.Load<Sprite>(skin.Head);
@@ -2346,6 +2337,40 @@ namespace STELLAREST_F1
             envWeapons[(int)EHeroGrade.Max] = Managers.Resource.Load<Sprite>(CString.Sprite(EString.Sprite_MaxPickaxe));
             _envHeroWeaponDict.Add(EEnvType.Rock, envWeapons);
         }
-        #endregion
+
+        public override void EnableBodyTrail(bool enable)
+        {
+            foreach (var containers in _heroBodyDict.Values)
+            {
+                foreach (var container in containers)
+                {
+                    if (container.STrail == null)
+                        continue;
+
+                    if (enable)
+                    {
+                        container.STrail.enabled = true;
+                        container.STrail.EnableTrail();
+                    }
+                    else
+                    {
+                        container.STrail.DisableTrail();
+                        container.STrail.enabled = false;
+                    }
+                }
+            }
+        }
+
+        public void EnableWeaponTrail(bool enable)
+        {
+            // DO SOMETHING,,
+            if (Owner.IsMaxLevel == false)
+            {
+                Debug.LogWarning($"{nameof(EnableWeaponTrail)}::IsMaxLevel::{Owner.IsMaxLevel}");
+                return;
+            }
+            
+            
+        }
     }
 }

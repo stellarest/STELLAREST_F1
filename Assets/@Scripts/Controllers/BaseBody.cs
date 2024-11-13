@@ -13,6 +13,23 @@ namespace STELLAREST_F1
             this.Tag = tag;
             this.TR = tr;
             this.SPR = spr;
+            if (spr != null)
+            {
+                STrail = TR.gameObject.GetOrAddComponent<SpriteTrail.SpriteTrail>();
+                STrail.m_SortingLayerID = UnityEngine.SortingLayer.NameToID(CString.CValue(EString.CValue_BaseObject));
+                STrail.m_OrderInSortingLayer = CInt.Sorting(EInt.Sorting_BaseObject);
+
+                // SpriteTrail.TrailPreset trailPreset = Managers.Resource.Load<SpriteTrail.TrailPreset>(CString.SObject(EString.SO_Trail_Base)); 
+                // if (trailPreset == null)
+                // {
+                //     Debug.LogError("Something is wrong !!");
+                //     Debug.Break();
+                // }
+                // STrail.SetTrailPreset(trailPreset);
+                // --- 가장 초기에 Trail 컴포넌트 자체는 비활성화로 시작
+                STrail.enabled = false;
+            }
+
             this.DefaultSPRMat = defaultSPRMat;
             this.DefaultSPRColor = defaultSPRColor;
             this.DefaultMatColor = defaultMatColor;
@@ -22,6 +39,8 @@ namespace STELLAREST_F1
         public string Tag { get; private set; } = null;
         public Transform TR { get; private set; } = null;
         public SpriteRenderer SPR { get; private set; } = null;
+        public SpriteTrail.SpriteTrail STrail { get; } = null;
+
         public Material DefaultSPRMat { get; } = null;
         public Color DefaultSPRColor { get; private set; } = Color.white;
         public Color DefaultMatColor { get; private set; } = Color.white;
@@ -61,6 +80,9 @@ namespace STELLAREST_F1
 
         // --- Reset
         public virtual void ResetMaterialsAndColors() { }
+
+        // --- Trail
+        public virtual void EnableBodyTrail(bool enable) { }
 
         // --- Effect: Hurt Flash
         public void StartCoHurtFlashEffect(bool isCritical = false) => StartCoroutine(CoHurtFlashEffect(isCritical));

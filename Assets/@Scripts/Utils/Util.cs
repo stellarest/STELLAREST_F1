@@ -664,6 +664,47 @@ namespace STELLAREST_F1
                 _ => throw new ArgumentOutOfRangeException($"{nameof(CString)}::{nameof(Object)}", $"\nInvalid: {eString}")
             };
         }
+
+        /*
+            SO_Trail_Ball,
+            SO_Trail_Base,
+            SO_Trail_Bio,
+            SO_Trail_Bird,
+            SO_Trail_Blob,
+            SO_Trail_Happy,
+            SO_Trail_Pos,
+            SO_Trail_PureRainbow,
+            SO_Trail_SpriteTrail,
+            SO_Trail_Stamp,
+            SO_Trail_Tired,
+        */
+
+        public static string SObject(EString eString)
+        {
+            return eString switch
+            {
+                EString.SO_Trail_Ball => "SO_Trail_Ball",
+                EString.SO_Trail_Base => "SO_Trail_Base",
+                EString.SO_Trail_Bio => "SO_Trail_Bio",
+                EString.SO_Trail_Bird => "SO_Trail_Bird",
+                EString.SO_Trail_Blob => "SO_Trail_Blob",
+                EString.SO_Trail_Happy => "SO_Trail_Happy",
+                EString.SO_Trail_Pos => "SO_Trail_Pos",
+                EString.SO_Trail_PureRainbow => "SO_Trail_PureRainbow",
+                EString.SO_Trail_SpriteTrail => "SO_Trail_SpriteTrail",
+                EString.SO_Trail_Tired => "SO_Trail_Tired",
+                _ => throw new ArgumentOutOfRangeException($"{nameof(CString)}::{nameof(SObject)}", $"\nInvalid: {eString}")
+            };
+        }
+
+        public static string CValue(EString eString)
+        {
+            return eString switch
+            {
+                EString.CValue_BaseObject => "BaseObject",
+                _ => throw new ArgumentOutOfRangeException($"{nameof(CString)}::{nameof(CValue)}", $"\nInvalid: {eString}")
+            };
+        }
     }
 }
 

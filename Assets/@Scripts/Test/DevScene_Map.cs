@@ -62,6 +62,14 @@ namespace STELLAREST_F1
             }
         }
 
+        private void SpawnChicken_Test(int cellPosX, int cellPosY)
+        {
+            // --- Init Start Cel Pos: -9, 8
+            Monster chicken = Managers.Object.SpawnBaseObject<Monster>
+                (objectType: EObjectType.Monster, spawnPos: Managers.Map.CellToCenterWorld(new Vector3Int(cellPosX, cellPosY, 0)),
+                dataID: CInt.ID(EInt.ID_Chicken));
+        }
+
         private void Test()
         {
             UI_Joystick joystick = Managers.UI.ShowBaseUI<UI_Joystick>();

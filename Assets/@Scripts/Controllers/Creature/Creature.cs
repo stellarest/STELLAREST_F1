@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 using STELLAREST_F1.Data;
 using static STELLAREST_F1.Define;
 
@@ -14,6 +15,8 @@ namespace STELLAREST_F1
         public SkillComponent CreatureSkill { get; protected set; } = null; // Skills
         public CreatureBody CreatureBody { get; protected set; } = null;
         public CreatureAnimation CreatureAnim { get; private set; } = null;
+
+        public SpriteTrail.SpriteTrail WeaponTrail { get; protected set; } = null;
 
         public bool CanSkill
         {
@@ -587,8 +590,8 @@ namespace STELLAREST_F1
         protected Coroutine _coUpdateAI = null;
         protected IEnumerator CoUpdateAI()
         {
-            // if (ObjectType == EObjectType.Monster)
-            //     yield break;
+            if (ObjectType == EObjectType.Monster)
+                yield break;
 
             while (true)
             {

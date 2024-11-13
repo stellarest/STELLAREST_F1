@@ -22,6 +22,18 @@ namespace STELLAREST_F1
                 if (LevelUp() == false)
                     Debug.LogWarning($"Faield to LvUp, IsMaxLv: {IsMaxLevel}");
             }
+
+            if (Input.GetKeyDown(KeyCode.K))
+            {
+                Debug.Log("<color=white>Enable Trail</color>");
+                HeroBody.EnableBodyTrail(true);
+            }
+
+            if (Input.GetKeyDown(KeyCode.L))
+            {
+                Debug.Log("Disable Trail");
+                HeroBody.EnableBodyTrail(false);
+            }
         }
         #endif
 
@@ -252,6 +264,10 @@ namespace STELLAREST_F1
                 Skill_A: 101100(Lv.01), 101002(Lv.03), 101004(Lv.05), 101007(Lv.08)
                 Skill_B: 101201(Lv.02), 101203(Lv.04), 101205(Lv.06), 102007(Lv.08)
                 Skill_C: 101302(Lv.03), 101304(Lv.05), 101306(Lv.07), 103007(Lv.08)
+                01 ~ 03: Common
+                04 ~ 05: Rare
+                06 ~ 07: Unique
+                08: Elite 
             */
 
             // --- SKILL_A

@@ -722,7 +722,23 @@ namespace STELLAREST_F1
             Obj_EnvsRoot,
             Obj_ProjectilesRoot,
             Obj_TextFontsRoot,
-            Obj_EffectsRoot
+            Obj_EffectsRoot,
+
+            // --- SObjects
+            SO_Trail_Ball,
+            SO_Trail_Base,
+            SO_Trail_Bio,
+            SO_Trail_Bird,
+            SO_Trail_Blob,
+            SO_Trail_Happy,
+            SO_Trail_Pos,
+            SO_Trail_PureRainbow,
+            SO_Trail_SpriteTrail,
+            SO_Trail_Stamp,
+            SO_Trail_Tired,
+
+            // --- Constant Value
+            CValue_BaseObject,
         }
     }
 }

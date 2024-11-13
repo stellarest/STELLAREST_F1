@@ -23,6 +23,8 @@ namespace STELLAREST_F1
         public Vector3 CenterLocalPosition => Vector3.up * ColliderRadius;
         [field: SerializeField] public Vector3 SpawnedPos { get; protected set; } = Vector3.zero;
 
+        public SpriteTrail.SpriteTrail BodyTrail { get; protected set; } = null;
+
         #region Core
         public override bool Init()
         {
@@ -42,7 +44,8 @@ namespace STELLAREST_F1
             RigidBody.simulated = false;
 
             SortingGroup = gameObject.GetOrAddComponent<SortingGroup>();
-            SortingGroup.sortingLayerName = "BaseObject";
+            //SortingGroup.sortingLayerName = "BaseObject";
+            SortingGroup.sortingLayerName = CString.CValue(EString.CValue_BaseObject);
             SortingGroup.sortingOrder = CInt.Sorting(EInt.Sorting_BaseObject);
 
             return true;
