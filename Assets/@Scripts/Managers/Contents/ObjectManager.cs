@@ -48,7 +48,7 @@ namespace STELLAREST_F1
             GameObject go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: ProjectileRoot, poolingID: Util.GetPoolingID(EObjectType.Projectile, dataID));
             if (go == null)
             {
-                Debug.LogError($"{nameof(SpawnBaseObject)}, {nameof(EObjectType.Projectile)}, Input: \"{dataID}\"");
+                Util.LogError(obj: nameof(ObjectManager), method: nameof(SpawnProjectile), log: $"Input: {dataID}");
                 return null;
             }
 
@@ -85,7 +85,7 @@ namespace STELLAREST_F1
                         go = Managers.Resource.Instantiate(key: heroData.PrefabLabel, parent: HeroRoot, poolingID: Util.GetPoolingID(EObjectType.Hero, dataID));
                         if (go == null)
                         {
-                            Debug.LogError($"{nameof(SpawnBaseObject)}, {nameof(EObjectType.Hero)}, Input: \"{dataID}\"");
+                            Util.LogError(obj: nameof(ObjectManager), method: nameof(SpawnBaseObject), log: $"Input: {EObjectType.Hero}, {dataID}");
                             return null;
                         }
 
@@ -107,7 +107,7 @@ namespace STELLAREST_F1
                         go = Managers.Resource.Instantiate(key: monsterData.PrefabLabel, parent: MonsterRoot, poolingID: Util.GetPoolingID(EObjectType.Monster, dataID));
                         if (go == null)
                         {
-                            Debug.LogError($"{nameof(SpawnBaseObject)}, {nameof(EObjectType.Monster)}, Input: \"{dataID}\"");
+                            Util.LogError(obj: nameof(ObjectManager), method: nameof(SpawnBaseObject), log: $"Input: {EObjectType.Monster}, {dataID}");
                             return null;
                         }
 
@@ -129,7 +129,7 @@ namespace STELLAREST_F1
                         go = Managers.Resource.Instantiate(key: envData.PrefabLabel, parent: EnvRoot, poolingID:  Util.GetPoolingID(EObjectType.Env, dataID));
                         if (go == null)
                         {
-                            Debug.LogError($"{nameof(SpawnBaseObject)}, {nameof(EObjectType.Env)}, Input: \"{dataID}\"");
+                            Util.LogError(obj: nameof(ObjectManager), method: nameof(SpawnBaseObject), log: $"Input: {EObjectType.Env}, {dataID}");
                             return null;
                         }
 
@@ -150,7 +150,7 @@ namespace STELLAREST_F1
                         go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: ProjectileRoot, poolingID: Util.GetPoolingID(EObjectType.Projectile, dataID));
                         if (go == null)
                         {
-                            Debug.LogError($"{nameof(SpawnBaseObject)}, {nameof(EObjectType.Projectile)}, Input: \"{dataID}\"");
+                            Util.LogError(obj: nameof(ObjectManager), method: nameof(SpawnBaseObject), log: $"Input: {EObjectType.Projectile}, {dataID}");
                             return null;
                         }
 
@@ -164,7 +164,7 @@ namespace STELLAREST_F1
                     {
                         if (owner == null)
                         {
-                            Debug.LogWarning($"None of owner for spawning effect.");
+                            Util.LogError(obj: nameof(ObjectManager), method: nameof(SpawnBaseObject), log: $"Input: {EObjectType.Effect}, Effect must need an owner.");
                             return null;
                         }   
 
@@ -175,7 +175,7 @@ namespace STELLAREST_F1
                         go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: EffectRoot, poolingID:  Util.GetPoolingID(EObjectType.Effect, dataID));
                         if (go == null)
                         {
-                            Debug.LogError($"{nameof(SpawnBaseObject)}, {nameof(EObjectType.Projectile)}, Input: \"{dataID}\"");
+                            Util.LogError(obj: nameof(ObjectManager), method: nameof(SpawnBaseObject), log: $"Input: {EObjectType.Effect}, {dataID}");
                             return null;
                         }
 

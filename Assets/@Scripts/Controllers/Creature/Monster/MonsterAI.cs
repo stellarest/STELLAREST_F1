@@ -160,7 +160,7 @@ namespace STELLAREST_F1
         {
             if (_monsterOwner.CreatureAIState != ECreatureAIState.Idle)
             {
-                Debug.LogWarning("Patrol can only run in idle state.");
+                Util.LogWarning(obj: nameof(MonsterAI), method: nameof(StartCoPatrol), log: "Patrol can only start in idle state.");
                 return;
             }
 

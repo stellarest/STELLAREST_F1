@@ -43,7 +43,10 @@ namespace STELLAREST_F1
                     objects[i] = Util.FindChild<T>(gameObject, names[i], true, inActiveTarget: true);
 
                 if (objects[i] == null)
-                    Debug.LogWarning($"{nameof(UI_Base)}, {nameof(Bind)}, Input : \"{names[i]}\"");
+                {
+                    Util.LogWarning(obj: nameof(UI_Base), method: nameof(Bind), log: $"Input: \"{names[i]}\"");
+                    //Debug.LogWarning($"{nameof(UI_Base)}, {nameof(Bind)}, Input : \"{names[i]}\"");
+                }
             }
         }
 

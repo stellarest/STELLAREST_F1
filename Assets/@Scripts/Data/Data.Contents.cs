@@ -172,6 +172,7 @@ namespace STELLAREST_F1.Data
     public class HeroSpriteData_Weapon
     {
         public string LWeapon;
+        public string LWeaponSTrailPreset;
         public Vector3 LWeaponLocalScale;
         public int LWeaponSorting;
         public bool LWeaponFlipX;
@@ -186,6 +187,7 @@ namespace STELLAREST_F1.Data
         public bool[] LWeaponChildFlipYs;
 
         public string RWeapon;
+        public string RWeaponSTrailPreset;
         public Vector3 RWeaponLocalScale;
         public int RWeaponSorting;
         public bool RWeaponFlipX;

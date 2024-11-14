@@ -265,8 +265,8 @@ namespace STELLAREST_F1
                             _heads[i] = Managers.Resource.Load<Sprite>(bird.Heads[i]);
                             if (_heads[i] == null)
                             {
-                                Debug.LogError($"{nameof(InitBody)}, {bird.Heads[i]}");
-                                Debug.Break();
+                                Util.LogError(obj: nameof(MonsterBody), method: nameof(InitBody), log: $"Input: {bird.Heads[i]}");
+                                return;
                             }
                         }
 
@@ -439,8 +439,8 @@ namespace STELLAREST_F1
                             _heads[i] = Managers.Resource.Load<Sprite>(quadrupeds.Heads[i]);
                             if (_heads[i] == null)
                             {
-                                Debug.LogError($"{nameof(InitBody)}, {quadrupeds.Heads[i]}");
-                                Debug.Break();
+                                Util.LogError(obj: nameof(MonsterBody), method: nameof(InitBody), log: $"Input: {quadrupeds.Heads[i]}");
+                                return;
                             }
                         }
 

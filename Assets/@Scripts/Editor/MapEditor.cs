@@ -78,7 +78,7 @@ namespace STELLAREST_F1
             GameObject[] gameObjects = Selection.gameObjects;
             if (gameObjects.Length == 0)
             {
-                Debug.LogWarning($"Please select map before.");
+                Util.LogWarning(obj: nameof(MapEditor), method: nameof(GenerateMap), log: "Select a map \"first\".");
                 return;
             }
 
@@ -87,7 +87,8 @@ namespace STELLAREST_F1
                 Tilemap tm = Util.FindChild<Tilemap>(go, TileMap.Tilemap_Collision, true);
                 if (tm == null)
                 {
-                    Debug.LogWarning($"Failed to get Tilemap component on \"{TileMap.Tilemap_Collision}\" object.");
+                    Util.LogWarning(obj: nameof(MapEditor), method: nameof(GenerateMap), log: "Tilemap is null.");
+                    // Debug.LogWarning($"Failed to get Tilemap component on \"{TileMap.Tilemap_Collision}\" object.");
                     return;
                 }
                 tm.RefreshAllTiles();
@@ -140,7 +141,8 @@ namespace STELLAREST_F1
                 string assetPath = Path.Combine("Assets/@Resources/TileMaps/Dev/Monsters", $"{name}.asset");
                 if (assetPath == "")
                 {
-                    Debug.LogWarning("AssetPath is empty.");
+                    Util.LogWarning(obj: nameof(MapEditor), method: nameof(CreateObjectTile), log: "assetPath is null, or empty.");
+                    // Debug.LogWarning("AssetPath is empty.");
                     continue;
                 }
 
@@ -152,7 +154,8 @@ namespace STELLAREST_F1
                     Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>($"Assets/@Resources/Sprites/Creature/Monsters/Icons/{spriteName}.png");
                     if (sprite == null)
                     {
-                        Debug.LogWarning($"Failed to find Sprite - {data.DescriptionTextID}");
+                        Util.LogWarning(obj: nameof(MapEditor), method: nameof(CreateObjectTile), log: "Sprite is null.");
+                        // Debug.LogWarning($"Failed to find Sprite - {data.DescriptionTextID}");
                         continue;
                     }
 
@@ -169,7 +172,8 @@ namespace STELLAREST_F1
                     Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>($"Assets/@Resources/Sprites/Creature/Monsters/Icons/{spriteName}.png");
                     if (sprite == null)
                     {
-                        Debug.LogWarning($"Failed to find Sprite - {data.DescriptionTextID}");
+                        Util.LogWarning(obj: nameof(MapEditor), method: nameof(CreateObjectTile), log: "Sprite is null.");
+                        // Debug.LogWarning($"Failed to find Sprite - {data.DescriptionTextID}");
                         continue;
                     }
 
@@ -179,7 +183,9 @@ namespace STELLAREST_F1
                     newCustomTile.ObjectType = EObjectType.Monster;
                     newCustomTile.sprite = sprite;
                     AssetDatabase.CreateAsset(newCustomTile, assetPath);
-                    Debug.Log($"{nameof(CreateObjectTile)}, Completed CreateAsset - {data.DescriptionTextID}");
+
+                    Util.Log($"Success CreateAsset: {data.DescriptionTextID}", highlight: true);
+                    // Debug.Log($"{nameof(CreateObjectTile)}, Completed CreateAsset - {data.DescriptionTextID}");
                 }
             }
             #endregion

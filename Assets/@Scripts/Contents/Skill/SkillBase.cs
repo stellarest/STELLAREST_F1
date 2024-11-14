@@ -45,8 +45,7 @@ namespace STELLAREST_F1
         {
             if (_manualCoolTime == false)
             {
-                Debug.LogError($"{nameof(StartManualCoolTime)}, Something is wrong..");
-                Debug.Break();
+                Util.LogError(obj: nameof(SkillBase), method: nameof(StartManualCoolTime));
                 return;
             }
 

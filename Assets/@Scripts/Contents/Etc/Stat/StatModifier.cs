@@ -89,7 +89,7 @@ namespace STELLAREST_F1
                     break;
 
                 // --- Sub Stats
-                case EEffectType.SubStat_Shield:
+                case EEffectType.MainStat_Shield:
                     {
                         float shieldBase = MaxHealth;
                         if (addStat)
@@ -107,7 +107,7 @@ namespace STELLAREST_F1
                         }
                     }
                     break;
-                case EEffectType.SubStat_BonusHealth:
+                case EEffectType.MainStat_BonusHealth:
                     {
                         float bonusHealthBase = MaxHealth;
                         if (addStat)
@@ -125,7 +125,7 @@ namespace STELLAREST_F1
                         }
                     }
                     break;
-                case EEffectType.SubStat_Armor:
+                case EEffectType.MainStat_Armor:
                     {
                         if (addStat)
                         {
@@ -140,7 +140,7 @@ namespace STELLAREST_F1
                         }
                     }
                     break;
-                case EEffectType.SubStat_Critical:
+                case EEffectType.MainStat_Critical:
                     {
                         if (addStat)
                         {
@@ -154,7 +154,7 @@ namespace STELLAREST_F1
                         }
                     }
                     break;
-                case EEffectType.SubStat_Dodge:
+                case EEffectType.MainStat_Dodge:
                     {
                         if (addStat)
                         {
@@ -168,7 +168,7 @@ namespace STELLAREST_F1
                         }
                     }
                     break;
-                case EEffectType.SubStat_Luck:
+                case EEffectType.PublicStat_Luck:
                     {
                         if (addStat)
                         {
@@ -182,7 +182,7 @@ namespace STELLAREST_F1
                         }
                     }
                     break;
-                case EEffectType.SubStat_InvincibleBlockCountPerWave:
+                case EEffectType.MainStat_InvincibleBlockCountPerWave:
                     {
                         if (addStat)
                             InvincibleBlockCountPerWave += Mathf.RoundToInt(addAmount);
@@ -198,8 +198,7 @@ namespace STELLAREST_F1
 #if UNITY_EDITOR
             if (target.IsValid() == false)
             {
-                Debug.LogWarning($"{nameof(StatModifier)}, {nameof(ApplyStatToTarget)}, !!");
-                Debug.Break();
+                Util.LogWarning(obj: nameof(StatModifier), method: nameof(ApplyStatToTarget), log: "Invalid target.");
                 return;
             }
 #endif
@@ -252,7 +251,7 @@ namespace STELLAREST_F1
                     break;
 
                 // --- Sub Stats
-                case EEffectType.SubStat_Shield:
+                case EEffectType.MainStat_Shield:
                     {
                         float shieldBase = target.MaxHealth;
                         if (addStat)
@@ -270,7 +269,7 @@ namespace STELLAREST_F1
                         }
                     }
                     break;
-                case EEffectType.SubStat_BonusHealth:
+                case EEffectType.MainStat_BonusHealth:
                     {
                         float bonusHealthBase = target.MaxHealth;
                         if (addStat)
@@ -288,7 +287,7 @@ namespace STELLAREST_F1
                         }
                     }
                     break;
-                case EEffectType.SubStat_Armor:
+                case EEffectType.MainStat_Armor:
                     {
                         if (addStat)
                         {
@@ -303,7 +302,7 @@ namespace STELLAREST_F1
                         }
                     }
                     break;
-                case EEffectType.SubStat_Critical:
+                case EEffectType.MainStat_Critical:
                     {
                         if (addStat)
                         {
@@ -317,7 +316,7 @@ namespace STELLAREST_F1
                         }
                     }
                     break;
-                case EEffectType.SubStat_Dodge:
+                case EEffectType.MainStat_Dodge:
                     {
                         if (addStat)
                         {
@@ -331,7 +330,7 @@ namespace STELLAREST_F1
                         }
                     }
                     break;
-                case EEffectType.SubStat_Luck:
+                case EEffectType.PublicStat_Luck:
                     {
                         if (addStat)
                         {
@@ -345,7 +344,7 @@ namespace STELLAREST_F1
                         }
                     }
                     break;
-                case EEffectType.SubStat_InvincibleBlockCountPerWave:
+                case EEffectType.MainStat_InvincibleBlockCountPerWave:
                     {
                         if (addStat)
                             target.InvincibleBlockCountPerWave += Mathf.RoundToInt(addAmount);

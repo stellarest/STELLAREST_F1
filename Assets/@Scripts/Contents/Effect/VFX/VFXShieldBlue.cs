@@ -51,7 +51,7 @@ public class VFXShieldBlue : VFXBase
         base.ApplyEffect();
         if (Owner.Shield == 0.0f)
         {
-            Debug.LogWarning("Zero value of BonusHealthShield.");
+            Util.LogWarning(obj: nameof(VFXShieldBlue), method: nameof(ApplyEffect), log: "Zero value of Shield.");
             ExitEffect();
             return;
         }

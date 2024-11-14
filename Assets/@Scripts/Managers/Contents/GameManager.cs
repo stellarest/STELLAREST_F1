@@ -44,7 +44,8 @@ namespace STELLAREST_F1
             Hero leader = leaderController.Leader;
             if (autoChangeFromDead == false && (leader.IsValid() == false || leader.CreatureAIState == ECreatureAIState.Dead))
             {
-                Debug.LogWarning("What the... hell is going on!");
+                Util.LogWarning(obj: nameof(GameManager), method: nameof(ChangeHeroLeader));
+                //Debug.LogWarning("What the... hell is going on!");
                 return;
             }
 
@@ -52,7 +53,8 @@ namespace STELLAREST_F1
             {
                 if (leaderController._coActivateChangeLeaderCoolTime != null)
                 {
-                    Debug.LogWarning("Wait Change Leader CoolTime..");
+                    Util.Log("Wait cooltime for changing leader.", warning: true, highlight: false);
+                    //Debug.LogWarning("Wait Change Leader CoolTime..");
                     return;
                 }
                 else
@@ -86,7 +88,7 @@ namespace STELLAREST_F1
             float _replaceHeroesDistance_Test = DevManager.Instance.TestReplaceDistance;
             if (_replaceHeroesDistance_Test < 1f)
             {
-                Debug.LogWarning("### You have to set over \"1f\" distance. ###");
+                // Debug.LogWarning("### You have to set over \"1f\" distance. ###");
                 return;
             }
             

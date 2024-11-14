@@ -20,19 +20,21 @@ namespace STELLAREST_F1
             if (Input.GetKeyDown(KeyCode.T))
             {
                 if (LevelUp() == false)
-                    Debug.LogWarning($"Faield to LvUp, IsMaxLv: {IsMaxLevel}");
+                    Util.Log("Faield to LvUp", warning: true, highlight: true); 
             }
 
             if (Input.GetKeyDown(KeyCode.K))
             {
-                Debug.Log("<color=white>Enable Trail</color>");
-                HeroBody.EnableBodyTrail(true);
+                Util.LogWarning(obj: nameof(Hero), method: nameof(Update));
+
+                // HeroBody.EnableBodyTrail(true);
+                // HeroBody.EnableWeaponTrail(true);
             }
 
             if (Input.GetKeyDown(KeyCode.L))
             {
-                Debug.Log("Disable Trail");
-                HeroBody.EnableBodyTrail(false);
+                // HeroBody.EnableBodyTrail(false);
+                // HeroBody.EnableWeaponTrail(false);
             }
         }
         #endif
@@ -301,9 +303,9 @@ namespace STELLAREST_F1
             CreatureAnim.RefreshAnimEventHandlers();
             if (IsMaxLevel)
             {
-                Debug.Log($"<color=yellow>MaxLv Hero</color>");
+                Debug.Log($"<color=yellow>Success: EliteHero(Max)</color>");
                 HeroAnim.SetEliteMax();
-                HeroBody.ChangeSpriteSet(Managers.Data.HeroSpriteDataDict[BaseStat.LevelID]);
+                HeroBody.SetEliteSpritesSet(MaxLevelID);
             }
 
             return true;

@@ -200,8 +200,7 @@ namespace STELLAREST_F1
         {
             if (focus == GameObjects.JoystickBG || focus == GameObjects.JoystickCursor)
             {
-                Debug.LogError($"{nameof(UI_Joystick)}, {nameof(GetFocusIndex)}, Input : \"{focus}\"");
-                Debug.Break();
+                Util.LogError(obj: nameof(UI_Joystick), method: nameof(GetFocusIndex), log: $"Input: {focus}");
                 return -1;
             }
 

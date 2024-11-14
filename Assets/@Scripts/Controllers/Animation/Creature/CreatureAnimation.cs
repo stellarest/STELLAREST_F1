@@ -239,7 +239,7 @@ namespace STELLAREST_F1
             SkillBase[] skills = _creatureOwner.CreatureSkill.SkillArray;
             if (skills == null)
             {
-                Debug.LogError("Creatute must have Skill_A at least.");
+                Util.LogError(obj: nameof(CreatureAnimation), method: nameof(RefreshAnimEventHandlers), log: "All of creatures must have SKILL_A.");
                 return;
             }
 

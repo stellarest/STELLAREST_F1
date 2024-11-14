@@ -124,6 +124,7 @@ namespace STELLAREST_F1
         public int LevelID => _levelID;
 
         [SerializeField] protected int _maxLevelID = -1;
+        public int MaxLevelID => _maxLevelID;
         public bool IsMaxLevel => _levelID == _maxLevelID;
         #endregion
 
@@ -135,6 +136,13 @@ namespace STELLAREST_F1
         [field: SerializeField] public float Dodge { get; set; } = 0.0f;
         [field: SerializeField] public float Luck { get; set; } = 0.0f;
         [field: SerializeField] public int InvincibleBlockCountPerWave { get; set; } = 0;
+        #endregion
+
+        #region Public Stat
+        // 
+        // Luck
+        // ExpUp
+        // 
         #endregion
 
         public void InitialSetInfo(int dataID, BaseCellObject owner)

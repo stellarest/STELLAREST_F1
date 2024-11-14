@@ -123,8 +123,7 @@ namespace STELLAREST_F1
                     return typeof(MonsterAI);
 
                 default:
-                    Debug.LogError($"{nameof(Util)}, {nameof(GetTypeFromClassName)}, Input : \"{className}, Please check Define.EClassName\"");
-                    Debug.Break();
+                    Util.LogError(obj: nameof(Util), method: nameof(GetTypeFromClassName), log: $"Input: {className}, Please check Define.EClassName.");
                     return null;
             }
         }
@@ -256,13 +255,13 @@ namespace STELLAREST_F1
             EEffectType.MainStat_AttackRate,
             EEffectType.MainStat_MovementSpeed,
 
-            EEffectType.SubStat_Shield,
-            EEffectType.SubStat_BonusHealth,
-            EEffectType.SubStat_Armor,
-            EEffectType.SubStat_Critical,
-            EEffectType.SubStat_Dodge,
-            EEffectType.SubStat_Luck,
-            EEffectType.SubStat_InvincibleBlockCountPerWave
+            EEffectType.MainStat_Shield,
+            EEffectType.MainStat_BonusHealth,
+            EEffectType.MainStat_Armor,
+            EEffectType.MainStat_Critical,
+            EEffectType.MainStat_Dodge,
+            EEffectType.PublicStat_Luck,
+            EEffectType.MainStat_InvincibleBlockCountPerWave
         };
 
         public static bool IsEffectStatType(EEffectType effectType)
@@ -357,6 +356,52 @@ namespace STELLAREST_F1
             var method = type.GetMethod("Clear");
             method.Invoke(new object(), null);
             Debug.Log("### CLEAR ###");
+        }
+
+        // 기존 디폴트 로그 컬러는 이거였음. 약간 퍼런색 #ADD8E6
+        [Conditional("UNITY_EDITOR")]
+        public static void Log(object log, bool warning = false, bool highlight = false)
+        {
+            if (warning == false)
+            {
+                if (highlight == false)
+                    Debug.Log($"{log}");
+                else
+                    Debug.Log($"<color=#A3E635>{log}</color>");
+            }
+            else
+            {
+                if (highlight == false)
+                    Debug.Log($"<color=#FF9999>{log}</color>");
+                else
+                    Debug.Log($"<color=#FF6666>{log}</color>");
+            }
+        }
+
+        [Conditional("UNITY_EDITOR")]
+        public static void LogWarning(object obj, object method)
+        {
+            Debug.LogWarning($"<color=#00FF22>[!]</color> <color=yellow>{obj}</color><color=white>::</color><color=cyan>{method}</color>");
+        }
+
+        [Conditional("UNITY_EDITOR")]
+        public static void LogWarning(object obj, object method, object log)
+        {
+            Debug.LogWarning($"<color=#00FF22>[!]</color> <color=yellow>{obj}</color><color=white>::</color><color=cyan>{method}</color>\n<color=white>{log}</color>");
+        }
+
+        [Conditional("UNITY_EDITOR")]
+        public static void LogError(object obj, object method)
+        {
+            Debug.LogError($"<color=red>[!!!]</color> <color=yellow>{obj}</color><color=white>::</color><color=cyan>{method}</color>");
+            Debug.Break();
+        }
+        
+        [Conditional("UNITY_EDITOR")]
+        public static void LogError(object obj, object method, object log)
+        {
+            Debug.LogError($"<color=red>[!!!]</color> <color=yellow>{obj}</color><color=white>::</color><color=cyan>{method}</color>\n<color=white>{log}</color>");
+            Debug.Break();
         }
 
         public static GameObject SpawnTestObject(Vector3Int spawnCellPos)
@@ -665,34 +710,21 @@ namespace STELLAREST_F1
             };
         }
 
-        /*
-            SO_Trail_Ball,
-            SO_Trail_Base,
-            SO_Trail_Bio,
-            SO_Trail_Bird,
-            SO_Trail_Blob,
-            SO_Trail_Happy,
-            SO_Trail_Pos,
-            SO_Trail_PureRainbow,
-            SO_Trail_SpriteTrail,
-            SO_Trail_Stamp,
-            SO_Trail_Tired,
-        */
-
         public static string SObject(EString eString)
         {
             return eString switch
             {
-                EString.SO_Trail_Ball => "SO_Trail_Ball",
-                EString.SO_Trail_Base => "SO_Trail_Base",
-                EString.SO_Trail_Bio => "SO_Trail_Bio",
-                EString.SO_Trail_Bird => "SO_Trail_Bird",
-                EString.SO_Trail_Blob => "SO_Trail_Blob",
-                EString.SO_Trail_Happy => "SO_Trail_Happy",
-                EString.SO_Trail_Pos => "SO_Trail_Pos",
-                EString.SO_Trail_PureRainbow => "SO_Trail_PureRainbow",
-                EString.SO_Trail_SpriteTrail => "SO_Trail_SpriteTrail",
-                EString.SO_Trail_Tired => "SO_Trail_Tired",
+                EString.SO_STrail_Ball => "SO_STrail_Ball",
+                EString.SO_STrail_Base => "SO_STrail_Base",
+                EString.SO_STrail_Bio => "SO_STrail_Bio",
+                EString.SO_STrail_Bird => "SO_STrail_Bird",
+                EString.SO_STrail_Blob => "SO_STrail_Blob",
+                EString.SO_STrail_Happy => "SO_STrail_Happy",
+                EString.SO_STrail_Pos => "SO_STrail_Pos",
+                EString.SO_STrail_PureRainbow => "SO_STrail_PureRainbow",
+                EString.SO_STrail_SpriteTrail => "SO_STrail_SpriteTrail",
+                EString.SO_STrail_Tired => "SO_STrail_Tired",
+                EString.SO_STrail_SwordOfEndingLight => "SO_STrail_SwordOfEndingLight",
                 _ => throw new ArgumentOutOfRangeException($"{nameof(CString)}::{nameof(SObject)}", $"\nInvalid: {eString}")
             };
         }

@@ -17,7 +17,7 @@ namespace STELLAREST_F1
         public enum EHeroGrade
         {
             Default,
-            Max
+            Elite,
         }
 
         public enum EGameGrade
@@ -426,19 +426,21 @@ namespace STELLAREST_F1
             VFX_ShieldBlue,
             VFX_BonusHealth,
 
-            // BUFF STATS
+            // MAIN STATS
             MainStat_MaxHealth,
             MainStat_Damage,
             MainStat_AttackRate,
             MainStat_MovementSpeed,
 
-            SubStat_Shield,
-            SubStat_BonusHealth,
-            SubStat_Armor,
-            SubStat_Critical,
-            SubStat_Dodge,
-            SubStat_Luck,
-            SubStat_InvincibleBlockCountPerWave,
+            MainStat_Shield,
+            MainStat_BonusHealth,
+            MainStat_Armor,
+            MainStat_Critical,
+            MainStat_Dodge,
+            MainStat_InvincibleBlockCountPerWave,
+
+            // PUBLIC STAT
+            PublicStat_Luck,
 
             // DOT
             Dot_Example01,
@@ -725,17 +727,18 @@ namespace STELLAREST_F1
             Obj_EffectsRoot,
 
             // --- SObjects
-            SO_Trail_Ball,
-            SO_Trail_Base,
-            SO_Trail_Bio,
-            SO_Trail_Bird,
-            SO_Trail_Blob,
-            SO_Trail_Happy,
-            SO_Trail_Pos,
-            SO_Trail_PureRainbow,
-            SO_Trail_SpriteTrail,
-            SO_Trail_Stamp,
-            SO_Trail_Tired,
+            SO_STrail_Ball,
+            SO_STrail_Base,
+            SO_STrail_Bio,
+            SO_STrail_Bird,
+            SO_STrail_Blob,
+            SO_STrail_Happy,
+            SO_STrail_Pos,
+            SO_STrail_PureRainbow,
+            SO_STrail_SpriteTrail,
+            SO_STrail_Stamp,
+            SO_STrail_Tired,
+            SO_STrail_SwordOfEndingLight,
 
             // --- Constant Value
             CValue_BaseObject,

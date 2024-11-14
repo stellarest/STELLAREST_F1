@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using STELLAREST_F1.Data;
 using static STELLAREST_F1.Define;
+using UnityEngine.UIElements.Experimental;
 
 namespace STELLAREST_F1
 {
@@ -26,6 +27,14 @@ namespace STELLAREST_F1
 
         public Hero Owner { get; private set; } = null;
         private Material _matDefaultEyes = null;
+
+        private SpriteTrail.TrailPreset _weaponTrailPreset = null;
+        public void SetWeaponSTrailPreset(HeroSpriteData heroSpriteData)
+        {
+            _weaponTrailPreset = Managers.Resource.Load<SpriteTrail.TrailPreset>(heroSpriteData.Weapon.LWeaponSTrailPreset);
+            if (_weaponTrailPreset != null)
+                GetContainer(EHeroBody_Weapon.WeaponL_Armor).STrail.SetTrailPreset(_weaponTrailPreset);
+        }
 
         public BodyContainer GetContainer(EHeroBody_Head head) => _heroBodyDict[EHeroBody.Head][(int)head];
         public BodyContainer GetContainer(EHeroBody_Upper upperBody) => _heroBodyDict[EHeroBody.UpperBody][(int)upperBody];
@@ -211,8 +220,19 @@ namespace STELLAREST_F1
             }
         }
 
-        public void ChangeSpriteSet(HeroSpriteData heroSpriteData)
+        // --- 1. 스탯(전투에 참여중인 히어로)
+        // --- 2. 스킬(전투에 참여중인 히어로의 전용 스킬 + 공용 스킬(엑티브, 패시브))
+        // --- 3. 아이템(전용 아이템, 공용 아이템)
+        public void SetEliteSpritesSet(int dataID)
         {
+            if (Managers.Data.HeroSpriteDataDict.TryGetValue(key: dataID, value: out HeroSpriteData eliteHeroSpriteData) == false)
+            {
+                Util.LogError(obj: nameof(HeroBody), method: nameof(SetEliteSpritesSet));
+                return;
+            }
+
+            SetWeaponSTrailPreset(eliteHeroSpriteData);
+
             // --- Release Current
             ReleaseWeapon();
             foreach (var containers in _heroBodyDict.Values)
@@ -237,16 +257,15 @@ namespace STELLAREST_F1
             }
 
             // --- Set New
-            HeroSpriteData_Skin skin = heroSpriteData.Skin;
+            HeroSpriteData_Skin skin = eliteHeroSpriteData.Skin;
             if (ColorUtility.TryParseHtmlString(skin.SkinColor, out Color skinColor) == false)
             {
-                Debug.LogError($"{nameof(ChangeSpriteSet)}, {skin.SkinColor}");
-                Debug.Break();
+                Util.LogError(obj: nameof(HeroBody), method: nameof(SetEliteSpritesSet), log: $"Input: {skin.SkinColor}");
                 return;
             }
 
             // --- Head
-            HeroSpriteData_Head head = heroSpriteData.Head;
+            HeroSpriteData_Head head = eliteHeroSpriteData.Head;
             foreach (var container in _heroBodyDict[EHeroBody.Head])
             {
                 if (container.SPR == null)
@@ -277,8 +296,8 @@ namespace STELLAREST_F1
                         Eyebrows[i] = Managers.Resource.Load<Sprite>(head.Eyebrows[i]);
                         if (Eyebrows[i] == null)
                         {
-                            Debug.LogError($"{nameof(ChangeSpriteSet)}, {head.Eyebrows[i]}");
-                            Debug.Break();
+                            Util.LogError(obj: nameof(HeroBody), method: nameof(SetEliteSpritesSet), log: $"Input: {head.Eyebrows[i]}");
+                            return;
                         }
 
                         string eyebrowsColor = head.EyebrowsColors[i];
@@ -286,8 +305,8 @@ namespace STELLAREST_F1
                             EyebrowsColors[i] = color;
                         else
                         {
-                            Debug.LogError($"{nameof(ChangeSpriteSet)}, {head.EyebrowsColors[i]}");
-                            Debug.Break();
+                            Util.LogError(obj: nameof(HeroBody), method: nameof(SetEliteSpritesSet), log: $"Input: {head.EyebrowsColors[i]}");
+                            return;
                         }
                     }
 
@@ -304,8 +323,8 @@ namespace STELLAREST_F1
                         Eyes[i] = Managers.Resource.Load<Sprite>(head.Eyes[i]);
                         if (Eyes[i] == null)
                         {
-                            Debug.LogError($"{nameof(ChangeSpriteSet)}, {head.Eyes[i]}");
-                            Debug.Break();
+                            Util.LogError(obj: nameof(HeroBody), method: nameof(SetEliteSpritesSet), log: $"Input: {head.Eyes[i]}");
+                            return;
                         }
 
                         string eyesColor = head.EyesColors[i];
@@ -313,8 +332,8 @@ namespace STELLAREST_F1
                             EyesColors[i] = color;
                         else
                         {
-                            Debug.LogError($"{nameof(ChangeSpriteSet)}, {head.EyesColors[i]}");
-                            Debug.Break();
+                            Util.LogError(obj: nameof(HeroBody), method: nameof(SetEliteSpritesSet), log: $"Input: {head.EyesColors[i]}");
+                            return;
                         }
                     }
 
@@ -331,8 +350,8 @@ namespace STELLAREST_F1
                         Mouths[i] = Managers.Resource.Load<Sprite>(head.Mouth[i]);
                         if (Mouths[i] == null)
                         {
-                            Debug.LogError($"{nameof(ChangeSpriteSet)}, {head.Mouth[i]}");
-                            Debug.Break();
+                            Util.LogError(obj: nameof(HeroBody), method: nameof(SetEliteSpritesSet), log: $"Input: {head.Mouth[i]}");
+                            return;
                         }
 
                         string mouthColor = head.MouthColors[i];
@@ -340,8 +359,8 @@ namespace STELLAREST_F1
                             MouthsColors[i] = color;
                         else
                         {
-                            Debug.LogError($"{nameof(ChangeSpriteSet)}, {head.MouthColors[i]}");
-                            Debug.Break();
+                            Util.LogError(obj: nameof(HeroBody), method: nameof(SetEliteSpritesSet), log: $"Input: {head.MouthColors[i]}");
+                            return;
                         }
                     }
 
@@ -396,7 +415,7 @@ namespace STELLAREST_F1
             }
 
             // --- UpperBody
-            HeroSpriteData_UpperBody upperBody = heroSpriteData.UpperBody;
+            HeroSpriteData_UpperBody upperBody = eliteHeroSpriteData.UpperBody;
             foreach (var container in _heroBodyDict[EHeroBody.UpperBody])
             {
                 // --- Torso(skin)
@@ -555,7 +574,7 @@ namespace STELLAREST_F1
             }
 
             // --- LowerBody
-            HeroSpriteData_LowerBody lowerBody = heroSpriteData.LowerBody;
+            HeroSpriteData_LowerBody lowerBody = eliteHeroSpriteData.LowerBody;
             foreach (var container in _heroBodyDict[EHeroBody.LowerBody])
             {
                 // --- Pelvis(skin)
@@ -645,7 +664,7 @@ namespace STELLAREST_F1
             }
 
             // --- Weapon
-            HeroSpriteData_Weapon weapon = heroSpriteData.Weapon;
+            HeroSpriteData_Weapon weapon = eliteHeroSpriteData.Weapon;
             foreach (var container in _heroBodyDict[EHeroBody.Weapon])
             {
                 // --- WeaponL_Armor
@@ -1066,22 +1085,35 @@ namespace STELLAREST_F1
             }
         }
 
+        private HeroSpriteData GetHeroSpriteData(int levelID)
+        {
+            if (Managers.Data.HeroSpriteDataDict.TryGetValue(key: levelID, value: out HeroSpriteData heroSpriteData) == false)
+                return null;
+
+            return heroSpriteData;
+        }
+
         public override void InitialSetInfo(int dataID, BaseObject owner)
         {
             Owner = owner as Hero;
             _matDefaultEyes = Managers.Resource.Load<Material>(CString.Material(EString.Mat_EyesPaint));
-            InitBody(Managers.Data.HeroSpriteDataDict[dataID]);
+            InitBody(dataID);
             InitEnvWeapon();
         }
 
-        private void InitBody(HeroSpriteData heroSpriteData)
+        private void InitBody(int dataID)
         {
+            if (Managers.Data.HeroSpriteDataDict.TryGetValue(key: dataID, value: out HeroSpriteData heroSpriteData) == false)
+            {
+                Util.LogError(obj: nameof(HeroBody), method: nameof(InitBody));
+                return;
+            }
+
             // --- Skin Color(if it has invalid value, error)
             HeroSpriteData_Skin skin = heroSpriteData.Skin;
             if (ColorUtility.TryParseHtmlString(skin.SkinColor, out Color skinColor) == false)
             {
-                Debug.LogError($"{nameof(InitBody)}, {skin.SkinColor}");
-                Debug.Break();
+                Util.LogError(obj: nameof(HeroBody), method: nameof(InitBody));
                 return;
             }
 
@@ -1138,8 +1170,8 @@ namespace STELLAREST_F1
                 Eyebrows[i] = Managers.Resource.Load<Sprite>(head.Eyebrows[i]);
                 if (Eyebrows[i] == null)
                 {
-                    Debug.LogError($"{nameof(InitBody)}, {heroSpriteData.Head.Eyebrows[i]}");
-                    Debug.Break();
+                    Util.LogError(obj: nameof(HeroBody), method: nameof(InitBody), log: $"Input: {heroSpriteData.Head.Eyebrows[i]}");
+                    return;
                 }
 
                 string eyebrowsColor = head.EyebrowsColors[i];
@@ -1147,8 +1179,8 @@ namespace STELLAREST_F1
                     EyebrowsColors[i] = color;
                 else
                 {
-                    Debug.LogError($"{nameof(InitBody)}, {heroSpriteData.Head.EyebrowsColors[i]}");
-                    Debug.Break();
+                    Util.LogError(obj: nameof(HeroBody), method: nameof(InitBody), log: $"Input: {heroSpriteData.Head.EyebrowsColors[i]}");
+                    return;
                 }
             }
 
@@ -1177,8 +1209,8 @@ namespace STELLAREST_F1
                 Eyes[i] = Managers.Resource.Load<Sprite>(head.Eyes[i]);
                 if (Eyes[i] == null)
                 {
-                    Debug.LogError($"{nameof(InitBody)}, {head.Eyes[i]}");
-                    Debug.Break();
+                    Util.LogError(obj: nameof(HeroBody), method: nameof(InitBody), log: $"Input: {head.Eyes[i]}");
+                    return;
                 }
 
                 string eyesColors = head.EyesColors[i];
@@ -1186,8 +1218,8 @@ namespace STELLAREST_F1
                     EyesColors[i] = color;
                 else
                 {
-                    Debug.LogError($"{nameof(InitBody)}, {head.EyesColors[i]}");
-                    Debug.Break();
+                    Util.LogError(obj: nameof(HeroBody), method: nameof(InitBody), log: $"Input: {head.EyesColors[i]}");
+                    return;
                 }
             }
 
@@ -1216,8 +1248,8 @@ namespace STELLAREST_F1
                 Mouths[i] = Managers.Resource.Load<Sprite>(head.Mouth[i]);
                 if (Mouths[i] == null)
                 {
-                    Debug.LogError($"{nameof(InitBody)}, {heroSpriteData.Head.Mouth[i]}");
-                    Debug.Break();
+                    Util.LogError(obj: nameof(HeroBody), method: nameof(InitBody), log: $"Input: {heroSpriteData.Head.Mouth[i]}");
+                    return;
                 }
 
                 string mouthColor = head.MouthColors[i];
@@ -1225,8 +1257,8 @@ namespace STELLAREST_F1
                     MouthsColors[i] = color;
                 else
                 {
-                    Debug.LogError($"{nameof(InitBody)}, {head.MouthColors[i]}");
-                    Debug.Break();
+                    Util.LogError(obj: nameof(HeroBody), method: nameof(InitBody), log: $"Input: {head.MouthColors[i]}");
+                    return;
                 }
             }
 
@@ -1945,6 +1977,7 @@ namespace STELLAREST_F1
             spr.SetPropertyBlock(matPB);
 
             // --- Weapon
+            SetWeaponSTrailPreset(heroSpriteData);
             HeroSpriteData_Weapon weapon = heroSpriteData.Weapon;
             BodyContainer[] weaponContainers = new BodyContainer[(int)EHeroBody_Weapon.Max];
             _heroBodyDict.Add(EHeroBody.Weapon, weaponContainers);
@@ -2329,12 +2362,12 @@ namespace STELLAREST_F1
         {
             Sprite[] envWeapons = new Sprite[(int)EEnvType.Max];
             envWeapons[(int)EHeroGrade.Default] = Managers.Resource.Load<Sprite>(CString.Sprite(EString.Sprite_DefaultWoodcutterAxe));
-            envWeapons[(int)EHeroGrade.Max] = Managers.Resource.Load<Sprite>(CString.Sprite(EString.Sprite_MaxWoodcutterAxe));
+            envWeapons[(int)EHeroGrade.Elite] = Managers.Resource.Load<Sprite>(CString.Sprite(EString.Sprite_MaxWoodcutterAxe));
             _envHeroWeaponDict.Add(EEnvType.Tree, envWeapons);
 
             envWeapons = new Sprite[(int)EEnvType.Max];
             envWeapons[(int)EHeroGrade.Default] = Managers.Resource.Load<Sprite>(CString.Sprite(EString.Sprite_DefaultPickaxe));
-            envWeapons[(int)EHeroGrade.Max] = Managers.Resource.Load<Sprite>(CString.Sprite(EString.Sprite_MaxPickaxe));
+            envWeapons[(int)EHeroGrade.Elite] = Managers.Resource.Load<Sprite>(CString.Sprite(EString.Sprite_MaxPickaxe));
             _envHeroWeaponDict.Add(EEnvType.Rock, envWeapons);
         }
 
@@ -2350,6 +2383,7 @@ namespace STELLAREST_F1
                     if (enable)
                     {
                         container.STrail.enabled = true;
+                        container.STrail.m_OrderInSortingLayer = CInt.Sorting(EInt.Sorting_BaseObject);
                         container.STrail.EnableTrail();
                     }
                     else
@@ -2363,14 +2397,49 @@ namespace STELLAREST_F1
 
         public void EnableWeaponTrail(bool enable)
         {
-            // DO SOMETHING,,
-            if (Owner.IsMaxLevel == false)
-            {
-                Debug.LogWarning($"{nameof(EnableWeaponTrail)}::IsMaxLevel::{Owner.IsMaxLevel}");
-                return;
-            }
+            // --- 문제점
+            // Body가 켜져있는 상태에서 무기를 enable하면,
+            // 기존에 Body 프리셋으로 남아있던 무기 트레일이 그대로 살아있음.
+            // ---> 아예 전용 웨폰 트레일로 장착을 시켜야함.
+
+            Util.LogError(obj: nameof(HeroBody), method: nameof(EnableWeaponTrail), log: $"abcdefg,,,");
             
-            
+            // EnableBodyTrail(false); // --- BodyTrail와 Weapon은 따로 움직임
+            // Sprite weaponSprite = GetContainer(EHeroBody_Weapon.WeaponL_Armor).SPR.sprite;
+            // SpriteTrail.SpriteTrail sTrail = GetContainer(EHeroBody_Weapon.WeaponL_Armor).STrail;
+            // if (weaponSprite != null && sTrail.m_CurrentTrailPreset != null)
+            // {
+            //     if (enable)
+            //     {
+            //         sTrail.enabled = true;
+            //         sTrail.m_OrderInSortingLayer = CInt.Sorting(EInt.Sorting_Effect);
+            //         sTrail.EnableTrail();
+            //     }
+            //     else
+            //     {
+            //         sTrail.m_OrderInSortingLayer = CInt.Sorting(EInt.Sorting_BaseObject);
+            //         sTrail.DisableTrail();
+            //         sTrail.enabled = false;
+            //     }
+            // }
+
+            // weaponSprite = GetContainer(EHeroBody_Weapon.WeaponR_Armor).SPR.sprite;
+            // sTrail = GetContainer(EHeroBody_Weapon.WeaponR_Armor).STrail;
+            // if (weaponSprite != null && sTrail.m_CurrentTrailPreset != null)
+            // {
+            //     if (enable)
+            //     {
+            //         sTrail.enabled = true;
+            //         sTrail.m_OrderInSortingLayer = CInt.Sorting(EInt.Sorting_Effect);
+            //         sTrail.EnableTrail();
+            //     }
+            //     else
+            //     {
+            //         sTrail.m_OrderInSortingLayer = CInt.Sorting(EInt.Sorting_BaseObject);
+            //         sTrail.DisableTrail();
+            //         sTrail.enabled = false;
+            //     }
+            // }
         }
     }
 }

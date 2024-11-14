@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.Tilemaps;
 using static STELLAREST_F1.Define;
 
@@ -611,12 +612,16 @@ namespace STELLAREST_F1
             int y = MaxY - currentPos.y - 1;
             if (x < 0 || x >= _cellCollisionType.GetLength(1) || y < 0 || y >= _cellCollisionType.GetLength(0))
             {
-                Debug.LogWarning($"### Out of index ###");
+                Util.LogWarning(obj: nameof(MapManager), method: nameof(CheckOnTile), log: "Out of idx.");
+                // Debug.LogWarning($"### Out of index ###");
                 return;
             }
 
-            Debug.Log($"xMin: {MinX}, xMax: {MaxX}, yMin: {MinY}, yMax: {MaxY}");
-            Debug.Log($"Cell[{currentPos.x}][{currentPos.y}] | Tile[{x}][{y}]: {_cellCollisionType[y, x]}");
+            Util.Log($"xMin: {MinX}, xMax: {MaxX}, yMin: {MinY}, yMax: {MaxY}");
+            //Debug.Log($"xMin: {MinX}, xMax: {MaxX}, yMin: {MinY}, yMax: {MaxY}");
+
+            Util.Log($"Cell[{currentPos.x}][{currentPos.y}] | Tile[{x}][{y}]: {_cellCollisionType[y, x]}", highlight: true);
+            // Debug.Log($"Cell[{currentPos.x}][{currentPos.y}] | Tile[{x}][{y}]: {_cellCollisionType[y, x]}");
         }
 
         public void CheckOnTile(Vector3 worldPos)
@@ -629,12 +634,16 @@ namespace STELLAREST_F1
 
             if (x < 0 || x >= _cellCollisionType.GetLength(1) || y < 0 || y >= _cellCollisionType.GetLength(0))
             {
-                Debug.LogWarning($"### Out of index ### | x: {x}, y: {y}");
+                Util.LogWarning(obj: nameof(MapManager), method: nameof(CheckOnTile), log: $"Input: x: {x}, y: {y}. Out of idx.");
+                // Debug.LogWarning($"### Out of index ### | x: {x}, y: {y}");
                 return;
             }
 
-            Debug.Log($"CellPos: ({cellPos.x}, {cellPos.y})");
-            Debug.Log($"Tile[{x}][{y}]: {_cellCollisionType[y, x]}");
+            Util.Log($"CellPos: ({cellPos.x}, {cellPos.y})");
+            // Debug.Log($"CellPos: ({cellPos.x}, {cellPos.y})");
+
+            Util.Log($"Tile[{x}][{y}]: {_cellCollisionType[y, x]}", highlight: true);
+            //Debug.Log($"Tile[{x}][{y}]: {_cellCollisionType[y, x]}");
         }
 
         public void PrintCollisionTile()

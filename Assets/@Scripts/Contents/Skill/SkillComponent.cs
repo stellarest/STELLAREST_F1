@@ -62,8 +62,7 @@ namespace STELLAREST_F1
             SkillBase skillA = TryUnlockSkill(ESkillType.Skill_A);
             if (skillA == null)
             {
-                Debug.LogError($"{nameof(SkillComponent)}::{nameof(InitialSetInfo)}, You must have one skill at least.");
-                Debug.Break();
+                Util.LogError(obj: nameof(SkillComponent), method: nameof(InitialSetInfo), log: "You must have a skill.");
                 return;
             }
 
@@ -105,7 +104,7 @@ namespace STELLAREST_F1
             SkillBase newSkill = gameObject.AddComponent(skillClassType) as SkillBase;
             if (newSkill == null)
             {
-                Debug.LogError($"Failed: {nameof(TryUnlockSkill)}");
+                Util.LogError(obj: nameof(SkillComponent), method: nameof(TryUnlockSkill));
                 return null;
             }
 
@@ -128,8 +127,7 @@ namespace STELLAREST_F1
             SkillBase lvUpSkill = gameObject.AddComponent(skillClassType) as SkillBase;
             if (lvUpSkill == null)
             {
-                Debug.LogError($"{nameof(TryLevelUpSkill)}");
-                Debug.Break();
+                Util.LogError(obj: nameof(SkillComponent), method: nameof(TryLevelUpSkill));
                 return null;
             }
 
@@ -200,7 +198,7 @@ namespace STELLAREST_F1
                 SkillBase skill = SkillArray[i];
                 if (skill != null && skill.SkillType == skillData.SkillType)
                 {
-                    Debug.LogError($"Failed: {nameof(CanUnlockSkill)}, {skill.Dev_NameTextID} already exists.");
+                    Util.LogError(obj: nameof(SkillComponent), method: nameof(CanUnlockSkill), log: $"{skill.Dev_NameTextID} already exists.");
                     return false;
                 }
             }
@@ -210,82 +208,3 @@ namespace STELLAREST_F1
         #endregion
     }
 }
-
-/*
-    [Prev]
-      // --- PREV
-        // public override bool SetInfo(BaseObject owner, List<int> skillDataIDs) // CreatureData로 받아볼까.
-        // {
-        //     // --- Creature는 최소한 스킬 1개를 무조건 가지고 있어야한다.
-        //     if (skillDataIDs.Count == 0)
-        //     {
-        //         Debug.LogError($"{nameof(SkillComponent)}, {nameof(SetInfo)}, Input : \"{skillDataIDs.Count}, Skills zero count\"");
-        //         Debug.Break();
-        //         return false;
-        //     }
-
-        //     _owner = owner as Creature;
-        //     foreach (int skillDataID in skillDataIDs)
-        //         AddSkill(skillDataID);
-
-        //     if (SkillArray == null)
-        //         SkillArray = new SkillBase[(int)ESkillType.Max];
-
-        //     return true;
-        // }
-
-        private void AddSkill(int skillDataID)
-        {
-            if (skillDataID == -1)
-                return;
-
-            Data.SkillData skillData = null;
-            if (_owner.ObjectType == EObjectType.Hero)
-                skillData = Managers.Data.HeroSkillDataDict[skillDataID];
-            else if (_owner.ObjectType == EObjectType.Monster)
-                skillData = Managers.Data.MonsterSkillDataDict[skillDataID];
-            // --- SkillData.. and Stat Data... How to organize?
-            // if (Managers.Data.SkillDataDict.TryGetValue(skillDataID, out Data.SkillData skillData) == false)
-            // {
-            //     Debug.LogError($"{nameof(SkillComponent)}, {nameof(AddSkill)}, Input : \"{skillDataID}\"");
-            //     Debug.Break();
-            //     return;
-            // }
-
-            Type skillClassType = Util.GetTypeFromName(skillData.ClassName);
-            SkillBase skill = gameObject.AddComponent(skillClassType) as SkillBase;
-            if (skill == null)
-            {
-                Debug.LogError($"{nameof(AddSkill)}");
-                Debug.Break();
-                return;
-            }
-
-            skill.InitialSetInfo(dataID: skillDataID, owner: _owner);
-            Skills.Add(skill);
-
-            //ESkillType skillType = Util.GetEnumFromString<ESkillType>(skillData.Type);
-            switch (skillData.SkillType)
-            {
-                case ESkillType.Skill_A:
-                    SkillArray[(int)ESkillType.Skill_A] = skill;
-                    break;
-
-                case ESkillType.Skill_B:
-                    SkillArray[(int)ESkillType.Skill_B] = skill;
-                    ActiveSkills.Add(skill);
-                    break;
-
-                case ESkillType.Skill_C:
-                    SkillArray[(int)ESkillType.Skill_C] = skill;
-                    ActiveSkills.Add(skill);
-                    break;
-            }
-        }
-
-        // public float GetInvokeRatio(ECreatureState skillState)
-        // {
-        //     float skillInvokeRatio = SkillArray[(int)skillState - ReadOnly.Numeric.MaxActiveSkillsCount].InvokeRatioOnUpdate;
-        //     return UnityEngine.Mathf.Clamp(skillInvokeRatio, 0.01f, 0.99f);
-        // }
-*/

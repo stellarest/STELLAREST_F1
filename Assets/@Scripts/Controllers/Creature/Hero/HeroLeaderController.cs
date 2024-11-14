@@ -153,7 +153,7 @@ namespace STELLAREST_F1
             if (HeroMemberFormationMode == EHeroMemberFormationMode.FollowLeaderClosely ||
                 HeroMemberFormationMode == EHeroMemberFormationMode.ForceStop)
             {
-                Debug.LogWarning("You have to set \"Narrow\", or \"Wide\" formation before.");
+                Util.LogWarning(obj: nameof(HeroLeaderController), method: nameof(ShuffleMembersPosition), log: $"You have to set \"Narrow\", or \"Wide\" formation before.");
                 return;
             }
 

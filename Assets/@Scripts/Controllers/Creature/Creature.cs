@@ -250,7 +250,7 @@ namespace STELLAREST_F1
             // --- 순서는 Shield부터
             if (Shield > 0.0f)
             {
-                remainedDamage = OnDamagedHealthBuff(finalDamage, EEffectType.SubStat_Shield);
+                remainedDamage = OnDamagedHealthBuff(finalDamage, EEffectType.MainStat_Shield);
                 if (BaseEffect.IsAppliedEffect(EEffectType.VFX_ShieldBlue))
                 {
                     BaseEffect.OnShowEffect(EEffectType.VFX_ShieldBlue);
@@ -269,7 +269,7 @@ namespace STELLAREST_F1
                         // --- VFX 제거
                         BaseEffect.RemoveEffect(EEffectType.VFX_ShieldBlue);
                         // --- 버프 제거
-                        BaseEffect.RemoveEffect(EEffectType.SubStat_Shield);
+                        BaseEffect.RemoveEffect(EEffectType.MainStat_Shield);
                         // --- 쉴드의 경우, 잔여 데미지량과 관계 없이 쉴드가 깨질때 무조건 데미지 무효화
                         return;
                     }
@@ -289,7 +289,7 @@ namespace STELLAREST_F1
             else if (BonusHealth > 0.0f)
             {
                 float prevBonusHealth = finalDamage > BonusHealth ? BonusHealth : 0.0f;
-                remainedDamage = OnDamagedHealthBuff(finalDamage, EEffectType.SubStat_BonusHealth);
+                remainedDamage = OnDamagedHealthBuff(finalDamage, EEffectType.MainStat_BonusHealth);
                 if (BaseEffect.IsAppliedEffect(EEffectType.VFX_BonusHealth))
                 {
                     BaseEffect.OnShowEffect(EEffectType.VFX_BonusHealth);
@@ -317,7 +317,7 @@ namespace STELLAREST_F1
                         // --- VFX 제거
                         BaseEffect.RemoveEffect(EEffectType.VFX_BonusHealth);
                         // --- 버프 제거
-                        BaseEffect.RemoveEffect(EEffectType.SubStat_BonusHealth);
+                        BaseEffect.RemoveEffect(EEffectType.MainStat_BonusHealth);
                         // --- 잔여 데미지 처리
                         Health = Mathf.Clamp(Health - remainedDamage, 0.0f, MaxHealth);
                         if (Health <= 0.0f)
@@ -485,7 +485,7 @@ namespace STELLAREST_F1
         private float OnDamagedHealthBuff(float finalDamage, EEffectType effectBuffType)
         {
             float remainedDamage = 0.0f;
-            if (effectBuffType == EEffectType.SubStat_BonusHealth)
+            if (effectBuffType == EEffectType.MainStat_BonusHealth)
             {
                 if (finalDamage > BonusHealth)
                 {
@@ -495,7 +495,7 @@ namespace STELLAREST_F1
                 else
                     BonusHealth = Mathf.Clamp(BonusHealth - finalDamage, 0.0f, BonusHealth);
             }
-            else if (effectBuffType == EEffectType.SubStat_Shield)
+            else if (effectBuffType == EEffectType.MainStat_Shield)
             {
                 if (finalDamage > Shield)
                 {

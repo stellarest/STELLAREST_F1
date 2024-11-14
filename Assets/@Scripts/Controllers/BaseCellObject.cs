@@ -420,6 +420,7 @@ namespace STELLAREST_F1
         // --- Level
         public int LevelID => BaseStat.LevelID;
         public int Level => BaseStat.Level;
+        public int MaxLevelID => BaseStat.MaxLevelID;
         public int MaxLevel => BaseStat.MaxLevel;
         public bool IsMaxLevel => BaseStat.IsMaxLevel;
 

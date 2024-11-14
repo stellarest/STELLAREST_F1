@@ -19,15 +19,16 @@ namespace STELLAREST_F1
                 STrail.m_SortingLayerID = UnityEngine.SortingLayer.NameToID(CString.CValue(EString.CValue_BaseObject));
                 STrail.m_OrderInSortingLayer = CInt.Sorting(EInt.Sorting_BaseObject);
 
-                // SpriteTrail.TrailPreset trailPreset = Managers.Resource.Load<SpriteTrail.TrailPreset>(CString.SObject(EString.SO_Trail_Base)); 
-                // if (trailPreset == null)
-                // {
-                //     Debug.LogError("Something is wrong !!");
-                //     Debug.Break();
-                // }
-                // STrail.SetTrailPreset(trailPreset);
+                SpriteTrail.TrailPreset trailPreset = Managers.Resource.Load<SpriteTrail.TrailPreset>(CString.SObject(EString.SO_STrail_Base)); 
+                if (trailPreset == null)
+                {
+                    Util.LogError(obj: nameof(BodyContainer), method: nameof(BodyContainer));
+                    return;
+                }
+                
+                STrail.SetTrailPreset(trailPreset);
                 // --- 가장 초기에 Trail 컴포넌트 자체는 비활성화로 시작
-                STrail.enabled = false;
+                // STrail.enabled = false;
             }
 
             this.DefaultSPRMat = defaultSPRMat;
