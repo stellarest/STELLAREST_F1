@@ -35,7 +35,7 @@ namespace STELLAREST_F1
 
         public void ResetAllAnimations()
         {
-            Debug.Log($"<color=red>Cancel Anim</color>");
+            Util.Log($"{nameof(ResetAllAnimations)}", highlight: true);
             ReleaseAllAnimStates();
             ResetAllTriggers();
             Animator.Play(Upper_Idle);

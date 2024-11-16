@@ -56,7 +56,7 @@ namespace STELLAREST_F1
                 // {
                 //     if (pair.Value != null)
                 //     {
-                //         Debug.Log($"({pair.Key}, {pair.Value.gameObject.name}");
+                //         Util.Log($"({pair.Key}, {pair.Value.gameObject.name}");
                 //     }
                 // }
             }
@@ -66,15 +66,16 @@ namespace STELLAREST_F1
         {
             if (Input.GetKeyDown("0"))
             {
-                Debug.Log("===== Cells Pair =====");
+                Util.Log("===== Cells Pair =====");
                 foreach (var pair in Managers.Map.Cells)
                 {
                     if (pair.Value != null)
-                        Debug.Log($"({pair.Key}, {pair.Value.gameObject.name}");
+                        Util.Log($"({pair.Key}, {pair.Value.gameObject.name}");
                     else
-                        Debug.Log("NONE OF VALUE...");
+                        Util.Log("NONE OF VALUE...");
                 }
-                // Debug.Log($"<color=white>Is GameOver: {Managers.Game.IsGameOver}</color>");
+
+                // Util.Log($"<color=white>Is GameOver: {Managers.Game.IsGameOver}</color>");
             }
 
             // --- HERO MEMBERS TEST
@@ -88,7 +89,7 @@ namespace STELLAREST_F1
             // {
             //     bool forceFollowToLeader = Managers.Object.HeroLeaderController.ForceFollowToLeader;
             //     Managers.Object.HeroLeaderController.ForceFollowToLeader = !forceFollowToLeader;
-            //     Debug.Log($"<color=white>ForceFollowToLeader: {Managers.Object.HeroLeaderController.ForceFollowToLeader}</color>");
+            //     Util.Log($"<color=white>ForceFollowToLeader: {Managers.Object.HeroLeaderController.ForceFollowToLeader}</color>");
             // }
 
             // if (Input.GetKeyDown("9"))

@@ -73,6 +73,7 @@ namespace STELLAREST_F1
         protected bool IsForceMovingPingPongObject => _coForceMovePingPongObject != null;
         protected void EvadePingPongMovement()
         {
+            // * routine: house, patrol, related secretive hobbies 
             // if (Owner.ForceMove)
             //     return;
             {
@@ -86,11 +87,11 @@ namespace STELLAREST_F1
                         {
                             if (_currentPingPongCantMoveCount >= _tryFindingPathMaxCount && IsForceMovingPingPongObject == false)
                             {
-                                Debug.Log($"<color=magenta>[!]{Owner.gameObject.name}, Start force moving for PingPong Object.</color>");
+                                Util.Log($"{Owner.gameObject.name}: Set target for force moving of PP obj.", highlight: true);
                                 Owner.StopCoLerpToCellPos();
                                 CoStartForceMovePingPongObject(Owner.CellPos, CellChasePos, endCallback: delegate ()
                                 {
-                                    Debug.Log($"<color=cyan>[!]{Owner.gameObject.name}, End ForcePingPong..</color>");
+                                    Util.Log($"{Owner.gameObject.name}: End force moving of PP obj.");
                                     _currentPingPongCantMoveCount = 0;
                                     CoStopForceMovePingPongObject();
                                     Owner.StartCoLerpToCellPos();

@@ -116,7 +116,7 @@ namespace STELLAREST_F1
             RemainCoolTime = SkillData.CoolTime;
             if (_manualCoolTime)
             {
-                Debug.Log($"<color=magenta>Manual CoolTime: {SkillData.Dev_NameTextID}</color>");
+                Util.Log($"Is Manual CoolTime Skill: {SkillData.Dev_NameTextID}");
                 yield break;
             }
 
@@ -127,7 +127,7 @@ namespace STELLAREST_F1
 
         private IEnumerator CoManualCoolTime()
         {
-            Debug.Log($"<color=brown>{this.SkillType} activates manual CoolTime..</color>");
+            Util.Log($"{this.SkillType}: Activates Manual CoolTime");
             yield return new WaitForSeconds(RemainCoolTime);
             //_manualCoolTime = true;
             RemainCoolTime = 0f;
@@ -246,7 +246,6 @@ namespace STELLAREST_F1
                     if (_currentEffectIdx == length)
                     {
                         _currentEffectIdx = 0;
-                        Debug.Log("END !!");
                     }
                 }
 
@@ -467,7 +466,7 @@ namespace STELLAREST_F1
             //Vector3 nTargetDir = (target.transform.position - Owner.transform.position).normalized;
             Vector3 nTargetDir = target.CellPos - Owner.CellPos;
             float dot = Vector3.Dot(nLookAtDir, nTargetDir.normalized);
-            //Debug.Log($"Dot: {dot} - {target.CellPos}");
+            // Util.Log($"Dot: {dot} - {target.CellPos}");
             if (dot < 0) // --- 둔각일때는 종료
                 return;
 

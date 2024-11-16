@@ -32,7 +32,7 @@ namespace STELLAREST_F1
                            select n + 1;
 
             foreach (var num in plusNums)
-                Debug.Log($"num: {num}");
+                Util.Log($"num: {num}");
         }
 #endif
     }

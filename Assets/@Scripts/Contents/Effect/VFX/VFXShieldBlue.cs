@@ -105,7 +105,7 @@ public class VFXShieldBlue : VFXBase
             return true;
         });
 
-        Debug.Log("<color=white>END OFF SHIELD</color>");
+        Util.Log("End Shield", highlight: true);
         yield return new WaitForSeconds(Time.deltaTime);
         
         //yield return new WaitForSeconds(2.0F);

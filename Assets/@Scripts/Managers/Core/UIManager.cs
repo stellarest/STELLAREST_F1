@@ -130,7 +130,6 @@ namespace STELLAREST_F1
             if (_popupUIStack.Peek() != popup)
             {
                 Util.LogWarning(obj: nameof(UIManager), method: nameof(ClosePopupUI), log: $"Input: \"{popup.name}\"");
-                // Debug.LogWarning($"{nameof(UIManager)}, {nameof(ClosePopupUI)}, Input : \"{popup.name}\"");
                 return;
             }
 

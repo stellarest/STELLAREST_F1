@@ -20,13 +20,15 @@ namespace STELLAREST_F1
             if (Input.GetKeyDown(KeyCode.T))
             {
                 if (LevelUp() == false)
-                    Util.Log("Faield to LvUp", warning: true, highlight: true); 
+                    Util.Log("Faield to LvUp", highlight: true); 
             }
 
             if (Input.GetKeyDown(KeyCode.K))
             {
-                Util.LogWarning(obj: nameof(Hero), method: nameof(Update));
-
+                Util.Log("Show me the money");
+                Util.Log("Show me the money", highlight: true);
+                
+                // Util.LogWarning(obj: nameof(Hero), method: nameof(Update));
                 // HeroBody.EnableBodyTrail(true);
                 // HeroBody.EnableWeaponTrail(true);
             }
@@ -303,7 +305,7 @@ namespace STELLAREST_F1
             CreatureAnim.RefreshAnimEventHandlers();
             if (IsMaxLevel)
             {
-                Debug.Log($"<color=yellow>Success: EliteHero(Max)</color>");
+                Util.Log("Access to EliteHero(Max)");
                 HeroAnim.SetEliteMax();
                 HeroBody.SetEliteSpritesSet(MaxLevelID);
             }
@@ -313,9 +315,6 @@ namespace STELLAREST_F1
 
         private IEnumerator CoInitialReleaseLeaderHeroAI()
         {
-            // 여기서 하면 안됨... Leader랑 관련 있는듯.
-            // Debug.Log($"1 - Inactive: {HeroBody.GetContainer(EHeroWeapon.WeaponL_Armor).TR.gameObject.name}");
-            // HeroBody.GetContainer(EHeroWeapon.WeaponL_Armor).TR.gameObject.SetActive(false);
             yield return new WaitUntil(() =>
             {
                 bool allStartedHeroAI = true;
@@ -335,9 +334,7 @@ namespace STELLAREST_F1
             if (IsLeader)
             {
                 StopCoUpdateAI();
-                Debug.Log("<color=white>Initial Release Leader Hero's AI</color>");
-                // 여기서 하니까 됨.. 이거 때문인가??
-                // Debug.Log($"1 - Inactive: {HeroBody.GetContainer(EHeroWeapon.WeaponL_Armor).TR.gameObject.name}");
+                Util.Log("InitialRelease, LeaderHero's AI.");
                 // HeroBody.GetContainer(EHeroWeapon.WeaponL_Armor).TR.gameObject.SetActive(false);
             }
         }

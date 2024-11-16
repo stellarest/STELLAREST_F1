@@ -31,7 +31,7 @@ namespace STELLAREST_F1
 
                     float timeStep = delta - prevDelta;
                     calculatedSpeed = Vector3.Distance(posAt1, posBefore1) / timeStep;
-                    // Debug.Log($"Calculated Speed at delta = 1: {calculatedSpeed}");
+                    // Util.Log($"Calculated Speed at delta = 1: {calculatedSpeed}");
                     transform.position = posAt1;
                     break;
                 }

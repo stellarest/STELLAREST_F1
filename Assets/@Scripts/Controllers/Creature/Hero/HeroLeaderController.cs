@@ -138,14 +138,14 @@ namespace STELLAREST_F1
                     break;
             }
 
-            Debug.Log($"<color=white>{HeroMemberFormationMode}</color>");
+            Util.Log($"Formation: {HeroMemberFormationMode}");
         }
 
         public void ShuffleMembersPosition()
         {
             if (Managers.Object.Heroes.Count <= 2)
             {
-                Debug.Log($"<color=white>Hero Count: {Managers.Object.Heroes.Count}</color>");
+                Util.Log($"Heroes current count: {Managers.Object.Heroes.Count}");
                 return;
             }
 
@@ -172,8 +172,6 @@ namespace STELLAREST_F1
                 Managers.Object.Heroes[i + 1] = shuffleHeroes[i];
                 Managers.Object.Heroes[i + 1].CreatureAIState = ECreatureAIState.Move;
             }
-
-            Debug.Log($"<color=white>{nameof(ShuffleMembersPosition)}</color>");
         }
 
         public Vector3Int RequestFormationCellPos(Hero heroMember)
@@ -481,8 +479,6 @@ namespace STELLAREST_F1
                 _leader.transform.position = GoToJoystickPos;
                 // _leader.LerpToCellPosCompleted = false;
             }
-
-            // Debug.Log($"CanSkill: {_leader.CanSkill}");
         }
 
         [SerializeField] private bool _lockFindPath = false; // Lock Find Path 용도 외에 건드리지 말것.
@@ -491,7 +487,7 @@ namespace STELLAREST_F1
         {
             if (_leader == newLeader)
             {
-                Debug.Log($"Maybe Same Leader, Current: {_leader.name}, new: {newLeader.name}");
+                Util.LogWarning(obj: nameof(HeroLeaderController), method: nameof(SetLeader), log: $"Input: {_leader.name} == {newLeader.name}");
                 return;
             }
             else if (_leader.IsValid() == false) // --- First Leader
@@ -575,7 +571,7 @@ namespace STELLAREST_F1
                         // --- Stop PathFinding Immediately
                         if (Managers.Map.CanMove(_leader.transform.position + _nMovementDir))
                         {
-                            // Debug.Log("Out PathFinding Immediately.");
+                            // Util.Log("Out PathFinding immediately.");
                             _lockFindPath = false;
                             StopCoPathFinding();
                         }
@@ -613,7 +609,7 @@ namespace STELLAREST_F1
                     // --- Out Pathfinding when nMovement zero mag or not.
                     if (Managers.Map.CanMove(GoToJoystickPos, ignoreObjectType: EObjectType.Hero))
                     {
-                        // Debug.Log("Out After PathFinding.");
+                        // Util.Log("Out after PathFinding.");
                         _lockFindPath = false;
                         StopCoPathFinding();
                         break;
@@ -675,7 +671,7 @@ namespace STELLAREST_F1
 
                     if (isAllStop)
                     {
-                        Debug.Log("<color=yellow>IS ALL STOPPED!!</color>");
+                        Util.Log($"isAllStop: {isAllStop}", highlight: true);
                         return true;
                     }
 
@@ -926,7 +922,6 @@ namespace STELLAREST_F1
         // {
         //     if (_leader == null)
         //     {
-        //         Debug.LogError("Failed to Leader Update Cell Pos. Please check leader character.");
         //         return;
         //     }
 
@@ -938,7 +933,6 @@ namespace STELLAREST_F1
         //             EObjectType targetObjectType = _leader.Target.ObjectType;
         //             if (_leader.CanAttackOrChase(EObjectType.Monster) && _arriveToTarget == false) // 2칸 이상일 때, 대각선, 상하좌우포함
         //             {
-        //                 Debug.Log("A");
         //                 // ***** 최초 공격 시도 *****
         //                 if (_leaderPath.Count >= 1) // 2 - 대각선, 1 - 상하좌우
         //                 {
@@ -956,14 +950,13 @@ namespace STELLAREST_F1
         //                         }
 
         //                         _arriveToTarget = true;
-        //                         //Debug.Log("First attack.");
+        //                         //Util.Log("Attack first.");
         //                     }
         //                 }
         //                 // ***** 다만 Pointer Up을 하게 되면 _arriveToTarget가 false가 되는데, 이때 Target의 근처에 있다면 이쪽으로 오게됨 *****
         //                 // ***** Pointer Up, 또는 타겟이 존재하지 않을 경우 _arriveToTarget가 false이고 path count가 0이면 일로옴 *****
         //                 else if (_leaderPath.Count == 0 && _arriveToTarget == false)
         //                 {
-        //                     Debug.Log("B");
         //                     if (targetObjectType == EObjectType.Monster && IsSkillCoolTimeReady(ESkillType.Skill_Attack))
         //                     {
         //                         _leader.CreatureSkill?.CurrentSkill.DoSkill(); // Skill -> Idle
@@ -974,13 +967,12 @@ namespace STELLAREST_F1
         //                         _leader.CreatureState = ECreatureAIState.CollectEnv;
         //                     }
 
-        //                     //Debug.Log("Is in close with target.");
+        //                     //Util.Log("Is in close with target.");
         //                 }
         //             }
         //             // ***** 최초 이후의 공격은 이쪽으로 실행하게 됨, 여전히 범위내에 있다면 쿨타임 기다렸다가 공격 *****
         //             else if (_arriveToTarget)
         //             {
-        //                 Debug.Log("C");
         //                 if (targetObjectType == EObjectType.Monster && IsSkillCoolTimeReady(ESkillType.Skill_Attack))
         //                 {
         //                     _leader.CreatureSkill?.CurrentSkill.DoSkill(); // Skill -> Idle
@@ -991,7 +983,7 @@ namespace STELLAREST_F1
         //                     _leader.CreatureState = ECreatureAIState.CollectEnv;
         //                 }
 
-        //                 //Debug.Log("Just stop and attack.");
+        //                 //Util.Log("Just stop and attack.");
         //             }
         //             else
         //             {

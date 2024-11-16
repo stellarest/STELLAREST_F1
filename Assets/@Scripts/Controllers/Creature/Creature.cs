@@ -77,12 +77,10 @@ namespace STELLAREST_F1
                     switch (value)
                     {
                         case ECreatureAIState.Idle:
-                            // Debug.Log("111");
                             Moving = false;
                             break;
 
                         case ECreatureAIState.Move:
-                            // Debug.Log("222");
                             Moving = true;
                             break;
 

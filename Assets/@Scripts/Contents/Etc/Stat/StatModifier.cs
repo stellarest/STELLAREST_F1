@@ -131,7 +131,7 @@ namespace STELLAREST_F1
                         {
                             float armorBase = (Armor + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti);
                             Armor = Mathf.Clamp(armorBase, CFloat.Min(EFloat.Range_Armor), CFloat.Max(EFloat.Range_Armor));
-                            Debug.Log($"<color=yellow>### ARMOR: {Armor} ##</color>");
+                            Util.Log($"Armor: {Armor}");
                         }
                         else
                         {
@@ -293,7 +293,6 @@ namespace STELLAREST_F1
                         {
                             float armorBase = (target.Armor + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti);
                             target.Armor = Mathf.Clamp(armorBase, CFloat.Min(EFloat.Range_Armor), CFloat.Max(EFloat.Range_Armor));
-                            //Debug.Log($"<color=yellow>### ARMOR: {target.Armor} ##</color>");
                         }
                         else
                         {
@@ -398,7 +397,6 @@ namespace STELLAREST_F1
         //         case EEffectType.SubStat_Armor:
         //             float armorBase = (Armor + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti);
         //             Armor = Mathf.Clamp(armorBase, CFloat.Min(EFloat.Range_Armor), CFloat.Max(EFloat.Range_Armor));
-        //             Debug.Log($"<color=yellow>ARMOR: {Armor}</color>");
         //             break;
         //         case EEffectType.SubStat_Critical:
         //             float criticalBase = (Critical + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti);

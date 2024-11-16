@@ -108,13 +108,11 @@ namespace STELLAREST_F1
             _text.fontSize = _initialFontSize;
             if (isCritical)
             {
-                // Debug.Log("<color=red>CRITICAL FONT</color>");
                 _text.font = Managers.MonoContents.GetFontAsset(EFontAssetType.Comic);
                 _text.fontSize *= 1 + 0.5f; // +50%
             }
             else
             {
-                // Debug.Log("<color=white>NORMAL FONT</color>");
                 _text.font = Managers.MonoContents.GetFontAsset(EFontAssetType.MapleBold);
             }
 
@@ -154,13 +152,13 @@ namespace STELLAREST_F1
             _text.fontSize = _initialFontSize;
             if (isCritical)
             {
-                Debug.Log("<color=red>CRITICAL FONT</color>");
+                Util.Log("Critical Font.");
                 _text.font = Managers.MonoContents.GetFontAsset(EFontAssetType.Comic);
                 _text.fontSize *= 1 + 0.5f; // +50%
             }
             else
             {
-                Debug.Log("<color=white>NORMAL FONT</color>");
+                Util.Log("Normal Font.");
                 _text.font = Managers.MonoContents.GetFontAsset(EFontAssetType.MapleBold);
             }
 

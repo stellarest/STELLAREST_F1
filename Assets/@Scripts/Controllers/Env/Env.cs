@@ -75,7 +75,6 @@ namespace STELLAREST_F1
                         }, endCallback: null);
                         
             EnvState = EEnvState.Idle;
-            Debug.Log($"{Dev_NameTextID}: {transform.position}");
 
             // switch (EnvType)
             // {

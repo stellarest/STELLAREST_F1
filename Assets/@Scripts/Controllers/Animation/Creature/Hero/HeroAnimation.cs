@@ -125,7 +125,6 @@ namespace STELLAREST_F1
             if (_owner.IsValid() == false)
                 return;
 
-            // Debug.Log($"<color=white>{nameof(OnUpperCollectEnvEnter)}</color>");
             if (_heroOwner.Target.IsValid() && _heroOwner.Target.ObjectType == EObjectType.Env)
             {
                 if (_heroOwner.HeroWeaponType == EHeroWeaponType.Default)
@@ -197,7 +196,6 @@ namespace STELLAREST_F1
             if (_owner.IsValid() == false)
                 return;
 
-            // Debug.Log($"<color=white>{nameof(OnUpperCollectEnvExit)}</color>");
             if (_heroOwner.HeroWeaponType != EHeroWeaponType.Default)
                 _heroOwner.HeroWeaponType = EHeroWeaponType.Default;
 

@@ -71,7 +71,7 @@ namespace STELLAREST_F1
             {
                 delta += Time.deltaTime;
                 percent = Mathf.Clamp01(delta / CFloat.CValue(EFloat.CValue_CameraMoveToTargetTime));
-                // Debug.Log($"Percent: {percent}"); // 별도로 속도를 곱하지않고 하면 제대로 동작함
+                // Util.Log($"Percent: {percent}"); // 별도로 속도를 곱하지않고 하면 제대로 동작함
                 targetPos = new Vector3(_target.CenterPosition.x, _target.CenterPosition.y, -10f);
                 //Vector3 targetPos = new Vector3(_target.CenterPosition.x, _target.CenterPosition.y, -10f);
                 transform.position = Vector3.Lerp(startPos, targetPos, _curve.Evaluate(percent));

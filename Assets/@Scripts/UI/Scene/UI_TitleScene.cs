@@ -30,13 +30,13 @@ namespace STELLAREST_F1
             BindTexts(typeof(Texts));
             // GetObject((int)GameObjects.StartImage).BindEvent((evt) => 
             // {
-            //     Debug.Log("GO TO GAME SCENE !!");
+            //     Util.Log("GO TO GAME SCENE !!");
             //     Managers.Scene.LoadScene(Define.EScene.GameScene);
             // }, Define.EUIEvent.PointerClick);
 
             GetObject((int)GameObjects.StartImage).BindEvent(action: delegate(PointerEventData evtData)
             {
-                Debug.Log("GO TO GAME SCENE !!");
+                Util.Log("Go to GameScene");
                 Managers.Scene.LoadScene(Define.EScene.GameScene);
             }, evtType: EUIEvent.PointerClick);
 
@@ -51,9 +51,10 @@ namespace STELLAREST_F1
         {
             Managers.Resource.LoadAllAsync<Object>(label: "PreLoad", callback: delegate(string key, int count, int totalCount)
             {
-                Debug.Log($"Key Loaded : {key}, Current : {count} / Total : {totalCount}");
+                Util.Log($"{nameof(UI_TitleScene)}::{nameof(StartLoadAsset)}, Loading: {key}({count}/{totalCount})");
                 if (count == totalCount)
                 {
+                    Util.Log($"{nameof(UI_TitleScene)}::{nameof(StartLoadAsset)}, Loading Complete.", highlight: true);
                     Managers.Data.Init();
                     GetObject((int)GameObjects.StartImage).SetActive(true);
                     GetText((int)Texts.DisplayText).text = $"Touch To Start";

@@ -196,49 +196,49 @@ namespace STELLAREST_F1
             Vector3Int targetCellPos = target.CellPos;
             if (HitFromBottom)
             {
-                // Debug.Log("HitFrom - Bottom");
+                // Util.Log("HitFrom - Bottom");
                 for (int y = 0; y < _targetDistance; ++y)
                     TryAddProjectileTarget(targetCellPos + new Vector3Int(0, y, 0));
             }
             else if (HitFromTop)
             {
-                // Debug.Log("HitFrom - Top");
+                // Util.Log("HitFrom - Top");
                 for (int y = 0; y < _targetDistance; ++y)
                     TryAddProjectileTarget(targetCellPos + new Vector3Int(0, -y, 0));
             }
             else if (HitFromRight)
             {
-                // Debug.Log("HitFrom - Right");
+                // Util.Log("HitFrom - Right");
                 for (int x = 0; x < _targetDistance; ++x)
                     TryAddProjectileTarget(targetCellPos + new Vector3Int(-x, 0, 0));
             }
             else if (HitFromLeft)
             {
-                // Debug.Log("HitFrom - Left"); 
+                // Util.Log("HitFrom - Left"); 
                 for (int x = 0; x < _targetDistance; ++x)
                     TryAddProjectileTarget(targetCellPos + new Vector3Int(x, 0, 0));
             }
             else if (HitFromRightBottom)
             {
-                // Debug.Log("HitFrom - RightBottom");
+                // Util.Log("HitFrom - RightBottom");
                 for (int dxy = 0; dxy < _targetDistance; ++dxy)
                     TryAddProjectileTarget(targetCellPos + new Vector3Int(-dxy, dxy, 0));
             }
             else if (HitFromLeftBottom)
             {
-                // Debug.Log("HitFrom - LeftBottom");
+                // Util.Log("HitFrom - LeftBottom");
                 for (int dxy = 0; dxy < _targetDistance; ++dxy)
                     TryAddProjectileTarget(targetCellPos + new Vector3Int(dxy, dxy, 0));
             }
             else if (HitFromLeftTop)
             {
-                // Debug.Log("HitFrom - LeftTop");
+                // Util.Log("HitFrom - LeftTop");
                 for (int dxy = 0; dxy < _targetDistance; ++dxy)
                     TryAddProjectileTarget(targetCellPos + new Vector3Int(dxy, -dxy, 0));
             }
             else if (HitFromRightTop)
             {
-                // Debug.Log("HitFrom - RightTop");
+                // Util.Log("HitFrom - RightTop");
                 for (int dxy = 0; dxy < _targetDistance; ++dxy)
                     TryAddProjectileTarget(targetCellPos + new Vector3Int(-dxy, -dxy, 0));
             }
@@ -249,7 +249,7 @@ namespace STELLAREST_F1
             Vector3Int targetCellPos = target.CellPos;
             if (HitFromBottom)
             {
-                // Debug.Log("HitFrom - Bottom");
+                // Util.Log("HitFrom - Bottom");
                 for (int x = -_targetDistance; x <= _targetDistance; ++x)
                 {
                     for (int y = 0; y <= _targetDistance; ++y)
@@ -258,7 +258,7 @@ namespace STELLAREST_F1
             }
             else if (HitFromTop)
             {
-                // Debug.Log("HitFrom - Top");
+                // Util.Log("HitFrom - Top");
                 for (int x = -_targetDistance; x <= _targetDistance; ++x)
                 {
                     for (int y = 0; y >= -_targetDistance; --y)
@@ -267,7 +267,7 @@ namespace STELLAREST_F1
             }
             else if (HitFromRight)
             {
-                // Debug.Log("HitFrom - Right");
+                // Util.Log("HitFrom - Right");
                 for (int x = -_targetDistance; x <= 0; ++x)
                 {
                     for (int y = -_targetDistance; y <= _targetDistance; ++y)
@@ -276,7 +276,7 @@ namespace STELLAREST_F1
             }
             else if (HitFromLeft)
             {
-                // Debug.Log("HitFrom - Left");
+                // Util.Log("HitFrom - Left");
                 for (int x = 0; x <= _targetDistance; ++x)
                 {
                     for (int y = -_targetDistance; y <= _targetDistance; ++y)
@@ -285,7 +285,7 @@ namespace STELLAREST_F1
             }
             else if (HitFromRightBottom)
             {
-                // Debug.Log("HitFrom - RightBottom");
+                // Util.Log("HitFrom - RightBottom");
                 for (int x = -_targetDistance; x <= 0; ++x)
                 {
                     for (int y = -_targetDistance; y <= _targetDistance; ++y)
@@ -294,7 +294,7 @@ namespace STELLAREST_F1
             }
             else if (HitFromLeftBottom)
             {
-                // Debug.Log("HitFrom - LeftBottom");
+                // Util.Log("HitFrom - LeftBottom");
                 for (int x = 0; x <= _targetDistance; ++x)
                 {
                     for (int y = -_targetDistance; y <= _targetDistance; ++y)
@@ -303,7 +303,7 @@ namespace STELLAREST_F1
             }
             else if (HitFromLeftTop)
             {
-                // Debug.Log("HitFrom - LeftTop");
+                // Util.Log("HitFrom - LeftTop");
                 for (int x = 0; x <= _targetDistance; ++x)
                 {
                     for (int y = -_targetDistance; y <= _targetDistance; ++y)
@@ -312,7 +312,7 @@ namespace STELLAREST_F1
             }
             else if (HitFromRightTop)
             {
-                // Debug.Log("HitFrom - RightTop");
+                // Util.Log("HitFrom - RightTop");
                 for (int x = -_targetDistance; x <= 0; ++x)
                 {
                     for (int y = -_targetDistance; y <= _targetDistance; ++y)
@@ -467,7 +467,7 @@ namespace STELLAREST_F1
                             // --- Hit by Right
                             if (hitDir.x > 0)
                             {
-                                Debug.Log($"Hit by Right: {_targetDistance}");
+                                Util.Log($"Hit by Right: {_targetDistance}");
                                 for (int x = 0; x < _targetDistance; ++x)
                                 {
                                     nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(x * -1, 0, 0));
@@ -478,7 +478,7 @@ namespace STELLAREST_F1
                             // --- Hit by Left
                             else
                             {
-                                Debug.Log($"Hit by Left: {_targetDistance}");
+                                Util.Log($"Hit by Left: {_targetDistance}");
                                 for (int x = 0; x < _targetDistance; ++x)
                                 {
                                     nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(x, 0, 0));
@@ -492,7 +492,7 @@ namespace STELLAREST_F1
                             // --- Hit by Up
                             if (hitDir.y > 0)
                             {
-                                Debug.Log($"Hit by Up: {_targetDistance}");
+                                Util.Log($"Hit by Up: {_targetDistance}");
                                 for (int y = 0; y < _targetDistance; ++y)
                                 {
                                     nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(0, y * -1, 0));
@@ -503,7 +503,7 @@ namespace STELLAREST_F1
                             // --- Hit by Down
                             else
                             {
-                                Debug.Log($"Hit by Down: {_targetDistance}");
+                                Util.Log($"Hit by Down: {_targetDistance}");
                                 for (int y = 0; y < _targetDistance; ++y)
                                 {
                                     nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(0, y, 0));
@@ -517,7 +517,7 @@ namespace STELLAREST_F1
                             // --- Hit by LeftUp
                             if (hitDir.x < 0 && hitDir.y > 0)
                             {
-                                Debug.Log($"Hit by LeftUp: {_targetDistance}");
+                                Util.Log($"Hit by LeftUp: {_targetDistance}");
                                 // --- Go RightDown
                                 for (int dxy = 0; dxy < _targetDistance; ++dxy)
                                 {
@@ -529,7 +529,7 @@ namespace STELLAREST_F1
                             // --- Hit by RightUp
                             else if (hitDir.x > 0 && hitDir.y > 0)
                             {
-                                Debug.Log($"Hit by RightUp: {_targetDistance}");
+                                Util.Log($"Hit by RightUp: {_targetDistance}");
                                 // --- Go LeftDown
                                 for (int dxy = 0; dxy < _targetDistance; ++dxy)
                                 {
@@ -541,7 +541,7 @@ namespace STELLAREST_F1
                             // --- Hit by LeftDown
                             else if (hitDir.x < 0 && hitDir.y < 0)
                             {
-                                Debug.Log($"Hit by LeftDown: {_targetDistance}");
+                                Util.Log($"Hit by LeftDown: {_targetDistance}");
                                 // --- Go RightUp
                                 for (int dxy = 0; dxy < _targetDistance; ++dxy)
                                 {
@@ -553,7 +553,7 @@ namespace STELLAREST_F1
                             // --- Hit by RightDown
                             else if (hitDir.x > 0 && hitDir.y < 0)
                             {
-                                Debug.Log($"Hit by RightDown: {_targetDistance}");
+                                Util.Log($"Hit by RightDown: {_targetDistance}");
                                 // --- Go LeftUp
                                 for (int dxy = 0; dxy < _targetDistance; ++dxy)
                                 {
@@ -580,7 +580,7 @@ namespace STELLAREST_F1
                             // --- Hit by Right
                             if (hitDir.x > 0)
                             {
-                                Debug.Log($"Hit by Right: {_targetDistance}");
+                                Util.Log($"Hit by Right: {_targetDistance}");
                                 for (int x = 0; x < _targetDistance; ++x)
                                 {
                                     nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(x * -1, 0, 0));
@@ -591,7 +591,7 @@ namespace STELLAREST_F1
                             // --- Hit by Left
                             else
                             {
-                                Debug.Log($"Hit by Left: {_targetDistance}");
+                                Util.Log($"Hit by Left: {_targetDistance}");
                                 for (int x = 0; x < _targetDistance; ++x)
                                 {
                                     nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(x, 0, 0));
@@ -605,7 +605,7 @@ namespace STELLAREST_F1
                             // --- Hit by Up
                             if (hitDir.y > 0)
                             {
-                                Debug.Log($"Hit by Up: {_targetDistance}");
+                                Util.Log($"Hit by Up: {_targetDistance}");
                                 for (int y = 0; y < _targetDistance; ++y)
                                 {
                                     nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(0, y * -1, 0));
@@ -616,7 +616,7 @@ namespace STELLAREST_F1
                             // --- Hit by Down
                             else
                             {
-                                Debug.Log($"Hit by Down: {_targetDistance}");
+                                Util.Log($"Hit by Down: {_targetDistance}");
                                 for (int y = 0; y < _targetDistance; ++y)
                                 {
                                     nextTarget = Managers.Map.GetObject(targetCellPos + new Vector3Int(0, y, 0));
@@ -630,7 +630,7 @@ namespace STELLAREST_F1
                             // --- Hit by LeftUp
                             if (hitDir.x < 0 && hitDir.y > 0)
                             {
-                                Debug.Log($"Hit by LeftUp: {_targetDistance}");
+                                Util.Log($"Hit by LeftUp: {_targetDistance}");
                                 // --- Go RightDown
                                 for (int dxy = 0; dxy < _targetDistance; ++dxy)
                                 {
@@ -642,7 +642,7 @@ namespace STELLAREST_F1
                             // --- Hit by RightUp
                             else if (hitDir.x > 0 && hitDir.y > 0)
                             {
-                                Debug.Log($"Hit by RightUp: {_targetDistance}");
+                                Util.Log($"Hit by RightUp: {_targetDistance}");
                                 // --- Go LeftDown
                                 for (int dxy = 0; dxy < _targetDistance; ++dxy)
                                 {
@@ -654,7 +654,7 @@ namespace STELLAREST_F1
                             // --- Hit by LeftDown
                             else if (hitDir.x < 0 && hitDir.y < 0)
                             {
-                                Debug.Log($"Hit by LeftDown: {_targetDistance}");
+                                Util.Log($"Hit by LeftDown: {_targetDistance}");
                                 // --- Go RightUp
                                 for (int dxy = 0; dxy < _targetDistance; ++dxy)
                                 {
@@ -666,7 +666,7 @@ namespace STELLAREST_F1
                             // --- Hit by RightDown
                             else if (hitDir.x > 0 && hitDir.y < 0)
                             {
-                                Debug.Log($"Hit by RightDown: {_targetDistance}");
+                                Util.Log($"Hit by RightDown: {_targetDistance}");
                                 // --- Go LeftUp
                                 for (int dxy = 0; dxy < _targetDistance; ++dxy)
                                 {
@@ -697,7 +697,6 @@ namespace STELLAREST_F1
         // {
         //     if (Managers.Data.ProjectileDataDict.TryGetValue(dataID, out ProjectileData projectileData) == false)
         //     {
-        //         Debug.LogError($"{nameof(Projectile)}, Input : \"{dataID}\"");
         //         Debug.Break();
         //         return;
         //     }

@@ -98,10 +98,10 @@ namespace STELLAREST_F1
             if (tm != null)
                 tm.gameObject.SetActive(false);
 
-            // Debug.Log($"xMin: {tm.cellBounds.xMin}");
-            // Debug.Log($"xMax: {tm.cellBounds.xMax}");
-            // Debug.Log($"yMin: {tm.cellBounds.yMin}");
-            // Debug.Log($"yMax: {tm.cellBounds.yMax}");
+            // Util.Log($"xMin: {tm.cellBounds.xMin}");
+            // Util.Log($"xMax: {tm.cellBounds.xMax}");
+            // Util.Log($"yMin: {tm.cellBounds.yMin}");
+            // Util.Log($"yMax: {tm.cellBounds.yMax}");
             for (int y = tm.cellBounds.yMax; y >= tm.cellBounds.yMin; --y)
             {
                 for (int x = tm.cellBounds.xMin; x <= tm.cellBounds.xMax; ++x)
@@ -148,7 +148,7 @@ namespace STELLAREST_F1
                         //     else
                         //     {
                         //         ++attemptSpawnCount;
-                        //         Debug.Log("Fail to spawn Turkey");
+                        //         Util.Log("Fail to spawn Turkey");
                         //     }
                         // }
 
@@ -173,7 +173,7 @@ namespace STELLAREST_F1
                         //     else
                         //     {
                         //         ++attemptSpawnCount;
-                        //         Debug.Log("Fail to spawn Turkey");
+                        //         Util.Log("Fail to spawn Turkey");
                         //     }
                         // }
 
@@ -198,7 +198,7 @@ namespace STELLAREST_F1
                         //     else
                         //     {
                         //         ++attemptSpawnCount;
-                        //         Debug.Log("Fail to spawn Bunny");
+                        //         Util.Log("Fail to spawn Bunny");
                         //     }
                         // }
 
@@ -223,7 +223,7 @@ namespace STELLAREST_F1
                         //     else
                         //     {
                         //         ++attemptSpawnCount;
-                        //         Debug.Log("Fail to spawn Pug");
+                        //         Util.Log("Fail to spawn Pug");
                         //     }
                         // }
 
@@ -424,7 +424,7 @@ namespace STELLAREST_F1
 
             if (x < 0 || x >= _cellCollisionType.GetLength(1) || y < 0 || y >= _cellCollisionType.GetLength(0))
             {
-                //Debug.Log($"Tile[{x}][{y}]: {_cellCollisionType[y, x]}");
+                //Util.Log($"Tile[{x}][{y}]: {_cellCollisionType[y, x]}");
                 return false;
             }
 
@@ -606,22 +606,21 @@ namespace STELLAREST_F1
 #if UNITY_EDITOR
         public void CheckOnTile(Creature creature)
         {
-            Debug.Log($"WorldPos: {creature.transform.position}");
+            Util.Log($"WorldPos: {creature.transform.position}");
             Vector3Int currentPos = Managers.Map.WorldToCell(creature.transform.position);
             int x = currentPos.x - MinX;
             int y = MaxY - currentPos.y - 1;
             if (x < 0 || x >= _cellCollisionType.GetLength(1) || y < 0 || y >= _cellCollisionType.GetLength(0))
             {
                 Util.LogWarning(obj: nameof(MapManager), method: nameof(CheckOnTile), log: "Out of idx.");
-                // Debug.LogWarning($"### Out of index ###");
                 return;
             }
 
             Util.Log($"xMin: {MinX}, xMax: {MaxX}, yMin: {MinY}, yMax: {MaxY}");
-            //Debug.Log($"xMin: {MinX}, xMax: {MaxX}, yMin: {MinY}, yMax: {MaxY}");
+            //Util.Log($"xMin: {MinX}, xMax: {MaxX}, yMin: {MinY}, yMax: {MaxY}");
 
             Util.Log($"Cell[{currentPos.x}][{currentPos.y}] | Tile[{x}][{y}]: {_cellCollisionType[y, x]}", highlight: true);
-            // Debug.Log($"Cell[{currentPos.x}][{currentPos.y}] | Tile[{x}][{y}]: {_cellCollisionType[y, x]}");
+            // Util.Log($"Cell[{currentPos.x}][{currentPos.y}] | Tile[{x}][{y}]: {_cellCollisionType[y, x]}");
         }
 
         public void CheckOnTile(Vector3 worldPos)
@@ -635,15 +634,14 @@ namespace STELLAREST_F1
             if (x < 0 || x >= _cellCollisionType.GetLength(1) || y < 0 || y >= _cellCollisionType.GetLength(0))
             {
                 Util.LogWarning(obj: nameof(MapManager), method: nameof(CheckOnTile), log: $"Input: x: {x}, y: {y}. Out of idx.");
-                // Debug.LogWarning($"### Out of index ### | x: {x}, y: {y}");
                 return;
             }
 
             Util.Log($"CellPos: ({cellPos.x}, {cellPos.y})");
-            // Debug.Log($"CellPos: ({cellPos.x}, {cellPos.y})");
+            // Util.Log($"CellPos: ({cellPos.x}, {cellPos.y})");
 
             Util.Log($"Tile[{x}][{y}]: {_cellCollisionType[y, x]}", highlight: true);
-            //Debug.Log($"Tile[{x}][{y}]: {_cellCollisionType[y, x]}");
+            //Util.Log($"Tile[{x}][{y}]: {_cellCollisionType[y, x]}");
         }
 
         public void PrintCollisionTile()
@@ -673,12 +671,12 @@ namespace STELLAREST_F1
         // {
         //     if (cellPos.x < _minX || cellPos.x >= _maxX)
         //     {
-        //         Debug.LogWarning("Out of X");
+        //         // Out of X
         //         return false;
         //     }
         //     if (cellPos.y < _minY || cellPos.y >= _maxY)
         //     {
-        //         Debug.LogWarning("Out of Y");
+        //         // Out of Y
         //         return false;
         //     }
 
@@ -688,7 +686,6 @@ namespace STELLAREST_F1
         //         BaseObject obj = GetObject(cellPos);
         //         if (obj != null)
         //         {
-        //             Debug.LogWarning("WTF");
         //             return false;
         //         }
         //     }

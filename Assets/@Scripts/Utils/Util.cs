@@ -355,27 +355,16 @@ namespace STELLAREST_F1
             var type = assembly.GetType("UnityEditor.LogEntries");
             var method = type.GetMethod("Clear");
             method.Invoke(new object(), null);
-            Debug.Log("### CLEAR ###");
+            Log("### CLEAR ###");
         }
 
-        // 기존 디폴트 로그 컬러는 이거였음. 약간 퍼런색 #ADD8E6
         [Conditional("UNITY_EDITOR")]
-        public static void Log(object log, bool warning = false, bool highlight = false)
+        public static void Log(object log, bool highlight = false)
         {
-            if (warning == false)
-            {
-                if (highlight == false)
-                    Debug.Log($"{log}");
-                else
-                    Debug.Log($"<color=#A3E635>{log}</color>");
-            }
+            if (highlight)
+                Debug.Log($"<color=#FF6666>\"</color><color=#A3E635>[<color=#FF6666>!</color>]: {log}</color><color=#FF6666>\"</color>");
             else
-            {
-                if (highlight == false)
-                    Debug.Log($"<color=#FF9999>{log}</color>");
-                else
-                    Debug.Log($"<color=#FF6666>{log}</color>");
-            }
+                Debug.Log($"{log}");
         }
 
         [Conditional("UNITY_EDITOR")]
@@ -758,4 +747,23 @@ namespace STELLAREST_F1
         //         _ => throw new ArgumentOutOfRangeException(nameof(effectType), $"Invalid value: {effectType}")
         //     };
         // }
+
+        [Conditional("UNITY_EDITOR")]
+        public static void Log(object log, bool warning = false, bool highlight = false)
+        {
+            if (warning == false)
+            {
+                if (highlight == false)
+                    Debug.Log($"{log}");
+                else
+                    Debug.Log($"<color=#A3E635>{log}</color>");
+            }
+            else
+            {
+                if (highlight == false)
+                    Debug.Log($"<color=#FF9999>{log}</color>"); // 살구색
+                else
+                    Debug.Log($"<color=#FF6666>{log}</color>"); // 진한 살구색
+            }
+        }
 */

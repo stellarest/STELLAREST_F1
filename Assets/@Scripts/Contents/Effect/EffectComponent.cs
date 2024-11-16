@@ -264,7 +264,6 @@ namespace STELLAREST_F1
             //                 }
             //                 else if (effect.Owner != null)
             //                 {
-            //                     Debug.Log($"<color=red>REMOVE: {effect.Dev_NameTextID}</color>");
             //                     // --- Component만 제거
             //                     UnityEngine.Object.Destroy(effect, Time.deltaTime);
             //                 }
@@ -284,7 +283,6 @@ namespace STELLAREST_F1
             //                     }
             //                     else if (effect.Owner != null)
             //                     {
-            //                         Debug.Log($"<color=red>REMOVE: {effect.Dev_NameTextID}</color>");
             //                         // --- Component만 제거(아래 처럼 제거 or 단순 데이터 교체 방식으로)
             //                         UnityEngine.Object.Destroy(effect, Time.deltaTime);
             //                     }

@@ -85,7 +85,7 @@ namespace STELLAREST_F1
         // // 파라볼라 모션도 지금 고장나있는게 가까이 붙어 있으면 못맞춤
         // protected override IEnumerator CoLaunchProjectile()
         // {
-        //     //Debug.Log($"### Launch::ParabolaMotion ###");
+        //     //Util.Log($"### Launch::ParabolaMotion ###");
         //     float startTime = Time.time;
         //     float journeyLength = Vector2.Distance(StartPosition, TargetPosition);
         //     float totalTime = journeyLength / _movementSpeed;
@@ -186,7 +186,7 @@ namespace STELLAREST_F1
                     // --->> 0.42로 미리 땅겨놓고. 안보여주다가 20% 지나면 보여줌.
                     // 어쨋든 평생 과제로 개선 필요함. 무조건 화살의 중앙에서 나오도록.
                     // 내 생각엔 Arrow의 Center Child를 정해서 Center를 회전시키면 한방에 해결될 것 같긴 한데.
-                    Debug.Log("<color=cyan>SHOW BODY PROJECTILE</color>");
+                    // Util.Log("<color=cyan>SHOW BODY PROJECTILE</color>");
                     //Projectile.ShowBody(true);
                     //Projectile.Show = true;
                 }

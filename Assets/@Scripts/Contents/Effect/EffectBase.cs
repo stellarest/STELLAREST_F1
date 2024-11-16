@@ -171,10 +171,6 @@ namespace STELLAREST_F1
             }
 
             Remains = 0f;
-
-            if (DataTemplateID == 201100)
-                Debug.Log($"<color=red>###{nameof(CoStartLifeTimer)}, OUT: {Dev_NameTextID}###</color>");
-
             Owner.BaseEffect.RemoveEffect(this);
         }
     }
@@ -234,7 +230,6 @@ namespace STELLAREST_F1
         //         {
         //              angle += 360f;
         //         }
-        //         Debug.Log($"Angle: {angle}");
         //         main.startRotation = (angle + (Owner as Hero).TestOffset) * Mathf.Deg2Rad * -1;
         //         //main.flipRotation = (int)Owner.LookAtDir * -1;
         //     }

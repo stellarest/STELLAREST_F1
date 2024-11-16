@@ -13,7 +13,7 @@ namespace STELLAREST_F1
                 return false;
 
             SceneType = Define.EScene.GameScene;
-            Debug.Log($"ENTERED GAME SCENE !!");
+            Util.Log($"{nameof(GameScene)}::{nameof(Init)}");
 
             // GameObject map = Managers.Resource.Instantiate(ReadOnly.String.BaseMap);
             // map.transform.position = Vector3.zero;

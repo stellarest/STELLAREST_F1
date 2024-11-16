@@ -50,25 +50,25 @@ namespace STELLAREST_F1
         //     // for (int i = 0; i < arr.GetLength(0); ++i)
         //     // {
         //     //     for (int j = 0; j < arr.GetLength(1); ++j)
-        //     //         Debug.Log($"arr[{i}][{j}]: {arr[i, j]}");
-        //     //     Debug.Log("");
+        //     //         Util.Log($"arr[{i}][{j}]: {arr[i, j]}");
+        //     //     Util.Log("");
         //     // }
 
         //     // ###
         //     // List<int> lst = new List<int>() { 3, 5, 7, 9 ,12 };
         //     // int[] arr = lst.Where(n => n <= 7).ToArray();
         //     // for (int i = 0; i < arr.Length; ++i)
-        //     //     Debug.Log($"arr[{i}]: {arr[i]}");
+        //     //     Util.Log($"arr[{i}]: {arr[i]}");
         // }
 
         public static void PrintNums(IEnumerable<int> nums)
         {
-            Debug.Log("PrintNums");
+            Util.Log("PrintNums");
             foreach (var num in nums)
             {
-                Debug.Log($"Num: {num}");
+                Util.Log($"Num: {num}");
             }
-            Debug.Log("End PrintNums");
+            Util.Log("End PrintNums");
         }
 
         // Mac: %(Command) #(Shift) K
@@ -88,7 +88,6 @@ namespace STELLAREST_F1
                 if (tm == null)
                 {
                     Util.LogWarning(obj: nameof(MapEditor), method: nameof(GenerateMap), log: "Tilemap is null.");
-                    // Debug.LogWarning($"Failed to get Tilemap component on \"{TileMap.Tilemap_Collision}\" object.");
                     return;
                 }
                 tm.RefreshAllTiles();
@@ -127,7 +126,7 @@ namespace STELLAREST_F1
                 }
             }
 
-            Debug.Log("Map Collision Generation Complete");
+            Util.Log("Complete: GenerateMap.");
         }
 
         [MenuItem("Tools/Create Object Tile %#o")]
@@ -142,7 +141,6 @@ namespace STELLAREST_F1
                 if (assetPath == "")
                 {
                     Util.LogWarning(obj: nameof(MapEditor), method: nameof(CreateObjectTile), log: "assetPath is null, or empty.");
-                    // Debug.LogWarning("AssetPath is empty.");
                     continue;
                 }
 
@@ -155,7 +153,7 @@ namespace STELLAREST_F1
                     if (sprite == null)
                     {
                         Util.LogWarning(obj: nameof(MapEditor), method: nameof(CreateObjectTile), log: "Sprite is null.");
-                        // Debug.LogWarning($"Failed to find Sprite - {data.DescriptionTextID}");
+                        // ($"Failed to find Sprite - {data.DescriptionTextID}");
                         continue;
                     }
 
@@ -164,7 +162,7 @@ namespace STELLAREST_F1
                     customTile.ObjectType = EObjectType.Monster;
                     customTile.sprite = sprite;
                     EditorUtility.SetDirty(customTile);;
-                    Debug.Log($"{nameof(CreateObjectTile)}, Completed SetDirty - {data.DescriptionTextID}");
+                    Util.Log($"{nameof(CreateObjectTile)}, Completed SetDirty - {data.DescriptionTextID}");
                 }
                 else
                 {
@@ -173,7 +171,6 @@ namespace STELLAREST_F1
                     if (sprite == null)
                     {
                         Util.LogWarning(obj: nameof(MapEditor), method: nameof(CreateObjectTile), log: "Sprite is null.");
-                        // Debug.LogWarning($"Failed to find Sprite - {data.DescriptionTextID}");
                         continue;
                     }
 
@@ -185,7 +182,7 @@ namespace STELLAREST_F1
                     AssetDatabase.CreateAsset(newCustomTile, assetPath);
 
                     Util.Log($"Success CreateAsset: {data.DescriptionTextID}", highlight: true);
-                    // Debug.Log($"{nameof(CreateObjectTile)}, Completed CreateAsset - {data.DescriptionTextID}");
+                    // Util.Log($"{nameof(CreateObjectTile)}, Completed CreateAsset - {data.DescriptionTextID}");
                 }
             }
             #endregion
@@ -199,7 +196,6 @@ namespace STELLAREST_F1
             //     string assetPath = Path.Combine("Assets/@Resources/TileMaps/Dev/Envs", $"{name}.asset");
             //     if (assetPath == "")
             //     {
-            //         Debug.LogWarning("AssetPath is empty.");
             //         continue;
             //     }
 
@@ -211,7 +207,6 @@ namespace STELLAREST_F1
             //         Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>($"Assets/@Resources/Sprites/Env/Icons/{spriteName}.png");
             //         if (sprite == null)
             //         {
-            //             Debug.LogWarning($"Failed to find Sprite - {data.DescriptionTextID}");
             //             continue;
             //         }
 
@@ -220,7 +215,7 @@ namespace STELLAREST_F1
             //         customTile.ObjectType = EObjectType.Env;
             //         customTile.sprite = sprite;
             //         EditorUtility.SetDirty(customTile); ;
-            //         Debug.Log($"{nameof(CreateObjectTile)}, Completed SetDirty - {data.DescriptionTextID}");
+            //         Util.Log($"{nameof(CreateObjectTile)}, Completed SetDirty - {data.DescriptionTextID}");
             //     }
             //     else
             //     {
@@ -228,7 +223,6 @@ namespace STELLAREST_F1
             //         Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>($"Assets/@Resources/Sprites/Env/Icons/{spriteName}.png");
             //         if (sprite == null)
             //         {
-            //             Debug.LogWarning($"Failed to find Sprite - {data.DescriptionTextID}");
             //             continue;
             //         }
 
@@ -238,7 +232,7 @@ namespace STELLAREST_F1
             //         newCustomTile.ObjectType = EObjectType.Env;
             //         newCustomTile.sprite = sprite;
             //         AssetDatabase.CreateAsset(newCustomTile, assetPath);
-            //         Debug.Log($"{nameof(CreateObjectTile)}, Completed CreateAsset - {data.DescriptionTextID}");
+            //         Util.Log($"{nameof(CreateObjectTile)}, Completed CreateAsset - {data.DescriptionTextID}");
             //     }
             // }
             // #endregion
@@ -277,7 +271,7 @@ namespace STELLAREST_F1
             //         existingTile.ObjectType = EObjectType.Monster;
 
             //         EditorUtility.SetDirty(existingTile);
-            //         Debug.Log($"{nameof(CreateObjectTile)}, Completed - SetDirty.");
+            //         Util.Log($"{nameof(CreateObjectTile)}, Completed - SetDirty.");
             //     }
             //     else
             //     {
@@ -285,7 +279,6 @@ namespace STELLAREST_F1
             //         Sprite spr = AssetDatabase.LoadAssetAtPath<Sprite>($"Assets/@Resources/TileMaps/Dev/Monsters/{spriteName}.png");
             //         if (spr == null)
             //         {
-            //             Debug.LogError($"{nameof(CreateObjectTile)}, Failed to load {data.DescriptionTextID} Sprite.");
             //             return;
             //         }
 
@@ -296,6 +289,6 @@ namespace STELLAREST_F1
 
             //         customTile.sprite = spr;
             //         AssetDatabase.CreateAsset(customTile, path);
-            //         Debug.Log($"{nameof(CreateObjectTile)}, Completed - Create New Asset.");
+            //         Util.Log($"{nameof(CreateObjectTile)}, Completed - Create New Asset.");
             //     }
             // }

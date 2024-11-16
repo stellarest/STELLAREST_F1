@@ -121,31 +121,11 @@ namespace STELLAREST_F1
         // public override void OnDamaged(BaseCellObject attacker, SkillBase skillFromAttacker)
         // {
         //     base.OnDamaged(attacker, skillFromAttacker);
-        //     HitShakeMovement(duration: 0.05f, power: 0.5f, vibrato: 10); // --- TEMP
+        //     HitShakeMovement(duration: 0.05f, power: 0.5f, vibrato: 10);
         // }
 
         public override void OnDead(BaseCellObject attacker, SkillBase skillFromAttacker)
             => base.OnDead(attacker, skillFromAttacker);
-
-        // public override void LevelUp()
-        // {
-        //     if (this.IsValid() == false)
-        //         return;
-
-        //     if (IsMaxLevel)
-        //     {
-        //         Debug.Log($"<color=magenta>MAX LEVEL !!{gameObject.name}</color>");
-        //         return;
-        //     }
-
-        //     _levelID = Mathf.Clamp(_levelID + 1, DataTemplateID, _maxLevelID);
-        //     Debug.Log($"<color=white>Lv: {Level} / MaxLv: {MaxLevel}</color>");
-        //     if (Managers.Data.MonsterStatDataDict.TryGetValue(key: _levelID, value: out MonsterStatData statData))
-        //     {
-        //         SetStat(_levelID);
-        //         CreatureSkill.LevelUpSkill(ownerLevelID: _levelID);
-        //     }
-        // }
 
         protected override void OnDisable()
             => base.OnDisable();

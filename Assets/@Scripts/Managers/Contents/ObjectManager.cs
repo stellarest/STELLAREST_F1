@@ -66,7 +66,7 @@ namespace STELLAREST_F1
                 cellSpawnPos = Util.MakeSpawnPosition(spawnPos);
                 if (Managers.Map.CanMove(cellSpawnPos) == false)
                 {
-                    Debug.LogWarning($"Failed Spawn Cell Object: {nameof(Util.MakeSpawnPosition)}, {objectType}");
+                    Util.LogWarning(obj: nameof(ObjectManager), method: $"{nameof(SpawnBaseObject)}::{nameof(Util.MakeSpawnPosition)}", log: "cellSpawnPos: wrong value");
                     return null;
                 }
 
@@ -351,7 +351,6 @@ namespace STELLAREST_F1
         //                 go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: HeroRoot, poolingID: dataID);
         //                 if (go == null)
         //                 {
-        //                     Debug.LogError($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input: \"{dataID}\"");
         //                     return null;
         //                 }
         //                 Hero hero = go.GetComponent<Hero>();
@@ -366,7 +365,6 @@ namespace STELLAREST_F1
         //                 go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: MonsterRoot, poolingID: dataID);
         //                 if (go == null)
         //                 {
-        //                     Debug.LogError($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input: \"{dataID}\"");
         //                     return null;
         //                 }
         //                 Monster monster = go.GetComponent<Monster>();
@@ -380,7 +378,6 @@ namespace STELLAREST_F1
         //                 go = Managers.Resource.Instantiate(data.PrefabLabel, parent: EnvRoot, poolingID: dataID);
         //                 if (go == null)
         //                 {
-        //                     Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input: \"{dataID}\"");
         //                     return null;
         //                 }
 
@@ -395,7 +392,6 @@ namespace STELLAREST_F1
         //                 go = Managers.Resource.Instantiate(data.PrefabLabel, parent: ProjectileRoot, poolingID: data.DataID);
         //                 if (go == null)
         //                 {
-        //                     Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input: \"{data.PrefabLabel}\"");
         //                     return null;
         //                 }
 
@@ -409,7 +405,6 @@ namespace STELLAREST_F1
         //                 go = Managers.Resource.Instantiate(ReadOnly.Prefabs.PFName_LeaderController);
         //                 if (go == null)
         //                 {
-        //                     Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input: \"{EObjectType.LeaderController}\"");
         //                     return null;
         //                 }
         //                 go.name = $"@{go.name}";
@@ -423,7 +418,6 @@ namespace STELLAREST_F1
         //                 go = Managers.Resource.Instantiate(data.PrefabLabel, parent: EffectRoot, poolingID: dataID);
         //                 if (go == null)
         //                 {
-        //                     Debug.LogWarning($"{nameof(ObjectManager)}, {nameof(Spawn)}, Input: \"{data.PrefabLabel}\"");
         //                     return null;
         //                 }
 

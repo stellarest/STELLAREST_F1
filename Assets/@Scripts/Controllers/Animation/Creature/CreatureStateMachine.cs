@@ -112,7 +112,7 @@ public class CreatureStateMachine : StateMachineBehaviour
             //     if (_owner.CollectEnv)
             //     {
             //         _owner.StopCoActivateCollectEnv();
-            //         Debug.Log("<color=cyan>Move State Enter</color>");
+            //         Util.Log("<color=cyan>Move State Enter</color>");
             //     }
             // }
 
@@ -157,7 +157,6 @@ public class CreatureStateMachine : StateMachineBehaviour
             // // Body Att 끊김. Gunner 애니메이션 자연스러움
             // if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureAIState.Idle))
             // {
-            //     // Debug.Log($"<color=white>{_owner.gameObject.name}, Set Idle.</color>");
             //     _owner.CreatureState = ECreatureAIState.Idle;
             //     return;
             // }
@@ -192,7 +191,6 @@ public class CreatureStateMachine : StateMachineBehaviour
         //     // Body Att 끊김. Gunner 애니메이션 자연스러움
         //     if (stateInfo.shortNameHash == _creatureAnim?.GetHash(ECreatureAIState.Idle))
         //     {
-        //         // Debug.Log($"<color=white>{_owner.gameObject.name}, Set Idle.</color>");
         //         _owner.CreatureState = ECreatureAIState.Idle;
         //         return;
         //     }

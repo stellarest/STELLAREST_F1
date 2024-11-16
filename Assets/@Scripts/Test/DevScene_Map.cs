@@ -212,7 +212,6 @@ namespace STELLAREST_F1
                 // {
                 //     if (attemptCount >= 100)
                 //     {
-                //         Debug.LogError("Failed set randPos");
                 //         Application.Quit();
                 //     }
                 //     randPos = new Vector3Int(Random.Range(-3, 3), Random.Range(-3, 3), 0); // Retry
@@ -447,7 +446,7 @@ namespace STELLAREST_F1
 
             if (Managers.Object.HeroLeaderController == null)
             {
-                Debug.LogError("This game absolutely requires at least one Hero Leader Controller.");
+                Util.LogError(obj: nameof(DevScene_Map), method: nameof(Test), log: "Failed to find HeroLeaderController.");
                 Application.Quit();
             }
         }
@@ -456,9 +455,10 @@ namespace STELLAREST_F1
         {
             Managers.Resource.LoadAllAsync<Object>(label: "PreLoad", callback: delegate (string key, int count, int totalCount)
             {
-                Debug.Log($"Key Loaded : {key}, Current : {count} / Total : {totalCount}");
+                Util.Log($"{nameof(DevScene_Map)}::{nameof(LoadAsset)}, Loading: {key}({count}/{totalCount})");
                 if (count == totalCount)
                 {
+                    Util.Log($"{nameof(DevScene_Map)}::{nameof(LoadAsset)}, Loading Complete.", highlight: true);
                     Managers.Data.Init();
                     Managers.MonoContents.Init();
                     Test();
