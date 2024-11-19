@@ -1,13 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 using static STELLAREST_F1.Define;
+using SpriteTrail;
+
 
 namespace STELLAREST_F1
 {
     public class BodyContainer
     {
-        public BodyContainer(string tag, Transform tr, SpriteRenderer spr, Material defaultSPRMat, 
+        public BodyContainer(string tag, BaseObject owner, Transform tr, SpriteRenderer spr, Material defaultSPRMat, 
                                 Color defaultSPRColor, Color defaultMatColor, MaterialPropertyBlock matPB)
         {
             this.Tag = tag;
@@ -18,14 +21,27 @@ namespace STELLAREST_F1
                 STrail = TR.gameObject.GetOrAddComponent<SpriteTrail.SpriteTrail>();
                 STrail.m_SortingLayerID = UnityEngine.SortingLayer.NameToID(CString.CValue(EString.CValue_BaseObject));
                 STrail.m_OrderInSortingLayer = CInt.Sorting(EInt.Sorting_BaseObject);
-
+                /*
+                    SO_STrail_Ball,
+                    SO_STrail_Base,
+                    SO_STrail_Bio,
+                    SO_STrail_Bird,
+                    SO_STrail_Blob,
+                    SO_STrail_Happy,
+                    SO_STrail_Pos,
+                    SO_STrail_PureRainbow,
+                    SO_STrail_SpriteTrail,
+                    SO_STrail_Stamp,
+                    SO_STrail_Tired,
+                */
                 SpriteTrail.TrailPreset trailPreset = Managers.Resource.Load<SpriteTrail.TrailPreset>(CString.SObject(EString.SO_STrail_Base)); 
                 if (trailPreset == null)
                 {
-                    Util.LogError(obj: nameof(BodyContainer), method: nameof(BodyContainer));
+                    Dev.LogError(obj: nameof(BodyContainer), method: nameof(BodyContainer));
                     return;
                 }
                 
+                //STrail.SetTrailParent(owner.transform);
                 STrail.SetTrailPreset(trailPreset);
                 // --- 가장 초기에 Trail 컴포넌트 자체는 비활성화로 시작
                 // STrail.enabled = false;
@@ -60,6 +76,7 @@ namespace STELLAREST_F1
         protected const string _matStrongTintColor = "_Color";
 
         protected MaterialPropertyBlock _matPropertyBlock = null;
+        protected Dictionary<ESTrail, TrailPreset> _sTrailPresetDict = null;
 
         public override bool Init()
         {
@@ -69,6 +86,7 @@ namespace STELLAREST_F1
             _matDefault = Managers.Resource.Load<Material>(CString.Material(EString.Mat_Default));
             _matStrongTint =  Managers.Resource.Load<Material>(CString.Material(EString.Mat_StrongTint));
             _matPropertyBlock = new MaterialPropertyBlock();
+            _sTrailPresetDict = new Dictionary<ESTrail, TrailPreset>();
             return true;
         }
 
@@ -83,7 +101,7 @@ namespace STELLAREST_F1
         public virtual void ResetMaterialsAndColors() { }
 
         // --- Trail
-        public virtual void EnableBodyTrail(bool enable) { }
+        public virtual void EnableBodySTrail(bool enable) { }
 
         // --- Effect: Hurt Flash
         public void StartCoHurtFlashEffect(bool isCritical = false) => StartCoroutine(CoHurtFlashEffect(isCritical));

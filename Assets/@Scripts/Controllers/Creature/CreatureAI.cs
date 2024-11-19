@@ -87,11 +87,11 @@ namespace STELLAREST_F1
                         {
                             if (_currentPingPongCantMoveCount >= _tryFindingPathMaxCount && IsForceMovingPingPongObject == false)
                             {
-                                Util.Log($"{Owner.gameObject.name}: Set target for force moving of PP obj.", highlight: true);
+                                Dev.Log($"{Owner.gameObject.name}: Set target for force moving of PP obj.", highlight: true);
                                 Owner.StopCoLerpToCellPos();
                                 CoStartForceMovePingPongObject(Owner.CellPos, CellChasePos, endCallback: delegate ()
                                 {
-                                    Util.Log($"{Owner.gameObject.name}: End force moving of PP obj.");
+                                    Dev.Log($"{Owner.gameObject.name}: End force moving of PP obj.");
                                     _currentPingPongCantMoveCount = 0;
                                     CoStopForceMovePingPongObject();
                                     Owner.StartCoLerpToCellPos();

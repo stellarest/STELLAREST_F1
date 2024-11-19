@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 using STELLAREST_F1.Data;
 using static STELLAREST_F1.Define;
-using UnityEngine.UIElements.Experimental;
+using SpriteTrail;
 
 namespace STELLAREST_F1
 {
@@ -28,12 +29,15 @@ namespace STELLAREST_F1
         public Hero Owner { get; private set; } = null;
         private Material _matDefaultEyes = null;
 
-        private SpriteTrail.TrailPreset _weaponTrailPreset = null;
-        public void SetWeaponSTrailPreset(HeroSpriteData heroSpriteData)
+        public void LoadWeaponSTrailPreset(HeroSpriteData heroSpriteData)
         {
-            _weaponTrailPreset = Managers.Resource.Load<SpriteTrail.TrailPreset>(heroSpriteData.Weapon.LWeaponSTrailPreset);
-            if (_weaponTrailPreset != null)
-                GetContainer(EHeroBody_Weapon.WeaponL_Armor).STrail.SetTrailPreset(_weaponTrailPreset);
+            TrailPreset weaponSTrailPreset = Managers.Resource.Load<TrailPreset>(heroSpriteData.Weapon.LWeaponSTrailPreset);
+            if (weaponSTrailPreset != null)
+                GetContainer(EHeroBody_Weapon.WeaponL_Armor).STrail.SetTrailPreset(weaponSTrailPreset);
+
+            weaponSTrailPreset = Managers.Resource.Load<TrailPreset>(heroSpriteData.Weapon.RWeaponSTrailPreset);
+            if (weaponSTrailPreset != null)
+                GetContainer(EHeroBody_Weapon.WeaponR_Armor).STrail.SetTrailPreset(weaponSTrailPreset);
         }
 
         public BodyContainer GetContainer(EHeroBody_Head head) => _heroBodyDict[EHeroBody.Head][(int)head];
@@ -227,12 +231,11 @@ namespace STELLAREST_F1
         {
             if (Managers.Data.HeroSpriteDataDict.TryGetValue(key: dataID, value: out HeroSpriteData eliteHeroSpriteData) == false)
             {
-                Util.LogError(obj: nameof(HeroBody), method: nameof(SetEliteSpritesSet));
+                Dev.LogError(obj: nameof(HeroBody), method: nameof(SetEliteSpritesSet));
                 return;
             }
 
-            SetWeaponSTrailPreset(eliteHeroSpriteData);
-
+            LoadWeaponSTrailPreset(eliteHeroSpriteData);
             // --- Release Current
             ReleaseWeapon();
             foreach (var containers in _heroBodyDict.Values)
@@ -260,7 +263,7 @@ namespace STELLAREST_F1
             HeroSpriteData_Skin skin = eliteHeroSpriteData.Skin;
             if (ColorUtility.TryParseHtmlString(skin.SkinColor, out Color skinColor) == false)
             {
-                Util.LogError(obj: nameof(HeroBody), method: nameof(SetEliteSpritesSet), log: $"Input: {skin.SkinColor}");
+                Dev.LogError(obj: nameof(HeroBody), method: nameof(SetEliteSpritesSet), log: $"Input: {skin.SkinColor}");
                 return;
             }
 
@@ -296,7 +299,7 @@ namespace STELLAREST_F1
                         Eyebrows[i] = Managers.Resource.Load<Sprite>(head.Eyebrows[i]);
                         if (Eyebrows[i] == null)
                         {
-                            Util.LogError(obj: nameof(HeroBody), method: nameof(SetEliteSpritesSet), log: $"Input: {head.Eyebrows[i]}");
+                            Dev.LogError(obj: nameof(HeroBody), method: nameof(SetEliteSpritesSet), log: $"Input: {head.Eyebrows[i]}");
                             return;
                         }
 
@@ -305,7 +308,7 @@ namespace STELLAREST_F1
                             EyebrowsColors[i] = color;
                         else
                         {
-                            Util.LogError(obj: nameof(HeroBody), method: nameof(SetEliteSpritesSet), log: $"Input: {head.EyebrowsColors[i]}");
+                            Dev.LogError(obj: nameof(HeroBody), method: nameof(SetEliteSpritesSet), log: $"Input: {head.EyebrowsColors[i]}");
                             return;
                         }
                     }
@@ -323,7 +326,7 @@ namespace STELLAREST_F1
                         Eyes[i] = Managers.Resource.Load<Sprite>(head.Eyes[i]);
                         if (Eyes[i] == null)
                         {
-                            Util.LogError(obj: nameof(HeroBody), method: nameof(SetEliteSpritesSet), log: $"Input: {head.Eyes[i]}");
+                            Dev.LogError(obj: nameof(HeroBody), method: nameof(SetEliteSpritesSet), log: $"Input: {head.Eyes[i]}");
                             return;
                         }
 
@@ -332,7 +335,7 @@ namespace STELLAREST_F1
                             EyesColors[i] = color;
                         else
                         {
-                            Util.LogError(obj: nameof(HeroBody), method: nameof(SetEliteSpritesSet), log: $"Input: {head.EyesColors[i]}");
+                            Dev.LogError(obj: nameof(HeroBody), method: nameof(SetEliteSpritesSet), log: $"Input: {head.EyesColors[i]}");
                             return;
                         }
                     }
@@ -350,7 +353,7 @@ namespace STELLAREST_F1
                         Mouths[i] = Managers.Resource.Load<Sprite>(head.Mouth[i]);
                         if (Mouths[i] == null)
                         {
-                            Util.LogError(obj: nameof(HeroBody), method: nameof(SetEliteSpritesSet), log: $"Input: {head.Mouth[i]}");
+                            Dev.LogError(obj: nameof(HeroBody), method: nameof(SetEliteSpritesSet), log: $"Input: {head.Mouth[i]}");
                             return;
                         }
 
@@ -359,7 +362,7 @@ namespace STELLAREST_F1
                             MouthsColors[i] = color;
                         else
                         {
-                            Util.LogError(obj: nameof(HeroBody), method: nameof(SetEliteSpritesSet), log: $"Input: {head.MouthColors[i]}");
+                            Dev.LogError(obj: nameof(HeroBody), method: nameof(SetEliteSpritesSet), log: $"Input: {head.MouthColors[i]}");
                             return;
                         }
                     }
@@ -1105,7 +1108,7 @@ namespace STELLAREST_F1
         {
             if (Managers.Data.HeroSpriteDataDict.TryGetValue(key: dataID, value: out HeroSpriteData heroSpriteData) == false)
             {
-                Util.LogError(obj: nameof(HeroBody), method: nameof(InitBody));
+                Dev.LogError(obj: nameof(HeroBody), method: nameof(InitBody));
                 return;
             }
 
@@ -1113,7 +1116,7 @@ namespace STELLAREST_F1
             HeroSpriteData_Skin skin = heroSpriteData.Skin;
             if (ColorUtility.TryParseHtmlString(skin.SkinColor, out Color skinColor) == false)
             {
-                Util.LogError(obj: nameof(HeroBody), method: nameof(InitBody));
+                Dev.LogError(obj: nameof(HeroBody), method: nameof(InitBody));
                 return;
             }
 
@@ -1132,7 +1135,7 @@ namespace STELLAREST_F1
                 spr.sprite = sprite;
             spr.color = skinColor;
 
-            headContainers[(int)EHeroBody_Head.Head] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            headContainers[(int)EHeroBody_Head.Head] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: skinColor,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1153,7 +1156,7 @@ namespace STELLAREST_F1
             if (ColorUtility.TryParseHtmlString(head.HairColor, out Color hairColor))
                 spr.color = hairColor;
 
-            headContainers[(int)EHeroBody_Head.Hair] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            headContainers[(int)EHeroBody_Head.Hair] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1170,7 +1173,7 @@ namespace STELLAREST_F1
                 Eyebrows[i] = Managers.Resource.Load<Sprite>(head.Eyebrows[i]);
                 if (Eyebrows[i] == null)
                 {
-                    Util.LogError(obj: nameof(HeroBody), method: nameof(InitBody), log: $"Input: {heroSpriteData.Head.Eyebrows[i]}");
+                    Dev.LogError(obj: nameof(HeroBody), method: nameof(InitBody), log: $"Input: {heroSpriteData.Head.Eyebrows[i]}");
                     return;
                 }
 
@@ -1179,7 +1182,7 @@ namespace STELLAREST_F1
                     EyebrowsColors[i] = color;
                 else
                 {
-                    Util.LogError(obj: nameof(HeroBody), method: nameof(InitBody), log: $"Input: {heroSpriteData.Head.EyebrowsColors[i]}");
+                    Dev.LogError(obj: nameof(HeroBody), method: nameof(InitBody), log: $"Input: {heroSpriteData.Head.EyebrowsColors[i]}");
                     return;
                 }
             }
@@ -1192,7 +1195,7 @@ namespace STELLAREST_F1
                 spr.sprite = Eyebrows[(int)EHeroEmoji.Idle];
             spr.color = EyebrowsColors[(int)EHeroEmoji.Idle];
 
-            headContainers[(int)EHeroBody_Head.Eyebrows] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            headContainers[(int)EHeroBody_Head.Eyebrows] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: EyebrowsColors[(int)EHeroEmoji.Idle],
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1209,7 +1212,7 @@ namespace STELLAREST_F1
                 Eyes[i] = Managers.Resource.Load<Sprite>(head.Eyes[i]);
                 if (Eyes[i] == null)
                 {
-                    Util.LogError(obj: nameof(HeroBody), method: nameof(InitBody), log: $"Input: {head.Eyes[i]}");
+                    Dev.LogError(obj: nameof(HeroBody), method: nameof(InitBody), log: $"Input: {head.Eyes[i]}");
                     return;
                 }
 
@@ -1218,7 +1221,7 @@ namespace STELLAREST_F1
                     EyesColors[i] = color;
                 else
                 {
-                    Util.LogError(obj: nameof(HeroBody), method: nameof(InitBody), log: $"Input: {head.EyesColors[i]}");
+                    Dev.LogError(obj: nameof(HeroBody), method: nameof(InitBody), log: $"Input: {head.EyesColors[i]}");
                     return;
                 }
             }
@@ -1231,7 +1234,7 @@ namespace STELLAREST_F1
                 spr.sprite = Eyes[(int)EHeroEmoji.Idle];
             spr.color = EyesColors[(int)EHeroEmoji.Idle];
 
-            headContainers[(int)EHeroBody_Head.Eyes] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            headContainers[(int)EHeroBody_Head.Eyes] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefaultEyes, defaultSPRColor: EyesColors[(int)EHeroEmoji.Idle],
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1248,7 +1251,7 @@ namespace STELLAREST_F1
                 Mouths[i] = Managers.Resource.Load<Sprite>(head.Mouth[i]);
                 if (Mouths[i] == null)
                 {
-                    Util.LogError(obj: nameof(HeroBody), method: nameof(InitBody), log: $"Input: {heroSpriteData.Head.Mouth[i]}");
+                    Dev.LogError(obj: nameof(HeroBody), method: nameof(InitBody), log: $"Input: {heroSpriteData.Head.Mouth[i]}");
                     return;
                 }
 
@@ -1257,7 +1260,7 @@ namespace STELLAREST_F1
                     MouthsColors[i] = color;
                 else
                 {
-                    Util.LogError(obj: nameof(HeroBody), method: nameof(InitBody), log: $"Input: {head.MouthColors[i]}");
+                    Dev.LogError(obj: nameof(HeroBody), method: nameof(InitBody), log: $"Input: {head.MouthColors[i]}");
                     return;
                 }
             }
@@ -1271,7 +1274,7 @@ namespace STELLAREST_F1
 
             spr.color = MouthsColors[(int)EHeroEmoji.Idle];
 
-            headContainers[(int)EHeroBody_Head.Mouth] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            headContainers[(int)EHeroBody_Head.Mouth] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: MouthsColors[(int)EHeroEmoji.Idle],
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1290,7 +1293,7 @@ namespace STELLAREST_F1
                 spr.sprite = sprite;
             spr.color = skinColor;
 
-            headContainers[(int)EHeroBody_Head.Ears] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            headContainers[(int)EHeroBody_Head.Ears] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: skinColor,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1311,7 +1314,7 @@ namespace STELLAREST_F1
             if (ColorUtility.TryParseHtmlString(head.EarringsColor, out Color earringsColor))
                 spr.color = earringsColor;
 
-            headContainers[(int)EHeroBody_Head.Earrings] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            headContainers[(int)EHeroBody_Head.Earrings] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1332,7 +1335,7 @@ namespace STELLAREST_F1
             if (ColorUtility.TryParseHtmlString(head.BeardColor, out Color beardColor))
                 spr.color = beardColor;
 
-            headContainers[(int)EHeroBody_Head.Beard] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            headContainers[(int)EHeroBody_Head.Beard] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1353,7 +1356,7 @@ namespace STELLAREST_F1
             if (ColorUtility.TryParseHtmlString(head.MaskColor, out Color maskColor))
                 spr.color = maskColor;
 
-            headContainers[(int)EHeroBody_Head.Mask] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            headContainers[(int)EHeroBody_Head.Mask] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1374,7 +1377,7 @@ namespace STELLAREST_F1
             if (ColorUtility.TryParseHtmlString(head.GlassesColor, out Color glassesColor))
                 spr.color = glassesColor;
 
-            headContainers[(int)EHeroBody_Head.Glasses] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            headContainers[(int)EHeroBody_Head.Glasses] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1395,7 +1398,7 @@ namespace STELLAREST_F1
             if (ColorUtility.TryParseHtmlString(head.HelmetColor, out Color helmetColor))
                 spr.color = helmetColor;
 
-            headContainers[(int)EHeroBody_Head.Helmet] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            headContainers[(int)EHeroBody_Head.Helmet] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1419,7 +1422,7 @@ namespace STELLAREST_F1
                 spr.sprite = sprite;
             spr.color = skinColor;
 
-            upperBodyContainers[(int)EHeroBody_Upper.Torso] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            upperBodyContainers[(int)EHeroBody_Upper.Torso] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: skinColor,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1440,7 +1443,7 @@ namespace STELLAREST_F1
             if (ColorUtility.TryParseHtmlString(upperBody.TorsoColor, out Color torsoColor))
                 spr.color = torsoColor;
 
-            upperBodyContainers[(int)EHeroBody_Upper.Torso_Armor] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            upperBodyContainers[(int)EHeroBody_Upper.Torso_Armor] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1461,7 +1464,7 @@ namespace STELLAREST_F1
             if (ColorUtility.TryParseHtmlString(upperBody.CapeColor, out Color capeColor))
                 spr.color = capeColor;
 
-            upperBodyContainers[(int)EHeroBody_Upper.Cape_Armor] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            upperBodyContainers[(int)EHeroBody_Upper.Cape_Armor] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1480,7 +1483,7 @@ namespace STELLAREST_F1
                 spr.sprite = sprite;
             spr.color = skinColor;
 
-            upperBodyContainers[(int)EHeroBody_Upper.ArmL] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            upperBodyContainers[(int)EHeroBody_Upper.ArmL] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: skinColor,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1501,7 +1504,7 @@ namespace STELLAREST_F1
             if (ColorUtility.TryParseHtmlString(upperBody.ArmLColor, out Color armLColor))
                 spr.color = armLColor;
 
-            upperBodyContainers[(int)EHeroBody_Upper.ArmL_Armor] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            upperBodyContainers[(int)EHeroBody_Upper.ArmL_Armor] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1520,7 +1523,7 @@ namespace STELLAREST_F1
                 spr.sprite = sprite;
             spr.color = skinColor;
 
-            upperBodyContainers[(int)EHeroBody_Upper.ForearmL] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            upperBodyContainers[(int)EHeroBody_Upper.ForearmL] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: skinColor,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1541,7 +1544,7 @@ namespace STELLAREST_F1
             if (ColorUtility.TryParseHtmlString(upperBody.ForearmLColor, out Color forearmLColor))
                 spr.color = forearmLColor;
 
-            upperBodyContainers[(int)EHeroBody_Upper.ForearmL_Armor] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            upperBodyContainers[(int)EHeroBody_Upper.ForearmL_Armor] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1560,7 +1563,7 @@ namespace STELLAREST_F1
                 spr.sprite = sprite;
             spr.color = skinColor;
 
-            upperBodyContainers[(int)EHeroBody_Upper.HandL] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            upperBodyContainers[(int)EHeroBody_Upper.HandL] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: skinColor,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1581,7 +1584,7 @@ namespace STELLAREST_F1
             if (ColorUtility.TryParseHtmlString(upperBody.HandLColor, out Color handLColor))
                 spr.color = handLColor;
 
-            upperBodyContainers[(int)EHeroBody_Upper.HandL_Armor] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            upperBodyContainers[(int)EHeroBody_Upper.HandL_Armor] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1600,7 +1603,7 @@ namespace STELLAREST_F1
                 spr.sprite = sprite;
             spr.color = skinColor;
 
-            upperBodyContainers[(int)EHeroBody_Upper.Finger] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            upperBodyContainers[(int)EHeroBody_Upper.Finger] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: skinColor,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1621,7 +1624,7 @@ namespace STELLAREST_F1
             if (ColorUtility.TryParseHtmlString(upperBody.FingerColor, out Color fingerColor))
                 spr.color = fingerColor;
 
-            upperBodyContainers[(int)EHeroBody_Upper.Finger_Armor] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            upperBodyContainers[(int)EHeroBody_Upper.Finger_Armor] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1640,7 +1643,7 @@ namespace STELLAREST_F1
                 spr.sprite = sprite;
             spr.color = skinColor;
 
-            upperBodyContainers[(int)EHeroBody_Upper.ArmR] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            upperBodyContainers[(int)EHeroBody_Upper.ArmR] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: skinColor,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1661,7 +1664,7 @@ namespace STELLAREST_F1
             if (ColorUtility.TryParseHtmlString(upperBody.ArmRColor, out Color armRColor))
                 spr.color = armRColor;
 
-            upperBodyContainers[(int)EHeroBody_Upper.ArmR_Armor] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            upperBodyContainers[(int)EHeroBody_Upper.ArmR_Armor] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1680,7 +1683,7 @@ namespace STELLAREST_F1
                 spr.sprite = sprite;
             spr.color = skinColor;
 
-            upperBodyContainers[(int)EHeroBody_Upper.ForearmR] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            upperBodyContainers[(int)EHeroBody_Upper.ForearmR] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: skinColor,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1701,7 +1704,7 @@ namespace STELLAREST_F1
             if (ColorUtility.TryParseHtmlString(upperBody.ForearmRColor, out Color ForearmRColor))
                 spr.color = ForearmRColor;
 
-            upperBodyContainers[(int)EHeroBody_Upper.ForearmR_Armor] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            upperBodyContainers[(int)EHeroBody_Upper.ForearmR_Armor] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1722,7 +1725,7 @@ namespace STELLAREST_F1
             if (ColorUtility.TryParseHtmlString(upperBody.SleeveRColor, out Color sleeveRColor))
                 spr.color = sleeveRColor;
 
-            upperBodyContainers[(int)EHeroBody_Upper.SleeveR_Armor] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            upperBodyContainers[(int)EHeroBody_Upper.SleeveR_Armor] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1741,7 +1744,7 @@ namespace STELLAREST_F1
                 spr.sprite = sprite;
             spr.color = skinColor;
 
-            upperBodyContainers[(int)EHeroBody_Upper.HandR] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            upperBodyContainers[(int)EHeroBody_Upper.HandR] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: skinColor,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1762,7 +1765,7 @@ namespace STELLAREST_F1
             if (ColorUtility.TryParseHtmlString(upperBody.HandRColor, out Color handRColor))
                 spr.color = handRColor;
 
-            upperBodyContainers[(int)EHeroBody_Upper.HandR_Armor] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            upperBodyContainers[(int)EHeroBody_Upper.HandR_Armor] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1786,7 +1789,7 @@ namespace STELLAREST_F1
                 spr.sprite = sprite;
             spr.color = skinColor;
 
-            lowerBodyContainers[(int)EHeroBody_Lower.Pelvis] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            lowerBodyContainers[(int)EHeroBody_Lower.Pelvis] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: skinColor,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1807,7 +1810,7 @@ namespace STELLAREST_F1
             if (ColorUtility.TryParseHtmlString(lowerBody.PelvisColor, out Color pelvisColor))
                 spr.color = pelvisColor;
 
-            lowerBodyContainers[(int)EHeroBody_Lower.Pelvis_Armor] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            lowerBodyContainers[(int)EHeroBody_Lower.Pelvis_Armor] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1826,7 +1829,7 @@ namespace STELLAREST_F1
                 spr.sprite = sprite;
             spr.color = skinColor;
 
-            lowerBodyContainers[(int)EHeroBody_Lower.LegL] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            lowerBodyContainers[(int)EHeroBody_Lower.LegL] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: skinColor,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1847,7 +1850,7 @@ namespace STELLAREST_F1
             if (ColorUtility.TryParseHtmlString(lowerBody.LegLColor, out Color legLColor))
                 spr.color = legLColor;
 
-            lowerBodyContainers[(int)EHeroBody_Lower.LegL_Armor] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            lowerBodyContainers[(int)EHeroBody_Lower.LegL_Armor] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1866,7 +1869,7 @@ namespace STELLAREST_F1
                 spr.sprite = sprite;
             spr.color = skinColor;
 
-            lowerBodyContainers[(int)EHeroBody_Lower.ShinL] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            lowerBodyContainers[(int)EHeroBody_Lower.ShinL] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: skinColor,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1887,7 +1890,7 @@ namespace STELLAREST_F1
             if (ColorUtility.TryParseHtmlString(lowerBody.ShinLColor, out Color shinLColor))
                 spr.color = shinLColor;
 
-            lowerBodyContainers[(int)EHeroBody_Lower.ShinL_Armor] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            lowerBodyContainers[(int)EHeroBody_Lower.ShinL_Armor] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1906,7 +1909,7 @@ namespace STELLAREST_F1
                 spr.sprite = sprite;
             spr.color = skinColor;
 
-            lowerBodyContainers[(int)EHeroBody_Lower.LegR] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            lowerBodyContainers[(int)EHeroBody_Lower.LegR] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: skinColor,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1927,7 +1930,7 @@ namespace STELLAREST_F1
             if (ColorUtility.TryParseHtmlString(lowerBody.LegRColor, out Color legRColor))
                 spr.color = legRColor;
 
-            lowerBodyContainers[(int)EHeroBody_Lower.LegR_Armor] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            lowerBodyContainers[(int)EHeroBody_Lower.LegR_Armor] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1946,7 +1949,7 @@ namespace STELLAREST_F1
                 spr.sprite = sprite;
             spr.color = skinColor;
 
-            lowerBodyContainers[(int)EHeroBody_Lower.ShinR] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            lowerBodyContainers[(int)EHeroBody_Lower.ShinR] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: skinColor,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1967,7 +1970,7 @@ namespace STELLAREST_F1
             if (ColorUtility.TryParseHtmlString(lowerBody.ShinR, out Color shinRColor))
                 spr.color = shinRColor;
 
-            lowerBodyContainers[(int)EHeroBody_Lower.ShinR_Armor] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            lowerBodyContainers[(int)EHeroBody_Lower.ShinR_Armor] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                             defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                             defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -1977,7 +1980,7 @@ namespace STELLAREST_F1
             spr.SetPropertyBlock(matPB);
 
             // --- Weapon
-            SetWeaponSTrailPreset(heroSpriteData);
+            LoadWeaponSTrailPreset(heroSpriteData);
             HeroSpriteData_Weapon weapon = heroSpriteData.Weapon;
             BodyContainer[] weaponContainers = new BodyContainer[(int)EHeroBody_Weapon.Max];
             _heroBodyDict.Add(EHeroBody.Weapon, weaponContainers);
@@ -2003,7 +2006,7 @@ namespace STELLAREST_F1
                 _defaultHeroWeapons[(int)EHeroWeapons.WeaponL_Armor] = sprite;
             }
 
-            weaponContainers[(int)EHeroBody_Weapon.WeaponL_Armor] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            weaponContainers[(int)EHeroBody_Weapon.WeaponL_Armor] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                             defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                             defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -2017,7 +2020,7 @@ namespace STELLAREST_F1
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             tr.localPosition = weapon.LWeaponFireSocketLocalPosition;
 
-            weaponContainers[(int)EHeroBody_Weapon.WeaponL_FireSocket] = new BodyContainer(tag: tag, tr: tr, spr: null,
+            weaponContainers[(int)EHeroBody_Weapon.WeaponL_FireSocket] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: null,
                                                             defaultSPRMat: null, defaultSPRColor: Color.white,
                                                             defaultMatColor: Color.white, matPB: null);
 
@@ -2025,7 +2028,7 @@ namespace STELLAREST_F1
             tag = Util.GetStringFromEnum(EHeroBody_Weapon.WeaponL_ChildsRoot);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
 
-            weaponContainers[(int)EHeroBody_Weapon.WeaponL_ChildsRoot] = new BodyContainer(tag: tag, tr: tr, spr: null,
+            weaponContainers[(int)EHeroBody_Weapon.WeaponL_ChildsRoot] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: null,
                                                             defaultSPRMat: null, defaultSPRColor: Color.white,
                                                             defaultMatColor: Color.white, matPB: null);
 
@@ -2051,7 +2054,7 @@ namespace STELLAREST_F1
                         spr.flipY = weapon.LWeaponChildFlipYs[0];
                         _defaultHeroWeapons[(int)EHeroWeapons.WeaponL_Armor_Child01] = sprite;
 
-                        weaponContainers[(int)EHeroBody_Weapon.WeaponL_Armor_Child01] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        weaponContainers[(int)EHeroBody_Weapon.WeaponL_Armor_Child01] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                             defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                             defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -2080,7 +2083,7 @@ namespace STELLAREST_F1
                             _defaultHeroWeapons[(int)EHeroWeapons.WeaponL_Armor_Child02] = sprite;
                         }
 
-                        weaponContainers[(int)EHeroBody_Weapon.WeaponL_Armor_Child02] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        weaponContainers[(int)EHeroBody_Weapon.WeaponL_Armor_Child02] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                             defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                             defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -2112,7 +2115,7 @@ namespace STELLAREST_F1
                             _defaultHeroWeapons[(int)EHeroWeapons.WeaponL_Armor_Child03] = sprite;
                         }
 
-                        weaponContainers[(int)EHeroBody_Weapon.WeaponL_Armor_Child03] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        weaponContainers[(int)EHeroBody_Weapon.WeaponL_Armor_Child03] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                             defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                             defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -2128,7 +2131,7 @@ namespace STELLAREST_F1
             }
             else
             {
-                weaponContainers[(int)EHeroBody_Weapon.WeaponL_Armor_Child01] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                weaponContainers[(int)EHeroBody_Weapon.WeaponL_Armor_Child01] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                             defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                             defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -2142,7 +2145,7 @@ namespace STELLAREST_F1
                 spr = tr.GetComponent<SpriteRenderer>();
                 spr.material = _matDefault;
 
-                weaponContainers[(int)EHeroBody_Weapon.WeaponL_Armor_Child02] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                weaponContainers[(int)EHeroBody_Weapon.WeaponL_Armor_Child02] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                             defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                             defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -2156,7 +2159,7 @@ namespace STELLAREST_F1
                 spr = tr.GetComponent<SpriteRenderer>();
                 spr.material = _matDefault;
 
-                weaponContainers[(int)EHeroBody_Weapon.WeaponL_Armor_Child03] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                weaponContainers[(int)EHeroBody_Weapon.WeaponL_Armor_Child03] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                             defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                             defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -2189,7 +2192,7 @@ namespace STELLAREST_F1
                 _defaultHeroWeapons[(int)EHeroWeapons.WeaponR_Armor] = sprite;
             }
 
-            weaponContainers[(int)EHeroBody_Weapon.WeaponR_Armor] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+            weaponContainers[(int)EHeroBody_Weapon.WeaponR_Armor] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                             defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                             defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -2203,7 +2206,7 @@ namespace STELLAREST_F1
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             tr.localPosition = weapon.RWeaponFireSocketLocalPosition;
 
-            weaponContainers[(int)EHeroBody_Weapon.WeaponR_FireSocket] = new BodyContainer(tag: tag, tr: tr, spr: null,
+            weaponContainers[(int)EHeroBody_Weapon.WeaponR_FireSocket] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: null,
                                                             defaultSPRMat: null, defaultSPRColor: Color.white,
                                                             defaultMatColor: Color.white, matPB: null);
 
@@ -2211,7 +2214,7 @@ namespace STELLAREST_F1
             tag = Util.GetStringFromEnum(EHeroBody_Weapon.WeaponR_ChildsRoot);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
 
-            weaponContainers[(int)EHeroBody_Weapon.WeaponR_ChildsRoot] = new BodyContainer(tag: tag, tr: tr, spr: null,
+            weaponContainers[(int)EHeroBody_Weapon.WeaponR_ChildsRoot] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: null,
                                                             defaultSPRMat: null, defaultSPRColor: Color.white,
                                                             defaultMatColor: Color.white, matPB: null);
 
@@ -2237,7 +2240,7 @@ namespace STELLAREST_F1
                         spr.flipY = weapon.RWeaponChildFlipYs[0];
                         _defaultHeroWeapons[(int)EHeroWeapons.WeaponR_Armor_Child01] = sprite;
 
-                        weaponContainers[(int)EHeroBody_Weapon.WeaponR_Armor_Child01] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        weaponContainers[(int)EHeroBody_Weapon.WeaponR_Armor_Child01] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                             defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                             defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -2266,7 +2269,7 @@ namespace STELLAREST_F1
                             _defaultHeroWeapons[(int)EHeroWeapons.WeaponR_Armor_Child02] = sprite;
                         }
 
-                        weaponContainers[(int)EHeroBody_Weapon.WeaponR_Armor_Child02] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        weaponContainers[(int)EHeroBody_Weapon.WeaponR_Armor_Child02] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                             defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                             defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -2298,7 +2301,7 @@ namespace STELLAREST_F1
                             _defaultHeroWeapons[(int)EHeroWeapons.WeaponR_Armor_Child03] = sprite;
                         }
 
-                        weaponContainers[(int)EHeroBody_Weapon.WeaponR_Armor_Child03] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        weaponContainers[(int)EHeroBody_Weapon.WeaponR_Armor_Child03] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                             defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                             defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -2314,7 +2317,7 @@ namespace STELLAREST_F1
             }
             else
             {
-                weaponContainers[(int)EHeroBody_Weapon.WeaponR_Armor_Child01] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                weaponContainers[(int)EHeroBody_Weapon.WeaponR_Armor_Child01] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                             defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                             defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -2328,7 +2331,7 @@ namespace STELLAREST_F1
                 spr = tr.GetComponent<SpriteRenderer>();
                 spr.material = _matDefault;
 
-                weaponContainers[(int)EHeroBody_Weapon.WeaponR_Armor_Child02] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                weaponContainers[(int)EHeroBody_Weapon.WeaponR_Armor_Child02] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                             defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                             defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -2342,7 +2345,7 @@ namespace STELLAREST_F1
                 spr = tr.GetComponent<SpriteRenderer>();
                 spr.material = _matDefault;
 
-                weaponContainers[(int)EHeroBody_Weapon.WeaponR_Armor_Child03] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                weaponContainers[(int)EHeroBody_Weapon.WeaponR_Armor_Child03] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                             defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                             defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -2371,7 +2374,7 @@ namespace STELLAREST_F1
             _envHeroWeaponDict.Add(EEnvType.Rock, envWeapons);
         }
 
-        public override void EnableBodyTrail(bool enable)
+        public override void EnableBodySTrail(bool enable)
         {
             foreach (var containers in _heroBodyDict.Values)
             {
@@ -2402,7 +2405,7 @@ namespace STELLAREST_F1
             // 기존에 Body 프리셋으로 남아있던 무기 트레일이 그대로 살아있음.
             // ---> 아예 전용 웨폰 트레일로 장착을 시켜야함.
 
-            Util.LogError(obj: nameof(HeroBody), method: nameof(EnableWeaponTrail), log: $"abcdefg,,,");
+            Dev.LogError(obj: nameof(HeroBody), method: nameof(EnableWeaponTrail), log: $"abcdefg,,,");
             
             // EnableBodyTrail(false); // --- BodyTrail와 Weapon은 따로 움직임
             // Sprite weaponSprite = GetContainer(EHeroBody_Weapon.WeaponL_Armor).SPR.sprite;

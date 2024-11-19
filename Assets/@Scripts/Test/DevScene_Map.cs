@@ -446,7 +446,7 @@ namespace STELLAREST_F1
 
             if (Managers.Object.HeroLeaderController == null)
             {
-                Util.LogError(obj: nameof(DevScene_Map), method: nameof(Test), log: "Failed to find HeroLeaderController.");
+                Dev.LogError(obj: nameof(DevScene_Map), method: nameof(Test), log: "Failed to find HeroLeaderController.");
                 Application.Quit();
             }
         }
@@ -455,10 +455,10 @@ namespace STELLAREST_F1
         {
             Managers.Resource.LoadAllAsync<Object>(label: "PreLoad", callback: delegate (string key, int count, int totalCount)
             {
-                Util.Log($"{nameof(DevScene_Map)}::{nameof(LoadAsset)}, Loading: {key}({count}/{totalCount})");
+                Dev.Log($"{nameof(DevScene_Map)}::{nameof(LoadAsset)}, Loading: {key}({count}/{totalCount})");
                 if (count == totalCount)
                 {
-                    Util.Log($"{nameof(DevScene_Map)}::{nameof(LoadAsset)}, Loading Complete.", highlight: true);
+                    Dev.Log($"{nameof(DevScene_Map)}::{nameof(LoadAsset)}, Loading Complete.", highlight: true);
                     Managers.Data.Init();
                     Managers.MonoContents.Init();
                     Test();

@@ -17,26 +17,18 @@ namespace STELLAREST_F1
         #if UNITY_EDITOR
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.T))
+            if (Dev.Input_M)
             {
                 if (LevelUp() == false)
-                    Util.Log("Faield to LvUp", highlight: true); 
+                    return;
             }
 
-            if (Input.GetKeyDown(KeyCode.K))
+            if (Dev.Input_N)
             {
-                Util.Log("Show me the money");
-                Util.Log("Show me the money", highlight: true);
-                
-                // Util.LogWarning(obj: nameof(Hero), method: nameof(Update));
-                // HeroBody.EnableBodyTrail(true);
-                // HeroBody.EnableWeaponTrail(true);
-            }
-
-            if (Input.GetKeyDown(KeyCode.L))
-            {
-                // HeroBody.EnableBodyTrail(false);
-                // HeroBody.EnableWeaponTrail(false);
+                Dev.Log("Show me the money.");
+                Dev.Log("Show me the money.", highlight: true);
+                Dev.LogWarning(obj: nameof(Hero), method: nameof(Update), log: "Show me the money");
+                Dev.LogError(obj: nameof(Hero), method: nameof(Update), log: "Show me the money");
             }
         }
         #endif
@@ -305,7 +297,7 @@ namespace STELLAREST_F1
             CreatureAnim.RefreshAnimEventHandlers();
             if (IsMaxLevel)
             {
-                Util.Log("Access to EliteHero(Max)");
+                Dev.Log("Access to EliteHero(Max)");
                 HeroAnim.SetEliteMax();
                 HeroBody.SetEliteSpritesSet(MaxLevelID);
             }
@@ -334,7 +326,7 @@ namespace STELLAREST_F1
             if (IsLeader)
             {
                 StopCoUpdateAI();
-                Util.Log("InitialRelease, LeaderHero's AI.");
+                Dev.Log("InitialRelease, LeaderHero's AI.");
                 // HeroBody.GetContainer(EHeroWeapon.WeaponL_Armor).TR.gameObject.SetActive(false);
             }
         }

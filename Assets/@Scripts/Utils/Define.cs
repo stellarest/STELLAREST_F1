@@ -6,14 +6,6 @@ namespace STELLAREST_F1
 {
     public static class Define
     {
-        // --- 독립적인 게임 패키지
-        // ---> Apple Arcade로 변경
-        // public enum EGamePackages
-        // {
-        //     ElitePack,                // 3,500 KRW
-        //     PremiumPack,              // 12,000 KRW
-        //     Max = PremiumPack + 1
-        // }
         public enum EHeroGrade
         {
             Default,
@@ -525,6 +517,14 @@ namespace STELLAREST_F1
             MapleBold,
             Comic,
             Max,
+        }
+
+        public enum ESTrail
+        {
+            None,
+            BodyIllusion,
+            BodyShadow,
+            CreatureWeapon,
         }
 
         public enum EInt

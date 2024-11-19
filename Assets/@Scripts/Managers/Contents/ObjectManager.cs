@@ -48,7 +48,7 @@ namespace STELLAREST_F1
             GameObject go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: ProjectileRoot, poolingID: Util.GetPoolingID(EObjectType.Projectile, dataID));
             if (go == null)
             {
-                Util.LogError(obj: nameof(ObjectManager), method: nameof(SpawnProjectile), log: $"Input: {dataID}");
+                Dev.LogError(obj: nameof(ObjectManager), method: nameof(SpawnProjectile), log: $"Input: {dataID}");
                 return null;
             }
 
@@ -66,7 +66,7 @@ namespace STELLAREST_F1
                 cellSpawnPos = Util.MakeSpawnPosition(spawnPos);
                 if (Managers.Map.CanMove(cellSpawnPos) == false)
                 {
-                    Util.LogWarning(obj: nameof(ObjectManager), method: $"{nameof(SpawnBaseObject)}::{nameof(Util.MakeSpawnPosition)}", log: "cellSpawnPos: wrong value");
+                    Dev.LogWarning(obj: nameof(ObjectManager), method: $"{nameof(SpawnBaseObject)}::{nameof(Util.MakeSpawnPosition)}", log: "cellSpawnPos: wrong value");
                     return null;
                 }
 
@@ -85,7 +85,7 @@ namespace STELLAREST_F1
                         go = Managers.Resource.Instantiate(key: heroData.PrefabLabel, parent: HeroRoot, poolingID: Util.GetPoolingID(EObjectType.Hero, dataID));
                         if (go == null)
                         {
-                            Util.LogError(obj: nameof(ObjectManager), method: nameof(SpawnBaseObject), log: $"Input: {EObjectType.Hero}, {dataID}");
+                            Dev.LogError(obj: nameof(ObjectManager), method: nameof(SpawnBaseObject), log: $"Input: {EObjectType.Hero}, {dataID}");
                             return null;
                         }
 
@@ -107,7 +107,7 @@ namespace STELLAREST_F1
                         go = Managers.Resource.Instantiate(key: monsterData.PrefabLabel, parent: MonsterRoot, poolingID: Util.GetPoolingID(EObjectType.Monster, dataID));
                         if (go == null)
                         {
-                            Util.LogError(obj: nameof(ObjectManager), method: nameof(SpawnBaseObject), log: $"Input: {EObjectType.Monster}, {dataID}");
+                            Dev.LogError(obj: nameof(ObjectManager), method: nameof(SpawnBaseObject), log: $"Input: {EObjectType.Monster}, {dataID}");
                             return null;
                         }
 
@@ -129,7 +129,7 @@ namespace STELLAREST_F1
                         go = Managers.Resource.Instantiate(key: envData.PrefabLabel, parent: EnvRoot, poolingID:  Util.GetPoolingID(EObjectType.Env, dataID));
                         if (go == null)
                         {
-                            Util.LogError(obj: nameof(ObjectManager), method: nameof(SpawnBaseObject), log: $"Input: {EObjectType.Env}, {dataID}");
+                            Dev.LogError(obj: nameof(ObjectManager), method: nameof(SpawnBaseObject), log: $"Input: {EObjectType.Env}, {dataID}");
                             return null;
                         }
 
@@ -150,7 +150,7 @@ namespace STELLAREST_F1
                         go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: ProjectileRoot, poolingID: Util.GetPoolingID(EObjectType.Projectile, dataID));
                         if (go == null)
                         {
-                            Util.LogError(obj: nameof(ObjectManager), method: nameof(SpawnBaseObject), log: $"Input: {EObjectType.Projectile}, {dataID}");
+                            Dev.LogError(obj: nameof(ObjectManager), method: nameof(SpawnBaseObject), log: $"Input: {EObjectType.Projectile}, {dataID}");
                             return null;
                         }
 
@@ -164,7 +164,7 @@ namespace STELLAREST_F1
                     {
                         if (owner == null)
                         {
-                            Util.LogError(obj: nameof(ObjectManager), method: nameof(SpawnBaseObject), log: $"Input: {EObjectType.Effect}, Effect must need an owner.");
+                            Dev.LogError(obj: nameof(ObjectManager), method: nameof(SpawnBaseObject), log: $"Input: {EObjectType.Effect}, Effect must need an owner.");
                             return null;
                         }   
 
@@ -175,7 +175,7 @@ namespace STELLAREST_F1
                         go = Managers.Resource.Instantiate(key: data.PrefabLabel, parent: EffectRoot, poolingID:  Util.GetPoolingID(EObjectType.Effect, dataID));
                         if (go == null)
                         {
-                            Util.LogError(obj: nameof(ObjectManager), method: nameof(SpawnBaseObject), log: $"Input: {EObjectType.Effect}, {dataID}");
+                            Dev.LogError(obj: nameof(ObjectManager), method: nameof(SpawnBaseObject), log: $"Input: {EObjectType.Effect}, {dataID}");
                             return null;
                         }
 

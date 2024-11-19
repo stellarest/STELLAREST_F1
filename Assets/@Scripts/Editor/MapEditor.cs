@@ -63,12 +63,12 @@ namespace STELLAREST_F1
 
         public static void PrintNums(IEnumerable<int> nums)
         {
-            Util.Log("PrintNums");
+            Dev.Log("PrintNums");
             foreach (var num in nums)
             {
-                Util.Log($"Num: {num}");
+                Dev.Log($"Num: {num}");
             }
-            Util.Log("End PrintNums");
+            Dev.Log("End PrintNums");
         }
 
         // Mac: %(Command) #(Shift) K
@@ -78,7 +78,7 @@ namespace STELLAREST_F1
             GameObject[] gameObjects = Selection.gameObjects;
             if (gameObjects.Length == 0)
             {
-                Util.LogWarning(obj: nameof(MapEditor), method: nameof(GenerateMap), log: "Select a map \"first\".");
+                Dev.LogWarning(obj: nameof(MapEditor), method: nameof(GenerateMap), log: "Select a map \"first\".");
                 return;
             }
 
@@ -87,7 +87,7 @@ namespace STELLAREST_F1
                 Tilemap tm = Util.FindChild<Tilemap>(go, TileMap.Tilemap_Collision, true);
                 if (tm == null)
                 {
-                    Util.LogWarning(obj: nameof(MapEditor), method: nameof(GenerateMap), log: "Tilemap is null.");
+                    Dev.LogWarning(obj: nameof(MapEditor), method: nameof(GenerateMap), log: "Tilemap is null.");
                     return;
                 }
                 tm.RefreshAllTiles();
@@ -126,7 +126,7 @@ namespace STELLAREST_F1
                 }
             }
 
-            Util.Log("Complete: GenerateMap.");
+            Dev.Log("Complete: GenerateMap.");
         }
 
         [MenuItem("Tools/Create Object Tile %#o")]
@@ -140,7 +140,7 @@ namespace STELLAREST_F1
                 string assetPath = Path.Combine("Assets/@Resources/TileMaps/Dev/Monsters", $"{name}.asset");
                 if (assetPath == "")
                 {
-                    Util.LogWarning(obj: nameof(MapEditor), method: nameof(CreateObjectTile), log: "assetPath is null, or empty.");
+                    Dev.LogWarning(obj: nameof(MapEditor), method: nameof(CreateObjectTile), log: "assetPath is null, or empty.");
                     continue;
                 }
 
@@ -152,7 +152,7 @@ namespace STELLAREST_F1
                     Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>($"Assets/@Resources/Sprites/Creature/Monsters/Icons/{spriteName}.png");
                     if (sprite == null)
                     {
-                        Util.LogWarning(obj: nameof(MapEditor), method: nameof(CreateObjectTile), log: "Sprite is null.");
+                        Dev.LogWarning(obj: nameof(MapEditor), method: nameof(CreateObjectTile), log: "Sprite is null.");
                         // ($"Failed to find Sprite - {data.DescriptionTextID}");
                         continue;
                     }
@@ -162,7 +162,7 @@ namespace STELLAREST_F1
                     customTile.ObjectType = EObjectType.Monster;
                     customTile.sprite = sprite;
                     EditorUtility.SetDirty(customTile);;
-                    Util.Log($"{nameof(CreateObjectTile)}, Completed SetDirty - {data.DescriptionTextID}");
+                    Dev.Log($"{nameof(CreateObjectTile)}, Completed SetDirty - {data.DescriptionTextID}");
                 }
                 else
                 {
@@ -170,7 +170,7 @@ namespace STELLAREST_F1
                     Sprite sprite = AssetDatabase.LoadAssetAtPath<Sprite>($"Assets/@Resources/Sprites/Creature/Monsters/Icons/{spriteName}.png");
                     if (sprite == null)
                     {
-                        Util.LogWarning(obj: nameof(MapEditor), method: nameof(CreateObjectTile), log: "Sprite is null.");
+                        Dev.LogWarning(obj: nameof(MapEditor), method: nameof(CreateObjectTile), log: "Sprite is null.");
                         continue;
                     }
 
@@ -181,7 +181,7 @@ namespace STELLAREST_F1
                     newCustomTile.sprite = sprite;
                     AssetDatabase.CreateAsset(newCustomTile, assetPath);
 
-                    Util.Log($"Success CreateAsset: {data.DescriptionTextID}", highlight: true);
+                    Dev.Log($"Success CreateAsset: {data.DescriptionTextID}", highlight: true);
                     // Util.Log($"{nameof(CreateObjectTile)}, Completed CreateAsset - {data.DescriptionTextID}");
                 }
             }

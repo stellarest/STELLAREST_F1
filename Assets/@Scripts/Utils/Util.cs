@@ -3,13 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using Unity.Burst;
 using UnityEngine;
+
 using Debug = UnityEngine.Debug;
 using static STELLAREST_F1.Define;
 using STELLAREST_F1.Data;
-using UnityEngine.UIElements;
-using UnityEngine.AI;
 
 namespace STELLAREST_F1
 {
@@ -123,7 +121,7 @@ namespace STELLAREST_F1
                     return typeof(MonsterAI);
 
                 default:
-                    Util.LogError(obj: nameof(Util), method: nameof(GetTypeFromClassName), log: $"Input: {className}, Please check Define.EClassName.");
+                    Dev.LogError(obj: nameof(Util), method: nameof(GetTypeFromClassName), log: $"Input: {className}, Please check Define.EClassName.");
                     return null;
             }
         }
@@ -347,59 +345,52 @@ namespace STELLAREST_F1
             return null;
         }
 
-#if UNITY_EDITOR
-        [Conditional("UNITY_EDITOR")]
-        public static void ClearLog()
-        {
-            var assembly = Assembly.GetAssembly(typeof(UnityEditor.Editor));
-            var type = assembly.GetType("UnityEditor.LogEntries");
-            var method = type.GetMethod("Clear");
-            method.Invoke(new object(), null);
-            Log("### CLEAR ###");
-        }
+// #if UNITY_EDITOR
+//         [Conditional("UNITY_EDITOR")]
+//         public static void ClearLog()
+//         {
+//             var assembly = Assembly.GetAssembly(typeof(UnityEditor.Editor));
+//             var type = assembly.GetType("UnityEditor.LogEntries");
+//             var method = type.GetMethod("Clear");
+//             method.Invoke(new object(), null);
+//             Log("### CLEAR ###");
+//         }
 
-        [Conditional("UNITY_EDITOR")]
-        public static void Log(object log, bool highlight = false)
-        {
-            if (highlight)
-                Debug.Log($"<color=#FF6666>\"</color><color=#A3E635>[<color=#FF6666>!</color>]: {log}</color><color=#FF6666>\"</color>");
-            else
-                Debug.Log($"{log}");
-        }
+//         [Conditional("UNITY_EDITOR")]
+//         public static void Log(object log, bool highlight = false)
+//         {
+//             if (highlight)
+//                 Debug.Log($"<color=#FF6666>\"</color><color=#A3E635>[<color=#FF6666>!</color>]: {log}</color><color=#FF6666>\"</color>");
+//             else
+//                 Debug.Log($"{log}");
+//         }
 
-        [Conditional("UNITY_EDITOR")]
-        public static void LogWarning(object obj, object method)
-        {
-            Debug.LogWarning($"<color=#00FF22>[!]</color> <color=yellow>{obj}</color><color=white>::</color><color=cyan>{method}</color>");
-        }
+//         [Conditional("UNITY_EDITOR")]
+//         public static void LogWarning(object obj, object method)
+//         {
+//             Debug.LogWarning($"<color=#00FF22>[!]</color> <color=yellow>{obj}</color><color=white>::</color><color=cyan>{method}</color>");
+//         }
 
-        [Conditional("UNITY_EDITOR")]
-        public static void LogWarning(object obj, object method, object log)
-        {
-            Debug.LogWarning($"<color=#00FF22>[!]</color> <color=yellow>{obj}</color><color=white>::</color><color=cyan>{method}</color>\n<color=white>{log}</color>");
-        }
+//         [Conditional("UNITY_EDITOR")]
+//         public static void LogWarning(object obj, object method, object log)
+//         {
+//             Debug.LogWarning($"<color=#00FF22>[!]</color> <color=yellow>{obj}</color><color=white>::</color><color=cyan>{method}</color>\n<color=white>{log}</color>");
+//         }
 
-        [Conditional("UNITY_EDITOR")]
-        public static void LogError(object obj, object method)
-        {
-            Debug.LogError($"<color=red>[!!!]</color> <color=yellow>{obj}</color><color=white>::</color><color=cyan>{method}</color>");
-            Debug.Break();
-        }
+//         [Conditional("UNITY_EDITOR")]
+//         public static void LogError(object obj, object method)
+//         {
+//             Debug.LogError($"<color=red>[!!!]</color> <color=yellow>{obj}</color><color=white>::</color><color=cyan>{method}</color>");
+//             Debug.Break();
+//         }
         
-        [Conditional("UNITY_EDITOR")]
-        public static void LogError(object obj, object method, object log)
-        {
-            Debug.LogError($"<color=red>[!!!]</color> <color=yellow>{obj}</color><color=white>::</color><color=cyan>{method}</color>\n<color=white>{log}</color>");
-            Debug.Break();
-        }
-
-        public static GameObject SpawnTestObject(Vector3Int spawnCellPos)
-        {
-            GameObject obj = Managers.Resource.Instantiate("TestCircleObject");
-            obj.transform.position = Managers.Map.CellToCenterWorld(spawnCellPos);
-            return obj;
-        }
-#endif
+//         [Conditional("UNITY_EDITOR")]
+//         public static void LogError(object obj, object method, object log)
+//         {
+//             Debug.LogError($"<color=red>[!!!]</color> <color=yellow>{obj}</color><color=white>::</color><color=cyan>{method}</color>\n<color=white>{log}</color>");
+//             Debug.Break();
+//         }
+// #endif
     }
 
     public static class TileMap
@@ -699,6 +690,7 @@ namespace STELLAREST_F1
             };
         }
 
+        //--- Scriptable Object
         public static string SObject(EString eString)
         {
             return eString switch

@@ -138,14 +138,14 @@ namespace STELLAREST_F1
                     break;
             }
 
-            Util.Log($"Formation: {HeroMemberFormationMode}");
+            Dev.Log($"Formation: {HeroMemberFormationMode}");
         }
 
         public void ShuffleMembersPosition()
         {
             if (Managers.Object.Heroes.Count <= 2)
             {
-                Util.Log($"Heroes current count: {Managers.Object.Heroes.Count}");
+                Dev.Log($"Heroes current count: {Managers.Object.Heroes.Count}");
                 return;
             }
 
@@ -153,7 +153,7 @@ namespace STELLAREST_F1
             if (HeroMemberFormationMode == EHeroMemberFormationMode.FollowLeaderClosely ||
                 HeroMemberFormationMode == EHeroMemberFormationMode.ForceStop)
             {
-                Util.LogWarning(obj: nameof(HeroLeaderController), method: nameof(ShuffleMembersPosition), log: $"You have to set \"Narrow\", or \"Wide\" formation before.");
+                Dev.LogWarning(obj: nameof(HeroLeaderController), method: nameof(ShuffleMembersPosition), log: $"You have to set \"Narrow\", or \"Wide\" formation before.");
                 return;
             }
 
@@ -487,7 +487,7 @@ namespace STELLAREST_F1
         {
             if (_leader == newLeader)
             {
-                Util.LogWarning(obj: nameof(HeroLeaderController), method: nameof(SetLeader), log: $"Input: {_leader.name} == {newLeader.name}");
+                Dev.LogWarning(obj: nameof(HeroLeaderController), method: nameof(SetLeader), log: $"Input: {_leader.name} == {newLeader.name}");
                 return;
             }
             else if (_leader.IsValid() == false) // --- First Leader
@@ -671,7 +671,7 @@ namespace STELLAREST_F1
 
                     if (isAllStop)
                     {
-                        Util.Log($"isAllStop: {isAllStop}", highlight: true);
+                        Dev.Log($"isAllStop: {isAllStop}", highlight: true);
                         return true;
                     }
 

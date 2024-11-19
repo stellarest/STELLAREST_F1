@@ -193,7 +193,7 @@ namespace STELLAREST_F1
                             spr.sprite = sprite;
                         }
 
-                        _treeBodyDict[ETreeBody.Trunk] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _treeBodyDict[ETreeBody.Trunk] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -214,7 +214,7 @@ namespace STELLAREST_F1
                             spr.sprite = sprite;
                         }
 
-                        _treeBodyDict[ETreeBody.Patch] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _treeBodyDict[ETreeBody.Patch] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -235,7 +235,7 @@ namespace STELLAREST_F1
                             spr.sprite = sprite;
                         }
 
-                        _treeBodyDict[ETreeBody.Stump] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _treeBodyDict[ETreeBody.Stump] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -260,7 +260,7 @@ namespace STELLAREST_F1
                             UnityEngine.Component.DestroyImmediate(ps);
                         }
 
-                        _treeBodyDict[ETreeBody.EndParticle] = new BodyContainer(tag: tag, tr: tr, spr: null,
+                        _treeBodyDict[ETreeBody.EndParticle] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: null,
                                                 defaultSPRMat: null, defaultSPRColor: Color.white,
                                                 defaultMatColor: Color.white, matPB: null);
 
@@ -268,7 +268,7 @@ namespace STELLAREST_F1
                         tag = Util.GetStringFromEnum(ETreeBody.Fruits_ChildsRoot);
                         tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
 
-                        _treeBodyDict[ETreeBody.Fruits_ChildsRoot] = new BodyContainer(tag: tag, tr: tr, spr: null,
+                        _treeBodyDict[ETreeBody.Fruits_ChildsRoot] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: null,
                                                 defaultSPRMat: null, defaultSPRColor: Color.white,
                                                 defaultMatColor: Color.white, matPB: null);
 
@@ -287,7 +287,7 @@ namespace STELLAREST_F1
                             spr.sprite = sprite;
                         }
 
-                        _treeBodyDict[ETreeBody.Fruits_Child_01] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _treeBodyDict[ETreeBody.Fruits_Child_01] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -311,7 +311,7 @@ namespace STELLAREST_F1
                             spr.sprite = sprite;
                         }
 
-                        _treeBodyDict[ETreeBody.Fruits_Child_02] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _treeBodyDict[ETreeBody.Fruits_Child_02] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -335,7 +335,7 @@ namespace STELLAREST_F1
                             spr.sprite = sprite;
                         }
 
-                        _treeBodyDict[ETreeBody.Fruits_Child_03] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _treeBodyDict[ETreeBody.Fruits_Child_03] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -356,7 +356,7 @@ namespace STELLAREST_F1
                             spr.sprite = sprite;
                         }
 
-                        _treeBodyDict[ETreeBody.Shadow] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _treeBodyDict[ETreeBody.Shadow] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -387,7 +387,7 @@ namespace STELLAREST_F1
                         if (sprite != null)
                             spr.sprite = sprite;
 
-                       _rockBodyDict[ERockBody.Rock] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                       _rockBodyDict[ERockBody.Rock] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -405,7 +405,7 @@ namespace STELLAREST_F1
                         if (sprite != null)
                             spr.sprite = sprite;
 
-                        _rockBodyDict[ERockBody.Empty] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _rockBodyDict[ERockBody.Empty] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -423,7 +423,7 @@ namespace STELLAREST_F1
                         if (sprite != null)
                             spr.sprite = sprite;
 
-                        _rockBodyDict[ERockBody.Ore] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _rockBodyDict[ERockBody.Ore] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -441,7 +441,7 @@ namespace STELLAREST_F1
                         if (sprite != null)
                             spr.sprite = sprite;
 
-                        _rockBodyDict[ERockBody.OreShadow] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _rockBodyDict[ERockBody.OreShadow] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -467,7 +467,7 @@ namespace STELLAREST_F1
                             }
                         }
                         
-                        _rockBodyDict[ERockBody.OreLight] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _rockBodyDict[ERockBody.OreLight] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: new Color(spr.color.r, spr.color.g, spr.color.b, 1f), matPB: new MaterialPropertyBlock());
 
@@ -500,7 +500,7 @@ namespace STELLAREST_F1
                         else
                             isEmptyOreParticleColor = true;
 
-                        _rockBodyDict[ERockBody.OreParticle] = new BodyContainer(tag: tag, tr: tr, spr: null,
+                        _rockBodyDict[ERockBody.OreParticle] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: null,
                                                 defaultSPRMat: null, defaultSPRColor: Color.white,
                                                 defaultMatColor: Color.white, matPB: null);
 
@@ -513,7 +513,7 @@ namespace STELLAREST_F1
                         ParticleSystemRenderer endPr = tr.GetComponent<ParticleSystemRenderer>();
                         endPr.material = Managers.Resource.Load<Material>(CString.Material(EString.Mat_RockFragments));
 
-                        _rockBodyDict[ERockBody.EndParticle] = new BodyContainer(tag: tag, tr: tr, spr: null,
+                        _rockBodyDict[ERockBody.EndParticle] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: null,
                                                 defaultSPRMat: null, defaultSPRColor: Color.white,
                                                 defaultMatColor: Color.white, matPB: null);
 
@@ -529,7 +529,7 @@ namespace STELLAREST_F1
                             spr.flipX = rock.SpotsFlipXs[0];
                         }
 
-                        _rockBodyDict[ERockBody.Spot1] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _rockBodyDict[ERockBody.Spot1] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -550,7 +550,7 @@ namespace STELLAREST_F1
                             spr.flipX = rock.SpotsFlipXs[1];
                         }
 
-                        _rockBodyDict[ERockBody.Spot2] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _rockBodyDict[ERockBody.Spot2] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -571,7 +571,7 @@ namespace STELLAREST_F1
                             spr.flipX = rock.SpotsFlipXs[2];
                         }
 
-                        _rockBodyDict[ERockBody.Spot3] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _rockBodyDict[ERockBody.Spot3] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -592,7 +592,7 @@ namespace STELLAREST_F1
                             spr.flipX = rock.FragmentsFlipXs[0];
                         }
 
-                        _rockBodyDict[ERockBody.Fragment1] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _rockBodyDict[ERockBody.Fragment1] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -613,7 +613,7 @@ namespace STELLAREST_F1
                             spr.flipX = rock.FragmentsFlipXs[1];
                         }
 
-                        _rockBodyDict[ERockBody.Fragment2] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _rockBodyDict[ERockBody.Fragment2] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -634,7 +634,7 @@ namespace STELLAREST_F1
                             spr.flipX = rock.FragmentsFlipXs[2];
                         }
 
-                        _rockBodyDict[ERockBody.Fragment3] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _rockBodyDict[ERockBody.Fragment3] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -652,7 +652,7 @@ namespace STELLAREST_F1
                         if (sprite != null)
                             spr.sprite = sprite;
 
-                        _rockBodyDict[ERockBody.Shadow] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _rockBodyDict[ERockBody.Shadow] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 

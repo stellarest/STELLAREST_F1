@@ -51,7 +51,7 @@ public class VFXShieldBlue : VFXBase
         base.ApplyEffect();
         if (Owner.Shield == 0.0f)
         {
-            Util.LogWarning(obj: nameof(VFXShieldBlue), method: nameof(ApplyEffect), log: "Zero value of Shield.");
+            Dev.LogWarning(obj: nameof(VFXShieldBlue), method: nameof(ApplyEffect), log: "Zero value of Shield.");
             ExitEffect();
             return;
         }
@@ -105,7 +105,7 @@ public class VFXShieldBlue : VFXBase
             return true;
         });
 
-        Util.Log("End Shield", highlight: true);
+        Dev.Log("End Shield", highlight: true);
         yield return new WaitForSeconds(Time.deltaTime);
         
         //yield return new WaitForSeconds(2.0F);

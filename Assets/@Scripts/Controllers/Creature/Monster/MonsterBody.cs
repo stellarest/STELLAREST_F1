@@ -249,7 +249,7 @@ namespace STELLAREST_F1
                         if (sprite != null)
                             spr.sprite = sprite;
 
-                        _birdBodyDict[EBirdBody.Body] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _birdBodyDict[EBirdBody.Body] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -265,7 +265,7 @@ namespace STELLAREST_F1
                             _heads[i] = Managers.Resource.Load<Sprite>(bird.Heads[i]);
                             if (_heads[i] == null)
                             {
-                                Util.LogError(obj: nameof(MonsterBody), method: nameof(InitBody), log: $"Input: {bird.Heads[i]}");
+                                Dev.LogError(obj: nameof(MonsterBody), method: nameof(InitBody), log: $"Input: {bird.Heads[i]}");
                                 return;
                             }
                         }
@@ -281,7 +281,7 @@ namespace STELLAREST_F1
                             spr.sortingOrder = bird.HeadSortingOrder;
                         }
 
-                        _birdBodyDict[EBirdBody.Head] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _birdBodyDict[EBirdBody.Head] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -303,7 +303,7 @@ namespace STELLAREST_F1
                             spr.sortingOrder = bird.WingSortingOrder;
                         }
 
-                        _birdBodyDict[EBirdBody.Wing] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _birdBodyDict[EBirdBody.Wing] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -325,7 +325,7 @@ namespace STELLAREST_F1
                             spr.sortingOrder = bird.LegLSortingOrder;
                         }
 
-                        _birdBodyDict[EBirdBody.LegL] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _birdBodyDict[EBirdBody.LegL] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -347,7 +347,7 @@ namespace STELLAREST_F1
                             spr.sortingOrder = bird.LegRSortingOrder;
                         }
 
-                        _birdBodyDict[EBirdBody.LegR] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _birdBodyDict[EBirdBody.LegR] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -369,7 +369,7 @@ namespace STELLAREST_F1
                             spr.sortingOrder = bird.TailSortingOrder;
                         }
 
-                        _birdBodyDict[EBirdBody.Tail] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _birdBodyDict[EBirdBody.Tail] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -423,7 +423,7 @@ namespace STELLAREST_F1
                         if (sprite != null)
                             spr.sprite = sprite;
 
-                        _quadrupedsBodyDict[EQuadrupedsBody.Body] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _quadrupedsBodyDict[EQuadrupedsBody.Body] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -439,7 +439,7 @@ namespace STELLAREST_F1
                             _heads[i] = Managers.Resource.Load<Sprite>(quadrupeds.Heads[i]);
                             if (_heads[i] == null)
                             {
-                                Util.LogError(obj: nameof(MonsterBody), method: nameof(InitBody), log: $"Input: {quadrupeds.Heads[i]}");
+                                Dev.LogError(obj: nameof(MonsterBody), method: nameof(InitBody), log: $"Input: {quadrupeds.Heads[i]}");
                                 return;
                             }
                         }
@@ -455,7 +455,7 @@ namespace STELLAREST_F1
                             spr.sortingOrder = quadrupeds.HeadSortingOrder;
                         }
 
-                        _quadrupedsBodyDict[EQuadrupedsBody.Head] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _quadrupedsBodyDict[EQuadrupedsBody.Head] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -477,7 +477,7 @@ namespace STELLAREST_F1
                             spr.sortingOrder = quadrupeds.LegFrontLSortingOrder;
                         }
 
-                        _quadrupedsBodyDict[EQuadrupedsBody.LegFrontL] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _quadrupedsBodyDict[EQuadrupedsBody.LegFrontL] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -499,7 +499,7 @@ namespace STELLAREST_F1
                             spr.sortingOrder = quadrupeds.LegFrontRSortingOrder;
                         }
 
-                        _quadrupedsBodyDict[EQuadrupedsBody.LegFrontR] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _quadrupedsBodyDict[EQuadrupedsBody.LegFrontR] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -521,7 +521,7 @@ namespace STELLAREST_F1
                             spr.sortingOrder = quadrupeds.LegBackLSortingOrder;
                         }
 
-                        _quadrupedsBodyDict[EQuadrupedsBody.LegBackL] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _quadrupedsBodyDict[EQuadrupedsBody.LegBackL] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -543,7 +543,7 @@ namespace STELLAREST_F1
                             spr.sortingOrder = quadrupeds.LegBackRSortingOrder;
                         }
 
-                        _quadrupedsBodyDict[EQuadrupedsBody.LegBackR] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _quadrupedsBodyDict[EQuadrupedsBody.LegBackR] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 
@@ -565,7 +565,7 @@ namespace STELLAREST_F1
                             spr.sortingOrder = quadrupeds.TailSortingOrder;
                         }
 
-                        _quadrupedsBodyDict[EQuadrupedsBody.Tail] = new BodyContainer(tag: tag, tr: tr, spr: spr,
+                        _quadrupedsBodyDict[EQuadrupedsBody.Tail] = new BodyContainer(tag: tag, owner: Owner, tr: tr, spr: spr,
                                                 defaultSPRMat: _matDefault, defaultSPRColor: spr.color,
                                                 defaultMatColor: Color.white, matPB: new MaterialPropertyBlock());
 

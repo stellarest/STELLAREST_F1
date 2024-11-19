@@ -152,13 +152,13 @@ namespace STELLAREST_F1
             _text.fontSize = _initialFontSize;
             if (isCritical)
             {
-                Util.Log("Critical Font.");
+                Dev.Log("Critical Font.");
                 _text.font = Managers.MonoContents.GetFontAsset(EFontAssetType.Comic);
                 _text.fontSize *= 1 + 0.5f; // +50%
             }
             else
             {
-                Util.Log("Normal Font.");
+                Dev.Log("Normal Font.");
                 _text.font = Managers.MonoContents.GetFontAsset(EFontAssetType.MapleBold);
             }
 

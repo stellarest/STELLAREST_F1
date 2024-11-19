@@ -64,39 +64,25 @@ namespace STELLAREST_F1
 
         private void Update()
         {
-            if (Input.GetKeyDown("0"))
+            if (Dev.Input_J)
             {
-                Util.Log("===== Cells Pair =====");
+                Dev.Log("===== Cells Pair =====");
                 foreach (var pair in Managers.Map.Cells)
                 {
                     if (pair.Value != null)
-                        Util.Log($"({pair.Key}, {pair.Value.gameObject.name}");
+                        Dev.Log($"({pair.Key}, {pair.Value.gameObject.name}");
                     else
-                        Util.Log("NONE OF VALUE...");
+                        Dev.Log("NONE OF VALUE...");
                 }
 
                 // Util.Log($"<color=white>Is GameOver: {Managers.Game.IsGameOver}</color>");
             }
 
-            // --- HERO MEMBERS TEST
-            // if (Input.GetKeyDown("1"))
-            //     Managers.Game.ChangeHeroLeader(autoChangeFromDead: false);
+            if (Dev.Input_K)
+                ShowCellPosText();
 
-            // if (Input.GetKeyDown("2"))
-            //     Managers.Object.HeroLeaderController.ChangeFormation_Dev();
-
-            // if (Input.GetKeyDown("4"))
-            // {
-            //     bool forceFollowToLeader = Managers.Object.HeroLeaderController.ForceFollowToLeader;
-            //     Managers.Object.HeroLeaderController.ForceFollowToLeader = !forceFollowToLeader;
-            //     Util.Log($"<color=white>ForceFollowToLeader: {Managers.Object.HeroLeaderController.ForceFollowToLeader}</color>");
-            // }
-
-            // if (Input.GetKeyDown("9"))
-            //     Managers.Object.HeroLeaderController.ShuffleMembersPosition();
-
-            if (Input.GetKeyDown(KeyCode.I)) ShowCellPosText();
-            if (Input.GetKeyDown(KeyCode.O)) OnOffTileCollider();
+            if (Dev.Input_L)
+                OnOffTileCollider();
         }
 
         private void ShowCellPosText()

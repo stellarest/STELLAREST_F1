@@ -62,7 +62,7 @@ namespace STELLAREST_F1
             SkillBase skillA = TryUnlockSkill(ESkillType.Skill_A);
             if (skillA == null)
             {
-                Util.LogError(obj: nameof(SkillComponent), method: nameof(InitialSetInfo), log: "You must have a skill.");
+                Dev.LogError(obj: nameof(SkillComponent), method: nameof(InitialSetInfo), log: "You must have a skill.");
                 return;
             }
 
@@ -104,7 +104,7 @@ namespace STELLAREST_F1
             SkillBase newSkill = gameObject.AddComponent(skillClassType) as SkillBase;
             if (newSkill == null)
             {
-                Util.LogError(obj: nameof(SkillComponent), method: nameof(TryUnlockSkill));
+                Dev.LogError(obj: nameof(SkillComponent), method: nameof(TryUnlockSkill));
                 return null;
             }
 
@@ -127,7 +127,7 @@ namespace STELLAREST_F1
             SkillBase lvUpSkill = gameObject.AddComponent(skillClassType) as SkillBase;
             if (lvUpSkill == null)
             {
-                Util.LogError(obj: nameof(SkillComponent), method: nameof(TryLevelUpSkill));
+                Dev.LogError(obj: nameof(SkillComponent), method: nameof(TryLevelUpSkill));
                 return null;
             }
 
@@ -161,7 +161,7 @@ namespace STELLAREST_F1
             if (IsSpecialSkill(skill) == false)
                 return;
 
-            Util.Log($"Add Skill: {skill.Dev_NameTextID}");
+            Dev.Log($"Add Skill: {skill.Dev_NameTextID}");
 #if UNITY_EDITOR
             if (skill.SkillType == ESkillType.Skill_B)
                 Skill_B = skill.Dev_NameTextID;
@@ -176,7 +176,7 @@ namespace STELLAREST_F1
             if (IsSpecialSkill(skill) == false)
                 return;
 
-            Util.Log($"Remove Skill: {skill.Dev_NameTextID}", highlight: true);
+            Dev.Log($"Remove Skill: {skill.Dev_NameTextID}", highlight: true);
             SpecialSkills.Remove(skill);
         }
 
@@ -198,7 +198,7 @@ namespace STELLAREST_F1
                 SkillBase skill = SkillArray[i];
                 if (skill != null && skill.SkillType == skillData.SkillType)
                 {
-                    Util.LogError(obj: nameof(SkillComponent), method: nameof(CanUnlockSkill), log: $"{skill.Dev_NameTextID} already exists.");
+                    Dev.LogError(obj: nameof(SkillComponent), method: nameof(CanUnlockSkill), log: $"{skill.Dev_NameTextID} already exists.");
                     return false;
                 }
             }

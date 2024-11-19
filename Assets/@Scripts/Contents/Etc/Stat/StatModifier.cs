@@ -131,7 +131,7 @@ namespace STELLAREST_F1
                         {
                             float armorBase = (Armor + addAmount) * (1.0f + addPercent) * (1.0f + addPercentMulti);
                             Armor = Mathf.Clamp(armorBase, CFloat.Min(EFloat.Range_Armor), CFloat.Max(EFloat.Range_Armor));
-                            Util.Log($"Armor: {Armor}");
+                            Dev.Log($"Armor: {Armor}");
                         }
                         else
                         {
@@ -198,7 +198,7 @@ namespace STELLAREST_F1
 #if UNITY_EDITOR
             if (target.IsValid() == false)
             {
-                Util.LogWarning(obj: nameof(StatModifier), method: nameof(ApplyStatToTarget), log: "Invalid target.");
+                Dev.LogWarning(obj: nameof(StatModifier), method: nameof(ApplyStatToTarget), log: "Invalid target.");
                 return;
             }
 #endif

@@ -44,7 +44,7 @@ namespace STELLAREST_F1
             Hero leader = leaderController.Leader;
             if (autoChangeFromDead == false && (leader.IsValid() == false || leader.CreatureAIState == ECreatureAIState.Dead))
             {
-                Util.LogWarning(obj: nameof(GameManager), method: nameof(ChangeHeroLeader));
+                Dev.LogWarning(obj: nameof(GameManager), method: nameof(ChangeHeroLeader));
                 return;
             }
 
@@ -52,7 +52,7 @@ namespace STELLAREST_F1
             {
                 if (leaderController._coActivateChangeLeaderCoolTime != null)
                 {
-                    Util.Log("Wait cooltime for changing leader.", highlight: true);
+                    Dev.Log("Wait cooltime for changing leader.", highlight: true);
                     return;
                 }
                 else
@@ -60,7 +60,7 @@ namespace STELLAREST_F1
             }
 
             leaderController.StartCoChangeRandomHeroLeader();
-            Util.Log($"<color=white>{nameof(ChangeHeroLeader)}</color>");
+            Dev.Log($"<color=white>{nameof(ChangeHeroLeader)}</color>");
         }
 
 #if UNITY_EDITOR

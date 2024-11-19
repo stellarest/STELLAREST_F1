@@ -52,7 +52,7 @@ namespace STELLAREST_F1
         {
             if (Managers.Data.ProjectileDataDict.TryGetValue(dataID, out ProjectileData projectileData) == false)
             {
-                Util.LogError(obj: nameof(Projectile), method: nameof(InitialSetInfo));
+                Dev.LogError(obj: nameof(Projectile), method: nameof(InitialSetInfo));
                 return;
             }
 

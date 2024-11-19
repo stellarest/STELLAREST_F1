@@ -239,12 +239,12 @@ namespace STELLAREST_F1
 
             if (IsMaxLevel)
             {
-                Util.Log($"{Owner.Dev_NameTextID} is already MaxLv.", highlight: true);
+                Dev.Log($"{Owner.Dev_NameTextID} is already MaxLv.", highlight: true);
                 return false;
             }
 
             _levelID = Mathf.Clamp(_levelID + 1, _dataTemplateID, _maxLevelID);
-            Util.Log($"Lv: {Level}/{MaxLevel}");
+            Dev.Log($"Lv: {Level}/{MaxLevel}");
             // RefreshAllStats(currentHealthToMax: true);
             return true;
         }

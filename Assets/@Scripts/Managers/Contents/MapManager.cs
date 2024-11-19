@@ -606,20 +606,20 @@ namespace STELLAREST_F1
 #if UNITY_EDITOR
         public void CheckOnTile(Creature creature)
         {
-            Util.Log($"WorldPos: {creature.transform.position}");
+            Dev.Log($"WorldPos: {creature.transform.position}");
             Vector3Int currentPos = Managers.Map.WorldToCell(creature.transform.position);
             int x = currentPos.x - MinX;
             int y = MaxY - currentPos.y - 1;
             if (x < 0 || x >= _cellCollisionType.GetLength(1) || y < 0 || y >= _cellCollisionType.GetLength(0))
             {
-                Util.LogWarning(obj: nameof(MapManager), method: nameof(CheckOnTile), log: "Out of idx.");
+                Dev.LogWarning(obj: nameof(MapManager), method: nameof(CheckOnTile), log: "Out of idx.");
                 return;
             }
 
-            Util.Log($"xMin: {MinX}, xMax: {MaxX}, yMin: {MinY}, yMax: {MaxY}");
+            Dev.Log($"xMin: {MinX}, xMax: {MaxX}, yMin: {MinY}, yMax: {MaxY}");
             //Util.Log($"xMin: {MinX}, xMax: {MaxX}, yMin: {MinY}, yMax: {MaxY}");
 
-            Util.Log($"Cell[{currentPos.x}][{currentPos.y}] | Tile[{x}][{y}]: {_cellCollisionType[y, x]}", highlight: true);
+            Dev.Log($"Cell[{currentPos.x}][{currentPos.y}] | Tile[{x}][{y}]: {_cellCollisionType[y, x]}", highlight: true);
             // Util.Log($"Cell[{currentPos.x}][{currentPos.y}] | Tile[{x}][{y}]: {_cellCollisionType[y, x]}");
         }
 
@@ -633,14 +633,14 @@ namespace STELLAREST_F1
 
             if (x < 0 || x >= _cellCollisionType.GetLength(1) || y < 0 || y >= _cellCollisionType.GetLength(0))
             {
-                Util.LogWarning(obj: nameof(MapManager), method: nameof(CheckOnTile), log: $"Input: x: {x}, y: {y}. Out of idx.");
+                Dev.LogWarning(obj: nameof(MapManager), method: nameof(CheckOnTile), log: $"Input: x: {x}, y: {y}. Out of idx.");
                 return;
             }
 
-            Util.Log($"CellPos: ({cellPos.x}, {cellPos.y})");
+            Dev.Log($"CellPos: ({cellPos.x}, {cellPos.y})");
             // Util.Log($"CellPos: ({cellPos.x}, {cellPos.y})");
 
-            Util.Log($"Tile[{x}][{y}]: {_cellCollisionType[y, x]}", highlight: true);
+            Dev.Log($"Tile[{x}][{y}]: {_cellCollisionType[y, x]}", highlight: true);
             //Util.Log($"Tile[{x}][{y}]: {_cellCollisionType[y, x]}");
         }
 

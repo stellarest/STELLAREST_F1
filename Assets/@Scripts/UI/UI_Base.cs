@@ -44,7 +44,7 @@ namespace STELLAREST_F1
 
                 if (objects[i] == null)
                 {
-                    Util.LogWarning(obj: nameof(UI_Base), method: nameof(Bind), log: $"Input: \"{names[i]}\"");
+                    Dev.LogWarning(obj: nameof(UI_Base), method: nameof(Bind), log: $"Input: \"{names[i]}\"");
                 }
             }
         }

@@ -45,7 +45,7 @@ namespace STELLAREST_F1
         {
             if (_manualCoolTime == false)
             {
-                Util.LogError(obj: nameof(SkillBase), method: nameof(StartManualCoolTime));
+                Dev.LogError(obj: nameof(SkillBase), method: nameof(StartManualCoolTime));
                 return;
             }
 
@@ -116,7 +116,7 @@ namespace STELLAREST_F1
             RemainCoolTime = SkillData.CoolTime;
             if (_manualCoolTime)
             {
-                Util.Log($"Is Manual CoolTime Skill: {SkillData.Dev_NameTextID}");
+                Dev.Log($"Is Manual CoolTime Skill: {SkillData.Dev_NameTextID}");
                 yield break;
             }
 
@@ -127,7 +127,7 @@ namespace STELLAREST_F1
 
         private IEnumerator CoManualCoolTime()
         {
-            Util.Log($"{this.SkillType}: Activates Manual CoolTime");
+            Dev.Log($"{this.SkillType}: Activates Manual CoolTime");
             yield return new WaitForSeconds(RemainCoolTime);
             //_manualCoolTime = true;
             RemainCoolTime = 0f;

@@ -35,7 +35,7 @@ namespace STELLAREST_F1
 
         public void ResetAllAnimations()
         {
-            Util.Log($"{nameof(ResetAllAnimations)}", highlight: true);
+            Dev.Log($"{nameof(ResetAllAnimations)}", highlight: true);
             ReleaseAllAnimStates();
             ResetAllTriggers();
             Animator.Play(Upper_Idle);
@@ -239,7 +239,7 @@ namespace STELLAREST_F1
             SkillBase[] skills = _creatureOwner.CreatureSkill.SkillArray;
             if (skills == null)
             {
-                Util.LogError(obj: nameof(CreatureAnimation), method: nameof(RefreshAnimEventHandlers), log: "All of creatures must have SKILL_A.");
+                Dev.LogError(obj: nameof(CreatureAnimation), method: nameof(RefreshAnimEventHandlers), log: "All of creatures must have SKILL_A.");
                 return;
             }
 

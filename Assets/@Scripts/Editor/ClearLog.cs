@@ -17,11 +17,11 @@ namespace STELLAREST_F1
     public class DataTransformer : EditorWindow
     {
 #if UNITY_EDITOR
-        // Mac: %(Command) #(Shift) J
-        [MenuItem("Tools/ClearLog %#J")]
+        // Mac: %(Command) #(Shift) E
+        [MenuItem("Tools/ClearLog %#E")]
         public static void ClearLog()
         {
-            Util.ClearLog();
+            Dev.ClearLog();
         }
 
         [MenuItem("Tools/SimpleLog %#H")]
@@ -32,7 +32,7 @@ namespace STELLAREST_F1
                            select n + 1;
 
             foreach (var num in plusNums)
-                Util.Log($"num: {num}");
+                Dev.Log($"num: {num}");
         }
 #endif
     }
