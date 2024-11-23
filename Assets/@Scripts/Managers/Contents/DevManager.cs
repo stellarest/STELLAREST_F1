@@ -64,7 +64,10 @@ namespace STELLAREST_F1
 
         private void Update()
         {
-            if (Dev.Input_J)
+            if (Dev.Input(EInput.Input_F8, useThis: this, tag: $"{nameof(Dev.PrintInputTagInfo)}"))
+                Dev.PrintInputTagInfo();
+
+            if (Dev.Input(EInput.Input_F1, useThis: this, tag: "Print Obj on the Cells."))
             {
                 Dev.Log("===== Cells Pair =====");
                 foreach (var pair in Managers.Map.Cells)
@@ -74,15 +77,12 @@ namespace STELLAREST_F1
                     else
                         Dev.Log("NONE OF VALUE...");
                 }
-
-                // Util.Log($"<color=white>Is GameOver: {Managers.Game.IsGameOver}</color>");
             }
 
-            if (Dev.Input_K)
-                ShowCellPosText();
-
-            if (Dev.Input_L)
-                OnOffTileCollider();
+            // if (Dev.Input(EInput.Input_F2, tag: $"{nameof(ShowCellPosText)}")) 
+            //     ShowCellPosText();
+            // if (Dev.Input(EInput.Input_F3, tag: $"{nameof(OnOffTileCollider)}"))
+            //     OnOffTileCollider();
         }
 
         private void ShowCellPosText()

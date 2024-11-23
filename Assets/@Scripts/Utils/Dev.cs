@@ -1,20 +1,64 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
+using System.Linq;
 using Debug = UnityEngine.Debug;
 using UnityEngine;
-using System.Reflection;
+using UnityEditor;
+
+using static STELLAREST_F1.Define;
 
 #if UNITY_EDITOR
 namespace STELLAREST_F1
 {
+    public class DevEditor : EditorWindow
+    {
+        // Mac: %(Command) #(Shift) E
+        [MenuItem("Tools/ClearLog %#E")]
+        public static void ClearLog()
+            => Dev.ClearLog();
+
+        [MenuItem("Tools/SimpleLog %#H")]
+        public static void TestPrint()
+        {
+            int[] numbers = { 1, 2, 3, 4, 5 };
+            var plusNums = (from n in numbers
+                           select n + 1).ToList();
+
+            string result = string.Join(separator: ", ", plusNums.Select(n => n % 2 == 0 ? 
+                                                        $"<color=red>{n}</color>" : $"<color=white>{n}</color>"));
+            Dev.Log(result);
+
+            string strA = $"<color=red>show</color>";
+            string strB = $" me ";
+            string strC = $"<color=white>the money</color>";
+            string ret = strA + strB + strC;
+            Dev.Log($"Ret: {ret}");
+        }
+    }
+
+    public class DevInputTag
+    {
+        public DevInputTag(object obj, object tag)
+        {
+            Obj = obj;
+            Tag = tag;
+        }
+
+        public object Obj { get; } = null;
+        public object Tag { get; } = null;
+        public bool Toggle { get; set; } = false;
+    }
+
     public static class Dev
     {
         [Conditional("UNITY_EDITOR")]
         public static void Log(object log, bool highlight = false)
         {
             if (highlight)
-                Debug.Log($"<color=#FF6666>\"</color><color=#A3E635>[<color=#FF6666>!</color>]: {log}</color><color=#FF6666>\"</color>");
+                Debug.Log($"<color=#FF6666>\"</color><color=#A3E635>{log}</color><color=#FF6666>\"</color>");
             else
                 Debug.Log($"{log}");
         }
@@ -28,7 +72,7 @@ namespace STELLAREST_F1
         [Conditional("UNITY_EDITOR")]
         public static void LogWarning(object obj, object method, object log)
         {
-            Debug.LogWarning($"<color=#00FF22>[!]</color> <color=yellow>{obj}</color><color=white>::</color><color=cyan>{method}</color>\n<color=yellow>{log}</color>");
+            Debug.LogWarning($"<color=#00FF22>[!]</color> <color=yellow>{obj}</color><color=white>::</color><color=cyan>{method}</color>\n<color=white>→ </color><color=#FFD966>{log}</color>");
         }
 
         [Conditional("UNITY_EDITOR")]
@@ -41,18 +85,20 @@ namespace STELLAREST_F1
         [Conditional("UNITY_EDITOR")]
         public static void LogError(object obj, object method, object log)
         {
-            Debug.LogError($"<color=red>[!!!]</color> <color=yellow>{obj}</color><color=white>::</color><color=cyan>{method}</color>\n<color=red>{log}</color>");
+            Debug.LogError($"<color=red>[!!!]</color> <color=yellow>{obj}</color><color=white>::</color><color=cyan>{method}</color>\n<color=white>→ </color><color=#F44336>{log}</color>");
             Debug.Break();
         }
 
         [Conditional("UNITY_EDITOR")]
-        public static void ClearLog()
+        public static void ClearLog(bool showClearLog = true)
         {
             var assembly = Assembly.GetAssembly(typeof(UnityEditor.Editor));
             var type = assembly.GetType("UnityEditor.LogEntries");
             var method = type.GetMethod("Clear");
             method.Invoke(new object(), null);
-            Log("... Clear ...");
+
+            if (showClearLog)
+                Log("... Clear ...");
         }
 
         public static GameObject SpawnCircleObj(Vector3Int spawnCellPos)
@@ -63,31 +109,101 @@ namespace STELLAREST_F1
         }
 
         #region Input
-        public static bool Input_J
-            => UnityEngine.Input.GetKeyDown(KeyCode.J);
-        public static bool Input_K
-            => UnityEngine.Input.GetKeyDown(KeyCode.K);
-        public static bool Input_L
-            => UnityEngine.Input.GetKeyDown(KeyCode.L);
-        public static bool Input_M
-            => UnityEngine.Input.GetKeyDown(KeyCode.M);
-        public static bool Input_N
-            => UnityEngine.Input.GetKeyDown(KeyCode.N);
-        public static bool Input_O
-            => UnityEngine.Input.GetKeyDown(KeyCode.T);
-        public static bool Input_P
-            => UnityEngine.Input.GetKeyDown(KeyCode.P);
-        public static bool Input_Q
-            => UnityEngine.Input.GetKeyDown(KeyCode.Q);
-        public static bool Input_R
-            => UnityEngine.Input.GetKeyDown(KeyCode.R);
-        public static bool Input_S
-            => UnityEngine.Input.GetKeyDown(KeyCode.S);
-        public static bool Input_T
-            => UnityEngine.Input.GetKeyDown(KeyCode.T);
-        public static bool Input_U
-            => UnityEngine.Input.GetKeyDown(KeyCode.U);
+        private static Dictionary<EInput, DevInputTag> _inputTagDict = new Dictionary<EInput, DevInputTag>();
+        public static bool Input(EInput eInput, object useThis, object tag)
+        {
+            bool input = UnityEngine.Input.GetKeyDown(GetKey(eInput));
+            if (input)
+            {
+                if (_inputTagDict.ContainsKey(eInput) == false)
+                    _inputTagDict.Add(eInput, new DevInputTag(obj: useThis, tag));
+            }
+
+            return input;
+        }
+
+        public static void Input(EInput eInput, object useThis, object tag, Action trueCase, Action falseCase)
+        {
+            bool input = UnityEngine.Input.GetKeyDown(GetKey(eInput));
+            if (input)
+            {
+                if (_inputTagDict.ContainsKey(eInput) == false)
+                    _inputTagDict.Add(eInput, new DevInputTag(obj: useThis, tag));
+
+                DevInputTag value = _inputTagDict[eInput];
+                value.Toggle = !value.Toggle;
+                if (value.Toggle)
+                    trueCase?.Invoke();
+                else
+                    falseCase?.Invoke();
+            }
+        }
+        
+        public static void PrintInputTagInfo()
+        {
+            ClearLog(showClearLog: false);
+            List<string> inputs = new List<string>();
+            for (int i = 0; i < (int)EInput.Max; ++i)
+            {
+                string input = ((EInput)i).ToString();
+                if (_inputTagDict.ContainsKey((EInput)i))
+                {
+                    DevInputTag value = _inputTagDict[(EInput)i];
+                    inputs.Add($"<color=red>*{input}</color><color=#FFC300>({value.Obj}/{value.Tag})</color>\n");
+                }
+                else
+                    inputs.Add($"{input}\n");
+            }
+
+            string result = string.Join(separator: "", values: inputs);
+            Log($"<color=red>* registered</color><color=white>,</color> * empty\n→ <color=white>[</color> \n{result} <color=white>]</color>");
+        }
+
+        private static UnityEngine.KeyCode GetKey(EInput eInput)
+        {
+            return eInput switch
+            {
+                EInput.Input_0 => KeyCode.Alpha0, EInput.Input_1 => KeyCode.Alpha1,
+                EInput.Input_2 => KeyCode.Alpha2, EInput.Input_3 => KeyCode.Alpha3,
+                EInput.Input_4 => KeyCode.Alpha4, EInput.Input_5 => KeyCode.Alpha5,
+                EInput.Input_6 => KeyCode.Alpha6, EInput.Input_7 => KeyCode.Alpha7,
+                EInput.Input_8 => KeyCode.Alpha8, EInput.Input_9 => KeyCode.Alpha9,
+
+                EInput.Input_F1 => KeyCode.F1, EInput.Input_F2 => KeyCode.F2,
+                EInput.Input_F3 => KeyCode.F3, EInput.Input_F4 => KeyCode.F4,
+                EInput.Input_F5 => KeyCode.F5, EInput.Input_F6 => KeyCode.F6,
+                EInput.Input_F7 => KeyCode.F7, EInput.Input_F8 => KeyCode.F8,
+
+                _ => throw new ArgumentOutOfRangeException($"{nameof(Dev)}::{nameof(GetKey)}", $"\nInvalid: {eInput}")
+            };
+        }
+
+        // public static bool Input_O // --- EnableSTrail_EntireBody in Hero
+        //     => UnityEngine.Input.GetKeyDown(KeyCode.O);
+        // private static bool _input_O_Toggle = false;
+        // public static void Input_O_Toggle(Action trueCase, Action falseCase)
+        // {
+        //     if (Input_O)
+        //     {
+        //         _input_O_Toggle = !_input_O_Toggle;
+        //         if (_input_O_Toggle)
+        //             trueCase?.Invoke();
+        //         else
+        //             falseCase?.Invoke();
+        //     }
+        // }
         #endregion
     }
 }
 #endif
+
+/*
+    [Conditional("UNITY_EDITOR")]
+    public static void Log(object log, bool highlight = false)
+    {
+        if (highlight)
+            Debug.Log($"<color=#FF6666>\"</color><color=#A3E635>[<color=#FF6666>*</color>]: {log}</color><color=#FF6666>\"</color>");
+        else
+            Debug.Log($"{log}");
+    }
+*/

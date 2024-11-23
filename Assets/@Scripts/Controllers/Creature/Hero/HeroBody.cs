@@ -5,6 +5,7 @@ using UnityEngine;
 using STELLAREST_F1.Data;
 using static STELLAREST_F1.Define;
 using SpriteTrail;
+using System;
 
 namespace STELLAREST_F1
 {
@@ -12,6 +13,15 @@ namespace STELLAREST_F1
     {
         private Dictionary<EHeroBody, BodyContainer[]> _heroBodyDict = new Dictionary<EHeroBody, BodyContainer[]>();
         private Dictionary<EEnvType, Sprite[]> _envHeroWeaponDict = new Dictionary<EEnvType, Sprite[]>();
+        private Dictionary<EHeroBody, bool> _heroBodySTrailFlagDict = new Dictionary<EHeroBody, bool>();
+        private void EnableHeroBodySTrailFlag(EHeroBody eTarget)
+            => _heroBodySTrailFlagDict[eTarget] = true;
+        private void DisableHeroBodySTrailFlag(EHeroBody eTarget)
+            => _heroBodySTrailFlagDict[eTarget] = false;
+        public bool IsOnHeroBodySTrail(EHeroBody eTarget)
+            => _heroBodySTrailFlagDict[eTarget];
+        
+
         private Sprite[] _defaultHeroWeapons = new Sprite[(int)EHeroWeapons.Max];
         public Vector3[] _defaultHeroWeaponsLocalScales = new Vector3[(int)EHeroWeapons.Max];
         private Vector3 GetWeaponLocalScale(EHeroWeapons weapon)
@@ -1100,9 +1110,138 @@ namespace STELLAREST_F1
         {
             Owner = owner as Hero;
             _matDefaultEyes = Managers.Resource.Load<Material>(CString.Material(EString.Mat_EyesPaint));
+            InitSTrailDict();
             InitBody(dataID);
             InitEnvWeapon();
         }
+
+        public void EnableHeroBodySTrail(EString ePreset, EHeroBody eTarget, Action startCallback = null)
+        {
+            if (IsOnHeroBodySTrail(eTarget))
+            {
+                Dev.LogWarning(obj: nameof(HeroBody), method: nameof(EnableHeroBodySTrail), log: $"Already enabled: {eTarget}");
+                return;
+            }
+
+            if (_sTrailPresetDict.TryGetValue(key: ePreset, out TrailPreset sTrailPreset) == false)
+            {
+                Dev.LogWarning(obj: nameof(HeroBody), method: nameof(EnableHeroBodySTrail), log: $"Invalid key: {ePreset}");
+                return;
+            }
+
+            if (_heroBodyDict.TryGetValue(key: eTarget, out BodyContainer[] containers) == false)
+            {
+                Dev.LogWarning(obj: nameof(HeroBody), method: nameof(EnableHeroBodySTrail), log: $"Invalid key: {eTarget}");
+                return;
+            }
+
+            EnableHeroBodySTrailFlag(eTarget);
+            startCallback?.Invoke();
+
+            for (int i = 0; i < containers.Length; ++i)
+            {
+                BodyContainer container = containers[i];
+                if (container == null || container.STrail == null)
+                    continue;
+
+                container.STrail.enabled = true;
+                container.STrail.m_OrderInSortingLayer = CInt.Sorting(EInt.Sorting_BodySTrail);
+                container.STrail.SetTrailPreset(sTrailPreset);
+                container.STrail.EnableTrail();
+            }
+        }
+
+        public void DisableHeroBodySTrail(EHeroBody eTarget, Action endCallback = null)
+        {
+            if (IsOnHeroBodySTrail(eTarget) == false)
+            {
+                Dev.LogWarning(obj: nameof(HeroBody), method: nameof(DisableHeroBodySTrail), log: $"Already disabled: {eTarget}");
+                return;
+            }
+
+            if (_heroBodyDict.TryGetValue(key: eTarget, out BodyContainer[] containers) == false)
+            {
+                Dev.LogWarning(obj: nameof(HeroBody), method: nameof(DisableHeroBodySTrail), log: $"Invalid key: {eTarget}");
+                return;
+            }
+
+            for (int i = 0; i < containers.Length; ++i)
+            {
+                BodyContainer container = containers[i];
+                if (container == null || container.STrail == null)
+                    continue;
+
+                container.STrail.DisableTrail();
+                container.STrail.enabled = false;
+            }
+
+            DisableHeroBodySTrailFlag(eTarget);
+            endCallback?.Invoke();
+        }
+
+        // public override void EnableSTrail_Body(EString eString, Action startCallback = null)
+        // {
+        //     if (_sTrailPresetDict.TryGetValue(key: eString, out TrailPreset sTrailPreset) == false)
+        //     {
+        //         Dev.LogWarning(obj: nameof(HeroBody), method: nameof(EnableSTrail_Body), log: $"Invalid key: {eString}");
+        //         return;
+        //     }
+
+        //     startCallback?.Invoke();
+            
+        //     foreach (var bodyDict in _heroBodyDict)
+        //     {
+        //         // 만약 이렇게 했을 떄, 제대로 동작을 한다고 했을 경우, 문제가 뭐냐~?
+        //         // --- Weapon은, 켜지도 않았는데, 계속 Disable만 작동함. 그래서 Disable도 수정해야함.
+        //         if (bodyDict.Key == EHeroBody.Weapon)
+        //             continue;
+        //         else
+        //         {
+        //             foreach (var container in bodyDict.Value)
+        //             {
+        //                 if (container.STrail == null)
+        //                     continue;
+
+        //                 container.STrail.enabled = true;
+        //                 container.STrail.m_OrderInSortingLayer = CInt.Sorting(EInt.Sorting_BaseObject);
+        //                 container.STrail.SetTrailPreset(sTrailPreset);
+        //                 container.STrail.EnableTrail();
+        //             }
+        //         }
+        //     }
+
+        //     // foreach (var containers in _heroBodyDict.Values)
+        //     // {
+        //     //     foreach (var container in containers)
+        //     //     {
+        //     //         if (container.STrail == null)
+        //     //             continue;
+
+        //     //         container.STrail.enabled = true;
+        //     //         // --- 파츠별로 별로 도정이 필요해 질 수도 있음
+        //     //         container.STrail.m_OrderInSortingLayer = CInt.Sorting(EInt.Sorting_BaseObject);
+        //     //         container.STrail.SetTrailPreset(sTrailPreset);
+        //     //         container.STrail.EnableTrail();
+        //     //     }
+        //     // }
+        // }
+
+        // public override void DisableSTrail_Body(Action endCallback = null)
+        // {
+        //     foreach (var containers in _heroBodyDict.Values)
+        //     {
+        //         foreach (var container in containers)
+        //         {
+        //             if (container.STrail == null)
+        //                 continue;
+
+        //             container.STrail.DisableTrail();
+        //             container.STrail.enabled = false;
+        //         }
+        //     }
+
+        //     endCallback?.Invoke();
+        // }
 
         private void InitBody(int dataID)
         {
@@ -1112,7 +1251,7 @@ namespace STELLAREST_F1
                 return;
             }
 
-            // --- Skin Color(if it has invalid value, error)
+            // * Skin Color(if it has invalid value, error)
             HeroSpriteData_Skin skin = heroSpriteData.Skin;
             if (ColorUtility.TryParseHtmlString(skin.SkinColor, out Color skinColor) == false)
             {
@@ -1120,12 +1259,13 @@ namespace STELLAREST_F1
                 return;
             }
 
-            // --- Head
+            // * Head
             HeroSpriteData_Head head = heroSpriteData.Head;
             BodyContainer[] headContainers = new BodyContainer[(int)EHeroBody_Head.Max];
             _heroBodyDict.Add(EHeroBody.Head, headContainers);
+            _heroBodySTrailFlagDict.Add(EHeroBody.Head, false);
 
-            // --- Head(skin)
+            // - Head(skin)
             string tag = Util.GetStringFromEnum(EHeroBody_Head.Head);
             Transform tr = Util.FindChild<Transform>(Owner.gameObject, name: tag, true, true);
             SpriteRenderer spr = tr.GetComponent<SpriteRenderer>();
@@ -1144,7 +1284,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, headContainers[(int)EHeroBody_Head.Head].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- Hair
+            // - Hair
             tag = Util.GetStringFromEnum(EHeroBody_Head.Hair);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1165,7 +1305,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, headContainers[(int)EHeroBody_Head.Hair].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- Eyebrows Emoji(if it has invalid value, error)
+            // - Eyebrows Emoji(if it has invalid value, error)
             Eyebrows = new Sprite[(int)EHeroEmoji.Max];
             EyebrowsColors = new Color[(int)EHeroEmoji.Max];
             for (int i = 0; i < (int)EHeroEmoji.Max; ++i)
@@ -1204,7 +1344,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, headContainers[(int)EHeroBody_Head.Eyebrows].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- Eyes Emoji(if it has invalid value, error)
+            // - Eyes Emoji(if it has invalid value, error)
             Eyes = new Sprite[(int)EHeroEmoji.Max];
             EyesColors = new Color[(int)EHeroEmoji.Max];
             for (int i = 0; i < (int)EHeroEmoji.Max; ++i)
@@ -1243,7 +1383,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, headContainers[(int)EHeroBody_Head.Eyes].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- Mouths Emoji(if it has invalid value, error)
+            // - Mouths Emoji(if it has invalid value, error)
             Mouths = new Sprite[(int)EHeroEmoji.Max];
             MouthsColors = new Color[(int)EHeroEmoji.Max];
             for (int i = 0; i < (int)EHeroEmoji.Max; ++i)
@@ -1283,7 +1423,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, headContainers[(int)EHeroBody_Head.Mouth].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- Ears(skin)
+            // - Ears(skin)
             tag = Util.GetStringFromEnum(EHeroBody_Head.Ears);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1302,7 +1442,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, headContainers[(int)EHeroBody_Head.Ears].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- Earrings
+            // - Earrings
             tag = Util.GetStringFromEnum(EHeroBody_Head.Earrings);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1323,7 +1463,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, headContainers[(int)EHeroBody_Head.Earrings].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- Beard
+            // - Beard
             tag = Util.GetStringFromEnum(EHeroBody_Head.Beard);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1344,7 +1484,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, headContainers[(int)EHeroBody_Head.Beard].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- Mask
+            // - Mask
             tag = Util.GetStringFromEnum(EHeroBody_Head.Mask);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1365,7 +1505,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, headContainers[(int)EHeroBody_Head.Mask].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- Glasses
+            // - Glasses
             tag = Util.GetStringFromEnum(EHeroBody_Head.Glasses);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1386,7 +1526,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, headContainers[(int)EHeroBody_Head.Glasses].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- Helmet
+            // - Helmet
             tag = Util.GetStringFromEnum(EHeroBody_Head.Helmet);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1407,12 +1547,13 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, headContainers[(int)EHeroBody_Head.Helmet].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- UpperBody
+            // * UpperBody
             HeroSpriteData_UpperBody upperBody = heroSpriteData.UpperBody;
             BodyContainer[] upperBodyContainers = new BodyContainer[(int)EHeroBody_Upper.Max];
             _heroBodyDict.Add(EHeroBody.UpperBody, upperBodyContainers);
+            _heroBodySTrailFlagDict.Add(EHeroBody.UpperBody, false);
 
-            // --- Torso(skin)
+            // - Torso(skin)
             tag = Util.GetStringFromEnum(EHeroBody_Upper.Torso);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1431,7 +1572,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, upperBodyContainers[(int)EHeroBody_Upper.Torso].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- Torso_Armor
+            // - Torso_Armor
             tag = Util.GetStringFromEnum(EHeroBody_Upper.Torso_Armor);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1452,7 +1593,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, upperBodyContainers[(int)EHeroBody_Upper.Torso_Armor].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- Cape_Armor
+            // - Cape_Armor
             tag = Util.GetStringFromEnum(EHeroBody_Upper.Cape_Armor);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1473,7 +1614,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, upperBodyContainers[(int)EHeroBody_Upper.Cape_Armor].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- ArmL(skin)
+            // - ArmL(skin)
             tag = Util.GetStringFromEnum(EHeroBody_Upper.ArmL);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1492,7 +1633,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, upperBodyContainers[(int)EHeroBody_Upper.ArmL].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- ArmL_Armor
+            // - ArmL_Armor
             tag = Util.GetStringFromEnum(EHeroBody_Upper.ArmL_Armor);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1513,7 +1654,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, upperBodyContainers[(int)EHeroBody_Upper.ArmL_Armor].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- ForearmL(skin)
+            // - ForearmL(skin)
             tag = Util.GetStringFromEnum(EHeroBody_Upper.ForearmL);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1532,7 +1673,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, upperBodyContainers[(int)EHeroBody_Upper.ForearmL].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- ForearmL_Armor
+            // - ForearmL_Armor
             tag = Util.GetStringFromEnum(EHeroBody_Upper.ForearmL_Armor);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1553,7 +1694,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, upperBodyContainers[(int)EHeroBody_Upper.ForearmL_Armor].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- HandL(skin)
+            // - HandL(skin)
             tag = Util.GetStringFromEnum(EHeroBody_Upper.HandL);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1572,7 +1713,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, upperBodyContainers[(int)EHeroBody_Upper.HandL].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- HandL_Armor
+            // - HandL_Armor
             tag = Util.GetStringFromEnum(EHeroBody_Upper.HandL_Armor);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1593,7 +1734,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, upperBodyContainers[(int)EHeroBody_Upper.HandL_Armor].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- Finger(skin)
+            // - Finger(skin)
             tag = Util.GetStringFromEnum(EHeroBody_Upper.Finger);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1612,7 +1753,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, upperBodyContainers[(int)EHeroBody_Upper.Finger].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- Finger_Armor
+            // - Finger_Armor
             tag = Util.GetStringFromEnum(EHeroBody_Upper.Finger_Armor);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1633,7 +1774,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, upperBodyContainers[(int)EHeroBody_Upper.Finger_Armor].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- ArmR(skin)
+            // - ArmR(skin)
             tag = Util.GetStringFromEnum(EHeroBody_Upper.ArmR);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1652,7 +1793,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, upperBodyContainers[(int)EHeroBody_Upper.ArmR].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- ArmR_Armor
+            // - ArmR_Armor
             tag = Util.GetStringFromEnum(EHeroBody_Upper.ArmR_Armor);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1673,7 +1814,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, upperBodyContainers[(int)EHeroBody_Upper.ArmR_Armor].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- ForearmR(skin)
+            // - ForearmR(skin)
             tag = Util.GetStringFromEnum(EHeroBody_Upper.ForearmR);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1692,7 +1833,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, upperBodyContainers[(int)EHeroBody_Upper.ForearmR].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- ForearmR_Armor
+            // - ForearmR_Armor
             tag = Util.GetStringFromEnum(EHeroBody_Upper.ForearmR_Armor);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1713,7 +1854,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, upperBodyContainers[(int)EHeroBody_Upper.ForearmR_Armor].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- SleeveR_Armor
+            // - SleeveR_Armor
             tag = Util.GetStringFromEnum(EHeroBody_Upper.SleeveR_Armor);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1734,7 +1875,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, upperBodyContainers[(int)EHeroBody_Upper.SleeveR_Armor].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- HandR(skin)
+            // - HandR(skin)
             tag = Util.GetStringFromEnum(EHeroBody_Upper.HandR);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1753,7 +1894,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, upperBodyContainers[(int)EHeroBody_Upper.HandR].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- HandR_Armor
+            // - HandR_Armor
             tag = Util.GetStringFromEnum(EHeroBody_Upper.HandR_Armor);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1774,12 +1915,13 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, upperBodyContainers[(int)EHeroBody_Upper.HandR_Armor].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- LowerBody
+            // * LowerBody
             HeroSpriteData_LowerBody lowerBody = heroSpriteData.LowerBody;
             BodyContainer[] lowerBodyContainers = new BodyContainer[(int)EHeroBody_Lower.Max];
             _heroBodyDict.Add(EHeroBody.LowerBody, lowerBodyContainers);
+            _heroBodySTrailFlagDict.Add(EHeroBody.LowerBody, false);
 
-            // --- Pelvis(skin)
+            // - Pelvis(skin)
             tag = Util.GetStringFromEnum(EHeroBody_Lower.Pelvis);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1798,7 +1940,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, lowerBodyContainers[(int)EHeroBody_Lower.Pelvis].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- Pelvis_Armor
+            // - Pelvis_Armor
             tag = Util.GetStringFromEnum(EHeroBody_Lower.Pelvis_Armor);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1819,7 +1961,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, lowerBodyContainers[(int)EHeroBody_Lower.Pelvis_Armor].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- LegL(skin)
+            // - LegL(skin)
             tag = Util.GetStringFromEnum(EHeroBody_Lower.LegL);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1859,7 +2001,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, lowerBodyContainers[(int)EHeroBody_Lower.LegL_Armor].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- ShinL(skin)
+            // - ShinL(skin)
             tag = Util.GetStringFromEnum(EHeroBody_Lower.ShinL);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1878,7 +2020,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, lowerBodyContainers[(int)EHeroBody_Lower.ShinL].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- ShinL_Armor
+            // - ShinL_Armor
             tag = Util.GetStringFromEnum(EHeroBody_Lower.ShinL_Armor);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1899,7 +2041,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, lowerBodyContainers[(int)EHeroBody_Lower.ShinL_Armor].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- LegR(skin)
+            // - LegR(skin)
             tag = Util.GetStringFromEnum(EHeroBody_Lower.LegR);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1918,7 +2060,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, lowerBodyContainers[(int)EHeroBody_Lower.LegR].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- LegR_Armor
+            // - LegR_Armor
             tag = Util.GetStringFromEnum(EHeroBody_Lower.LegR_Armor);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1939,7 +2081,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, lowerBodyContainers[(int)EHeroBody_Lower.LegR_Armor].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- ShinR(skin)
+            // - ShinR(skin)
             tag = Util.GetStringFromEnum(EHeroBody_Lower.ShinR);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1958,7 +2100,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, lowerBodyContainers[(int)EHeroBody_Lower.ShinR].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- ShinR_Armor
+            // - ShinR_Armor
             tag = Util.GetStringFromEnum(EHeroBody_Lower.ShinR_Armor);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -1979,16 +2121,17 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, lowerBodyContainers[(int)EHeroBody_Lower.ShinR_Armor].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- Weapon
+            // * Weapon
             LoadWeaponSTrailPreset(heroSpriteData);
             HeroSpriteData_Weapon weapon = heroSpriteData.Weapon;
             BodyContainer[] weaponContainers = new BodyContainer[(int)EHeroBody_Weapon.Max];
             _heroBodyDict.Add(EHeroBody.Weapon, weaponContainers);
+            _heroBodySTrailFlagDict.Add(EHeroBody.Weapon, false);
 
             for (int i = 0; i < _defaultHeroWeapons.Length; ++i)
                 _defaultHeroWeapons[i] = null;
 
-            // --- WeaponL_Armor
+            // - WeaponL_Armor
             tag = Util.GetStringFromEnum(EHeroBody_Weapon.WeaponL_Armor);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -2015,7 +2158,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, weaponContainers[(int)EHeroBody_Weapon.WeaponL_Armor].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- WeaponL_FireSocket
+            // - WeaponL_FireSocket
             tag = Util.GetStringFromEnum(EHeroBody_Weapon.WeaponL_FireSocket);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             tr.localPosition = weapon.LWeaponFireSocketLocalPosition;
@@ -2024,7 +2167,7 @@ namespace STELLAREST_F1
                                                             defaultSPRMat: null, defaultSPRColor: Color.white,
                                                             defaultMatColor: Color.white, matPB: null);
 
-            // --- WeaponL_ChildsRoot
+            // - WeaponL_ChildsRoot
             tag = Util.GetStringFromEnum(EHeroBody_Weapon.WeaponL_ChildsRoot);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
 
@@ -2032,7 +2175,7 @@ namespace STELLAREST_F1
                                                             defaultSPRMat: null, defaultSPRColor: Color.white,
                                                             defaultMatColor: Color.white, matPB: null);
 
-            // --- WeaponL_Armor_Child01, Child02, Child03
+            // - WeaponL_Armor_Child01, Child02, Child03
             tag = Util.GetStringFromEnum(EHeroBody_Weapon.WeaponL_Armor_Child01);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -2174,7 +2317,7 @@ namespace STELLAREST_F1
             if (GetContainer(EHeroBody_Weapon.WeaponL_Armor).SPR.sprite == null)
                 GetContainer(EHeroBody_Weapon.WeaponL_Armor).TR.gameObject.SetActive(false);
 
-            // --- WeaponR
+            // - WeaponR
             tag = Util.GetStringFromEnum(EHeroBody_Weapon.WeaponR_Armor);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -2201,7 +2344,7 @@ namespace STELLAREST_F1
             matPB.SetColor(_matDefaultColor, weaponContainers[(int)EHeroBody_Weapon.WeaponR_Armor].DefaultMatColor);
             spr.SetPropertyBlock(matPB);
 
-            // --- WeaponR_FireSocket
+            // - WeaponR_FireSocket
             tag = Util.GetStringFromEnum(EHeroBody_Weapon.WeaponR_FireSocket);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             tr.localPosition = weapon.RWeaponFireSocketLocalPosition;
@@ -2210,7 +2353,7 @@ namespace STELLAREST_F1
                                                             defaultSPRMat: null, defaultSPRColor: Color.white,
                                                             defaultMatColor: Color.white, matPB: null);
 
-            // --- WeaponR_ChildsRoot
+            // - WeaponR_ChildsRoot
             tag = Util.GetStringFromEnum(EHeroBody_Weapon.WeaponR_ChildsRoot);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
 
@@ -2218,7 +2361,7 @@ namespace STELLAREST_F1
                                                             defaultSPRMat: null, defaultSPRColor: Color.white,
                                                             defaultMatColor: Color.white, matPB: null);
 
-            // --- WeaponR_Armor_Child01, Child02, Child03
+            // - WeaponR_Armor_Child01, Child02, Child03
             tag = Util.GetStringFromEnum(EHeroBody_Weapon.WeaponR_Armor_Child01);
             tr = Util.FindChild<Transform>(Owner.gameObject, tag, true, true);
             spr = tr.GetComponent<SpriteRenderer>();
@@ -2374,75 +2517,76 @@ namespace STELLAREST_F1
             _envHeroWeaponDict.Add(EEnvType.Rock, envWeapons);
         }
 
-        public override void EnableBodySTrail(bool enable)
-        {
-            foreach (var containers in _heroBodyDict.Values)
-            {
-                foreach (var container in containers)
-                {
-                    if (container.STrail == null)
-                        continue;
+        // ------------------------------------------------------------
+        // public override void EnableBodySTrail(bool enable)
+        // {
+        //     foreach (var containers in _heroBodyDict.Values)
+        //     {
+        //         foreach (var container in containers)
+        //         {
+        //             if (container.STrail == null)
+        //                 continue;
 
-                    if (enable)
-                    {
-                        container.STrail.enabled = true;
-                        container.STrail.m_OrderInSortingLayer = CInt.Sorting(EInt.Sorting_BaseObject);
-                        container.STrail.EnableTrail();
-                    }
-                    else
-                    {
-                        container.STrail.DisableTrail();
-                        container.STrail.enabled = false;
-                    }
-                }
-            }
-        }
+        //             if (enable)
+        //             {
+        //                 container.STrail.enabled = true;
+        //                 container.STrail.m_OrderInSortingLayer = CInt.Sorting(EInt.Sorting_BaseObject);
+        //                 container.STrail.EnableTrail();
+        //             }
+        //             else
+        //             {
+        //                 container.STrail.DisableTrail();
+        //                 container.STrail.enabled = false;
+        //             }
+        //         }
+        //     }
+        // }
 
-        public void EnableWeaponTrail(bool enable)
-        {
-            // --- 문제점
-            // Body가 켜져있는 상태에서 무기를 enable하면,
-            // 기존에 Body 프리셋으로 남아있던 무기 트레일이 그대로 살아있음.
-            // ---> 아예 전용 웨폰 트레일로 장착을 시켜야함.
+        // public void EnableWeaponTrail(bool enable)
+        // {
+        //     // --- 문제점
+        //     // Body가 켜져있는 상태에서 무기를 enable하면,
+        //     // 기존에 Body 프리셋으로 남아있던 무기 트레일이 그대로 살아있음.
+        //     // ---> 아예 전용 웨폰 트레일로 장착을 시켜야함.
 
-            Dev.LogError(obj: nameof(HeroBody), method: nameof(EnableWeaponTrail), log: $"abcdefg,,,");
+        //     Dev.LogError(obj: nameof(HeroBody), method: nameof(EnableWeaponTrail), log: $"abcdefg,,,");
             
-            // EnableBodyTrail(false); // --- BodyTrail와 Weapon은 따로 움직임
-            // Sprite weaponSprite = GetContainer(EHeroBody_Weapon.WeaponL_Armor).SPR.sprite;
-            // SpriteTrail.SpriteTrail sTrail = GetContainer(EHeroBody_Weapon.WeaponL_Armor).STrail;
-            // if (weaponSprite != null && sTrail.m_CurrentTrailPreset != null)
-            // {
-            //     if (enable)
-            //     {
-            //         sTrail.enabled = true;
-            //         sTrail.m_OrderInSortingLayer = CInt.Sorting(EInt.Sorting_Effect);
-            //         sTrail.EnableTrail();
-            //     }
-            //     else
-            //     {
-            //         sTrail.m_OrderInSortingLayer = CInt.Sorting(EInt.Sorting_BaseObject);
-            //         sTrail.DisableTrail();
-            //         sTrail.enabled = false;
-            //     }
-            // }
+        //     // EnableBodyTrail(false); // --- BodyTrail와 Weapon은 따로 움직임
+        //     // Sprite weaponSprite = GetContainer(EHeroBody_Weapon.WeaponL_Armor).SPR.sprite;
+        //     // SpriteTrail.SpriteTrail sTrail = GetContainer(EHeroBody_Weapon.WeaponL_Armor).STrail;
+        //     // if (weaponSprite != null && sTrail.m_CurrentTrailPreset != null)
+        //     // {
+        //     //     if (enable)
+        //     //     {
+        //     //         sTrail.enabled = true;
+        //     //         sTrail.m_OrderInSortingLayer = CInt.Sorting(EInt.Sorting_Effect);
+        //     //         sTrail.EnableTrail();
+        //     //     }
+        //     //     else
+        //     //     {
+        //     //         sTrail.m_OrderInSortingLayer = CInt.Sorting(EInt.Sorting_BaseObject);
+        //     //         sTrail.DisableTrail();
+        //     //         sTrail.enabled = false;
+        //     //     }
+        //     // }
 
-            // weaponSprite = GetContainer(EHeroBody_Weapon.WeaponR_Armor).SPR.sprite;
-            // sTrail = GetContainer(EHeroBody_Weapon.WeaponR_Armor).STrail;
-            // if (weaponSprite != null && sTrail.m_CurrentTrailPreset != null)
-            // {
-            //     if (enable)
-            //     {
-            //         sTrail.enabled = true;
-            //         sTrail.m_OrderInSortingLayer = CInt.Sorting(EInt.Sorting_Effect);
-            //         sTrail.EnableTrail();
-            //     }
-            //     else
-            //     {
-            //         sTrail.m_OrderInSortingLayer = CInt.Sorting(EInt.Sorting_BaseObject);
-            //         sTrail.DisableTrail();
-            //         sTrail.enabled = false;
-            //     }
-            // }
-        }
+        //     // weaponSprite = GetContainer(EHeroBody_Weapon.WeaponR_Armor).SPR.sprite;
+        //     // sTrail = GetContainer(EHeroBody_Weapon.WeaponR_Armor).STrail;
+        //     // if (weaponSprite != null && sTrail.m_CurrentTrailPreset != null)
+        //     // {
+        //     //     if (enable)
+        //     //     {
+        //     //         sTrail.enabled = true;
+        //     //         sTrail.m_OrderInSortingLayer = CInt.Sorting(EInt.Sorting_Effect);
+        //     //         sTrail.EnableTrail();
+        //     //     }
+        //     //     else
+        //     //     {
+        //     //         sTrail.m_OrderInSortingLayer = CInt.Sorting(EInt.Sorting_BaseObject);
+        //     //         sTrail.DisableTrail();
+        //     //         sTrail.enabled = false;
+        //     //     }
+        //     // }
+        // }
     }
 }

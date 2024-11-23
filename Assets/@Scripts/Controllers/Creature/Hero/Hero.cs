@@ -17,19 +17,57 @@ namespace STELLAREST_F1
         #if UNITY_EDITOR
         private void Update()
         {
-            if (Dev.Input_M)
+            // if (Dev.Input(EInput.Input_2, useThis: this, tag: "Test in Hero"))
+            // {
+            //     Dev.Log("Hello");
+            // }
+
+            if (Dev.Input(EInput.Input_1, useThis: this, tag: "Hero LevelUp"))
             {
                 if (LevelUp() == false)
                     return;
             }
 
-            if (Dev.Input_N)
-            {
-                Dev.Log("Show me the money.");
-                Dev.Log("Show me the money.", highlight: true);
-                Dev.LogWarning(obj: nameof(Hero), method: nameof(Update), log: "Show me the money");
-                Dev.LogError(obj: nameof(Hero), method: nameof(Update), log: "Show me the money");
-            }
+            // if (Dev.Input(KeyCode.N))
+            // {    
+            //     Dev.Log("Show me the money.");
+            //     Dev.Log("Show me the money.", highlight: true);
+            //     Dev.LogWarning(obj: nameof(Hero), method: nameof(Update), log: "Show me the money");
+            //     Dev.LogError(obj: nameof(Hero), method: nameof(Update), log: "Show me the money");
+            // }
+
+            Dev.Input(EInput.Input_2, useThis: this, tag: "EnableHeroSTrail", trueCase: () => {
+                HeroBody.EnableHeroBodySTrail(ePreset: EString.SO_STrail_Base, eTarget: EHeroBody.Head,
+                    () => Dev.Log("EnableSTrail_Head", highlight: true));
+                HeroBody.EnableHeroBodySTrail(ePreset: EString.SO_STrail_Base, eTarget: EHeroBody.UpperBody,
+                    () => Dev.Log("EnableSTrail_UpperBody", highlight: true));
+                HeroBody.EnableHeroBodySTrail(ePreset: EString.SO_STrail_Base, eTarget: EHeroBody.LowerBody,
+                    () => Dev.Log("EnableSTrail_LowerBody", highlight: true));
+            }, falseCase: () => {
+                HeroBody.DisableHeroBodySTrail(eTarget: EHeroBody.Head,
+                    () => Dev.Log("DisableSTrail_Head"));
+                HeroBody.DisableHeroBodySTrail(eTarget: EHeroBody.UpperBody,
+                    () => Dev.Log("DisableSTrail_UpperBody"));
+                HeroBody.DisableHeroBodySTrail(eTarget: EHeroBody.LowerBody,
+                    () => Dev.Log("DisableSTrail_LowerBody"));
+            });
+
+            // --- TODO
+            // Dev.Input_O_Toggle(trueCase: () => {
+            //     HeroBody.EnableHeroBodySTrail(ePreset: EString.SO_STrail_Base, eTarget: EHeroBody.Head,
+            //         () => Dev.Log("EnableSTrail_Head", highlight: true));
+            //     HeroBody.EnableHeroBodySTrail(ePreset: EString.SO_STrail_Base, eTarget: EHeroBody.UpperBody,
+            //         () => Dev.Log("EnableSTrail_UpperBody", highlight: true));
+            //     HeroBody.EnableHeroBodySTrail(ePreset: EString.SO_STrail_Base, eTarget: EHeroBody.LowerBody,
+            //         () => Dev.Log("EnableSTrail_LowerBody", highlight: true));
+            // }, falseCase: () => {
+            //     HeroBody.DisableHeroBodySTrail(eTarget: EHeroBody.Head, 
+            //         () => Dev.Log("DisableSTrail_Head"));
+            //     HeroBody.DisableHeroBodySTrail(eTarget: EHeroBody.UpperBody, 
+            //         () => Dev.Log("DisableSTrail_UpperBody"));
+            //     HeroBody.DisableHeroBodySTrail(eTarget: EHeroBody.LowerBody, 
+            //         () => Dev.Log("DisableSTrail_LowerBody"));
+            // });
         }
         #endif
 

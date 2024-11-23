@@ -485,6 +485,7 @@ namespace STELLAREST_F1
             {
                 EInt.Sorting_Terrain => 0,
                 EInt.Sorting_Deco => 10,
+                EInt.Sorting_BodySTrail => 15,
                 EInt.Sorting_BaseObject => 20,
                 EInt.Sorting_Projectile => 30,
                 EInt.Sorting_UI => 90,
@@ -695,17 +696,12 @@ namespace STELLAREST_F1
         {
             return eString switch
             {
-                EString.SO_STrail_Ball => "SO_STrail_Ball",
                 EString.SO_STrail_Base => "SO_STrail_Base",
-                EString.SO_STrail_Bio => "SO_STrail_Bio",
-                EString.SO_STrail_Bird => "SO_STrail_Bird",
-                EString.SO_STrail_Blob => "SO_STrail_Blob",
-                EString.SO_STrail_Happy => "SO_STrail_Happy",
-                EString.SO_STrail_Pos => "SO_STrail_Pos",
-                EString.SO_STrail_PureRainbow => "SO_STrail_PureRainbow",
-                EString.SO_STrail_SpriteTrail => "SO_STrail_SpriteTrail",
-                EString.SO_STrail_Tired => "SO_STrail_Tired",
-                EString.SO_STrail_SwordOfEndingLight => "SO_STrail_SwordOfEndingLight",
+                EString.SO_STrail_Illusion => "SO_STrail_Illusion",
+                EString.SO_STrail_DarkShadow => "SO_STrail_DarkShadow",
+                EString.SO_STrail_DarkBeaten => "SO_STrail_DarkBeaten",
+                EString.SO_STrail_Rainbow => "SO_STrail_Rainbow",
+                EString.SO_STrail_PastelRainbow => "SO_STrail_PastelRainbow",
                 _ => throw new ArgumentOutOfRangeException($"{nameof(CString)}::{nameof(SObject)}", $"\nInvalid: {eString}")
             };
         }
@@ -739,23 +735,4 @@ namespace STELLAREST_F1
         //         _ => throw new ArgumentOutOfRangeException(nameof(effectType), $"Invalid value: {effectType}")
         //     };
         // }
-
-        [Conditional("UNITY_EDITOR")]
-        public static void Log(object log, bool warning = false, bool highlight = false)
-        {
-            if (warning == false)
-            {
-                if (highlight == false)
-                    Debug.Log($"{log}");
-                else
-                    Debug.Log($"<color=#A3E635>{log}</color>");
-            }
-            else
-            {
-                if (highlight == false)
-                    Debug.Log($"<color=#FF9999>{log}</color>"); // 살구색
-                else
-                    Debug.Log($"<color=#FF6666>{log}</color>"); // 진한 살구색
-            }
-        }
 */

@@ -519,13 +519,16 @@ namespace STELLAREST_F1
             Max,
         }
 
-        public enum ESTrail
-        {
-            None,
-            BodyIllusion,
-            BodyShadow,
-            CreatureWeapon,
-        }
+        // public enum ESTrail
+        // {
+        //     Base,
+        //     Illusion,
+        //     DarkShadow,
+        //     DarkBeaten,
+        //     Rainbow,
+        //     PastelRainbow,
+        //     CustomWeapon,
+        // }
 
         public enum EInt
         {
@@ -599,6 +602,7 @@ namespace STELLAREST_F1
             // --- Sorting
             Sorting_Terrain,
             Sorting_Deco,
+            Sorting_BodySTrail,
             Sorting_BaseObject,
             Sorting_Projectile,
             Sorting_UI,
@@ -727,22 +731,32 @@ namespace STELLAREST_F1
             Obj_EffectsRoot,
 
             // --- SObjects
-            SO_STrail_Ball,
             SO_STrail_Base,
-            SO_STrail_Bio,
-            SO_STrail_Bird,
-            SO_STrail_Blob,
-            SO_STrail_Happy,
-            SO_STrail_Pos,
-            SO_STrail_PureRainbow,
-            SO_STrail_SpriteTrail,
-            SO_STrail_Stamp,
-            SO_STrail_Tired,
-            SO_STrail_SwordOfEndingLight,
+            SO_STrail_Illusion,
+            SO_STrail_DarkShadow,
+            SO_STrail_DarkBeaten,
+            SO_STrail_Rainbow,
+            SO_STrail_PastelRainbow,
+            
+            SO_STrail_CustomWeaponL, // --- Custom
+            SO_STrail_CustomWeaponR, // --- Custom
 
             // --- Constant Value
             CValue_BaseObject,
         }
+
+        #if UNITY_EDITOR
+        public enum EInput
+        {
+            Input_1, Input_2, Input_3, Input_4, Input_5, 
+            Input_6, Input_7, Input_8, Input_9, Input_0,
+
+            Input_F1, Input_F2, Input_F3, Input_F4,
+            Input_F5, Input_F6, Input_F7, Input_F8,
+
+            Max,
+        }
+        #endif
     }
 }
 
