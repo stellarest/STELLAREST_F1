@@ -231,7 +231,10 @@ namespace STELLAREST_F1
         public bool LevelUp()
         {
             if (Owner.IsValid() == false)
+            {
+                Dev.LogWarning(obj: nameof(BaseStat), method: nameof(LevelUp), log: "Owner is not valid.");
                 return false;
+            }
 
             EObjectType objType = Owner.ObjectType;
             if (objType == EObjectType.Env)

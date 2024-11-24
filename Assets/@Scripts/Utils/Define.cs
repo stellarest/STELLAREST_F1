@@ -602,6 +602,7 @@ namespace STELLAREST_F1
             // --- Sorting
             Sorting_Terrain,
             Sorting_Deco,
+            Sorting_WeaponSTrail,
             Sorting_BodySTrail,
             Sorting_BaseObject,
             Sorting_Projectile,

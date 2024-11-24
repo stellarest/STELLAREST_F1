@@ -485,6 +485,7 @@ namespace STELLAREST_F1
             {
                 EInt.Sorting_Terrain => 0,
                 EInt.Sorting_Deco => 10,
+                EInt.Sorting_WeaponSTrail => 14, // TEMP
                 EInt.Sorting_BodySTrail => 15,
                 EInt.Sorting_BaseObject => 20,
                 EInt.Sorting_Projectile => 30,

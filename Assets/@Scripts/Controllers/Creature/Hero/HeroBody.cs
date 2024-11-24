@@ -11,6 +11,21 @@ namespace STELLAREST_F1
 {
     public class HeroBody : CreatureBody
     {
+        private HeroSpriteData _heroSpriteData = null;
+        public HeroSpriteData HeroSpriteData
+        {
+            get => _heroSpriteData;
+            set
+            {
+                if (_heroSpriteData != value)
+                {
+                    _heroSpriteData = value;
+                    SetHeroWeaponSTrail(EHeroBody_Weapon.WeaponL_Armor, value.Weapon.LWeaponSTrailPreset);
+                    SetHeroWeaponSTrail(EHeroBody_Weapon.WeaponR_Armor, value.Weapon.RWeaponSTrailPreset);
+                }
+            }
+        }
+
         private Dictionary<EHeroBody, BodyContainer[]> _heroBodyDict = new Dictionary<EHeroBody, BodyContainer[]>();
         private Dictionary<EEnvType, Sprite[]> _envHeroWeaponDict = new Dictionary<EEnvType, Sprite[]>();
         private Dictionary<EHeroBody, bool> _heroBodySTrailFlagDict = new Dictionary<EHeroBody, bool>();
@@ -20,7 +35,6 @@ namespace STELLAREST_F1
             => _heroBodySTrailFlagDict[eTarget] = false;
         public bool IsOnHeroBodySTrail(EHeroBody eTarget)
             => _heroBodySTrailFlagDict[eTarget];
-        
 
         private Sprite[] _defaultHeroWeapons = new Sprite[(int)EHeroWeapons.Max];
         public Vector3[] _defaultHeroWeaponsLocalScales = new Vector3[(int)EHeroWeapons.Max];
@@ -39,15 +53,16 @@ namespace STELLAREST_F1
         public Hero Owner { get; private set; } = null;
         private Material _matDefaultEyes = null;
 
-        public void LoadWeaponSTrailPreset(HeroSpriteData heroSpriteData)
+        private void SetHeroWeaponSTrail(EHeroBody_Weapon eTarget, string weaponSTrailPresetKey)
         {
-            TrailPreset weaponSTrailPreset = Managers.Resource.Load<TrailPreset>(heroSpriteData.Weapon.LWeaponSTrailPreset);
-            if (weaponSTrailPreset != null)
-                GetContainer(EHeroBody_Weapon.WeaponL_Armor).STrail.SetTrailPreset(weaponSTrailPreset);
-
-            weaponSTrailPreset = Managers.Resource.Load<TrailPreset>(heroSpriteData.Weapon.RWeaponSTrailPreset);
-            if (weaponSTrailPreset != null)
-                GetContainer(EHeroBody_Weapon.WeaponR_Armor).STrail.SetTrailPreset(weaponSTrailPreset);
+            TrailPreset weaponSTrailPreset = Managers.Resource.Load<TrailPreset>(weaponSTrailPresetKey);
+            if (weaponSTrailPreset == null)
+                return;
+            
+            if (eTarget == EHeroBody_Weapon.WeaponL_Armor)
+                _weaponLSTrailPreset = weaponSTrailPreset;
+            else if (eTarget == EHeroBody_Weapon.WeaponR_Armor)
+                _weaponRSTrailPreset = weaponSTrailPreset;
         }
 
         public BodyContainer GetContainer(EHeroBody_Head head) => _heroBodyDict[EHeroBody.Head][(int)head];
@@ -245,7 +260,7 @@ namespace STELLAREST_F1
                 return;
             }
 
-            LoadWeaponSTrailPreset(eliteHeroSpriteData);
+            HeroSpriteData = eliteHeroSpriteData;
             // --- Release Current
             ReleaseWeapon();
             foreach (var containers in _heroBodyDict.Values)
@@ -1111,6 +1126,8 @@ namespace STELLAREST_F1
             Owner = owner as Hero;
             _matDefaultEyes = Managers.Resource.Load<Material>(CString.Material(EString.Mat_EyesPaint));
             InitSTrailDict();
+            
+
             InitBody(dataID);
             InitEnvWeapon();
         }
@@ -1176,6 +1193,71 @@ namespace STELLAREST_F1
             }
 
             DisableHeroBodySTrailFlag(eTarget);
+            endCallback?.Invoke();
+        }
+
+        public void EnableHeroWeaponSTrail(Action startCallback = null)
+        {
+            if (IsOnHeroBodySTrail(EHeroBody.Weapon))
+            {
+                Dev.LogWarning(obj: nameof(HeroBody), method: nameof(EnableHeroWeaponSTrail), log: $"Already enabled: {nameof(EHeroBody.Weapon)}");
+                return;
+            }
+
+            if (_weaponLSTrailPreset != null || _weaponRSTrailPreset != null)
+            {
+                EnableHeroBodySTrailFlag(EHeroBody.Weapon);
+                startCallback?.Invoke();
+            }
+
+            // * WeaponL
+            BodyContainer container = GetContainer(EHeroBody_Weapon.WeaponL_Armor);
+            if (container != null && container.STrail != null && _weaponLSTrailPreset != null)
+            {
+                container.STrail.enabled = true;
+                container.STrail.m_OrderInSortingLayer = CInt.Sorting(EInt.Sorting_WeaponSTrail);
+                container.STrail.SetTrailPreset(_weaponLSTrailPreset);
+                container.STrail.EnableTrail();
+            }
+            else
+                Dev.Log($"Empty WeaponSTrail: {EHeroBody_Weapon.WeaponL_Armor}");
+
+            // * WeaponR
+            container = GetContainer(EHeroBody_Weapon.WeaponR_Armor);
+            if (container != null && container.STrail != null && _weaponRSTrailPreset != null)
+            {
+                container.STrail.enabled = true;
+                container.STrail.m_OrderInSortingLayer = CInt.Sorting(EInt.Sorting_WeaponSTrail);
+                container.STrail.SetTrailPreset(_weaponRSTrailPreset);
+                container.STrail.EnableTrail();
+            }
+            else
+                Dev.Log($"Empty WeaponSTrail: {EHeroBody_Weapon.WeaponR_Armor}");
+        }
+
+        public void DisableHeroWeaponSTrail(Action endCallback = null)
+        {
+            if (IsOnHeroBodySTrail(EHeroBody.Weapon) == false)
+            {
+                Dev.LogWarning(obj: nameof(HeroBody), method: nameof(DisableHeroWeaponSTrail), log: $"Already disabled: {nameof(EHeroBody.Weapon)}");
+                return;
+            }
+
+             BodyContainer container = GetContainer(EHeroBody_Weapon.WeaponL_Armor);
+            if (container != null && container.STrail != null)
+            {
+                container.STrail.DisableTrail();
+                container.STrail.enabled = false;
+            }
+
+            container = GetContainer(EHeroBody_Weapon.WeaponR_Armor);
+            if (container != null && container.STrail != null)
+            {
+                container.STrail.DisableTrail();
+                container.STrail.enabled = false;
+            }
+
+            DisableHeroBodySTrailFlag(EHeroBody.Weapon);
             endCallback?.Invoke();
         }
 
@@ -1251,6 +1333,7 @@ namespace STELLAREST_F1
                 return;
             }
 
+            HeroSpriteData = heroSpriteData;
             // * Skin Color(if it has invalid value, error)
             HeroSpriteData_Skin skin = heroSpriteData.Skin;
             if (ColorUtility.TryParseHtmlString(skin.SkinColor, out Color skinColor) == false)
@@ -2122,7 +2205,6 @@ namespace STELLAREST_F1
             spr.SetPropertyBlock(matPB);
 
             // * Weapon
-            LoadWeaponSTrailPreset(heroSpriteData);
             HeroSpriteData_Weapon weapon = heroSpriteData.Weapon;
             BodyContainer[] weaponContainers = new BodyContainer[(int)EHeroBody_Weapon.Max];
             _heroBodyDict.Add(EHeroBody.Weapon, weaponContainers);

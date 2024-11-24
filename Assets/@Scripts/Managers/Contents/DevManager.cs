@@ -64,10 +64,10 @@ namespace STELLAREST_F1
 
         private void Update()
         {
-            if (Dev.Input(EInput.Input_F8, useThis: this, tag: $"{nameof(Dev.PrintInputTagInfo)}"))
+            if (Dev.Input(EInput.Input_F8, obj: nameof(DevManager), tag: $"{nameof(Dev.PrintInputTagInfo)}"))
                 Dev.PrintInputTagInfo();
 
-            if (Dev.Input(EInput.Input_F1, useThis: this, tag: "Print Obj on the Cells."))
+            if (Dev.Input(EInput.Input_F1, obj: nameof(DevManager), tag: "Print Obj on the Cells."))
             {
                 Dev.Log("===== Cells Pair =====");
                 foreach (var pair in Managers.Map.Cells)

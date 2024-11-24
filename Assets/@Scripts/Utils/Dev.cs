@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEditor;
 
 using static STELLAREST_F1.Define;
+using Unity.VisualScripting;
 
 #if UNITY_EDITOR
 namespace STELLAREST_F1
@@ -110,25 +111,25 @@ namespace STELLAREST_F1
 
         #region Input
         private static Dictionary<EInput, DevInputTag> _inputTagDict = new Dictionary<EInput, DevInputTag>();
-        public static bool Input(EInput eInput, object useThis, object tag)
+        public static bool Input(EInput eInput, object obj, object tag)
         {
             bool input = UnityEngine.Input.GetKeyDown(GetKey(eInput));
             if (input)
             {
                 if (_inputTagDict.ContainsKey(eInput) == false)
-                    _inputTagDict.Add(eInput, new DevInputTag(obj: useThis, tag));
+                    _inputTagDict.Add(eInput, new DevInputTag(obj: obj, tag));
             }
 
             return input;
         }
 
-        public static void Input(EInput eInput, object useThis, object tag, Action trueCase, Action falseCase)
+        public static void Input(EInput eInput, object obj, object tag, Action trueCase, Action falseCase)
         {
             bool input = UnityEngine.Input.GetKeyDown(GetKey(eInput));
             if (input)
             {
                 if (_inputTagDict.ContainsKey(eInput) == false)
-                    _inputTagDict.Add(eInput, new DevInputTag(obj: useThis, tag));
+                    _inputTagDict.Add(eInput, new DevInputTag(obj: obj, tag));
 
                 DevInputTag value = _inputTagDict[eInput];
                 value.Toggle = !value.Toggle;
@@ -149,7 +150,9 @@ namespace STELLAREST_F1
                 if (_inputTagDict.ContainsKey((EInput)i))
                 {
                     DevInputTag value = _inputTagDict[(EInput)i];
-                    inputs.Add($"<color=red>*{input}</color><color=#FFC300>({value.Obj}/{value.Tag})</color>\n");
+                    // #DFEFEA
+                    //inputs.Add($"<color=red>*{input}</color><color=#FFC300>({value.Obj}, {value.Tag})</color>\n");
+                    inputs.Add($"<color=red>*{input}(</color><color=#DFEFEA>obj: </color><color=#FFC300>{value.Obj}</color>, <color=#DFEFEA>tag: </color><color=#80FF00>{value.Tag}</color><color=red>)</color>\n");
                 }
                 else
                     inputs.Add($"{input}\n");
@@ -177,21 +180,6 @@ namespace STELLAREST_F1
                 _ => throw new ArgumentOutOfRangeException($"{nameof(Dev)}::{nameof(GetKey)}", $"\nInvalid: {eInput}")
             };
         }
-
-        // public static bool Input_O // --- EnableSTrail_EntireBody in Hero
-        //     => UnityEngine.Input.GetKeyDown(KeyCode.O);
-        // private static bool _input_O_Toggle = false;
-        // public static void Input_O_Toggle(Action trueCase, Action falseCase)
-        // {
-        //     if (Input_O)
-        //     {
-        //         _input_O_Toggle = !_input_O_Toggle;
-        //         if (_input_O_Toggle)
-        //             trueCase?.Invoke();
-        //         else
-        //             falseCase?.Invoke();
-        //     }
-        // }
         #endregion
     }
 }

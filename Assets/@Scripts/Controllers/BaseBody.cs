@@ -101,10 +101,6 @@ namespace STELLAREST_F1
                 _ => throw new ArgumentOutOfRangeException($"{nameof(BaseBody)}::{nameof(LoadSTrailPreset)}", $"\nInvalid: {eString}")
             };
         }
-        // // ----- 가상 함수를 사용할 이유가 없다는 말임, 객체마다 바디 타입이 다르기 때문임 -----
-        // public virtual void EnableSTrail_Body(EString eString, Action startCallback = null) { }
-        // public virtual void DisableSTrail_Body(Action endCallback = null) { }
-        // ----- 가상 함수를 사용할 이유가 없다는 말임, 객체마다 바디 타입이 다르기 때문임 -----
 
         // --- Mat: Default
         protected virtual void ApplyDefaultMat_Alpha(float alphaValue){ }
