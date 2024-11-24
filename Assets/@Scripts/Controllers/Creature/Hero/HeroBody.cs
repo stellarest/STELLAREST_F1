@@ -28,13 +28,6 @@ namespace STELLAREST_F1
 
         private Dictionary<EHeroBody, BodyContainer[]> _heroBodyDict = new Dictionary<EHeroBody, BodyContainer[]>();
         private Dictionary<EEnvType, Sprite[]> _envHeroWeaponDict = new Dictionary<EEnvType, Sprite[]>();
-        private Dictionary<EHeroBody, bool> _heroBodySTrailFlagDict = new Dictionary<EHeroBody, bool>();
-        private void EnableHeroBodySTrailFlag(EHeroBody eTarget)
-            => _heroBodySTrailFlagDict[eTarget] = true;
-        private void DisableHeroBodySTrailFlag(EHeroBody eTarget)
-            => _heroBodySTrailFlagDict[eTarget] = false;
-        public bool IsOnHeroBodySTrail(EHeroBody eTarget)
-            => _heroBodySTrailFlagDict[eTarget];
 
         private Sprite[] _defaultHeroWeapons = new Sprite[(int)EHeroWeapons.Max];
         public Vector3[] _defaultHeroWeaponsLocalScales = new Vector3[(int)EHeroWeapons.Max];
@@ -1126,62 +1119,141 @@ namespace STELLAREST_F1
             Owner = owner as Hero;
             _matDefaultEyes = Managers.Resource.Load<Material>(CString.Material(EString.Mat_EyesPaint));
             InitSTrailDict();
-            
-
             InitBody(dataID);
             InitEnvWeapon();
         }
 
-        public void EnableHeroBodySTrail(EString ePreset, EHeroBody eTarget, Action startCallback = null)
+        public override void EnableSTrail(EBaseBodyParts eTarget, EString ePreset = EString.None, Action startCallback = null)
         {
-            if (IsOnHeroBodySTrail(eTarget))
+            switch (eTarget)
             {
-                Dev.LogWarning(obj: nameof(HeroBody), method: nameof(EnableHeroBodySTrail), log: $"Already enabled: {eTarget}");
-                return;
-            }
+                case EBaseBodyParts.Body:
+                    {
+                        if (IsOnSTrail(EBaseBodyParts.Body))
+                        {
+                            Dev.LogWarning(obj: nameof(HeroBody), method: nameof(EnableSTrail), log: $"Already enabled: {EBaseBodyParts.Body}");
+                            return;
+                        }
 
+                        bool b1 = EnableHeroBodySTrail(ePreset, EHeroBody.Head);
+                        bool b2 = EnableHeroBodySTrail(ePreset, EHeroBody.UpperBody);
+                        bool b3 = EnableHeroBodySTrail(ePreset, EHeroBody.LowerBody);
+                        if (b1 && b2 && b3)
+                        {
+                            EnableSTrailFlag(EBaseBodyParts.Body);
+                            startCallback?.Invoke();
+                        }
+                        else
+                            Dev.LogError(obj: nameof(HeroBody), method: nameof(EnableSTrail), log: $"Wrong value({EBaseBodyParts.Body}): {b1}, {b2}, {b3}");
+                    }
+                    break;
+
+                case EBaseBodyParts.Weapon:
+                    {
+                        if (IsOnSTrail(EBaseBodyParts.Weapon))
+                        {
+                            Dev.LogWarning(obj: nameof(HeroBody), method: nameof(EnableSTrail), log: $"Already enabled: {EBaseBodyParts.Weapon}");
+                            return;
+                        }
+
+                        bool b1 = EnableHeroWeaponSTrail();
+                        if (b1) 
+                        {
+                            EnableSTrailFlag(EBaseBodyParts.Weapon);
+                            startCallback?.Invoke();
+                        }
+                        // falseCase ErrorLogging ㄴㄴ, Weapon Trail은 안들고 있는 것이 더 많아서 false case ErrorLogging은 하면 안됨.
+                    }
+                    break;
+            }
+        }
+
+        public override void DisableSTrail(EBaseBodyParts eTarget, Action endCallback = null)
+        {
+            switch (eTarget)
+            {
+                case EBaseBodyParts.Body:
+                    {
+                        if (IsOnSTrail(EBaseBodyParts.Body) == false)
+                        {
+                            Dev.LogWarning(obj: nameof(HeroBody), method: nameof(DisableSTrail), log: $"Already disabled: {EBaseBodyParts.Body}");
+                            return;
+                        }
+                        
+                        bool b1 = DisableHeroBodySTrail(EHeroBody.Head);
+                        bool b2 = DisableHeroBodySTrail(EHeroBody.UpperBody);
+                        bool b3 = DisableHeroBodySTrail(EHeroBody.LowerBody);
+                        if (b1 && b2 && b3)
+                        {
+                            DisableSTrailFlag(EBaseBodyParts.Body);
+                            endCallback?.Invoke();   
+                        }
+                        else
+                            Dev.LogError(obj: nameof(HeroBody), method: nameof(EnableSTrail), log: "Something is wrong.");
+                    }
+                    break;
+
+                case EBaseBodyParts.Weapon:
+                    {
+                        if (IsOnSTrail(EBaseBodyParts.Weapon) == false)
+                        {
+                            Dev.LogWarning(obj: nameof(HeroBody), method: nameof(DisableSTrail), log: $"Already disabled: {EBaseBodyParts.Weapon}");
+                            return;
+                        }
+
+                        bool b1 = DisableHeroWeaponSTrail();
+                        if (b1)
+                        {
+                            DisableSTrailFlag(EBaseBodyParts.Weapon);
+                            endCallback?.Invoke();
+                        }
+                        else // 여기는 로깅 체크해도 될 듯. 어차피 꺼져있으면 안들어오는데, 만약에 켜진 상태서 꺼짐 시도를 했는데 이건 이상할 수도 있음. 켜짐의 경우에는 안들고있는게 많아서 체크 ㄴㄴ
+                            Dev.LogError(obj: nameof(HeroBody), method: nameof(DisableSTrail), log: $"Something is wrong: {EBaseBodyParts.Weapon}");
+                    }
+                    break;
+            }
+        }
+
+        public bool EnableHeroBodySTrail(EString ePreset, EHeroBody eTarget)
+        {
             if (_sTrailPresetDict.TryGetValue(key: ePreset, out TrailPreset sTrailPreset) == false)
             {
                 Dev.LogWarning(obj: nameof(HeroBody), method: nameof(EnableHeroBodySTrail), log: $"Invalid key: {ePreset}");
-                return;
+                return false;
             }
 
             if (_heroBodyDict.TryGetValue(key: eTarget, out BodyContainer[] containers) == false)
             {
                 Dev.LogWarning(obj: nameof(HeroBody), method: nameof(EnableHeroBodySTrail), log: $"Invalid key: {eTarget}");
-                return;
+                return false;
             }
 
-            EnableHeroBodySTrailFlag(eTarget);
-            startCallback?.Invoke();
-
+            bool result = false;
             for (int i = 0; i < containers.Length; ++i)
             {
                 BodyContainer container = containers[i];
                 if (container == null || container.STrail == null)
                     continue;
 
+                result = true;
                 container.STrail.enabled = true;
                 container.STrail.m_OrderInSortingLayer = CInt.Sorting(EInt.Sorting_BodySTrail);
                 container.STrail.SetTrailPreset(sTrailPreset);
                 container.STrail.EnableTrail();
             }
+
+            return result;
         }
 
-        public void DisableHeroBodySTrail(EHeroBody eTarget, Action endCallback = null)
+        public bool DisableHeroBodySTrail(EHeroBody eTarget)
         {
-            if (IsOnHeroBodySTrail(eTarget) == false)
-            {
-                Dev.LogWarning(obj: nameof(HeroBody), method: nameof(DisableHeroBodySTrail), log: $"Already disabled: {eTarget}");
-                return;
-            }
-
             if (_heroBodyDict.TryGetValue(key: eTarget, out BodyContainer[] containers) == false)
             {
                 Dev.LogWarning(obj: nameof(HeroBody), method: nameof(DisableHeroBodySTrail), log: $"Invalid key: {eTarget}");
-                return;
+                return false;
             }
 
+            bool result = false;
             for (int i = 0; i < containers.Length; ++i)
             {
                 BodyContainer container = containers[i];
@@ -1190,64 +1262,55 @@ namespace STELLAREST_F1
 
                 container.STrail.DisableTrail();
                 container.STrail.enabled = false;
+                result = true;
             }
 
-            DisableHeroBodySTrailFlag(eTarget);
-            endCallback?.Invoke();
+            return result;
         }
 
-        public void EnableHeroWeaponSTrail(Action startCallback = null)
+        public bool EnableHeroWeaponSTrail()
         {
-            if (IsOnHeroBodySTrail(EHeroBody.Weapon))
+            if (_weaponLSTrailPreset == null && _weaponRSTrailPreset == null)
             {
-                Dev.LogWarning(obj: nameof(HeroBody), method: nameof(EnableHeroWeaponSTrail), log: $"Already enabled: {nameof(EHeroBody.Weapon)}");
-                return;
-            }
-
-            if (_weaponLSTrailPreset != null || _weaponRSTrailPreset != null)
-            {
-                EnableHeroBodySTrailFlag(EHeroBody.Weapon);
-                startCallback?.Invoke();
+                Dev.Log("Hero's All Weapons STrails are empty.");
+                return false;
             }
 
             // * WeaponL
+            bool result = false;
             BodyContainer container = GetContainer(EHeroBody_Weapon.WeaponL_Armor);
             if (container != null && container.STrail != null && _weaponLSTrailPreset != null)
             {
                 container.STrail.enabled = true;
+                result = true;
                 container.STrail.m_OrderInSortingLayer = CInt.Sorting(EInt.Sorting_WeaponSTrail);
                 container.STrail.SetTrailPreset(_weaponLSTrailPreset);
                 container.STrail.EnableTrail();
             }
-            else
-                Dev.Log($"Empty WeaponSTrail: {EHeroBody_Weapon.WeaponL_Armor}");
 
             // * WeaponR
             container = GetContainer(EHeroBody_Weapon.WeaponR_Armor);
             if (container != null && container.STrail != null && _weaponRSTrailPreset != null)
             {
                 container.STrail.enabled = true;
+                result = true;
                 container.STrail.m_OrderInSortingLayer = CInt.Sorting(EInt.Sorting_WeaponSTrail);
                 container.STrail.SetTrailPreset(_weaponRSTrailPreset);
                 container.STrail.EnableTrail();
             }
-            else
-                Dev.Log($"Empty WeaponSTrail: {EHeroBody_Weapon.WeaponR_Armor}");
+
+            return result;
         }
 
-        public void DisableHeroWeaponSTrail(Action endCallback = null)
+        public bool DisableHeroWeaponSTrail()
         {
-            if (IsOnHeroBodySTrail(EHeroBody.Weapon) == false)
-            {
-                Dev.LogWarning(obj: nameof(HeroBody), method: nameof(DisableHeroWeaponSTrail), log: $"Already disabled: {nameof(EHeroBody.Weapon)}");
-                return;
-            }
-
-             BodyContainer container = GetContainer(EHeroBody_Weapon.WeaponL_Armor);
+            bool result = false;
+            BodyContainer container = GetContainer(EHeroBody_Weapon.WeaponL_Armor);
             if (container != null && container.STrail != null)
             {
                 container.STrail.DisableTrail();
                 container.STrail.enabled = false;
+                result = true;
             }
 
             container = GetContainer(EHeroBody_Weapon.WeaponR_Armor);
@@ -1255,75 +1318,11 @@ namespace STELLAREST_F1
             {
                 container.STrail.DisableTrail();
                 container.STrail.enabled = false;
+                result = true;
             }
 
-            DisableHeroBodySTrailFlag(EHeroBody.Weapon);
-            endCallback?.Invoke();
+            return result;
         }
-
-        // public override void EnableSTrail_Body(EString eString, Action startCallback = null)
-        // {
-        //     if (_sTrailPresetDict.TryGetValue(key: eString, out TrailPreset sTrailPreset) == false)
-        //     {
-        //         Dev.LogWarning(obj: nameof(HeroBody), method: nameof(EnableSTrail_Body), log: $"Invalid key: {eString}");
-        //         return;
-        //     }
-
-        //     startCallback?.Invoke();
-            
-        //     foreach (var bodyDict in _heroBodyDict)
-        //     {
-        //         // 만약 이렇게 했을 떄, 제대로 동작을 한다고 했을 경우, 문제가 뭐냐~?
-        //         // --- Weapon은, 켜지도 않았는데, 계속 Disable만 작동함. 그래서 Disable도 수정해야함.
-        //         if (bodyDict.Key == EHeroBody.Weapon)
-        //             continue;
-        //         else
-        //         {
-        //             foreach (var container in bodyDict.Value)
-        //             {
-        //                 if (container.STrail == null)
-        //                     continue;
-
-        //                 container.STrail.enabled = true;
-        //                 container.STrail.m_OrderInSortingLayer = CInt.Sorting(EInt.Sorting_BaseObject);
-        //                 container.STrail.SetTrailPreset(sTrailPreset);
-        //                 container.STrail.EnableTrail();
-        //             }
-        //         }
-        //     }
-
-        //     // foreach (var containers in _heroBodyDict.Values)
-        //     // {
-        //     //     foreach (var container in containers)
-        //     //     {
-        //     //         if (container.STrail == null)
-        //     //             continue;
-
-        //     //         container.STrail.enabled = true;
-        //     //         // --- 파츠별로 별로 도정이 필요해 질 수도 있음
-        //     //         container.STrail.m_OrderInSortingLayer = CInt.Sorting(EInt.Sorting_BaseObject);
-        //     //         container.STrail.SetTrailPreset(sTrailPreset);
-        //     //         container.STrail.EnableTrail();
-        //     //     }
-        //     // }
-        // }
-
-        // public override void DisableSTrail_Body(Action endCallback = null)
-        // {
-        //     foreach (var containers in _heroBodyDict.Values)
-        //     {
-        //         foreach (var container in containers)
-        //         {
-        //             if (container.STrail == null)
-        //                 continue;
-
-        //             container.STrail.DisableTrail();
-        //             container.STrail.enabled = false;
-        //         }
-        //     }
-
-        //     endCallback?.Invoke();
-        // }
 
         private void InitBody(int dataID)
         {
@@ -1346,7 +1345,6 @@ namespace STELLAREST_F1
             HeroSpriteData_Head head = heroSpriteData.Head;
             BodyContainer[] headContainers = new BodyContainer[(int)EHeroBody_Head.Max];
             _heroBodyDict.Add(EHeroBody.Head, headContainers);
-            _heroBodySTrailFlagDict.Add(EHeroBody.Head, false);
 
             // - Head(skin)
             string tag = Util.GetStringFromEnum(EHeroBody_Head.Head);
@@ -1634,7 +1632,6 @@ namespace STELLAREST_F1
             HeroSpriteData_UpperBody upperBody = heroSpriteData.UpperBody;
             BodyContainer[] upperBodyContainers = new BodyContainer[(int)EHeroBody_Upper.Max];
             _heroBodyDict.Add(EHeroBody.UpperBody, upperBodyContainers);
-            _heroBodySTrailFlagDict.Add(EHeroBody.UpperBody, false);
 
             // - Torso(skin)
             tag = Util.GetStringFromEnum(EHeroBody_Upper.Torso);
@@ -2002,7 +1999,6 @@ namespace STELLAREST_F1
             HeroSpriteData_LowerBody lowerBody = heroSpriteData.LowerBody;
             BodyContainer[] lowerBodyContainers = new BodyContainer[(int)EHeroBody_Lower.Max];
             _heroBodyDict.Add(EHeroBody.LowerBody, lowerBodyContainers);
-            _heroBodySTrailFlagDict.Add(EHeroBody.LowerBody, false);
 
             // - Pelvis(skin)
             tag = Util.GetStringFromEnum(EHeroBody_Lower.Pelvis);
@@ -2208,7 +2204,6 @@ namespace STELLAREST_F1
             HeroSpriteData_Weapon weapon = heroSpriteData.Weapon;
             BodyContainer[] weaponContainers = new BodyContainer[(int)EHeroBody_Weapon.Max];
             _heroBodyDict.Add(EHeroBody.Weapon, weaponContainers);
-            _heroBodySTrailFlagDict.Add(EHeroBody.Weapon, false);
 
             for (int i = 0; i < _defaultHeroWeapons.Length; ++i)
                 _defaultHeroWeapons[i] = null;

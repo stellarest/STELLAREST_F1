@@ -23,29 +23,27 @@ namespace STELLAREST_F1
                     return;
             }
 
-            Dev.Input(EInput.Input_2, obj: nameof(Hero), tag: "EnableHeroBodySTrail", trueCase: () => {
-                HeroBody.EnableHeroBodySTrail(ePreset: EString.SO_STrail_Base, eTarget: EHeroBody.Head,
-                    () => Dev.Log("EnableSTrail_Head", highlight: true));
-                HeroBody.EnableHeroBodySTrail(ePreset: EString.SO_STrail_Base, eTarget: EHeroBody.UpperBody,
-                    () => Dev.Log("EnableSTrail_UpperBody", highlight: true));
-                HeroBody.EnableHeroBodySTrail(ePreset: EString.SO_STrail_Base, eTarget: EHeroBody.LowerBody,
-                    () => Dev.Log("EnableSTrail_LowerBody", highlight: true));
-            }, falseCase: () => {
-                HeroBody.DisableHeroBodySTrail(eTarget: EHeroBody.Head,
-                    () => Dev.Log("DisableSTrail_Head"));
-                HeroBody.DisableHeroBodySTrail(eTarget: EHeroBody.UpperBody,
-                    () => Dev.Log("DisableSTrail_UpperBody"));
-                HeroBody.DisableHeroBodySTrail(eTarget: EHeroBody.LowerBody,
-                    () => Dev.Log("DisableSTrail_LowerBody"));
+            // Body STrail
+            Dev.Input(EInput.Input_2, obj: nameof(Hero), tag: "EnableSTrail_Body", trueCase: () =>
+            {
+                HeroBody.EnableSTrail(eTarget: EBaseBodyParts.Body, ePreset: EString.SO_STrail_Base,
+                    startCallback: () => Dev.Log($"{Dev_NameTextID}_EnableSTrail_Body", highlight: true));
+            }, falseCase: () =>
+            {
+                HeroBody.DisableSTrail(eTarget: EBaseBodyParts.Body,
+                    endCallback: () => Dev.Log($"{Dev_NameTextID}_DisableSTrail_Body"));
             });
 
-            Dev.Input(EInput.Input_3, obj: nameof(Hero), tag: "EnableHeroWeaponSTrail", trueCase: () => {
-                HeroBody.EnableHeroWeaponSTrail(() => Dev.Log("EnableSTrail_Weapon", highlight: true));
-            }, falseCase: () => {
-                HeroBody.DisableHeroWeaponSTrail(() => Dev.Log("DisableSTrail_Weapon"));
+            // // Weapon STrail
+            Dev.Input(EInput.Input_3, obj: nameof(Hero), tag: "EnableSTrail_Weapon", trueCase: () =>
+            {
+                HeroBody.EnableSTrail(eTarget: EBaseBodyParts.Weapon, startCallback: () => Dev.Log($"{Dev_NameTextID}_EnableSTrail_Weapon", highlight: true));
+            }, falseCase: () =>
+            {
+                HeroBody.DisableSTrail(eTarget: EBaseBodyParts.Weapon, endCallback: () => Dev.Log($"{Dev_NameTextID}_Disable_Weapon"));
             });
         }
-        #endif
+#endif
 
         public HeroData HeroData { get; private set; } = null;
         public HeroAnimation HeroAnim { get; private set; } = null;

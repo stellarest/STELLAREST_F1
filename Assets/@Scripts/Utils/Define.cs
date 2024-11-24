@@ -117,6 +117,12 @@ namespace STELLAREST_F1
             Max = Dead + 1
         }
 
+        public enum EBaseBodyParts
+        {
+            Body,
+            Weapon
+        }
+
         public enum EHeroBody
         {
             Head,
@@ -654,6 +660,8 @@ namespace STELLAREST_F1
 
         public enum EString
         {
+            None,
+
             // --- Labels
             Prefab_LeaderController,
             Prefab_TextFontBase,
@@ -738,9 +746,6 @@ namespace STELLAREST_F1
             SO_STrail_DarkBeaten,
             SO_STrail_Rainbow,
             SO_STrail_PastelRainbow,
-            
-            SO_STrail_CustomWeaponL, // --- Custom
-            SO_STrail_CustomWeaponR, // --- Custom
 
             // --- Constant Value
             CValue_BaseObject,

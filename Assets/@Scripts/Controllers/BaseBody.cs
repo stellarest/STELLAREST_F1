@@ -63,8 +63,19 @@ namespace STELLAREST_F1
         protected const string _matStrongTintColor = "_Color";
 
         protected MaterialPropertyBlock _matPropertyBlock = null;
+
         protected Dictionary<EString, TrailPreset> _sTrailPresetDict = null;
 
+        // ------------------------------------------------------------
+        private Dictionary<EBaseBodyParts, bool> _sTrailFlagDict = null;
+        protected void EnableSTrailFlag(EBaseBodyParts eTarget)
+            => _sTrailFlagDict[eTarget] = true;
+        protected void DisableSTrailFlag(EBaseBodyParts eTarget)
+            => _sTrailFlagDict[eTarget] = false;
+        protected bool IsOnSTrail(EBaseBodyParts eTarget)
+            => _sTrailFlagDict[eTarget];
+        // ------------------------------------------------------------
+        
         public override bool Init()
         {
             if (base.Init() == false)
@@ -74,6 +85,11 @@ namespace STELLAREST_F1
             _matStrongTint =  Managers.Resource.Load<Material>(CString.Material(EString.Mat_StrongTint));
             _matPropertyBlock = new MaterialPropertyBlock();
             _sTrailPresetDict = new Dictionary<EString, TrailPreset>();
+            _sTrailFlagDict = new Dictionary<EBaseBodyParts, bool>
+            {
+                { EBaseBodyParts.Body, false },
+                { EBaseBodyParts.Weapon, false }
+            };
             return true;
         }
 
@@ -101,6 +117,9 @@ namespace STELLAREST_F1
                 _ => throw new ArgumentOutOfRangeException($"{nameof(BaseBody)}::{nameof(LoadSTrailPreset)}", $"\nInvalid: {eString}")
             };
         }
+
+        public virtual void EnableSTrail(EBaseBodyParts eTarget, EString ePreset = EString.None, Action startCallback = null) { }
+        public virtual void DisableSTrail(EBaseBodyParts eTarget, Action endCallback = null){ }
 
         // --- Mat: Default
         protected virtual void ApplyDefaultMat_Alpha(float alphaValue){ }
