@@ -113,7 +113,7 @@ namespace STELLAREST_F1
         private static Dictionary<EInput, DevInputTag> _inputTagDict = new Dictionary<EInput, DevInputTag>();
         public static bool Input(EInput eInput, object obj, object tag)
         {
-            bool input = UnityEngine.Input.GetKeyDown(GetKey(eInput));
+            bool input = UnityEngine.Input.GetKeyDown(GetDevInputKey(eInput));
             if (input)
             {
                 if (_inputTagDict.ContainsKey(eInput) == false)
@@ -123,13 +123,17 @@ namespace STELLAREST_F1
             return input;
         }
 
-        public static void Input(EInput eInput, object obj, object tag, Action trueCase, Action falseCase)
+        public static void Input(EInput eInput, object obj, object tag, Action trueCase, Action falseCase, bool startFlagCase = true)
         {
-            bool input = UnityEngine.Input.GetKeyDown(GetKey(eInput));
+            bool input = UnityEngine.Input.GetKeyDown(GetDevInputKey(eInput));
             if (input)
             {
                 if (_inputTagDict.ContainsKey(eInput) == false)
+                {
                     _inputTagDict.Add(eInput, new DevInputTag(obj: obj, tag));
+                    if (startFlagCase == false)
+                        _inputTagDict[eInput].Toggle = true;
+                }
 
                 DevInputTag value = _inputTagDict[eInput];
                 value.Toggle = !value.Toggle;
@@ -162,7 +166,7 @@ namespace STELLAREST_F1
             Log($"<color=red>* registered</color><color=white>,</color> * empty\n→ <color=white>[</color> \n{result} <color=white>]</color>");
         }
 
-        private static UnityEngine.KeyCode GetKey(EInput eInput)
+        private static UnityEngine.KeyCode GetDevInputKey(EInput eInput)
         {
             return eInput switch
             {
@@ -177,7 +181,7 @@ namespace STELLAREST_F1
                 EInput.Input_F5 => KeyCode.F5, EInput.Input_F6 => KeyCode.F6,
                 EInput.Input_F7 => KeyCode.F7, EInput.Input_F8 => KeyCode.F8,
 
-                _ => throw new ArgumentOutOfRangeException($"{nameof(Dev)}::{nameof(GetKey)}", $"\nInvalid: {eInput}")
+                _ => throw new ArgumentOutOfRangeException($"{nameof(Dev)}::{nameof(GetDevInputKey)}", $"\nInvalid: {eInput}")
             };
         }
         #endregion

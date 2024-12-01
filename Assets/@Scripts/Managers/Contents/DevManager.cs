@@ -64,28 +64,60 @@ namespace STELLAREST_F1
 
         private void Update()
         {
+            // --- Input_F8
             if (Dev.Input(EInput.Input_F8, obj: nameof(DevManager), tag: $"{nameof(Dev.PrintInputTagInfo)}"))
                 Dev.PrintInputTagInfo();
 
+            // --- Input_F1
             if (Dev.Input(EInput.Input_F1, obj: nameof(DevManager), tag: "Print Objs on the Cells."))
             {
+                Dev.ClearLog(showClearLog: false);
                 Dev.Log("===== Cells Pair =====");
                 foreach (var pair in Managers.Map.Cells)
                 {
                     if (pair.Value != null)
-                        Dev.Log($"({pair.Key}, {pair.Value.gameObject.name}");
+                        Dev.Log($"({pair.Key}, {pair.Value.gameObject.name}", highlight: true);
                     else
-                        Dev.Log("NONE OF VALUE...");
+                        Dev.Log("None of Objs on the Cells...");
                 }
             }
 
-            // if (Dev.Input(EInput.Input_F2, tag: $"{nameof(ShowCellPosText)}")) 
-            //     ShowCellPosText();
-            // if (Dev.Input(EInput.Input_F3, tag: $"{nameof(OnOffTileCollider)}"))
-            //     OnOffTileCollider();
+            // --- Input_F2
+            Dev.Input(EInput.Input_F2, obj: nameof(DevManager), tag: nameof(ShowCellPosText), trueCase: () =>
+            {
+                ShowCellPosText(true);
+                Dev.Log($"{nameof(ShowCellPosText)}", highlight: true);
+            }, falseCase: () =>
+            {
+                ShowCellPosText(false);
+                Dev.Log($"{nameof(ShowCellPosText)}, false");
+            });
+
+            // --- Input_F3
+            Dev.Input(EInput.Input_F3, obj: nameof(DevManager), tag: nameof(ShowTileColliders), trueCase: () =>
+            {
+                ShowTileColliders(true);
+                Dev.Log($"{nameof(ShowTileColliders)}", highlight: true);
+            }, falseCase: () =>
+            {
+                ShowTileColliders(false);
+                Dev.Log($"{nameof(ShowTileColliders)}, false");
+            }, startFlagCase: false);
         }
 
-        private void ShowCellPosText()
+        private GameObject _cellPosTextRoot = null;
+        private void ShowCellPosText(bool show)
+        {
+            if (_cellPosTextRoot == null)
+            {
+                _cellPosTextRoot = new GameObject { name = "@CellPos" };
+                MakeCellPosText(_cellPosTextRoot);
+            }
+
+            _cellPosTextRoot.SetActive(show);
+        }
+
+        private void MakeCellPosText(GameObject root)
         {
             /*
                 MinX: -18, MaxX: 18
@@ -99,7 +131,6 @@ namespace STELLAREST_F1
             int MinY = Managers.Map.MinY;
             int MaxY = Managers.Map.MaxY;
 
-            GameObject root = new GameObject { name = "@CellPos" };
             SortingGroup sg = root.AddComponent<SortingGroup>();
             //sg.sortingLayerName = "BaseObject";
             sg.sortingLayerName = CString.CValue(EString.CValue_BaseObject);
@@ -116,17 +147,25 @@ namespace STELLAREST_F1
                     tmPro.text = $"{x},{y}";
                     tmPro.alignment = TextAlignmentOptions.Center;
                     tmPro.autoSizeTextContainer = false;
-
                     cell.transform.SetParent(root.transform);
                 }
             }
         }
 
-        bool OnOffTileColliderFlag = false;
-        private void OnOffTileCollider()
+        private void ShowTileColliders(bool show)
         {
             GameObject map = GameObject.Find("@Map_SummerForestField_Test2");
-            if (OnOffTileColliderFlag == false)
+            if (show)
+            {
+                GameObject tc = Util.FindChild(map, "Tilemap_Collision", true, true);
+                if (tc != null)
+                    tc.SetActive(true);
+
+                GameObject to = Util.FindChild(map, "Tilemap_Object", true, true);
+                if (to != null)
+                    to.SetActive(false);
+            }
+            else
             {
                 GameObject tc = Util.FindChild(map, "Tilemap_Collision", true, true);
                 if (tc != null)
@@ -140,18 +179,6 @@ namespace STELLAREST_F1
                 if (to != null)
                     to.SetActive(false);
             }
-            else
-            {
-                GameObject tc = Util.FindChild(map, "Tilemap_Collision", true, true);
-                if (tc != null)
-                    tc.SetActive(true);
-
-                GameObject to = Util.FindChild(map, "Tilemap_Object", true, true);
-                if (to != null)
-                    to.SetActive(false);
-            }
-
-            OnOffTileColliderFlag = !OnOffTileColliderFlag;
         }
     }
 }
