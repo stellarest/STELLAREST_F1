@@ -345,6 +345,9 @@ namespace STELLAREST_F1
             return null;
         }
 
+        public static T LoadScriptableObject<T>(EString eString) where T : UnityEngine.ScriptableObject
+                => Managers.Resource.Load<T>(CString.SObject(eString)) as T;
+
 // #if UNITY_EDITOR
 //         [Conditional("UNITY_EDITOR")]
 //         public static void ClearLog()

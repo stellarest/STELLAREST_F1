@@ -212,11 +212,12 @@ namespace STELLAREST_F1
                 return false;
             }
 
-            if (Owner.IsMaxLevel && this.SkillType == ESkillType.Skill_B)
-            {
-                Owner.CreatureBody.EnableSTrail(eTarget: EBaseBodyParts.Weapon, 
-                    startCallback: () => Dev.Log("EnableSTrail_Weapon, in SkillBase.", highlight: true));
-            }
+            // --- OnEnter: Weapon STrail Test
+            // if (Owner.IsMaxLevel && this.SkillType == ESkillType.Skill_B)
+            // {
+            //     Owner.CreatureBody.EnableSTrail(eTarget: EBaseBodyParts.Weapon, 
+            //         startCallback: () => Dev.Log("EnableSTrail_Weapon, in SkillBase.", highlight: true));
+            // }
 
             EnteredOwnerPos = Owner.CenterPosition;
             EnteredTargetPos = Owner.Target.CenterPosition; // FOR PROJECTILE,,,
@@ -283,11 +284,13 @@ namespace STELLAREST_F1
         public virtual void OnSkillExit()
         {
             _skillTargets.Clear();
-            if (Owner.IsMaxLevel && this.SkillType == ESkillType.Skill_B)
-            {
-                Owner.CreatureBody.DisableSTrail(eTarget: EBaseBodyParts.Weapon,
-                    endCallback: () => Dev.Log("Disable_Weapon, in SkillBase."));
-            }
+
+            // --- OnExit: Weapon STrail Test
+            // if (Owner.IsMaxLevel && this.SkillType == ESkillType.Skill_B)
+            // {
+            //     Owner.CreatureBody.DisableSTrail(eTarget: EBaseBodyParts.Weapon,
+            //         endCallback: () => Dev.Log("Disable_Weapon, in SkillBase."));
+            // }
 
             if (SkillData.OnSkillExit_GenEffectIDs.Length > 0)
                 GenerateSkillEffects(SkillData.OnSkillExit_GenEffectIDs);

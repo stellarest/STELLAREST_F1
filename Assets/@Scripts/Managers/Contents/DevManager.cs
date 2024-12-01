@@ -67,7 +67,7 @@ namespace STELLAREST_F1
             if (Dev.Input(EInput.Input_F8, obj: nameof(DevManager), tag: $"{nameof(Dev.PrintInputTagInfo)}"))
                 Dev.PrintInputTagInfo();
 
-            if (Dev.Input(EInput.Input_F1, obj: nameof(DevManager), tag: "Print Obj on the Cells."))
+            if (Dev.Input(EInput.Input_F1, obj: nameof(DevManager), tag: "Print Objs on the Cells."))
             {
                 Dev.Log("===== Cells Pair =====");
                 foreach (var pair in Managers.Map.Cells)

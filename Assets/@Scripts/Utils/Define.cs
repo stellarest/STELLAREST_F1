@@ -117,6 +117,7 @@ namespace STELLAREST_F1
             Max = Dead + 1
         }
 
+        // --- for virtual method in BaseBody
         public enum EBaseBodyParts
         {
             Body,

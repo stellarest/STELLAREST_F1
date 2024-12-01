@@ -65,7 +65,6 @@ namespace STELLAREST_F1
         protected MaterialPropertyBlock _matPropertyBlock = null;
 
         protected Dictionary<EString, TrailPreset> _sTrailPresetDict = null;
-
         // ------------------------------------------------------------
         private Dictionary<EBaseBodyParts, bool> _sTrailFlagDict = null;
         protected void EnableSTrailFlag(EBaseBodyParts eTarget)
@@ -96,26 +95,12 @@ namespace STELLAREST_F1
         public virtual void InitialSetInfo(int dataID, BaseObject owner) { }
         protected virtual void InitSTrailDict() 
         {
-            _sTrailPresetDict.Add(EString.SO_STrail_Base, LoadSTrailPreset(EString.SO_STrail_Base));
-            _sTrailPresetDict.Add(EString.SO_STrail_Illusion, LoadSTrailPreset(EString.SO_STrail_Illusion));
-            _sTrailPresetDict.Add(EString.SO_STrail_DarkShadow, LoadSTrailPreset(EString.SO_STrail_DarkShadow));
-            _sTrailPresetDict.Add(EString.SO_STrail_DarkBeaten, LoadSTrailPreset(EString.SO_STrail_DarkBeaten));
-            _sTrailPresetDict.Add(EString.SO_STrail_Rainbow, LoadSTrailPreset(EString.SO_STrail_Rainbow));
-            _sTrailPresetDict.Add(EString.SO_STrail_PastelRainbow, LoadSTrailPreset(EString.SO_STrail_PastelRainbow));
-        }
-
-        private TrailPreset LoadSTrailPreset(EString eString)
-        {
-            return eString switch
-            {
-                EString.SO_STrail_Base => Managers.Resource.Load<TrailPreset>(CString.SObject(eString)),
-                EString.SO_STrail_Illusion => Managers.Resource.Load<TrailPreset>(CString.SObject(eString)),
-                EString.SO_STrail_DarkShadow => Managers.Resource.Load<TrailPreset>(CString.SObject(eString)),
-                EString.SO_STrail_DarkBeaten => Managers.Resource.Load<TrailPreset>(CString.SObject(eString)),
-                EString.SO_STrail_Rainbow => Managers.Resource.Load<TrailPreset>(CString.SObject(eString)),
-                EString.SO_STrail_PastelRainbow => Managers.Resource.Load<TrailPreset>(CString.SObject(eString)),
-                _ => throw new ArgumentOutOfRangeException($"{nameof(BaseBody)}::{nameof(LoadSTrailPreset)}", $"\nInvalid: {eString}")
-            };
+            _sTrailPresetDict.Add(EString.SO_STrail_Base, Util.LoadScriptableObject<TrailPreset>(EString.SO_STrail_Base)); 
+            _sTrailPresetDict.Add(EString.SO_STrail_Illusion, Util.LoadScriptableObject<TrailPreset>(EString.SO_STrail_Illusion)); 
+            _sTrailPresetDict.Add(EString.SO_STrail_DarkShadow, Util.LoadScriptableObject<TrailPreset>(EString.SO_STrail_DarkShadow)); 
+            _sTrailPresetDict.Add(EString.SO_STrail_DarkBeaten, Util.LoadScriptableObject<TrailPreset>(EString.SO_STrail_DarkBeaten)); 
+            _sTrailPresetDict.Add(EString.SO_STrail_Rainbow, Util.LoadScriptableObject<TrailPreset>(EString.SO_STrail_Rainbow));
+            _sTrailPresetDict.Add(EString.SO_STrail_PastelRainbow, Util.LoadScriptableObject<TrailPreset>(EString.SO_STrail_PastelRainbow));
         }
 
         public virtual void EnableSTrail(EBaseBodyParts eTarget, EString ePreset = EString.None, Action startCallback = null) { }
