@@ -107,10 +107,6 @@ namespace STELLAREST_F1
             base.EnterInGame(spawnPos);
             MonsterBody.StartCoFadeInEffect(startCallback: () =>
             {
-                // GenerateGlobalEffect(
-                //         globalEffectID: EGlobalEffectID.TeleportPurple,
-                //         spawnPos: Managers.Map.CellToCenterWorld(Vector3Int.up + SpawnedCellPos)
-                //     );
                 GenerateGlobalEffect(
                     eInt: EInt.ID_TeleportPurple,
                     spawnPos: Managers.Map.CellToCenterWorld(Vector3Int.up + SpawnedCellPos)
@@ -118,14 +114,14 @@ namespace STELLAREST_F1
             });
         }
 
-        // public override void OnDamaged(BaseCellObject attacker, SkillBase skillFromAttacker)
-        // {
-        //     base.OnDamaged(attacker, skillFromAttacker);
-        //     HitShakeMovement(duration: 0.05f, power: 0.5f, vibrato: 10);
-        // }
-
         public override void OnDead(BaseCellObject attacker, SkillBase skillFromAttacker)
-            => base.OnDead(attacker, skillFromAttacker);
+        {
+            base.OnDead(attacker, skillFromAttacker);
+            CreatureBody.StartCoFadeOutEffect(
+               startCallback: () => GenerateGlobalEffect(EInt.ID_OnDeadSkull, CenterPosition),
+               endCallback: () => OnDeadFadeOutCompleted()
+            );
+        }
 
         protected override void OnDisable()
             => base.OnDisable();

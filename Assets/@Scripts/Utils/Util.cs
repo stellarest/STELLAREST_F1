@@ -469,6 +469,7 @@ namespace STELLAREST_F1
                 EInt.ID_RedSandalTree => 309000,
                 EInt.ID_WillowTree => 310000,
                 EInt.ID_YewTree => 311000,
+
                 EInt.ID_CopperRock => 312000,
                 EInt.ID_GoldRock => 313000,
                 EInt.ID_IronRock => 314000,
@@ -481,6 +482,53 @@ namespace STELLAREST_F1
                 _ => throw new ArgumentOutOfRangeException($"{nameof(CInt)}::{nameof(ID)}", $"\nInvalid: {eInt}")
             };
         }
+
+        private const int c_EnvTreeCount = 11;
+        public static int GetEnvTreeRandID
+        {
+            get
+            {
+                int randID = UnityEngine.Random.Range(0, c_EnvTreeCount);
+                return randID switch
+                {
+                    0 => ID(EInt.ID_AshTree),
+                    1 => ID(EInt.ID_BlackOakTree),
+                    2 => ID(EInt.ID_GreenAppleTree),
+                    3 => ID(EInt.ID_IvyTree),
+                    4 => ID(EInt.ID_ManticoreTree),
+                    5 => ID(EInt.ID_MapleTree),
+                    6 => ID(EInt.ID_OakTree),
+                    7 => ID(EInt.ID_RedAppleTree),
+                    8 => ID(EInt.ID_RedSandalTree),
+                    9 => ID(EInt.ID_WillowTree),
+                    10 => ID(EInt.ID_YewTree),
+                    _ => throw new ArgumentOutOfRangeException($"{nameof(CInt)}::{nameof(GetEnvTreeRandID)}", $"\nInvalid: {randID}")
+                };
+            }
+        }
+
+        private const int c_EnvRockCount = 9;
+        public static int GetEnvRockRandID
+        {
+            get
+            {
+                int randID = UnityEngine.Random.Range(0, c_EnvRockCount);
+                return randID switch
+                {
+                    0 => ID(EInt.ID_CopperRock),
+                    1 => ID(EInt.ID_GoldRock),
+                    2 => ID(EInt.ID_IronRock),
+                    3 => ID(EInt.ID_LimestoneRock),
+                    4 => ID(EInt.ID_SilverRock),
+                    5 => ID(EInt.ID_StoneRock),
+                    6 => ID(EInt.ID_TinRock),
+                    7 => ID(EInt.ID_WhetstoneRock),
+                    8 => ID(EInt.ID_ZincRock),
+                    _ => throw new ArgumentOutOfRangeException($"{nameof(CInt)}::{nameof(GetEnvRockRandID)}", $"\nInvalid: {randID}")
+                };
+            }
+        }
+
 
         public static int Sorting(EInt eInt)
         {

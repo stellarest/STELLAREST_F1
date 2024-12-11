@@ -112,7 +112,6 @@ namespace STELLAREST_F1
         public virtual void OnDead(BaseCellObject attacker, SkillBase skillFromAttacker)
         {
             RigidBody.simulated = false;
-            // BaseBody.StartCoFadeOutEffect(() => OnDeadFadeOutCompleted());
         }
         #endregion
 

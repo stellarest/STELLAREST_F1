@@ -63,13 +63,13 @@ namespace STELLAREST_F1
             Dev.Log($"<color=white>{nameof(ChangeHeroLeader)}</color>");
         }
 
-#if UNITY_EDITOR
-        public int GetRandEnvTree
-            => UnityEngine.Random.Range(CInt.ID(EInt.ID_AshTree), CInt.ID(EInt.ID_YewTree) + 1);
+// #if UNITY_EDITOR
+//         public int GetRandEnvTree
+//             => UnityEngine.Random.Range(CInt.ID(EInt.ID_AshTree), CInt.ID(EInt.ID_YewTree) + 1);
 
-        public int GetRandEnvRock
-            => UnityEngine.Random.Range(CInt.ID(EInt.ID_CopperRock), CInt.ID(EInt.ID_ZincRock) + 1);
-#endif
+//         public int GetRandEnvRock
+//             => UnityEngine.Random.Range(CInt.ID(EInt.ID_CopperRock), CInt.ID(EInt.ID_ZincRock) + 1);
+// #endif
     }
 }
 

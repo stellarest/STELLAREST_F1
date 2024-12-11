@@ -12,8 +12,6 @@ namespace STELLAREST_F1
 {
     public class Hero : Creature
     {
-        public float Test_CollectkRate = 0.0f;
-
         #if UNITY_EDITOR
         private void Update()
         {
@@ -215,6 +213,10 @@ namespace STELLAREST_F1
             }
 
             base.OnDead(attacker, skillFromAttacker);
+            CreatureBody.StartCoFadeOutEffect(
+                startCallback: () => Dev.Log($"{Dev_NameTextID} is dead and fading out..."),
+                endCallback: () => OnDeadFadeOutCompleted()
+            );
         }
         #endregion Core
 

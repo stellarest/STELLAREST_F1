@@ -22,10 +22,10 @@ namespace STELLAREST_F1
             return true;
         }
 
-        int canSpawnCount = 0;
-        private IEnumerator CoContinuousSpawnMonster_Test(float waitTime = 0.1f)
+        private int canSpawnCount = 0;
+        private IEnumerator CoContinuousSpawnMonster_Test(int maxSpawnCount, float waitTime = 0.1f)
         {
-            while (canSpawnCount++ < 3)
+            while (canSpawnCount++ < maxSpawnCount)
             {
                 yield return new WaitUntil(() => Managers.Object.Monsters.Count == 0);
                 yield return new WaitForSeconds(waitTime);
@@ -45,14 +45,14 @@ namespace STELLAREST_F1
 
                 if (_spawnEnvTypeFlag == false)
                 {
-                    int treeID = Managers.Game.GetRandEnvTree;
+                    int treeID = CInt.GetEnvTreeRandID;
                     Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
                        spawnPos: Managers.Map.CellToCenterWorld(new Vector3Int(-6, 11, 0)),
                        dataID: treeID);
                 }
                 else
                 {
-                    int rockID = Managers.Game.GetRandEnvRock;
+                    int rockID = CInt.GetEnvRockRandID;
                     Env env = Managers.Object.SpawnBaseObject<Env>(EObjectType.Env,
                        spawnPos: Managers.Map.CellToCenterWorld(new Vector3Int(-3, 11, 0)),
                        dataID: rockID);
@@ -88,8 +88,8 @@ namespace STELLAREST_F1
                     owner: null);
                 leaderController.Leader = firstHero;
 
-                //StartCoroutine(CoContinuousSpawnMonster_Test(5.0f));
-                //StartCoroutine(CoContinuousSpawnEnv_Test(1f));
+                // StartCoroutine(CoContinuousSpawnMonster_Test(maxSpawnCount: 3, waitTime: 555.0f));
+                StartCoroutine(CoContinuousSpawnEnv_Test(1f));
 
                 // ddd
                 // SpawnChicken_Test(-8, 8);
@@ -103,6 +103,9 @@ namespace STELLAREST_F1
 
                 // SpawnChicken_Test(-9, 9);
                 // SpawnChicken_Test(-8, 9);
+                // -------------------------------------------------------------------------------------
+
+
                 // SpawnChicken_Test(-7, 9);
                 // SpawnChicken_Test(-6, 9);
 

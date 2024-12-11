@@ -515,19 +515,6 @@ namespace STELLAREST_F1
             CreatureAIState = ECreatureAIState.Dead;
             attacker.Targets.Remove(this);
             base.OnDead(attacker, skillFromAttacker);
-            CreatureBody.StartCoFadeOutEffect(
-                startCallback: () =>
-                {
-                    // BaseEffect.GenerateEffect(
-                    //         //effectID: ReadOnly.DataAndPoolingID.DNPID_Effect_Global_OnDeadSkull,
-                    //         effectID: Util.GlobalDataID(EGlobalEffectID.OnDeadSkull),
-                    //         spawnPos: CenterPosition
-                    //         );
-                    //GenerateGlobalEffect(EGlobalEffectID.OnDeadSkull, CenterPosition);
-                    GenerateGlobalEffect(EInt.ID_OnDeadSkull, CenterPosition);
-                },
-                endCallback: () => OnDeadFadeOutCompleted()
-            );
         }
         #endregion Core
 

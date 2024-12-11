@@ -5,6 +5,7 @@ using static STELLAREST_F1.Define;
 
 namespace STELLAREST_F1
 {
+    // --- 개선 필요할듯
     public class BodyAttack : ActiveSkillBase
     {
         private float _delta = 0f;
