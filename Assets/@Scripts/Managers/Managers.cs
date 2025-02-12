@@ -22,7 +22,7 @@ namespace STELLAREST_F1
                     if (go == null)
                     {
                         go = new GameObject { name = CString.Object(EString.Obj_Managers) };
-                        DontDestroyOnLoad(go);
+                        DontDestroyOnLoad(go); 
                     }
 
                     s_instance = go.GetOrAddComponent<Managers>();
