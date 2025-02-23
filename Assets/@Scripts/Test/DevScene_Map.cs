@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using STELLAREST_F1;
 using Unity.VisualScripting;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Analytics;
 using static STELLAREST_F1.Define;
@@ -19,6 +20,11 @@ namespace STELLAREST_F1
 
             SceneType = Define.EScene.Unknown;
             LoadAsset();
+
+#if UNITY_EDITOR
+            Dev.AddDevMono(this.gameObject);
+#endif
+
             return true;
         }
 
@@ -463,7 +469,7 @@ namespace STELLAREST_F1
                 {
                     Dev.Log($"{nameof(DevScene_Map)}::{nameof(LoadAsset)}, Loading Complete.", highlight: true);
                     Managers.Data.Init();
-                    Managers.MonoContents.Init();
+                    Managers.Contents.Init();
                     Test();
                 }
             });

@@ -759,7 +759,7 @@ namespace STELLAREST_F1
             Input_6, Input_7, Input_8, Input_9, Input_0,
 
             Input_F1, Input_F2, Input_F3, Input_F4,
-            Input_F5, Input_F6, Input_F7, Input_F8,
+            Input_F5, Input_F6, Input_F7, Input_F8, /* Input_F9(x) */
 
             Max,
         }

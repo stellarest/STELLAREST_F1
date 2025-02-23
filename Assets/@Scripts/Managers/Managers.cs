@@ -33,8 +33,7 @@ namespace STELLAREST_F1
         }
 
         #region Contents
-        private ContentsManager _contents = new ContentsManager();
-        public static ContentsManager Contents => Instance?._contents;
+        public static ContentsManager Contents => ContentsManager.Instance;
 
         private GameManager _game = new GameManager();
         public static GameManager Game => Instance?._game;
@@ -42,8 +41,6 @@ namespace STELLAREST_F1
         private MapManager _map = new MapManager();
         public static MapManager Map => Instance?._map;
         
-        public static MonoContentsManager MonoContents => MonoContentsManager.Instance;
-
         private ObjectManager _object = new ObjectManager();
         public static ObjectManager Object => Instance?._object;
         #endregion

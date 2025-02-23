@@ -91,7 +91,7 @@ namespace STELLAREST_F1
 
             _delta += Time.deltaTime;
             float percent = _delta / desiredTime * Owner.MovementSpeed;
-            AnimationCurve curve = MonoContentsManager.Instance.Curve(animCurveType);
+            AnimationCurve curve = Managers.Contents.Curve(animCurveType);
             Owner.transform.position = Vector3.Lerp(startPoint, targetPoint, curve.Evaluate(percent));
             if (percent >= 1f)
             {

@@ -1,20 +1,21 @@
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using System.Linq;
 using Debug = UnityEngine.Debug;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEditor;
-
+using TMPro;
 using static STELLAREST_F1.Define;
 using Unity.VisualScripting;
 
 #if UNITY_EDITOR
 namespace STELLAREST_F1
 {
-    public class DevEditor : EditorWindow
+    public class DevShortCut : EditorWindow
     {
         // Mac: %(Command) #(Shift) E
         [MenuItem("Tools/ClearLog %#E")]
@@ -53,8 +54,111 @@ namespace STELLAREST_F1
         public bool Toggle { get; set; } = false;
     }
 
+    [System.Serializable]
+    public class DevCellObj
+    {
+        public Vector3Int CellPos = Vector3Int.zero;
+        public BaseCellObject BaseCellObj = null;
+    }
+
+    public class DevMono : MonoBehaviour
+    {
+        [field: SerializeField] public List<DevCellObj> DevCellObjs { get; private set; }= new List<DevCellObj>();
+
+        private IEnumerator Start()
+        {
+            while (true)
+            {
+                foreach (var pair in Managers.Map.Cells)
+                {
+                    DevCellObj devCellObj = DevCellObjs.Find(n => n.BaseCellObj == pair.Value);
+                    if (devCellObj != null)
+                        devCellObj.CellPos = pair.Key;
+                }
+                
+                yield return null;
+            }
+        }
+
+        private void Update()
+        {
+            // --- Input_F8
+            if (Dev.Input(EInput.Input_F8, obj: nameof(Dev), tag: $"{nameof(Dev.PrintInputTagInfo)}"))
+                Dev.PrintInputTagInfo();
+
+            // --- Input_F1
+            if (Dev.Input(EInput.Input_F1, obj: nameof(Dev), tag: $"{nameof(Dev.PrintObjsOnTheCells)}"))
+                Dev.PrintObjsOnTheCells();
+
+            // --- Input_F2
+            Dev.Input(EInput.Input_F2, obj: nameof(Dev), tag: $"{nameof(Dev.ShowCellPosText)}", trueCase: () => 
+            {
+                Dev.ShowCellPosText(show: true);
+                Dev.Log($"{nameof(Dev.ShowCellPosText)}, ON", highlight: true);
+            }, falseCase: () => 
+            {
+                Dev.ShowCellPosText(show: false);
+                Dev.Log($"{nameof(Dev.ShowCellPosText)}, OFF");
+            }, startFlagCase: true);
+
+            // --- Input_F3
+            Dev.Input(EInput.Input_F3, obj: nameof(Dev), tag: $"{nameof(Dev.ShowTiles)}", trueCase: () => 
+            {
+                Dev.ShowTiles(true);
+                Dev.Log($"{nameof(Dev.ShowTiles)}, ON", highlight: true);
+            }, falseCase: () => 
+            {
+                Dev.ShowTiles(false);
+                Dev.Log($"{nameof(Dev.ShowTiles)}, OFF");
+            }, startFlagCase: false);
+        }
+    }
+
+
     public static class Dev
     {
+        private static DevMono _devMono = null;
+
+        public static DevMono AddDevMono(GameObject go)
+        {
+            _devMono = _devMono == null ? go.GetOrAddComponent<DevMono>() : _devMono;
+            return _devMono;
+        }
+
+        public static void DestroyDevMono(GameObject go)
+        {
+            DevMono devMono = go.GetComponent<DevMono>();
+            if (devMono == null)
+                return;
+
+            UnityEngine.Object.Destroy(devMono);
+        }
+
+        public static void AddDevCellObj(DevCellObj devCellObj)
+        {
+            if (_devMono == null)
+            {
+                LogError($"Dev::", $"{_devMono == null}", $"{nameof(devCellObj)}");
+                return;
+            }
+
+            _devMono.DevCellObjs.Add(devCellObj);
+        }
+
+        public static void RemoveDevCellObj(BaseCellObject baseCellObj)
+        {
+            if (_devMono == null)
+            {
+                LogError($"Dev::", $"{nameof(RemoveDevCellObj)}");
+                return;
+            }
+
+            DevCellObj devCellObj = _devMono.DevCellObjs.Find(n => n.BaseCellObj == baseCellObj);
+            _devMono.DevCellObjs.Remove(devCellObj);
+        }
+
+        // #FF6666
+        // #A3E635
         [Conditional("UNITY_EDITOR")]
         public static void Log(object log, bool highlight = false)
         {
@@ -144,6 +248,7 @@ namespace STELLAREST_F1
             }
         }
         
+        #region Dev Input Tags (0 ~ 9, F1 ~ F8)
         public static void PrintInputTagInfo()
         {
             ClearLog(showClearLog: false);
@@ -165,6 +270,87 @@ namespace STELLAREST_F1
             string result = string.Join(separator: "", values: inputs);
             Log($"<color=red>* registered</color><color=white>,</color> * empty\n→ <color=white>[</color> \n{result} <color=white>]</color>");
         }
+
+        public static void PrintObjsOnTheCells()
+        {
+            ClearLog(showClearLog: false);
+            Log("===== Cells Pair =====");
+
+            bool isOnTheCellObjFlag = false;
+            foreach (var pair in Managers.Map.Cells)
+            {
+                if (pair.Value != null)
+                {
+                    Log($"({pair.Key}, {pair.Value.gameObject.name}", highlight: true);
+                    isOnTheCellObjFlag = true;
+                }
+            }
+
+            if (isOnTheCellObjFlag == false)
+                Log("=== None of Objs on the Cells ===");
+        }
+
+        private static GameObject _cellPosTextRoot = null;
+        public static void ShowCellPosText(bool show)
+        {
+            if (_cellPosTextRoot == null)
+            {
+                _cellPosTextRoot = new GameObject { name = "@CellPos" };
+                MakeCellPosText(_cellPosTextRoot);
+            }
+
+            _cellPosTextRoot.SetActive(show);
+        }
+
+        private static void MakeCellPosText(GameObject cellPosTextRoot)
+        {
+            /*
+                MinX: -18, MaxX: 18
+                MinY: -24, MaxY: 24
+                
+                좌상단: -18, 23
+                우하단: 17, -24 
+            */
+            int MinX = Managers.Map.MinX;
+            int MaxX = Managers.Map.MaxX;
+            int MinY = Managers.Map.MinY;
+            int MaxY = Managers.Map.MaxY;
+
+            SortingGroup sg = cellPosTextRoot.AddComponent<SortingGroup>();
+            //sg.sortingLayerName = "BaseObject";
+            sg.sortingLayerName = CString.CValue(EString.CValue_BaseObject);
+            sg.sortingOrder = 999;
+
+            for (int y = MaxY - 1; y >= MinY; --y)
+            {
+                for (int x = MinX; x < MaxX; ++x)
+                {
+                    GameObject cell = new GameObject { name = $"{x}, {y}" };
+                    cell.transform.position = Managers.Map.CellToCenterWorld(new Vector3Int(x, y));
+                    TextMeshPro tmPro = cell.AddComponent<TextMeshPro>();
+                    tmPro.fontSize = 3f;
+                    tmPro.text = $"{x},{y}";
+                    tmPro.alignment = TextAlignmentOptions.Center;
+                    tmPro.autoSizeTextContainer = false;
+                    cell.transform.SetParent(cellPosTextRoot.transform);
+                }
+            }
+
+        }
+
+        public static void ShowTiles(bool show)
+        {
+            GameObject map = GameObject.Find("@Map_SummerForestField_Test2");
+            GameObject tile = null;
+            tile = Util.FindChild(map, "Tilemap_Collision", true, true);
+            if (tile != null)
+                tile.SetActive(show);
+
+            tile = Util.FindChild(map, "Tilemap_Object", true, true);
+            if (tile != null)
+                tile.SetActive(show);
+        }
+        #endregion
 
         private static UnityEngine.KeyCode GetDevInputKey(EInput eInput)
         {
@@ -198,4 +384,8 @@ namespace STELLAREST_F1
         else
             Debug.Log($"{log}");
     }
+
+    // deprecated: DevManager
+    
+
 */

@@ -43,11 +43,11 @@ namespace STELLAREST_F1
             switch (fontAssetType)
             {
                 case EFontAssetType.MapleBold:
-                    _text.font = Managers.MonoContents.GetFontAsset(EFontAssetType.MapleBold);
+                    _text.font = Managers.Contents.GetFontAsset(EFontAssetType.MapleBold);
                     break;
 
                 case EFontAssetType.Comic:
-                    _text.font = Managers.MonoContents.GetFontAsset(EFontAssetType.Comic);
+                    _text.font = Managers.Contents.GetFontAsset(EFontAssetType.Comic);
                     break;
             }
 
@@ -76,11 +76,11 @@ namespace STELLAREST_F1
             switch (fontAssetType)
             {
                 case EFontAssetType.MapleBold:
-                    _text.font = Managers.MonoContents.GetFontAsset(EFontAssetType.MapleBold);
+                    _text.font = Managers.Contents.GetFontAsset(EFontAssetType.MapleBold);
                     break;
 
                 case EFontAssetType.Comic:
-                    _text.font = Managers.MonoContents.GetFontAsset(EFontAssetType.Comic);
+                    _text.font = Managers.Contents.GetFontAsset(EFontAssetType.Comic);
                     break;
             }
 
@@ -108,12 +108,12 @@ namespace STELLAREST_F1
             _text.fontSize = _initialFontSize;
             if (isCritical)
             {
-                _text.font = Managers.MonoContents.GetFontAsset(EFontAssetType.Comic);
+                _text.font = Managers.Contents.GetFontAsset(EFontAssetType.Comic);
                 _text.fontSize *= 1 + 0.5f; // +50%
             }
             else
             {
-                _text.font = Managers.MonoContents.GetFontAsset(EFontAssetType.MapleBold);
+                _text.font = Managers.Contents.GetFontAsset(EFontAssetType.MapleBold);
             }
 
             _text.color = textColor;
@@ -153,13 +153,13 @@ namespace STELLAREST_F1
             if (isCritical)
             {
                 Dev.Log("Critical Font.");
-                _text.font = Managers.MonoContents.GetFontAsset(EFontAssetType.Comic);
+                _text.font = Managers.Contents.GetFontAsset(EFontAssetType.Comic);
                 _text.fontSize *= 1 + 0.5f; // +50%
             }
             else
             {
                 Dev.Log("Normal Font.");
-                _text.font = Managers.MonoContents.GetFontAsset(EFontAssetType.MapleBold);
+                _text.font = Managers.Contents.GetFontAsset(EFontAssetType.MapleBold);
             }
 
             if (ColorUtility.TryParseHtmlString(textColorCode, out Color textColor))

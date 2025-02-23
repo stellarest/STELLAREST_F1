@@ -94,7 +94,8 @@ namespace STELLAREST_F1
                         Heroes.Add(hero);
 
 #if UNITY_EDITOR
-                        DevManager.Instance.CellObjs.Add(new CellObject { CellPos = cellSpawnPos, CellObj = hero });
+                        //DevManager.Instance.CellObjs.Add(new CellObject { CellPos = cellSpawnPos, CellObj = hero });
+                        Dev.AddDevCellObj(new DevCellObj { CellPos = cellSpawnPos, BaseCellObj = hero });
 #endif
                         return hero as T;
                     }
@@ -116,7 +117,8 @@ namespace STELLAREST_F1
                         Monsters.Add(monster);
 
 #if UNITY_EDITOR
-                        DevManager.Instance.CellObjs.Add(new CellObject { CellPos = cellSpawnPos, CellObj = monster });
+                        //DevManager.Instance.CellObjs.Add(new CellObject { CellPos = cellSpawnPos, CellObj = monster });
+                        Dev.AddDevCellObj(new DevCellObj { CellPos = cellSpawnPos, BaseCellObj = monster });
 #endif
                         return monster as T;
                     }
@@ -138,7 +140,8 @@ namespace STELLAREST_F1
                         Envs.Add(env);
 
 #if UNITY_EDITOR
-                        DevManager.Instance.CellObjs.Add(new CellObject { CellPos = cellSpawnPos, CellObj = env });
+                        //DevManager.Instance.CellObjs.Add(new CellObject { CellPos = cellSpawnPos, CellObj = env });
+                        Dev.AddDevCellObj(new DevCellObj { CellPos = cellSpawnPos, BaseCellObj = env });
 #endif
                         return env as T;
                     }
@@ -331,8 +334,9 @@ namespace STELLAREST_F1
 
 
 #if UNITY_EDITOR
-            CellObject cellObj = DevManager.Instance.CellObjs.Find(n => n.CellObj == obj);
-            DevManager.Instance.CellObjs.Remove(cellObj);
+            // CellObject cellObj = DevManager.Instance.CellObjs.Find(n => n.CellObj == obj);
+            // DevManager.Instance.CellObjs.Remove(cellObj);
+            Dev.RemoveDevCellObj(obj as BaseCellObject);
 #endif
         }
     }

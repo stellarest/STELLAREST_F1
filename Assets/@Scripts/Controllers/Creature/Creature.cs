@@ -262,7 +262,7 @@ namespace STELLAREST_F1
                                                                EFontAnimationType.EndBouncingLeftUp;
 
                         // --- Duration 추가해야 할 것 같은데.. BREAK !! 부분은 yellow로 하고 싶기도 하고 
-                        ShowTextFont(text: "SHIELD\n  BREAK !!", fontSize: 5.5f, textColor: Managers.MonoContents.BrightBlue, fontAnimType: shieldBreakAnimType);
+                        ShowTextFont(text: "SHIELD\n  BREAK !!", fontSize: 5.5f, textColor: Managers.Contents.BrightBlue, fontAnimType: shieldBreakAnimType);
 
                         // --- VFX 제거
                         BaseEffect.RemoveEffect(EEffectType.VFX_ShieldBlue);
@@ -306,11 +306,11 @@ namespace STELLAREST_F1
                         if (remainedDamage != 0.0f)
                         {
                             // --- Damage FontColor: BrightRed
-                            ShowDamageFont(damage: remainedDamage, fontColor: Managers.MonoContents.BrightRed,
+                            ShowDamageFont(damage: remainedDamage, fontColor: Managers.Contents.BrightRed,
                                 fontSignType: EFontSignType.None, isCritical: isCritical, fontAnimType: EFontAnimationType.EndBouncingRightUp);
                         }
                         else
-                            ShowTextFont(text: "ZERO DAMAGE", fontSize: 4.0f, textColor: Managers.MonoContents.BrightRed, fontAnimType: EFontAnimationType.EndBouncingRightUp);
+                            ShowTextFont(text: "ZERO DAMAGE", fontSize: 4.0f, textColor: Managers.Contents.BrightRed, fontAnimType: EFontAnimationType.EndBouncingRightUp);
 
                         // --- VFX 제거
                         BaseEffect.RemoveEffect(EEffectType.VFX_BonusHealth);
@@ -575,8 +575,8 @@ namespace STELLAREST_F1
         protected Coroutine _coUpdateAI = null;
         protected IEnumerator CoUpdateAI()
         {
-            if (ObjectType == EObjectType.Monster)
-                yield break;
+            // if (ObjectType == EObjectType.Monster)
+            //     yield break;
 
             while (true)
             {
